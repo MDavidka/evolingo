@@ -3589,3 +3589,78 @@ html, body { background: #fff; }
     transition: none !important;
   }
 }
+
+
+/* Normalize friends-page header scale and give the page more room on mobile. */
+.friends-page {
+  max-width: 680px;
+  padding-left: 18px;
+  padding-right: 18px;
+}
+.friends-app-header {
+  min-height: 48px;
+  margin: 0 3px 26px;
+}
+.friends-brand { gap: 10px; }
+.friends-brand img {
+  width: 42px;
+  height: 42px;
+  border-radius: 13px;
+}
+.friends-brand strong {
+  font-size: 27px;
+  line-height: 1.05;
+  letter-spacing: -1.05px;
+}
+.friends-counters { gap: 8px; }
+.friends-counters > span {
+  min-width: 62px;
+  height: 37px;
+  gap: 6px;
+  padding: 0 10px;
+}
+.friends-counters svg { width: 19px; height: 19px; }
+.friends-counters b { font-size: 14px; }
+.friends-title-block { margin: 0 3px 24px; }
+.friends-title-block h1 {
+  font-size: clamp(32px, 8.5vw, 38px);
+  line-height: 1.08;
+  letter-spacing: -1.35px;
+}
+.friends-title-block p {
+  margin-top: 8px;
+  font-size: 14px;
+}
+.friends-search-bar { margin-bottom: 23px; }
+.friends-tabs {
+  gap: 5px;
+  padding: 5px;
+  margin-bottom: 16px;
+}
+.friends-tabs > button {
+  min-height: 49px;
+  gap: 8px;
+  padding: 8px 7px;
+  font-size: 12px;
+}
+.friends-tabs > button svg { width: 19px; height: 19px; }
+@media (max-width: 420px) {
+  .friends-page { padding-left: 13px; padding-right: 13px; }
+  .friends-app-header { margin-bottom: 25px; }
+  .friends-brand { gap: 8px; }
+  .friends-brand img { width: 39px; height: 39px; border-radius: 12px; }
+  .friends-brand strong { font-size: 24px; letter-spacing: -.9px; }
+  .friends-counters > span { min-width: 52px; height: 34px; padding: 0 7px; }
+  .friends-counters svg { width: 17px; height: 17px; }
+  .friends-counters b { font-size: 13px; }
+  .friends-title-block h1 { font-size: 34px; }
+  .friends-title-block p { font-size: 13px; }
+  .friends-tabs { gap: 4px; padding: 4px; }
+  .friends-tabs > button { min-height: 47px; gap: 6px; padding: 7px 5px; font-size: 11px; }
+  .friends-tabs > button svg { width: 18px; height: 18px; }
+}
+@media (max-width: 360px) {
+  .friends-brand strong { font-size: 22px; }
+  .friends-counters > span { min-width: 47px; gap: 4px; }
+  .friends-tabs > button { gap: 4px; font-size: 10px; }
+}
