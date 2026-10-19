@@ -187,6 +187,13 @@ export default function App() {
   const [xp, setXp] = useState(0)
   const [stars, setStars] = useState(0)
   const [purchasedItems, setPurchasedItems] = useState<string[]>([])
+  const [lives, setLives] = useState(5)
+  const [userName, setUserName] = useState("Márton Dávid")
+  const [avatar, setAvatar] = useState("fox")
+  const [notifications, setNotifications] = useState(false)
+  const [compactMode, setCompactMode] = useState(false)
+  const [showSettings, setShowSettings] = useState(true)
+  const [sessionQuestionIndex, setSessionQuestionIndex] = useState(0)
   const [notice, setNotice] = useState("")
   const activeLesson = lessons.find((lesson) => lesson.id === activeLessonId) ?? lessons[0]
   const handleReadComplete = useCallback((lessonId: number) => {
@@ -203,6 +210,8 @@ export default function App() {
   const openTask = (lessonId: number, taskIndex: number) => {
     setActiveLessonId(lessonId)
     setActiveTaskIndex(taskIndex)
+    setLives(5)
+    setSessionQuestionIndex(taskIndex)
     const isUnlocked = lessonId === 1 || completedLessons.includes(lessonId - 1)
     if (!isUnlocked) {
       setNotice("Először fejezd be az előző leckét!")
@@ -221,7 +230,7 @@ export default function App() {
     const nextAnswered = answeredTasks.includes(taskKey) ? answeredTasks : [...answeredTasks, taskKey]
     setAnsweredTasks(nextAnswered)
     setXp((current) => current + (answeredTasks.includes(taskKey) ? 0 : 5))
-    setStars((current) => current + (answeredTasks.includes(taskKey) ? 0 : 1))
+    setStars((current) => current + 0)
     const lesson = lessons.find((item) => item.id === lessonId)
     if (lesson && lesson.questions.every((_, index) => nextAnswered.includes(lessonId + "-" + index))) {
       setCompletedLessons((previous) => previous.includes(lessonId) ? previous : [...previous, lessonId])
@@ -254,10 +263,14 @@ export default function App() {
         alreadyAnswered={answeredTasks.includes(activeLesson.id + "-" + activeTaskIndex)}
         onExit={() => setScreen("home")}
         onComplete={() => completeTask(activeLesson.id, activeTaskIndex)}
+        lives={lives}
+        onWrongAnswer={() => setLives((current) => Math.max(0, current - 1))}
+        onNextQuestion={(nextIndex) => { setActiveTaskIndex(nextIndex); setSessionQuestionIndex(nextIndex); }}
+        onOutOfLives={() => { setNotice("Elfogytak az életeid. Pihenj egy kicsit, és próbáld újra!"); setScreen("home"); }}
       />}
       {screen === "shop" && <Shop stars={stars} purchasedItems={purchasedItems} onPurchase={(id, cost) => { if (stars >= cost && !purchasedItems.includes(id)) { setStars((value) => value - cost); setPurchasedItems((items) => [...items, id]); setNotice("Sikeres vásárlás!"); } }} />}
       {screen === "leaderboard" && <Leaderboard />}
-      {screen === "profile" && <Profile completedCount={completedLessons.length} xp={xp} />}
+      {screen === "profile" && <Profile completedCount={completedLessons.length} xp={xp} userName={userName} setUserName={setUserName} avatar={avatar} setAvatar={setAvatar} notifications={notifications} setNotifications={setNotifications} compactMode={compactMode} setCompactMode={setCompactMode} showSettings={showSettings} setShowSettings={setShowSettings} />}
     </section>
     {screen !== "lessonIntro" && screen !== "task" && <Nav screen={screen} setScreen={setScreen} />}
   </main>
@@ -365,8 +378,9 @@ function LessonIntro({ lesson, onExit, onReadComplete, onPractice, alreadyRead }
   </div>
 }
 
-function TaskExercise({ lesson, taskIndex, onExit, onComplete, alreadyAnswered }: {
-  lesson: LessonUnit; taskIndex: number; onExit: () => void; onComplete: () => void; alreadyAnswered: boolean
+function TaskExercise({ lesson, taskIndex, onExit, onComplete, alreadyAnswered, lives, onWrongAnswer, onNextQuestion, onOutOfLives }: {
+  lesson: LessonUnit; taskIndex: number; onExit: () => void; onComplete: () => void; alreadyAnswered: boolean;
+  lives: number; onWrongAnswer: () => void; onNextQuestion: (index: number) => void; onOutOfLives: () => void
 }) {
   const question = lesson.questions[taskIndex]
   const [selectedAnswer, setSelectedAnswer] = useState("")
@@ -374,47 +388,62 @@ function TaskExercise({ lesson, taskIndex, onExit, onComplete, alreadyAnswered }
   const [selectedWords, setSelectedWords] = useState<string[]>([])
   const [checked, setChecked] = useState(false)
   const [answerCorrect, setAnswerCorrect] = useState(false)
+  const [rewardPulse, setRewardPulse] = useState(false)
+  const [heartLost, setHeartLost] = useState(false)
   const currentAnswer = question.type === "choice" ? selectedAnswer : question.type === "text" ? typedAnswer : selectedWords.map((item) => item.split(":").slice(1).join(":")).join(" ")
-  const canCheck = currentAnswer.trim().length > 0
+  const canCheck = currentAnswer.trim().length > 0 && lives > 0
   const acceptedAnswers = [question.answer, ...(question.accepted ?? [])]
+  const resetAnswer = () => { setSelectedAnswer(""); setTypedAnswer(""); setSelectedWords([]); setChecked(false); setAnswerCorrect(false); setHeartLost(false) }
   const submitAnswer = () => {
-    if (checked && !answerCorrect) {
-      setSelectedAnswer(""); setTypedAnswer(""); setSelectedWords([]); setChecked(false); setAnswerCorrect(false)
+    if (lives <= 0) { onOutOfLives(); return }
+    if (checked && !answerCorrect) { resetAnswer(); return }
+    if (checked && answerCorrect) {
+      if (taskIndex + 1 < lesson.questions.length) {
+        onNextQuestion(taskIndex + 1)
+      } else {
+        onComplete()
+      }
       return
     }
-    if (checked && answerCorrect) { onComplete(); return }
     const correct = acceptedAnswers.some((answer) => normalizeAnswer(answer) === normalizeAnswer(currentAnswer))
     setAnswerCorrect(correct)
     setChecked(true)
+    if (correct) {
+      setRewardPulse(true)
+      window.setTimeout(() => setRewardPulse(false), 750)
+    } else {
+      setHeartLost(true)
+      onWrongAnswer()
+    }
   }
   const toggleWord = (word: string, position: number) => {
-    if (checked) return
+    if (checked || lives <= 0) return
     setSelectedWords((previous) => previous.includes(position + ":" + word) ? previous.filter((item) => item !== position + ":" + word) : [...previous, position + ":" + word])
   }
   const chosenWords = selectedWords.map((item) => item.split(":").slice(1).join(":"))
-  const buttonLabel = checked ? (answerCorrect ? (alreadyAnswered ? "Vissza a tanulási útvonalhoz" : "Feladat befejezése · +5 XP") : "Próbáld újra") : "Válasz ellenőrzése"
+  const buttonLabel = lives <= 0 ? "Vissza az útvonalhoz" : checked ? (answerCorrect ? (taskIndex + 1 === lesson.questions.length ? "Csomag befejezése" : "Következő kérdés") : "Próbáld újra") : "Ellenőrzés"
+  const progress = Math.round((taskIndex / lesson.questions.length) * 100)
+  if (lives <= 0) return <div className="lesson-layout task-exercise-layout"><header className="lesson-topbar"><button className="exit-lesson" onClick={onOutOfLives} aria-label="Kilépés"><X size={27} /></button><div className="intro-top-title"><span>{lesson.title}</span><strong>Próba vége</strong></div><div className="lesson-hearts"><Heart size={21} fill="#e94f64" /><strong>0</strong></div></header><div className="session-ended"><div className="session-ended-heart"><Heart size={52} fill="currentColor" /></div><h1>Elfogytak az életeid</h1><p>A kérdéssort most nem tudod folytatni. Térj vissza az útvonalhoz, és később indíts új próbát.</p><button className="primary-action" onClick={onOutOfLives}>Vissza a tanuláshoz</button></div></div>
   return <div className="lesson-layout task-exercise-layout">
     <header className="lesson-topbar">
       <button className="exit-lesson" onClick={onExit} aria-label="Kilépés a feladatból"><X size={27} /></button>
-      <div className="intro-top-title"><span>{lesson.title.toLocaleUpperCase("en-US")}</span><strong>{taskIndex + 1}. feladat / {lesson.questions.length}</strong></div>
-      <div className="task-top-icon"><ClipboardCheck size={23} /></div>
+      <div className="lesson-progress-wrap"><div className="lesson-progress-track" aria-label="Haladás"><span style={{ width: progress + "%" }} /></div><strong className="lesson-progress-label">{taskIndex + 1}<span>/</span>{lesson.questions.length}</strong></div>
+      <div className={"lesson-hearts " + (heartLost ? "heart-lost" : "")}><Heart size={22} fill="#e94f64" /><strong>{Math.max(0, lives)}</strong></div>
     </header>
     <div className="task-exercise-content">
-      <span className="lesson-kicker">GYAKORLÁS · {lesson.level}</span>
-      <h1 className="task-screen-title">{question.instruction}</h1>
-      <TaskIllustration type={question.type} lessonId={lesson.id} taskIndex={taskIndex} /><div className="lesson-question-card"><div className="question-mascot"><img src={foxIcon} alt="Evölingo róka" /></div><div className="question-main"><span className="question-label">{question.type === "choice" ? "VÁLASSZ EGYET" : question.type === "text" ? "ÍRD BE A VÁLASZT" : "MONDATÉPÍTÉS"}</span><p className={question.type === "arrange" ? "question-prompt translation-prompt" : "question-prompt"}>{question.prompt}</p></div></div>
+      <h1 className="task-screen-title">{question.prompt}</h1>
       {question.type === "choice" && <div className="answer-options" role="group" aria-label="Válaszlehetőségek">{question.options?.map((option, index) => {
         const selected = selectedAnswer === option
         const isRight = checked && option === question.answer
         const isWrong = checked && selected && !answerCorrect
-        return <button key={option} className={"answer-option " + (selected ? "selected " : "") + (isRight ? "correct " : "") + (isWrong ? "incorrect" : "")} onClick={() => !checked && setSelectedAnswer(option)} disabled={checked}><span className="option-letter">{String.fromCharCode(65 + index)}</span><span>{option}</span>{isRight && <Check size={19} />}</button>
+        return <button key={option} className={"answer-option " + (selected ? "selected " : "") + (isRight ? "correct " : "") + (isWrong ? "incorrect " : "") + (rewardPulse && isRight ? "answer-pop" : "")} onClick={() => !checked && setSelectedAnswer(option)} disabled={checked || lives <= 0}><span className="option-letter">{String.fromCharCode(65 + index)}</span><span>{option}</span>{isRight && <Check size={19} />}</button>
       })}</div>}
-      {question.type === "text" && <div className={"answer-input-wrap " + (checked ? (answerCorrect ? "is-correct" : "is-incorrect") : "")}><label htmlFor="typed-answer">Válaszod</label><input id="typed-answer" autoComplete="off" autoCapitalize="none" placeholder="Írd be a hiányzó szót…" value={typedAnswer} onChange={(event) => setTypedAnswer(event.target.value)} onKeyDown={(event) => { if (event.key === "Enter" && canCheck && !checked) submitAnswer() }} />{checked && answerCorrect && <CheckCircle2 size={20} />}</div>}
-      {question.type === "arrange" && <div className="word-arrange-area"><div className={"word-answer-line " + (checked ? (answerCorrect ? "is-correct" : "is-incorrect") : "")} aria-label="Saját mondat">{chosenWords.length ? chosenWords.map((word, index) => <button key={index + "-" + word} onClick={() => !checked && setSelectedWords((previous) => previous.filter((_, itemIndex) => itemIndex !== index))} disabled={checked} className="chosen-word">{word}</button>) : <span className="word-placeholder">Koppints a szavakra a mondat összeállításához</span>}</div><div className="word-bank">{question.words?.map((word, index) => { const token = index + ":" + word; const used = selectedWords.includes(token); return <button key={token} className={"word-chip " + (used ? "used" : "")} disabled={used || checked} onClick={() => toggleWord(word, index)}>{word}</button> })}</div></div>}
-      <div className="lesson-tip"><span><Lightbulb size={18} /></span><div><strong>Gyors tipp</strong><p>{question.tip}</p></div></div>
-      {checked && <div className={"answer-feedback " + (answerCorrect ? "feedback-correct" : "feedback-incorrect")} role="status"><span className="feedback-icon">{answerCorrect ? <CheckCircle2 size={23} /> : <RotateCcw size={22} />}</span><div><strong>{answerCorrect ? "Helyes! Szép munka." : "Még nem jó — próbáld újra."}</strong><p>{question.explanation}</p></div></div>}
+      {question.type === "text" && <div className={"answer-input-wrap " + (checked ? (answerCorrect ? "is-correct" : "is-incorrect") : "")}><label htmlFor="typed-answer">Válaszod</label><input id="typed-answer" autoComplete="off" autoCapitalize="none" disabled={lives <= 0 || checked} placeholder="Írd be a választ…" value={typedAnswer} onChange={(event) => setTypedAnswer(event.target.value)} onKeyDown={(event) => { if (event.key === "Enter" && canCheck && !checked) submitAnswer() }} />{checked && answerCorrect && <CheckCircle2 size={20} />}</div>}
+      {question.type === "arrange" && <div className="word-arrange-area"><div className={"word-answer-line " + (checked ? (answerCorrect ? "is-correct" : "is-incorrect") : "")} aria-label="Saját mondat">{chosenWords.length ? chosenWords.map((word, index) => <button key={index + "-" + word} onClick={() => !checked && setSelectedWords((previous) => previous.filter((_, itemIndex) => itemIndex !== index))} disabled={checked || lives <= 0} className="chosen-word">{word}</button>) : <span className="word-placeholder">Koppints a szavakra a mondat összeállításához</span>}</div><div className="word-bank">{question.words?.map((word, index) => { const token = index + ":" + word; const used = selectedWords.includes(token); return <button key={token} className="word-chip" disabled={used || checked || lives <= 0} onClick={() => toggleWord(word, index)}>{word}</button> })}</div></div>}
+      {checked && <div className={"answer-feedback " + (answerCorrect ? "feedback-correct" : "feedback-incorrect")} role="status"><span className="feedback-icon">{answerCorrect ? <CheckCircle2 size={23} /> : <RotateCcw size={22} />}</span><div><strong>{answerCorrect ? "Helyes! +1 csillag" : "Ez most nem sikerült"}</strong>{!answerCorrect && <p>Próbáld újra. A hibás válasz egy életbe kerül.</p>}</div></div>}
+      {checked && answerCorrect && <div className={"star-reward " + (rewardPulse ? "star-reward-pop" : "")}><Star size={22} fill="currentColor" /><strong>+1 csillag</strong></div>}
     </div>
-    <footer className="lesson-action-bar task-action-bar"><span className="action-hint">{checked ? (answerCorrect ? "Szép munka, sikerült a feladat." : "Nézd meg a tippet, majd próbáld újra.") : "Válassz vagy írj be egy választ a folytatáshoz."}</span><button className="primary-action" disabled={!checked && !canCheck} onClick={submitAnswer}>{buttonLabel}{checked && answerCorrect && <ArrowRight size={19} />}</button></footer>
+    <footer className="lesson-action-bar task-action-bar"><button className="primary-action" disabled={!checked && !canCheck} onClick={lives <= 0 ? onOutOfLives : submitAnswer}>{buttonLabel}{checked && answerCorrect && <ArrowRight size={19} />}</button></footer>
   </div>
 }
 
@@ -446,6 +475,36 @@ function Shop({ stars, purchasedItems, onPurchase }: { stars: number; purchasedI
   })}</div><p className="shop-footnote">A bolt bemutató funkció: a megvett jutalmak egyelőre csak az alkalmazás aktuális munkamenetében maradnak meg.</p></>
 }
 function Leaderboard() { return <><PageHeader title="Ranglista" /><div className="league-card"><div className="league-top"><div className="league-badge"><Trophy size={26} /></div><div><h3>Bronz liga</h3><p>Vége: 2 nap múlva</p></div></div><div className="league-progress"><span style={{ width: "68%" }} /></div></div><div className="rank-list">{ranks.map((rank) => <div className={"rank-row " + (rank.name === "You" ? "you" : "")} key={rank.name}><div className="rank-number">{rank.place <= 3 ? <Medal size={21} /> : rank.place}</div><div className="rank-avatar">{rank.name.charAt(0)}</div><div className="rank-name"><strong>{rank.name === "You" ? "Te" : rank.name}</strong><span>{rank.name === "You" ? "Csak így tovább!" : "Angolt tanul"}</span></div><strong className="rank-xp">{rank.xp}</strong></div>)}</div></> }
-function Profile({ completedCount, xp }: { completedCount: number; xp: number }) { return <><PageHeader title="Profil" /><div className="profile-card"><div className="large-avatar"><img src={foxIcon} alt="Evölingo profilkép" /></div><div><h2>Márton Dávid</h2><p>Tanulás kezdete: 2026. október</p></div></div><div className="profile-stats"><div><Flame /><strong>7</strong><span>napos sorozat</span></div><div><Zap /><strong>{xp.toLocaleString("en-US")}</strong><span>XP</span></div><div><BookOpen /><strong>{completedCount}</strong><span>kész lecke</span></div></div></> }
+function Profile({ completedCount, xp, userName, setUserName, avatar, setAvatar, notifications, setNotifications, compactMode, setCompactMode, showSettings, setShowSettings }: {
+  completedCount: number; xp: number; userName: string; setUserName: (value: string) => void;
+  avatar: string; setAvatar: (value: string) => void; notifications: boolean; setNotifications: (value: boolean) => void;
+  compactMode: boolean; setCompactMode: (value: boolean) => void; showSettings: boolean; setShowSettings: (value: boolean) => void
+}) {
+  const [draftName, setDraftName] = useState(userName)
+  const [saved, setSaved] = useState(false)
+  useEffect(() => setDraftName(userName), [userName])
+  const avatarSrc = avatar === "fox" ? foxIcon : avatar === "book" ? "" : ""
+  return <>
+    <PageHeader title="Profil" />
+    <div className="profile-card profile-edit-card">
+      <div className="large-avatar">{avatar === "fox" ? <img src={foxIcon} alt="Róka profilkép" /> : <span className="avatar-emoji">{avatar === "book" ? "📚" : avatar === "star" ? "⭐" : "🦊"}</span>}</div>
+      <div><h2>{userName || "Tanuló"}</h2><p>Saját tanulói profil</p></div>
+    </div>
+    <div className="profile-stats"><div><Flame /><strong>7</strong><span>napos sorozat</span></div><div><Zap /><strong>{xp.toLocaleString("en-US")}</strong><span>XP</span></div><div><BookOpen /><strong>{completedCount}</strong><span>kész lecke</span></div></div>
+    <section className="profile-settings">
+      <button className="settings-section-heading" onClick={() => setShowSettings(!showSettings)} aria-expanded={showSettings}><span>Profil és beállítások</span><span>{showSettings ? "−" : "+"}</span></button>
+      {showSettings && <>
+        <label className="setting-label" htmlFor="profile-name">Név</label>
+        <div className="profile-name-form"><input id="profile-name" maxLength={32} value={draftName} onChange={(event) => { setDraftName(event.target.value); setSaved(false) }} placeholder="Írd be a neved" /><button onClick={() => { const value = draftName.trim(); if (value) { setUserName(value); setSaved(true) } }}>Mentés</button></div>
+        {saved && <p className="setting-success">A profilnév frissítve.</p>}
+        <span className="setting-label">Profilkép</span>
+        <div className="avatar-options">{[["fox","🦊"],["book","📚"],["star","⭐"],["spark","✨"]].map(([id,emoji]) => <button key={id} className={"avatar-option " + (avatar === id ? "selected" : "")} onClick={() => setAvatar(id)} aria-label={"Profilkép: " + emoji}>{emoji}</button>)}</div>
+        <label className="setting-toggle"><span><strong>Értesítések</strong><small>Tanulási emlékeztetők (felület-beállítás)</small></span><input type="checkbox" checked={notifications} onChange={(event) => setNotifications(event.target.checked)} /></label>
+        <label className="setting-toggle"><span><strong>Kompakt felület</strong><small>Kisebb térközök és tömörebb kártyák</small></span><input type="checkbox" checked={compactMode} onChange={(event) => { setCompactMode(event.target.checked); document.documentElement.classList.toggle("compact-ui", event.target.checked) }} /></label>
+        <p className="setting-footnote">Ezek a beállítások jelenleg ezen az oldalon, a megnyitott munkamenet alatt működnek. A rendszer értesítéseit még nem küldi ki.</p>
+      </>}
+    </section>
+  </>
+}
 function PageHeader({ title }: { title: string }) { return <header className="page-header"><div className="brand compact"><img src={foxIcon} alt="Evölingo róka" /><div><h1>Evölingo</h1></div></div><h1>{title}</h1></header> }
 function Nav({ screen, setScreen }: { screen: Screen; setScreen: (screen: Screen) => void }) { const items: [Screen, string, React.ElementType][] = [["home", "Tanulás", BookOpen], ["shop", "Bolt", ShoppingBag], ["leaderboard", "Ranglista", BarChart3], ["profile", "Profil", UserRound]]; return <nav className="bottom-nav">{items.map(([id, label, Icon]) => <button key={id} className={screen === id ? "active" : ""} onClick={() => setScreen(id)} aria-current={screen === id ? "page" : undefined}><Icon size={23} /><span>{label}</span></button>)}</nav> }
