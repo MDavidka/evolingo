@@ -296,7 +296,7 @@ function Home({ readLessons, completedLessons, answeredTasks, stars, notice, cle
           <button className={"compact-lesson-icon-button " + (isUnlocked ? "node-unlocked" : "node-locked") + (complete ? " node-complete" : "")} disabled={!isUnlocked} onClick={() => setSelectedLessonId(selectedLessonId === lesson.id ? null : lesson.id)} aria-label={"Lecke vagy feladat: " + lesson.title} aria-expanded={selectedLessonId === lesson.id}>
             <span className="compact-lesson-icon"><BookOpen size={28} />{complete && <span className="compact-lesson-check"><Check size={13} /></span>}</span>
           </button>
-          <button className="compact-lesson-name" disabled={!isUnlocked} onClick={() => setSelectedLessonId(selectedLessonId === lesson.id ? null : lesson.id)}>{lesson.title}</button>
+          <button className="compact-lesson-name" disabled={!isUnlocked} onClick={() => setSelectedLessonId(selectedLessonId === lesson.id ? null : lesson.id)}><strong>{lesson.title}</strong><span>{lesson.summary}</span></button>
           {selectedLessonId === lesson.id && <div className={"lesson-choice-popover " + side} role="group" aria-label="Lecke vagy feladat">
             <button onClick={() => { setSelectedLessonId(null); onOpenLesson(lesson.id) }}>Lecke</button>
             <button onClick={() => { setSelectedLessonId(null); onOpenTask(lesson.id, continueIndex) }}>Feladat</button>
@@ -341,7 +341,7 @@ function LessonIntro({ lesson, onExit, onReadComplete, onPractice, alreadyRead }
         <p>{lesson.summary}</p>
         <div className="intro-meta"><span><BookOpen size={15} /> Tananyag</span><span><Zap size={15} /> +10 XP olvasásért</span></div>
       </div>
-      <figure className="lesson-illustration"><img src="https://undraw.co/illustrations/education_3vwh.svg" alt="Tanulási illusztráció" /><figcaption>{lesson.summary}</figcaption></figure>
+      <figure className="lesson-illustration local-lesson-art"><div className="local-art-scene"><span className="local-art-orbit orbit-one" /><span className="local-art-orbit orbit-two" /><span className="local-art-paper"><BookOpen size={56} strokeWidth={1.6} /></span><span className="local-art-spark">✦</span><span className="local-art-dot">A1</span></div><figcaption>{lesson.summary}</figcaption></figure>
       {lesson.sections.map((section, index) => <section className="lesson-note-block" key={section.title}>
         <h2>{index + 1}. {section.title}</h2><p>{section.body}</p>
         {section.rows && <div className="grammar-table">{section.rows.map(([left, right]) => <div key={left}><span>{left}</span><strong>{right}</strong></div>)}</div>}
@@ -349,7 +349,7 @@ function LessonIntro({ lesson, onExit, onReadComplete, onPractice, alreadyRead }
         {section.tip && <div className="lesson-callout"><Lightbulb size={19} /><p>{section.tip}</p></div>}
       </section>)}
       <section className="lesson-note-block"><h2>Gyors összefoglaló</h2><ul className="lesson-summary-list">{lesson.sections.slice(0, 3).map((section) => <li key={section.title}>{section.title}: {section.body.split(".")[0]}.</li>)}</ul></section>
-      <figure className="lesson-illustration second-lesson-illustration"><img src="https://undraw.co/illustrations/reading-time.svg" alt="Olvasás és tanulás illusztráció" /><figcaption>Olvass, gondold át a példákat, és folytasd a tanulást.</figcaption></figure>
+      <figure className="lesson-illustration second-lesson-illustration local-lesson-art"><div className="local-art-scene reading-art-scene"><span className="local-art-orbit orbit-one" /><span className="local-art-orbit orbit-two" /><span className="local-art-paper"><BookOpen size={56} strokeWidth={1.6} /></span><span className="local-art-spark">✧</span><span className="local-art-dot">Aa</span></div><figcaption>Olvass, gondold át a példákat, és folytasd a tanulást.</figcaption></figure>
       <div className="reading-inline-status">{readingComplete ? <><CheckCircle2 size={19} /><span>Tananyag elolvasva · +10 XP</span></> : <><BookOpen size={19} /><span>Olvasd át a tananyagot. A körben láthatod a hátralévő időt.</span></>}</div>
       {readingComplete && <div className="reading-complete-state"><div><strong>Mehetünk tovább!</strong><p>A leckéhez tartozó négy feladat most már elérhető az útvonalon.</p></div><button className="primary-action" onClick={onPractice}>Feladatok megnyitása <ArrowRight size={19} /></button></div>}
     </div>
