@@ -260,7 +260,7 @@ export default function App() {
         onComplete={() => { setStars((current) => current + (answeredTasks.includes(activeLesson.id + "-" + activeTaskIndex) ? 0 : 1)); setXp((current) => current + (answeredTasks.includes(activeLesson.id + "-" + activeTaskIndex) ? 0 : 5)); completeTask(activeLesson.id, activeTaskIndex); }}
         lives={lives}
         onWrongAnswer={() => setLives((current) => Math.max(0, current - 1))}
-        onNextQuestion={(nextIndex) => { setStars((current) => current + (answeredTasks.includes(activeLesson.id + "-" + activeTaskIndex) ? 0 : 1)); setXp((current) => current + (answeredTasks.includes(activeLesson.id + "-" + activeTaskIndex) ? 0 : 5)); setActiveTaskIndex(nextIndex); }}
+        onNextQuestion={(nextIndex) => { const key = activeLesson.id + "-" + activeTaskIndex; if (!answeredTasks.includes(key)) { setAnsweredTasks((items) => items.includes(key) ? items : [...items, key]); setStars((current) => current + 1); setXp((current) => current + 5); } setActiveTaskIndex(nextIndex); }}
         onOutOfLives={() => { setNotice("Elfogytak az életeid. Pihenj egy kicsit, és próbáld újra!"); setScreen("home"); }}
       />}
       {screen === "shop" && <Shop stars={stars} purchasedItems={purchasedItems} onPurchase={(id, cost) => { if (stars >= cost && !purchasedItems.includes(id)) { setStars((value) => value - cost); setPurchasedItems((items) => [...items, id]); setNotice("Sikeres vásárlás!"); } }} />}
