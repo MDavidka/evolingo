@@ -58,3 +58,16 @@
   stroke-width: 2.25;
 }
 .task-node .task-labels { flex: 1; }
+
+
+/* Latest polish: white background across the full app, gray locked levels */
+html, body { background: #fff; }
+.app-shell { background: #fff; }
+.screen-content { background: #fff; }
+.task-node.locked .task-dot {
+  background: #d9d9d9;
+  color: #888;
+  box-shadow: none;
+}
+.task-node.locked .task-name { color: #777; }
+.task-node.locked .task-status { color: #888; }
