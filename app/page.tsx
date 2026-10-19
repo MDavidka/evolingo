@@ -220,7 +220,8 @@ export default function App() {
     const taskKey = lessonId + "-" + taskIndex
     const nextAnswered = answeredTasks.includes(taskKey) ? answeredTasks : [...answeredTasks, taskKey]
     setAnsweredTasks(nextAnswered)
-    setXp((current) => current + (answeredTasks.includes(taskKey) ? 0 : 5))\n    setStars((current) => current + (answeredTasks.includes(taskKey) ? 0 : 1))
+    setXp((current) => current + (answeredTasks.includes(taskKey) ? 0 : 5))
+    setStars((current) => current + (answeredTasks.includes(taskKey) ? 0 : 1))
     const lesson = lessons.find((item) => item.id === lessonId)
     if (lesson && lesson.questions.every((_, index) => nextAnswered.includes(lessonId + "-" + index))) {
       setCompletedLessons((previous) => previous.includes(lessonId) ? previous : [...previous, lessonId])
