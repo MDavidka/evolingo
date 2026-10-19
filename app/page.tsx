@@ -194,6 +194,8 @@ export default function App() {
   const [completedLessons, setCompletedLessons] = useState<number[]>([])
   const [answeredTasks, setAnsweredTasks] = useState<string[]>([])
   const [xp, setXp] = useState(0)
+  const [stars, setStars] = useState(0)
+  const [purchasedItems, setPurchasedItems] = useState<string[]>([])
   const [notice, setNotice] = useState("")
   const activeLesson = lessons.find((lesson) => lesson.id === activeLessonId) ?? lessons[0]
   const handleReadComplete = useCallback((lessonId: number) => {
