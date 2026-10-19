@@ -180,37 +180,30 @@ function Lesson({ onExit, onComplete }: { onExit: () => void; onComplete: () => 
     })
   }
   const chosenWordText = selectedWords.map((item) => item.split(":").slice(1).join(":"))
-  const nextActionText = checked ? (answerCorrect ? (questionIndex === presentSimpleQuestions.length - 1 ? "Finish lesson" : "Continue") : "Try again") : "Check answer"
+  const nextActionText = checked ? (answerCorrect ? (questionIndex === presentSimpleQuestions.length - 1 ? "Lecke befejezése" : "Folytatás") : "Próbáld újra") : "Válasz ellenőrzése"
 
   if (complete) return <div className="lesson-completion">
     <div className="completion-confetti" aria-hidden="true"><span>✦</span><span>✦</span><span>✧</span><span>✦</span><span>✧</span></div>
     <div className="completion-mascot"><img src={foxIcon} alt="Evölingo fox celebrating" /></div>
     <span className="completion-tag"><CheckCircle2 size={16} /> LESSON COMPLETE</span>
-    <h1>Brilliant work!</h1>
-    <p>You finished <strong>Present Simple</strong>. Every little step counts.</p>
-    <div className="xp-reward"><span className="xp-bolt"><Zap size={24} fill="currentColor" /></span><div><strong>+50 XP</strong><span>Reward earned</span></div><CheckCircle2 size={22} /></div>
-    <div className="completion-stats"><div><strong>5/5</strong><span>Questions</span></div><div><strong>1</strong><span>Lesson done</span></div><div><strong>+1</strong><span>Level unlocked</span></div></div>
-    <button className="primary-action completion-action" onClick={onComplete}>Continue learning <ArrowRight size={19} /></button>
+    <h1>Remek munka!</h1>
+    <p>Befejezted a <strong>Present Simple</strong> leckét. Minden lépés számít.</p>
+    <div className="xp-reward"><span className="xp-bolt"><Zap size={24} fill="currentColor" /></span><div><strong>+50 XP</strong><span>Megszerezted a jutalmat</span></div><CheckCircle2 size={22} /></div>
+    <div className="completion-stats"><div><strong>5/5</strong><span>Kérdés</span></div><div><strong>1</strong><span>Lecke kész</span></div><div><strong>+1</strong><span>Feloldott szint</span></div></div>
+    <button className="primary-action completion-action" onClick={onComplete}>Tanulás folytatása <ArrowRight size={19} /></button>
   </div>
 
   return <div className="lesson-layout">
     <header className="lesson-topbar">
-      <button className="exit-lesson" onClick={onExit} aria-label="Exit lesson"><X size={22} /></button>
+      <button className="exit-lesson" onClick={onExit} aria-label="Kilépés a leckéből"><X size={27} /></button>
       <div className="lesson-progress-wrap">
         <div className="lesson-progress-track"><span style={{ width: `${progress}%` }} /></div>
         <span className="lesson-progress-label">{questionIndex + 1} <span>/</span> {presentSimpleQuestions.length}</span>
       </div>
-      <div className="lesson-hearts"><Heart fill="currentColor" size={20} /><strong>5</strong></div>
+      <div className="lesson-hearts"><Heart fill="currentColor" size={27} /><strong>5</strong></div>
     </header>
 
-    <div className="lesson-topic-row"><span className="lesson-topic-dot" /> ENGLISH <ChevronRight size={13} /> GRAMMAR <span className="lesson-level">A1 BEGINNER</span></div>
-    <div className="lesson-heading">
-      <span className="lesson-kicker">LESSON 01 · PRESENT SIMPLE</span>
-      <h1>{question.instruction}</h1>
-      <p>Question {questionIndex + 1} of {presentSimpleQuestions.length}</p>
-    </div>
-
-    <div className="lesson-question-card">
+        <div className="lesson-question-card">
       <div className="question-mascot"><img src={foxIcon} alt="Evölingo fox mascot" /></div>
       <div className="question-main">
         <span className="question-label">{question.type === "choice" ? "CHOOSE ONE" : question.type === "text" ? "TYPE YOUR ANSWER" : "WORD ORDER"}</span>
@@ -218,7 +211,7 @@ function Lesson({ onExit, onComplete }: { onExit: () => void; onComplete: () => 
       </div>
     </div>
 
-    {question.type === "choice" && <div className="answer-options" role="group" aria-label="Answer options">
+    {question.type === "choice" && <div className="answer-options" role="group" aria-label="Válaszlehetőségek">
       {question.options?.map((option, index) => {
         const selected = selectedAnswer === option
         const isRight = checked && option === question.answer
@@ -230,14 +223,14 @@ function Lesson({ onExit, onComplete }: { onExit: () => void; onComplete: () => 
     </div>}
 
     {question.type === "text" && <div className={`answer-input-wrap ${checked ? (answerCorrect ? "is-correct" : "is-incorrect") : ""}`}>
-      <label htmlFor="typed-answer">Your answer</label>
-      <input id="typed-answer" autoComplete="off" autoCapitalize="none" placeholder="Type the missing word…" value={typedAnswer} disabled={checked && answerCorrect} onChange={(event) => setTypedAnswer(event.target.value)} onKeyDown={(event) => { if (event.key === "Enter" && canCheck && !checked) submitAnswer() }} />
+      <label htmlFor="typed-answer">Válaszod</label>
+      <input id="typed-answer" autoComplete="off" autoCapitalize="none" placeholder="Írd be a hiányzó szót…" value={typedAnswer} disabled={checked && answerCorrect} onChange={(event) => setTypedAnswer(event.target.value)} onKeyDown={(event) => { if (event.key === "Enter" && canCheck && !checked) submitAnswer() }} />
       {checked && answerCorrect && <CheckCircle2 size={20} />}
     </div>}
 
     {question.type === "arrange" && <div className="word-arrange-area">
       <div className={`word-answer-line ${checked ? (answerCorrect ? "is-correct" : "is-incorrect") : ""}`} aria-label="Your sentence">
-        {chosenWordText.length ? chosenWordText.map((word, index) => <button key={`chosen-${index}-${word}`} onClick={() => !checked && setSelectedWords((previous) => previous.filter((_, itemIndex) => itemIndex !== index))} disabled={checked} className="chosen-word">{word}</button>) : <span className="word-placeholder">Tap the words below to build a sentence</span>}
+        {chosenWordText.length ? chosenWordText.map((word, index) => <button key={`chosen-${index}-${word}`} onClick={() => !checked && setSelectedWords((previous) => previous.filter((_, itemIndex) => itemIndex !== index))} disabled={checked} className="chosen-word">{word}</button>) : <span className="word-placeholder">Koppints a szavakra a mondat összeállításához</span>}
       </div>
       <div className="word-bank">{question.words?.map((word, index) => {
         const token = `${index}:${word}`
@@ -246,15 +239,15 @@ function Lesson({ onExit, onComplete }: { onExit: () => void; onComplete: () => 
       })}</div>
     </div>}
 
-    <div className="lesson-tip"><span><Lightbulb size={18} /></span><div><strong>Quick tip</strong><p>{question.tip}</p></div></div>
+    <div className="lesson-tip"><span><Lightbulb size={18} /></span><div><strong>Gyors tipp</strong><p>{question.tip}</p></div></div>
 
     {checked && <div className={`answer-feedback ${answerCorrect ? "feedback-correct" : "feedback-incorrect"}`} role="status">
       <span className="feedback-icon">{answerCorrect ? <CheckCircle2 size={23} /> : <RotateCcw size={22} />}</span>
-      <div><strong>{answerCorrect ? "Correct! Well done." : "Not quite — try once more."}</strong><p>{question.explanation}</p></div>
+      <div><strong>{answerCorrect ? "Helyes! Szép munka." : "Még nem jó — próbáld újra."}</strong><p>{question.explanation}</p></div>
     </div>}
 
     <footer className={`lesson-action-bar ${checked ? (answerCorrect ? "action-correct" : "action-incorrect") : ""}`}>
-      {!checked && <span className="action-hint">{canCheck ? "Ready to check your answer?" : "Select or enter an answer to continue."}</span>}
+      {!checked && <span className="action-hint">{canCheck ? "Ellenőrizheted a válaszodat." : "Válassz vagy írj be egy választ a folytatáshoz."}</span>}
       <button className={`primary-action ${!checked && !canCheck ? "disabled" : ""} ${checked && !answerCorrect ? "retry-action" : ""}`} disabled={!checked && !canCheck} onClick={submitAnswer}>{nextActionText}{checked && answerCorrect ? <ArrowRight size={19} /> : checked && !answerCorrect ? <RotateCcw size={18} /> : null}</button>
     </footer>
   </div>
