@@ -2667,3 +2667,89 @@ html, body { background: #fff; }
     background: #f8f9fa !important;
   }
 }
+
+
+/* Fix profile geometry and ensure gallery banners render as actual image layers. */
+.profile-page .profile-hero {
+  position: relative !important;
+  overflow: visible !important;
+  isolation: isolate;
+}
+.profile-page .profile-cover {
+  position: absolute !important;
+  z-index: 0 !important;
+  inset: 0 0 auto !important;
+  display: block !important;
+  width: 100% !important;
+  height: 154px !important;
+  min-height: 154px !important;
+  overflow: hidden;
+  border-radius: 0 0 22px 22px;
+  background-color: #d8dfe6 !important;
+  background-repeat: no-repeat !important;
+  background-position: center 45% !important;
+  background-size: cover !important;
+}
+.profile-page .profile-cover.has-custom-banner {
+  background-color: #d8dfe6 !important;
+  background-repeat: no-repeat !important;
+  background-position: center center !important;
+  background-size: cover !important;
+}
+.profile-page .profile-identity {
+  position: relative !important;
+  z-index: 1 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  padding-top: 91px !important;
+  margin: 0 !important;
+}
+.profile-page .profile-avatar-wrap {
+  position: relative !important;
+  display: block !important;
+  flex: 0 0 auto !important;
+  width: 116px !important;
+  height: 116px !important;
+  min-width: 116px !important;
+  min-height: 116px !important;
+  margin: 0 auto 13px !important;
+}
+.profile-page .large-avatar {
+  display: grid !important;
+  place-items: center !important;
+  position: relative !important;
+  width: 100% !important;
+  height: 100% !important;
+  overflow: hidden !important;
+  border: 5px solid #fff !important;
+  border-radius: 50% !important;
+  background: #fff !important;
+  box-shadow: 0 3px 15px rgba(25,34,44,.08) !important;
+}
+.profile-page .large-avatar img {
+  display: block !important;
+  width: 100% !important;
+  height: 100% !important;
+  max-width: none !important;
+  object-fit: cover !important;
+  object-position: center !important;
+}
+.profile-page .profile-avatar-edit {
+  position: absolute !important;
+  z-index: 3 !important;
+  right: -4px !important;
+  bottom: 1px !important;
+}
+.profile-page .profile-banner-settings {
+  position: absolute !important;
+  z-index: 4 !important;
+}
+.profile-page .profile-file-input {
+  display: block !important;
+}
+@media (max-width: 390px) {
+  .profile-page .profile-cover { height: 140px !important; min-height: 140px !important; }
+  .profile-page .profile-identity { padding-top: 79px !important; }
+  .profile-page .profile-avatar-wrap { width: 104px !important; height: 104px !important; min-width: 104px !important; min-height: 104px !important; }
+}
