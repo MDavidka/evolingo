@@ -177,3 +177,48 @@ html, body { background: #fff; }
   .answer-option { min-height: 53px; padding: 8px 10px; }
   .lesson-completion h1 { font-size: 31px; }
 }
+
+
+/* Lesson UI refinements: cleaner header, larger controls, sticky Hungarian answer button */
+.lesson-topbar {
+  grid-template-columns: 54px minmax(0, 1fr) auto;
+  gap: 14px;
+  padding: 8px 0 25px;
+}
+.exit-lesson {
+  width: 50px;
+  height: 50px;
+  border-width: 1.5px;
+}
+.exit-lesson svg { width: 28px; height: 28px; }
+.lesson-progress-track { height: 14px; }
+.lesson-progress-label { font-size: 14px; }
+.lesson-hearts { gap: 7px; }
+.lesson-hearts svg { width: 29px; height: 29px; }
+.lesson-hearts strong { font-size: 21px; }
+.lesson-action-bar {
+  position: sticky;
+  bottom: 0;
+  z-index: 20;
+  margin-top: auto;
+  padding: 15px 0 max(16px, env(safe-area-inset-bottom));
+  background: rgba(255,255,255,.97);
+  border-top: 1px solid #f0f0f0;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+.primary-action {
+  min-height: 66px;
+  border-radius: 17px;
+  font-size: 17px;
+}
+.action-hint { font-size: 12px; margin-bottom: 11px; }
+.lesson-question-card { margin-top: 4px; }
+@media (max-width: 360px) {
+  .lesson-topbar { grid-template-columns: 46px minmax(0, 1fr) auto; gap: 9px; }
+  .exit-lesson { width: 44px; height: 44px; }
+  .lesson-progress-track { height: 12px; }
+  .lesson-hearts svg { width: 25px; height: 25px; }
+  .lesson-hearts strong { font-size: 18px; }
+  .primary-action { min-height: 60px; }
+}
