@@ -557,9 +557,12 @@ function Nav({ screen, setScreen }: { screen: Screen; setScreen: (screen: Screen
     const delta = (event.clientX - dragStart.current.x) / dragStart.current.width
     setDragIndex(Math.max(0, Math.min(items.length - 1, dragStart.current.index + delta)))
   }
-  const finishIndicatorDrag = () => {
-    if (dragStart.current && dragIndex !== null) {
-      const index = Math.max(0, Math.min(items.length - 1, Math.round(dragIndex)))
+  const finishIndicatorDrag = (event: React.PointerEvent<HTMLDivElement>) => {
+    const start = dragStart.current
+    if (start && event.type === "pointerup") {
+      // Derive the final tab from pointer-up coordinates, not a potentially stale React state snapshot.
+      const delta = (event.clientX - start.x) / start.width
+      const index = Math.max(0, Math.min(items.length - 1, Math.round(start.index + delta)))
       setScreen(items[index][0])
     }
     dragStart.current = null
