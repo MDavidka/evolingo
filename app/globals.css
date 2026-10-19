@@ -1551,3 +1551,132 @@ html, body { background: #fff; }
 @media (prefers-reduced-motion:reduce) {
   .nav-selection-indicator { transition:none !important; }
 }
+
+
+/* Profile page redesigned to match the clean, centered reference layout. */
+.screen-content:has(.profile-page) {
+  padding:0 0 28px !important;
+  min-height:100dvh;
+}
+.profile-page {
+  display:flex;
+  flex-direction:column;
+  min-height:calc(100dvh - 8px);
+  padding-bottom:max(20px, env(safe-area-inset-bottom));
+  background:#fff;
+}
+.profile-hero {
+  position:relative;
+  padding:0 22px;
+  text-align:center;
+}
+.profile-cover {
+  position:absolute;
+  inset:0 0 auto;
+  height:157px;
+  background:#c9d2da;
+}
+.profile-identity {
+  position:relative;
+  z-index:1;
+  display:flex;
+  align-items:center;
+  flex-direction:column;
+  padding-top:105px;
+}
+.profile-avatar-wrap {
+  position:relative;
+  width:104px;
+  height:104px;
+  margin:0 auto 25px;
+}
+.profile-page .large-avatar {
+  display:grid;
+  place-items:center;
+  width:104px;
+  height:104px;
+  overflow:hidden;
+  border-radius:50%;
+  background:#dedede;
+  box-shadow:0 0 0 0 #fff;
+}
+.profile-page .large-avatar img {
+  display:block;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  object-position:center;
+}
+.profile-page .avatar-emoji {
+  font-size:56px;
+  background:#dedede;
+}
+.profile-avatar-edit {
+  position:absolute;
+  right:-24px;
+  bottom:-2px;
+  display:grid;
+  place-items:center;
+  width:38px;
+  height:38px;
+  border-radius:50%;
+  color:#080808;
+  background:#fff;
+  box-shadow:none;
+}
+.profile-avatar-edit svg { fill:#080808; stroke:#fff; }
+.profile-display-name {
+  max-width:100%;
+  margin:0;
+  color:#080808;
+  font-size:clamp(30px, 10vw, 40px);
+  line-height:1.12;
+  font-weight:800;
+  letter-spacing:-1.4px;
+  overflow-wrap:anywhere;
+}
+.profile-handle {
+  margin:12px 0 0;
+  color:#191919;
+  font-size:16px;
+  line-height:1.4;
+  font-weight:400;
+}
+.profile-feature-placeholder {
+  flex:none;
+  height:68px;
+  margin:40px 31px 0;
+  border-radius:20px;
+  background:#c9d2da;
+}
+.profile-lower-content {
+  display:flex;
+  flex:1;
+  flex-direction:column;
+  margin-top:auto;
+  padding:0 22px;
+}
+.profile-page .profile-stats {
+  padding:34px 0 20px;
+}
+.profile-page .profile-stats div { gap:6px; }
+.profile-page .profile-stats svg { color:#58a83c; }
+.profile-page .profile-settings {
+  margin-top:8px;
+  border-top:1px solid #ededed;
+}
+.profile-page .settings-section-heading { padding:13px 0 16px; }
+.profile-page .settings-section-heading > span:last-child {
+  background:#eff1f3;
+  color:#222;
+}
+@media (max-width:360px) {
+  .profile-cover { height:148px; }
+  .profile-identity { padding-top:98px; }
+  .profile-avatar-wrap,.profile-page .large-avatar { width:96px;height:96px; }
+  .profile-avatar-wrap { margin-bottom:22px; }
+  .profile-feature-placeholder { margin-left:24px;margin-right:24px; }
+}
+
+/* The glass selector itself must receive pointer events to support dragging on touch devices. */
+.nav-selection-indicator { pointer-events:auto !important; }
