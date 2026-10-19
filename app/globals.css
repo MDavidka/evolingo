@@ -1680,3 +1680,34 @@ html, body { background: #fff; }
 
 /* The glass selector itself must receive pointer events to support dragging on touch devices. */
 .nav-selection-indicator { pointer-events:auto !important; }
+
+
+/* Production polish: compact, meaningful profile overview instead of a decorative blank block. */
+.profile-overview {
+  margin:36px 22px 0;
+  padding:19px;
+  border-radius:22px;
+  background:#c9d2da;
+  color:#141719;
+}
+.profile-overview-heading { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; }
+.profile-overview-kicker { display:block; margin-bottom:7px; color:#4e5b65; font-size:10px; font-weight:850; letter-spacing:1.05px; }
+.profile-overview-heading h2 { max-width:235px; margin:0; font-size:18px; line-height:1.28; letter-spacing:-.45px; }
+.profile-overview-icon { display:grid; place-items:center; width:38px; height:38px; flex:none; border-radius:13px; background:rgba(255,255,255,.48); }
+.profile-overview-metrics { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:20px; }
+.profile-overview-metrics div { display:flex; flex-direction:column; gap:3px; }
+.profile-overview-metrics strong { font-size:22px; letter-spacing:-.5px; font-variant-numeric:tabular-nums; }
+.profile-overview-metrics span { color:#4e5b65; font-size:11px; }
+.profile-overview-track { height:5px; margin-top:17px; overflow:hidden; border-radius:99px; background:rgba(255,255,255,.48); }
+.profile-overview-track span { display:block; height:100%; border-radius:inherit; background:#58a83c; transition:width .25s ease; }
+.profile-avatar-edit { transition:transform .16s ease, background .16s ease; }
+.profile-avatar-edit:active { transform:scale(.92); }
+.profile-avatar-edit:focus-visible { outline:2px solid #58a83c; outline-offset:3px; }
+.profile-page .profile-stats { margin-top:0; }
+@media (max-width:360px) {
+  .profile-overview { margin-left:18px; margin-right:18px; padding:16px; }
+  .profile-overview-heading h2 { font-size:16px; }
+}
+@media (prefers-reduced-motion:reduce) {
+  .profile-overview-track span,.profile-avatar-edit { transition:none !important; }
+}
