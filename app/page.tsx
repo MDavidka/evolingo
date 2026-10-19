@@ -476,6 +476,11 @@ const suggestedFriendProfiles: FriendProfile[] = [
   { id: "liam", name: "Liam R.", handle: "@liamr", evoTag: "EVO-LIAM-1960", avatar: "🐧", streak: 6, xp: 1960, status: "Most tanul", online: true },
   { id: "anna", name: "Anna T.", handle: "@anna", evoTag: "EVO-ANNA-1420", avatar: "🐼", streak: 3, xp: 1420, status: "3 napja aktív volt", online: false },
   { id: "david", name: "David P.", handle: "@davidp", evoTag: "EVO-DAVID-0980", avatar: "🦊", streak: 1, xp: 980, status: "1 hete aktív volt", online: false },
+  { id: "mira", name: "Mira V.", handle: "@mirav", evoTag: "EVO-MIRA-0835", avatar: "🐨", streak: 5, xp: 835, status: "Tegnap aktív volt", online: false },
+  { id: "noah", name: "Noah B.", handle: "@noahb", evoTag: "EVO-NOAH-0740", avatar: "🐻", streak: 4, xp: 740, status: "Most tanul", online: true },
+  { id: "emma", name: "Emma L.", handle: "@emmal", evoTag: "EVO-EMMA-0620", avatar: "🐰", streak: 2, xp: 620, status: "Ma aktív volt", online: false },
+  { id: "alex", name: "Alex M.", handle: "@alexm", evoTag: "EVO-ALEX-0510", avatar: "🐸", streak: 2, xp: 510, status: "2 napja aktív volt", online: false },
+  { id: "oliver", name: "Oliver P.", handle: "@oliverp", evoTag: "EVO-OLIVER-0330", avatar: "🐶", streak: 1, xp: 330, status: "Ma aktív volt", online: false },
 ]
 
 function Friends({ userName, stars, lives }: { userName: string; stars: number; lives: number }) {
@@ -485,18 +490,27 @@ function Friends({ userName, stars, lives }: { userName: string; stars: number; 
   const [match, setMatch] = useState<FriendProfile | null>(null)
   const [friends, setFriends] = useState<string[]>([])
   const [requests, setRequests] = useState<string[]>([])
+  const [storageReady, setStorageReady] = useState(false)
   const ownTag = "EVO-" + userName.normalize("NFKD").replace(/[\u0300-\u036f]/g, "").toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0,8).padEnd(4,"X") + "-0001"
 
   useEffect(() => {
     try {
-      const saved = JSON.parse(localStorage.getItem("evolingo.friends.v1") || "{}") as { friends?: unknown; requests?: unknown }
-      if (Array.isArray(saved.friends)) setFriends(saved.friends.filter((v): v is string => typeof v === "string").slice(0,100))
-      if (Array.isArray(saved.requests)) setRequests(saved.requests.filter((v): v is string => typeof v === "string").slice(0,100))
+      const raw = localStorage.getItem("evolingo.friends.v1")
+      if (raw) {
+        const saved = JSON.parse(raw) as { friends?: unknown; requests?: unknown }
+        if (Array.isArray(saved.friends)) setFriends(saved.friends.filter((v): v is string => typeof v === "string").slice(0,100))
+        if (Array.isArray(saved.requests)) setRequests(saved.requests.filter((v): v is string => typeof v === "string").slice(0,100))
+      } else {
+        // First-run preview data mirrors the design reference; users can remove any demo contact.
+        setFriends(["sofia", "marton", "liam", "anna", "david"])
+      }
     } catch { /* Keep the friends page usable if local storage is unavailable. */ }
+    finally { setStorageReady(true) }
   }, [])
   useEffect(() => {
+    if (!storageReady) return
     try { localStorage.setItem("evolingo.friends.v1", JSON.stringify({ friends, requests })) } catch { /* Optional local persistence. */ }
-  }, [friends, requests])
+  }, [storageReady, friends, requests])
 
   const search = (value: string) => {
     const normalized = value.trim().toUpperCase().replace(/\s+/g, "")
