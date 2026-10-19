@@ -384,7 +384,7 @@ function TaskExercise({ lesson, taskIndex, onExit, onComplete, lives, onWrongAns
   const canCheck = currentAnswer.trim().length > 0 && lives > 0
   const acceptedAnswers = [question.answer, ...(question.accepted ?? [])]
   const resetAnswer = () => { setSelectedAnswer(""); setTypedAnswer(""); setSelectedWords([]); setChecked(false); setAnswerCorrect(false); setHeartLost(false) }
-  useEffect(() => { resetAnswer(); setRewardPulse(false) }, [taskIndex])
+  useEffect(() => { setSelectedAnswer(""); setTypedAnswer(""); setSelectedWords([]); setChecked(false); setAnswerCorrect(false); setHeartLost(false); setRewardPulse(false) }, [taskIndex])
   const submitAnswer = () => {
     if (lives <= 0) { onOutOfLives(); return }
     if (checked && !answerCorrect) { resetAnswer(); return }
