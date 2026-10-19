@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react"
 import {
   ArrowRight, BarChart3, BookOpen, Check, CheckCircle2,
   Flame, Heart, Lightbulb, Medal, RotateCcw, Trophy, UserRound,
-  X, Zap, LockKeyhole, ClipboardCheck, Star, ShoppingBag, Gift, Palette, Pencil, Settings,
+  X, Zap, LockKeyhole, ClipboardCheck, Star, ShoppingBag, Gift, Palette, Pencil, Settings, ChevronRight, CalendarDays, Sparkles, Target,
 } from "lucide-react"
 
 const foxIcon = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Image-D15751D4-6Ne8AGNrryN8wlvyBepC8VDGQkHTw4.jpeg"
@@ -277,7 +277,7 @@ export default function App() {
       />}
       {screen === "shop" && <Shop stars={stars} purchasedItems={purchasedItems} onPurchase={(id, cost) => { if (stars >= cost && !purchasedItems.includes(id)) { setStars((value) => value - cost); setPurchasedItems((items) => [...items, id]); setNotice("Sikeres vásárlás!"); } }} />}
       {screen === "leaderboard" && <Leaderboard />}
-      {screen === "profile" && <Profile completedCount={completedLessons.length} xp={xp} userName={userName} setUserName={setUserName} avatar={avatar} setAvatar={setAvatar} notifications={notifications} setNotifications={setNotifications} compactMode={compactMode} setCompactMode={setCompactMode} showSettings={showSettings} setShowSettings={setShowSettings} />}
+      {screen === "profile" && <Profile completedCount={completedLessons.length} readCount={readLessons.length} completedTaskCount={answeredTasks.length} xp={xp} stars={stars} userName={userName} setUserName={setUserName} avatar={avatar} setAvatar={setAvatar} notifications={notifications} setNotifications={setNotifications} compactMode={compactMode} setCompactMode={setCompactMode} showSettings={showSettings} setShowSettings={setShowSettings} />}
     </section>
     {screen !== "lessonIntro" && screen !== "task" && <Nav screen={screen} setScreen={setScreen} />}
   </main>
@@ -466,23 +466,26 @@ function Shop({ stars, purchasedItems, onPurchase }: { stars: number; purchasedI
   })}</div><p className="shop-footnote">A bolt bemutató funkció: a megvett jutalmak egyelőre csak az alkalmazás aktuális munkamenetében maradnak meg.</p></>
 }
 function Leaderboard() { return <><PageHeader title="Ranglista" /><div className="league-card"><div className="league-top"><div className="league-badge"><Trophy size={26} /></div><div><h3>Bronz liga</h3><p>Vége: 2 nap múlva</p></div></div><div className="league-progress"><span style={{ width: "68%" }} /></div></div><div className="rank-list">{ranks.map((rank) => <div className={"rank-row " + (rank.name === "You" ? "you" : "")} key={rank.name}><div className="rank-number">{rank.place <= 3 ? <Medal size={21} /> : rank.place}</div><div className="rank-avatar">{rank.name.charAt(0)}</div><div className="rank-name"><strong>{rank.name === "You" ? "Te" : rank.name}</strong><span>{rank.name === "You" ? "Csak így tovább!" : "Angolt tanul"}</span></div><strong className="rank-xp">{rank.xp}</strong></div>)}</div></> }
-function Profile({ completedCount, xp, userName, setUserName, avatar, setAvatar, notifications, setNotifications, compactMode, setCompactMode, showSettings, setShowSettings }: {
-  completedCount: number; xp: number; userName: string; setUserName: (value: string) => void;
+function Profile({ completedCount, readCount, completedTaskCount, xp, stars, userName, setUserName, avatar, setAvatar, notifications, setNotifications, compactMode, setCompactMode, showSettings, setShowSettings }: {
+  completedCount: number; readCount: number; completedTaskCount: number; xp: number; stars: number; userName: string; setUserName: (value: string) => void;
   avatar: string; setAvatar: (value: string) => void; notifications: boolean; setNotifications: (value: boolean) => void;
   compactMode: boolean; setCompactMode: (value: boolean) => void; showSettings: boolean; setShowSettings: (value: boolean) => void
 }) {
   const [draftName, setDraftName] = useState(userName)
   const [saved, setSaved] = useState(false)
   const [profileStorageReady, setProfileStorageReady] = useState(false)
+  const [profileTheme, setProfileTheme] = useState<"mist" | "sage">("mist")
+  const [profileFeedback, setProfileFeedback] = useState("")
   useEffect(() => setDraftName(userName), [userName])
   useEffect(() => {
     try {
       const raw = window.localStorage.getItem("evolingo.profile.v1")
       if (raw) {
-        const profile = JSON.parse(raw) as { userName?: unknown; avatar?: unknown; notifications?: unknown; compactMode?: unknown }
+        const profile = JSON.parse(raw) as { userName?: unknown; avatar?: unknown; notifications?: unknown; compactMode?: unknown; theme?: unknown }
         if (typeof profile.userName === "string" && profile.userName.trim()) setUserName(profile.userName.slice(0, 32))
         if (["fox", "book", "star", "spark"].includes(String(profile.avatar))) setAvatar(String(profile.avatar))
         if (typeof profile.notifications === "boolean") setNotifications(profile.notifications)
+        if (profile.theme === "mist" || profile.theme === "sage") setProfileTheme(profile.theme)
         if (typeof profile.compactMode === "boolean") {
           setCompactMode(profile.compactMode)
           document.documentElement.classList.toggle("compact-ui", profile.compactMode)
@@ -497,58 +500,115 @@ function Profile({ completedCount, xp, userName, setUserName, avatar, setAvatar,
   useEffect(() => {
     if (!profileStorageReady) return
     try {
-      window.localStorage.setItem("evolingo.profile.v1", JSON.stringify({ userName, avatar, notifications, compactMode }))
+      window.localStorage.setItem("evolingo.profile.v1", JSON.stringify({ userName, avatar, notifications, compactMode, theme: profileTheme }))
     } catch {
-      // Private browsing or storage limits should never break profile editing.
+      // Storage restrictions never prevent the profile from being used.
     }
-  }, [profileStorageReady, userName, avatar, notifications, compactMode])
-  return <div className="profile-page">
+  }, [profileStorageReady, userName, avatar, notifications, compactMode, profileTheme])
+
+  const openSettings = (target?: string) => {
+    setShowSettings(true)
+    setProfileFeedback("")
+    window.requestAnimationFrame(() => {
+      const element = document.getElementById(target || "profile-settings")
+      element?.scrollIntoView({ behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "center" })
+    })
+  }
+  const progressPercent = Math.max(0, Math.min(100, Math.round((completedCount / lessons.length) * 100)))
+  const avatarOptions = ["fox", "book", "star", "spark"]
+  const cycleAvatar = () => setAvatar(avatarOptions[(avatarOptions.indexOf(avatar) + 1) % avatarOptions.length])
+  const showComingSoon = (message: string) => setProfileFeedback(message)
+
+  return <div className={"profile-page profile-theme-" + profileTheme}>
     <section className="profile-hero">
       <div className="profile-cover" aria-hidden="true" />
-      <button
-        className="profile-banner-settings"
-        type="button"
-        aria-label="Profilbeállítások megnyitása"
-        title="Beállítások"
-        onClick={() => {
-          setShowSettings(true)
-          document.getElementById("profile-settings")?.scrollIntoView({
-            behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
-            block: "center",
-          })
-        }}
-      ><Settings size={21} strokeWidth={2.1} /></button>
+      <button className="profile-banner-settings" type="button" aria-label="Profilbeállítások megnyitása" title="Beállítások" onClick={() => openSettings()}>
+        <Settings size={21} strokeWidth={2.1} />
+      </button>
       <div className="profile-identity">
         <div className="profile-avatar-wrap">
           <div className="large-avatar">
-            {avatar === "fox" ? <img src={foxIcon} alt="Róka profilkép" /> : <span className="avatar-emoji">{avatar === "book" ? "📚" : avatar === "star" ? "⭐" : "🦊"}</span>}
+            {avatar === "fox" ? <img src={foxIcon} alt="Róka profilkép" /> : <span className="avatar-emoji">{avatar === "book" ? "📚" : avatar === "star" ? "⭐" : "✨"}</span>}
           </div>
-          <button className="profile-avatar-edit" type="button" onClick={() => { setShowSettings(true); document.getElementById("profile-settings")?.scrollIntoView({ behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "center" }) }} aria-label="Profilkép szerkesztése"><Pencil size={20} strokeWidth={2.8} /></button>
+          <button className="profile-avatar-edit" type="button" onClick={() => openSettings("profile-avatar-options")} aria-label="Profilkép szerkesztése"><Pencil size={19} strokeWidth={2.5} /></button>
         </div>
         <h1 className="profile-display-name">{userName || "Tanuló"}</h1>
         <p className="profile-handle">@{(userName || "tanulo").normalize("NFKD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "").slice(0, 20) || "tanulo"}</p>
       </div>
     </section>
+
     <section className="profile-social-stats" aria-label="Profilstatisztikák">
-      <div className="profile-social-stat"><strong>0</strong><span>Széria</span></div>
-      <div className="profile-social-stat"><strong>0</strong><span>Barát</span></div>
-      <div className="profile-social-stat"><strong>{xp.toLocaleString("en-US")}</strong><span>Pont</span></div>
+      <button className="profile-social-stat" type="button" onClick={() => showComingSoon("A széria követése még nem aktív. A leckék és a pontjaid már számolódnak.")}>
+        <span className="profile-stat-icon profile-stat-fire"><Flame size={25} fill="currentColor" /></span>
+        <strong>0</strong><span>Széria</span><ChevronRight className="profile-stat-chevron" size={17} />
+      </button>
+      <button className="profile-social-stat" type="button" onClick={() => showComingSoon("A barátlista a közösségi funkciók bevezetésekor lesz elérhető.")}>
+        <span className="profile-stat-icon profile-stat-friends"><UserRound size={25} /></span>
+        <strong>0</strong><span>Barát</span><ChevronRight className="profile-stat-chevron" size={17} />
+      </button>
+      <button className="profile-social-stat" type="button" onClick={() => showComingSoon("Az XP a tanulási fejlődésedet mutatja. A jelenlegi összesítés a haladási kártyán található.")}>
+        <span className="profile-stat-icon profile-stat-points"><Star size={25} fill="currentColor" /></span>
+        <strong>{xp.toLocaleString("en-US")}</strong><span>Pont</span><ChevronRight className="profile-stat-chevron" size={17} />
+      </button>
     </section>
-    <div className="profile-lower-content">
-      <section className="profile-settings" id="profile-settings" aria-label="Profilbeállítások">
-        <button className="settings-section-heading" onClick={() => setShowSettings(!showSettings)} aria-expanded={showSettings}><span>Profil és beállítások</span><span>{showSettings ? "−" : "+"}</span></button>
-        {showSettings && <>
-          <label className="setting-label" htmlFor="profile-name">Név</label>
-          <div className="profile-name-form"><input id="profile-name" maxLength={32} value={draftName} onChange={(event) => { setDraftName(event.target.value); setSaved(false) }} placeholder="Írd be a neved" /><button onClick={() => { const value = draftName.trim(); if (value) { setUserName(value); setSaved(true) } }}>Mentés</button></div>
-          {saved && <p className="setting-success" role="status" aria-live="polite">A profilnév frissítve.</p>}
-          <span className="setting-label">Profilkép</span>
-          <div className="avatar-options">{[["fox","🦊"],["book","📚"],["star","⭐"],["spark","✨"]].map(([id,emoji]) => <button key={id} className={"avatar-option " + (avatar === id ? "selected" : "")} onClick={() => setAvatar(id)} aria-label={"Profilkép: " + emoji} aria-pressed={avatar === id}>{emoji}</button>)}</div>
-          <label className="setting-toggle"><span><strong>Értesítések</strong><small>Tanulási emlékeztetők (felület-beállítás)</small></span><input type="checkbox" checked={notifications} onChange={(event) => setNotifications(event.target.checked)} /></label>
-          <label className="setting-toggle"><span><strong>Kompakt felület</strong><small>Kisebb térközök és tömörebb kártyák</small></span><input type="checkbox" checked={compactMode} onChange={(event) => { setCompactMode(event.target.checked); document.documentElement.classList.toggle("compact-ui", event.target.checked) }} /></label>
-          <p className="setting-footnote">Ezek a beállítások jelenleg ezen az oldalon, a megnyitott munkamenet alatt működnek. A rendszer értesítéseit még nem küldi ki.</p>
-        </>}
-      </section>
-    </div>
+
+    <section className="profile-learning-card">
+      <button className="profile-section-link" type="button" onClick={() => showComingSoon("A haladás a 10 alaptémából elolvasott leckék és a teljesített feladatcsomagok alapján frissül.")}>
+        <span><strong>Tanulási haladás</strong><small>Folytasd a fejlődést!</small></span><ChevronRight size={21} />
+      </button>
+      <div className="profile-learning-content">
+        <div className="profile-progress-ring" role="progressbar" aria-label="Teljesített alaptémák" aria-valuemin={0} aria-valuemax={10} aria-valuenow={Math.min(completedCount, 10)} style={{ background: "conic-gradient(#4f9b36 " + progressPercent + "%, #e6eaf0 " + progressPercent + "% 100%)" }}>
+          <div><strong>{progressPercent}%</strong><span>kész</span></div>
+        </div>
+        <div className="profile-learning-metrics">
+          <div><BookOpen size={20} /><span><strong>{completedCount}</strong><small>Teljesített lecke</small></span></div>
+          <div><CheckCircle2 size={20} /><span><strong>{completedTaskCount}</strong><small>Kész feladatcsomag</small></span></div>
+          <div><Star size={20} /><span><strong>{stars.toLocaleString("en-US")}</strong><small>Összegyűjtött csillag</small></span></div>
+        </div>
+      </div>
+      <div className="profile-learning-foot"><span>{readCount} lecke elolvasva</span><span>{Math.min(completedCount, 10)} / {lessons.length} alaptéma</span></div>
+    </section>
+
+    <section className="profile-goals-card">
+      <div className="profile-card-heading"><span><strong>Kitűzések</strong><small>Találj egy új célt!</small></span><Target size={21} /></div>
+      <button className="profile-goal-row" type="button" onClick={() => showComingSoon("A napi célbeállítás még fejlesztés alatt áll.")}>
+        <span className="profile-goal-icon goal-daily"><Zap size={23} fill="currentColor" /></span>
+        <span className="profile-goal-copy"><strong>Napi cél</strong><small>Állíts be napi tanulási célt</small></span><ChevronRight size={19} />
+      </button>
+      <button className="profile-goal-row" type="button" onClick={() => showComingSoon("A heti célok és a heti összesítés hamarosan érkeznek.")}>
+        <span className="profile-goal-icon goal-weekly"><CalendarDays size={23} /></span>
+        <span className="profile-goal-copy"><strong>Heti cél</strong><small>Érd el a heti céljaidat</small></span><ChevronRight size={19} />
+      </button>
+      <button className="profile-goal-row" type="button" onClick={() => showComingSoon("Eddig " + completedCount + " leckét és " + completedTaskCount + " feladatcsomagot teljesítettél.")}>
+        <span className="profile-goal-icon goal-achievements"><Trophy size={23} fill="currentColor" /></span>
+        <span className="profile-goal-copy"><strong>Eredmények</strong><small>Nézd meg az elért eredményeidet</small></span><ChevronRight size={19} />
+      </button>
+    </section>
+
+    <section className="profile-custom-card">
+      <div className="profile-card-heading"><span><strong>Testreszabás</strong><small>Tedd egyedivé az élményt!</small></span><Sparkles size={21} /></div>
+      <div className="profile-custom-actions">
+        <button type="button" onClick={() => openSettings("profile-avatar-options")}><span>🦊</span><strong>Profilkép</strong><ChevronRight size={17} /></button>
+        <button type="button" onClick={() => { setProfileTheme(profileTheme === "mist" ? "sage" : "mist"); setProfileFeedback("Téma váltva: " + (profileTheme === "mist" ? "zsálya" : "ködös szürke") + ".") }}><Palette size={20} /><strong>Téma</strong><ChevronRight size={17} /></button>
+        <button type="button" onClick={cycleAvatar}><Sparkles size={20} /><strong>Stílus</strong><ChevronRight size={17} /></button>
+      </div>
+    </section>
+
+    {profileFeedback && <div className="profile-feedback" role="status" aria-live="polite"><span>{profileFeedback}</span><button type="button" onClick={() => setProfileFeedback("")} aria-label="Üzenet bezárása"><X size={17} /></button></div>}
+
+    <section className="profile-settings" id="profile-settings" aria-label="Profilbeállítások">
+      <button className="settings-section-heading" onClick={() => setShowSettings(!showSettings)} aria-expanded={showSettings}><span>Profil és beállítások</span><span>{showSettings ? "−" : "+"}</span></button>
+      {showSettings && <>
+        <label className="setting-label" htmlFor="profile-name">Név</label>
+        <div className="profile-name-form"><input id="profile-name" maxLength={32} value={draftName} onChange={(event) => { setDraftName(event.target.value); setSaved(false) }} placeholder="Írd be a neved" /><button type="button" onClick={() => { const value = draftName.trim(); if (value) { setUserName(value); setSaved(true) } }}>Mentés</button></div>
+        {saved && <p className="setting-success" role="status" aria-live="polite">A profilnév frissítve.</p>}
+        <span className="setting-label">Profilkép</span>
+        <div className="avatar-options" id="profile-avatar-options">{[["fox","🦊"],["book","📚"],["star","⭐"],["spark","✨"]].map(([id,emoji]) => <button key={id} type="button" className={"avatar-option " + (avatar === id ? "selected" : "")} onClick={() => setAvatar(id)} aria-label={"Profilkép: " + emoji} aria-pressed={avatar === id}>{emoji}</button>)}</div>
+        <label className="setting-toggle"><span><strong>Értesítések</strong><small>Tanulási emlékeztetők (felület-beállítás)</small></span><input type="checkbox" checked={notifications} onChange={(event) => setNotifications(event.target.checked)} /></label>
+        <label className="setting-toggle"><span><strong>Kompakt felület</strong><small>Kisebb térközök és tömörebb kártyák</small></span><input type="checkbox" checked={compactMode} onChange={(event) => { setCompactMode(event.target.checked); document.documentElement.classList.toggle("compact-ui", event.target.checked) }} /></label>
+        <p className="setting-footnote">Ezek a beállítások ezen az eszközön, a megnyitott munkamenet alatt tárolódnak. A rendszer értesítéseit még nem küldi ki.</p>
+      </>}
+    </section>
   </div>
 }
 function PageHeader({ title }: { title: string }) { return <header className="page-header"><div className="brand compact"><img src={foxIcon} alt="Evölingo róka" /><div><h1>Evölingo</h1></div></div><h1>{title}</h1></header> }
