@@ -193,7 +193,6 @@ export default function App() {
   const [notifications, setNotifications] = useState(false)
   const [compactMode, setCompactMode] = useState(false)
   const [showSettings, setShowSettings] = useState(true)
-  const [sessionQuestionIndex, setSessionQuestionIndex] = useState(0)
   const [notice, setNotice] = useState("")
   const activeLesson = lessons.find((lesson) => lesson.id === activeLessonId) ?? lessons[0]
   const handleReadComplete = useCallback((lessonId: number) => {
@@ -211,7 +210,6 @@ export default function App() {
     setActiveLessonId(lessonId)
     setActiveTaskIndex(taskIndex)
     setLives(5)
-    setSessionQuestionIndex(taskIndex)
     const isUnlocked = lessonId === 1 || completedLessons.includes(lessonId - 1)
     if (!isUnlocked) {
       setNotice("Először fejezd be az előző leckét!")
@@ -229,14 +227,12 @@ export default function App() {
     const taskKey = lessonId + "-" + taskIndex
     const nextAnswered = answeredTasks.includes(taskKey) ? answeredTasks : [...answeredTasks, taskKey]
     setAnsweredTasks(nextAnswered)
-    setXp((current) => current + (answeredTasks.includes(taskKey) ? 0 : 5))
-    setStars((current) => current + 0)
     const lesson = lessons.find((item) => item.id === lessonId)
     if (lesson && lesson.questions.every((_, index) => nextAnswered.includes(lessonId + "-" + index))) {
       setCompletedLessons((previous) => previous.includes(lessonId) ? previous : [...previous, lessonId])
     }
     setScreen("home")
-    setNotice("Feladat elvégezve! " + (answeredTasks.includes(taskKey) ? "" : "+5 XP"))
+    setNotice("Feladatcsomag teljesítve! " + (answeredTasks.includes(taskKey) ? "" : "Jutalom jóváírva."))
   }
   return <main className={"app-shell " + ((screen === "lessonIntro" || screen === "task") ? "lesson-open" : "")}>
     <section className={"screen-content " + ((screen === "lessonIntro" || screen === "task") ? "lesson-page" : "")}>
@@ -262,10 +258,10 @@ export default function App() {
         taskIndex={activeTaskIndex}
         alreadyAnswered={answeredTasks.includes(activeLesson.id + "-" + activeTaskIndex)}
         onExit={() => setScreen("home")}
-        onComplete={() => completeTask(activeLesson.id, activeTaskIndex)}
+        onComplete={() => { setStars((current) => current + (answeredTasks.includes(activeLesson.id + "-" + activeTaskIndex) ? 0 : 1)); setXp((current) => current + (answeredTasks.includes(activeLesson.id + "-" + activeTaskIndex) ? 0 : 5)); completeTask(activeLesson.id, activeTaskIndex); }}
         lives={lives}
         onWrongAnswer={() => setLives((current) => Math.max(0, current - 1))}
-        onNextQuestion={(nextIndex) => { setActiveTaskIndex(nextIndex); setSessionQuestionIndex(nextIndex); }}
+        onNextQuestion={(nextIndex) => { setStars((current) => current + (answeredTasks.includes(activeLesson.id + "-" + activeTaskIndex) ? 0 : 1)); setXp((current) => current + (answeredTasks.includes(activeLesson.id + "-" + activeTaskIndex) ? 0 : 5)); setActiveTaskIndex(nextIndex); }}
         onOutOfLives={() => { setNotice("Elfogytak az életeid. Pihenj egy kicsit, és próbáld újra!"); setScreen("home"); }}
       />}
       {screen === "shop" && <Shop stars={stars} purchasedItems={purchasedItems} onPurchase={(id, cost) => { if (stars >= cost && !purchasedItems.includes(id)) { setStars((value) => value - cost); setPurchasedItems((items) => [...items, id]); setNotice("Sikeres vásárlás!"); } }} />}
@@ -483,7 +479,6 @@ function Profile({ completedCount, xp, userName, setUserName, avatar, setAvatar,
   const [draftName, setDraftName] = useState(userName)
   const [saved, setSaved] = useState(false)
   useEffect(() => setDraftName(userName), [userName])
-  const avatarSrc = avatar === "fox" ? foxIcon : avatar === "book" ? "" : ""
   return <>
     <PageHeader title="Profil" />
     <div className="profile-card profile-edit-card">
