@@ -41,7 +41,7 @@ const taskNames = [
 function Home({lessons,lives,progress,open}:{lessons:Lesson[];lives:number;progress:Record<string,boolean>;open:(l:Lesson)=>void}) {
   const tasks = Array.from({length:Math.min(TASK_LIMIT, Math.max(TASK_LIMIT, lessons.length))}, (_, i) => ({
     id: i < taskNames.length ? (lessons[i]?.id ?? `task-${i+1}`) : `task-${i+1}`,
-    title: i < taskNames.length ? taskNames[i] : "Kidolgozás alatt",
+    title: i < taskNames.length ? taskNames[i] : `Task ${i+1}`,
     lesson: lessons[i],
     index: i
   }))
