@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react"
 import {
-  ArrowRight, BarChart3, BookOpen, Check, CheckCircle2, ChevronRight,
+  ArrowRight, BarChart3, BookOpen, Check, CheckCircle2,
   Flame, Heart, Lightbulb, Medal, RotateCcw, Trophy, UserRound,
   X, Zap, LockKeyhole, ClipboardCheck, Star, ShoppingBag, Gift, Palette,
 } from "lucide-react"
@@ -23,14 +23,6 @@ type Question = {
   tip: string
 }
 type LessonUnit = { id: number; title: string; summary: string; sections: LessonSection[]; questions: Question[]; level: string }
-type World = { name: string; color: string; icon: string; progress: number }
-
-const worlds: World[] = [
-  { name: "English", color: "#ff7900", icon: "EN", progress: 32 },
-  { name: "Magyar", color: "#e94f64", icon: "HU", progress: 12 },
-  { name: "Español", color: "#4b8fe8", icon: "ES", progress: 0 },
-]
-
 const lessons: LessonUnit[] = [
   {
     id: 1, title: "Present Simple", level: "A1", summary: "Szokások, napi rutinok és általános tények leírása.",
@@ -187,7 +179,6 @@ const normalizeAnswer = (value: string) => value.toLowerCase().trim().replace(/[
 
 export default function App() {
   const [screen, setScreen] = useState<Screen>("home")
-  const [selectedWorld, setSelectedWorld] = useState(worlds[0])
   const [activeLessonId, setActiveLessonId] = useState(1)
   const [activeTaskIndex, setActiveTaskIndex] = useState(0)
   const [readLessons, setReadLessons] = useState<number[]>([])
