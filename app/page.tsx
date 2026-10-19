@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import {
   ArrowRight, BarChart3, BookOpen, Check, CheckCircle2,
   Flame, Heart, Lightbulb, Medal, RotateCcw, Trophy, UserRound,
@@ -499,22 +499,8 @@ function Profile({ completedCount, xp, userName, setUserName, avatar, setAvatar,
 function PageHeader({ title }: { title: string }) { return <header className="page-header"><div className="brand compact"><img src={foxIcon} alt="Evölingo róka" /><div><h1>Evölingo</h1></div></div><h1>{title}</h1></header> }
 function Nav({ screen, setScreen }: { screen: Screen; setScreen: (screen: Screen) => void }) {
   const items: [Screen, string, React.ElementType][] = [["home", "Tanulás", BookOpen], ["shop", "Bolt", ShoppingBag], ["leaderboard", "Ranglista", BarChart3], ["profile", "Profil", UserRound]]
-  const [offset, setOffset] = useState({ x: 0, y: 0 })
-  const dragStart = useRef<{ pointerX: number; pointerY: number; x: number; y: number } | null>(null)
-  const startDrag = (event: React.PointerEvent<HTMLDivElement>) => {
-    event.preventDefault()
-    dragStart.current = { pointerX: event.clientX, pointerY: event.clientY, x: offset.x, y: offset.y }
-    event.currentTarget.setPointerCapture(event.pointerId)
-  }
-  const moveDrag = (event: React.PointerEvent<HTMLDivElement>) => {
-    if (!dragStart.current) return
-    const nextX = dragStart.current.x + event.clientX - dragStart.current.pointerX
-    const nextY = dragStart.current.y + event.clientY - dragStart.current.pointerY
-    setOffset({ x: Math.max(-120, Math.min(120, nextX)), y: Math.max(-100, Math.min(100, nextY)) })
-  }
-  const stopDrag = () => { dragStart.current = null }
-  return <nav className="bottom-nav" style={{ transform: `translate(calc(-50% + ${offset.x}px), ${offset.y}px)` }}>
-    <div className="nav-drag-handle" role="slider" aria-label="Navigációs üvegsáv mozgatása" aria-valuetext="Fogd meg és húzd a sávot" onPointerDown={startDrag} onPointerMove={moveDrag} onPointerUp={stopDrag} onPointerCancel={stopDrag} />
-    {items.map(([id, label, Icon]) => <button key={id} className={screen === id ? "active" : ""} onClick={() => setScreen(id)} aria-current={screen === id ? "page" : undefined}><Icon size={23} /><span>{label}</span></button>)}
+  return <nav className="bottom-nav">
+    <div className="nav-selection-indicator" aria-hidden="true" />
+    {items.map(([id, label, Icon], index) => <button key={id} data-tab-index={index} className={screen === id ? "active" : ""} onClick={() => setScreen(id)} aria-current={screen === id ? "page" : undefined}><Icon size={23} /><span>{label}</span></button>)}
   </nav>
 }
