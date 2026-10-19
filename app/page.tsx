@@ -128,7 +128,7 @@ function Home({ completedTasks, readLessons, onStart, notice, clearNotice }: { c
 }
 
 function TaskNode({ number, title, unlocked, completed, inDevelopment, onClick }: { number: number; title: string; unlocked: boolean; completed: boolean; inDevelopment: boolean; onClick: () => void }) {
-  const Icon = completed ? Check : BookOpen
+  const Icon = BookOpen
   return <button className={`task-node ${unlocked ? "unlocked" : "locked"} ${completed ? "completed" : ""}`} disabled={!unlocked} onClick={onClick} aria-label={inDevelopment ? `${title}, Kidolgozás alatt` : title}>
     <span className="task-dot"><Icon size={24} strokeWidth={2.25} /></span>
     <span className="task-labels"><span className="task-name">{title}</span>{inDevelopment && <span className="task-status">Kidolgozás alatt</span>}</span>
