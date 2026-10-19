@@ -473,7 +473,35 @@ function Profile({ completedCount, xp, userName, setUserName, avatar, setAvatar,
 }) {
   const [draftName, setDraftName] = useState(userName)
   const [saved, setSaved] = useState(false)
+  const [profileStorageReady, setProfileStorageReady] = useState(false)
   useEffect(() => setDraftName(userName), [userName])
+  useEffect(() => {
+    try {
+      const raw = window.localStorage.getItem("evolingo.profile.v1")
+      if (raw) {
+        const profile = JSON.parse(raw) as { userName?: unknown; avatar?: unknown; notifications?: unknown; compactMode?: unknown }
+        if (typeof profile.userName === "string" && profile.userName.trim()) setUserName(profile.userName.slice(0, 32))
+        if (["fox", "book", "star", "spark"].includes(String(profile.avatar))) setAvatar(String(profile.avatar))
+        if (typeof profile.notifications === "boolean") setNotifications(profile.notifications)
+        if (typeof profile.compactMode === "boolean") {
+          setCompactMode(profile.compactMode)
+          document.documentElement.classList.toggle("compact-ui", profile.compactMode)
+        }
+      }
+    } catch {
+      // Ignore invalid or unavailable browser storage; the profile remains usable.
+    } finally {
+      setProfileStorageReady(true)
+    }
+  }, [setUserName, setAvatar, setNotifications, setCompactMode])
+  useEffect(() => {
+    if (!profileStorageReady) return
+    try {
+      window.localStorage.setItem("evolingo.profile.v1", JSON.stringify({ userName, avatar, notifications, compactMode }))
+    } catch {
+      // Private browsing or storage limits should never break profile editing.
+    }
+  }, [profileStorageReady, userName, avatar, notifications, compactMode])
   return <div className="profile-page">
     <section className="profile-hero">
       <div className="profile-cover" aria-hidden="true" />
@@ -485,10 +513,14 @@ function Profile({ completedCount, xp, userName, setUserName, avatar, setAvatar,
           <button className="profile-avatar-edit" onClick={() => setShowSettings(true)} aria-label="Profilkép szerkesztése"><Pencil size={20} strokeWidth={2.8} /></button>
         </div>
         <h1 className="profile-display-name">{userName || "Tanuló"}</h1>
-        <p className="profile-handle">@mdavid7</p>
+        <p className="profile-handle">@{(userName || "tanulo").normalize("NFKD").replace(/[\\u0300-\\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "").slice(0, 20) || "tanulo"}</p>
       </div>
     </section>
-    <div className="profile-feature-placeholder" aria-hidden="true" />
+    <section className="profile-overview" aria-label="Tanulási áttekintés">
+      <div className="profile-overview-heading"><div><span className="profile-overview-kicker">A TE HALADÁSOD</span><h2>Apró lépések, nagy eredmények.</h2></div><span className="profile-overview-icon"><BookOpen size={21} /></span></div>
+      <div className="profile-overview-metrics"><div><strong>{completedCount}</strong><span>leckék készen</span></div><div><strong>{xp.toLocaleString("en-US")}</strong><span>összegyűjtött XP</span></div></div>
+      <div className="profile-overview-track" role="progressbar" aria-label="Teljesített leckék" aria-valuemin={0} aria-valuemax={10} aria-valuenow={Math.min(completedCount, 10)}><span style={{ width: Math.min(100, completedCount * 10) + "%" }} /></div>
+    </section>
     <div className="profile-lower-content">
       <div className="profile-stats">
         <div><Flame /><strong>7</strong><span>napos sorozat</span></div>
