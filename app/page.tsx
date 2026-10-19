@@ -475,24 +475,30 @@ function Profile({ completedCount, readCount, completedTaskCount, xp, stars, use
   const [saved, setSaved] = useState(false)
   const [profileStorageReady, setProfileStorageReady] = useState(false)
   const [profileTheme, setProfileTheme] = useState<"mist" | "sage">("mist")
-  const [profileFeedback, setProfileFeedback] = useState("")
+  const [avatarImage, setAvatarImage] = useState("")
+  const [bannerImage, setBannerImage] = useState("")
+  const [imageError, setImageError] = useState("")
+  const avatarInputRef = useRef<HTMLInputElement>(null)
+  const bannerInputRef = useRef<HTMLInputElement>(null)
   useEffect(() => setDraftName(userName), [userName])
   useEffect(() => {
     try {
       const raw = window.localStorage.getItem("evolingo.profile.v1")
       if (raw) {
-        const profile = JSON.parse(raw) as { userName?: unknown; avatar?: unknown; notifications?: unknown; compactMode?: unknown; theme?: unknown }
+        const profile = JSON.parse(raw) as { userName?: unknown; avatar?: unknown; notifications?: unknown; compactMode?: unknown; theme?: unknown; avatarImage?: unknown; bannerImage?: unknown }
         if (typeof profile.userName === "string" && profile.userName.trim()) setUserName(profile.userName.slice(0, 32))
         if (["fox", "book", "star", "spark"].includes(String(profile.avatar))) setAvatar(String(profile.avatar))
         if (typeof profile.notifications === "boolean") setNotifications(profile.notifications)
         if (profile.theme === "mist" || profile.theme === "sage") setProfileTheme(profile.theme)
+        if (typeof profile.avatarImage === "string" && profile.avatarImage.startsWith("data:image/")) setAvatarImage(profile.avatarImage)
+        if (typeof profile.bannerImage === "string" && profile.bannerImage.startsWith("data:image/")) setBannerImage(profile.bannerImage)
         if (typeof profile.compactMode === "boolean") {
           setCompactMode(profile.compactMode)
           document.documentElement.classList.toggle("compact-ui", profile.compactMode)
         }
       }
     } catch {
-      // Ignore invalid or unavailable browser storage; the profile remains usable.
+      // Keep the profile usable if local storage is unavailable or invalid.
     } finally {
       setProfileStorageReady(true)
     }
@@ -500,62 +506,86 @@ function Profile({ completedCount, readCount, completedTaskCount, xp, stars, use
   useEffect(() => {
     if (!profileStorageReady) return
     try {
-      window.localStorage.setItem("evolingo.profile.v1", JSON.stringify({ userName, avatar, notifications, compactMode, theme: profileTheme }))
+      window.localStorage.setItem("evolingo.profile.v1", JSON.stringify({ userName, avatar, notifications, compactMode, theme: profileTheme, avatarImage, bannerImage }))
     } catch {
-      // Storage restrictions never prevent the profile from being used.
+      setImageError("A kép túl nagy a helyi mentéshez. Válassz egy kisebb képet.")
     }
-  }, [profileStorageReady, userName, avatar, notifications, compactMode, profileTheme])
+  }, [profileStorageReady, userName, avatar, notifications, compactMode, profileTheme, avatarImage, bannerImage])
 
-  const openSettings = (target?: string) => {
+  const openSettings = () => {
+    setDraftName(userName)
+    setSaved(false)
+    setImageError("")
     setShowSettings(true)
-    setProfileFeedback("")
-    window.requestAnimationFrame(() => window.requestAnimationFrame(() => {
-      const element = document.getElementById(target || "profile-settings")
-      element?.scrollIntoView({ behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "center" })
-    }))
+  }
+  const handleGalleryImage = async (file: File | undefined, kind: "avatar" | "banner") => {
+    if (!file) return
+    if (!file.type.startsWith("image/")) {
+      setImageError("Kérlek, képfájlt válassz.")
+      return
+    }
+    if (file.size > 12 * 1024 * 1024) {
+      setImageError("A kép legfeljebb 12 MB lehet.")
+      return
+    }
+    try {
+      const bitmap = await createImageBitmap(file)
+      const maxDimension = kind === "avatar" ? 640 : 1400
+      const scale = Math.min(1, maxDimension / Math.max(bitmap.width, bitmap.height))
+      const canvas = document.createElement("canvas")
+      canvas.width = Math.max(1, Math.round(bitmap.width * scale))
+      canvas.height = Math.max(1, Math.round(bitmap.height * scale))
+      const context = canvas.getContext("2d")
+      if (!context) throw new Error("Canvas unavailable")
+      context.drawImage(bitmap, 0, 0, canvas.width, canvas.height)
+      bitmap.close()
+      const blob = await new Promise<Blob>((resolve, reject) => canvas.toBlob(result => result ? resolve(result) : reject(new Error("Image conversion failed")), "image/jpeg", .78))
+      const dataUrl = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader()
+        reader.onload = () => typeof reader.result === "string" ? resolve(reader.result) : reject(new Error("Image read failed"))
+        reader.onerror = () => reject(new Error("Image read failed"))
+        reader.readAsDataURL(blob)
+      })
+      if (kind === "avatar") setAvatarImage(dataUrl)
+      else setBannerImage(dataUrl)
+      setImageError("")
+    } catch {
+      setImageError("Ezt a képet nem sikerült betölteni. Próbálj másik fájlt.")
+    }
   }
   const progressPercent = Math.max(0, Math.min(100, Math.round((completedCount / lessons.length) * 100)))
   const avatarOptions = ["fox", "book", "star", "spark"]
-  const cycleAvatar = () => setAvatar(avatarOptions[(avatarOptions.indexOf(avatar) + 1) % avatarOptions.length])
-  const showComingSoon = (message: string) => setProfileFeedback(message)
+  const defaultAvatar = avatar === "fox" ? "🦊" : avatar === "book" ? "📚" : avatar === "star" ? "⭐" : "✨"
 
   return <div className={"profile-page profile-theme-" + profileTheme}>
     <section className="profile-hero">
-      <div className="profile-cover" aria-hidden="true" />
-      <button className="profile-banner-settings" type="button" aria-label="Profilbeállítások megnyitása" title="Beállítások" onClick={() => openSettings()}>
-        <Settings size={21} strokeWidth={2.1} />
+      <div className={"profile-cover" + (bannerImage ? " has-custom-banner" : "")} aria-hidden="true" style={bannerImage ? { backgroundImage: "linear-gradient(180deg, rgba(12,18,24,.05), rgba(12,18,24,.18)), url(" + bannerImage + ")" } : undefined} />
+      <button className="profile-banner-settings" type="button" aria-label="Profil és borítókép szerkesztése" title="Profil szerkesztése" onClick={openSettings}>
+        <Pencil size={20} strokeWidth={2.2} />
       </button>
       <div className="profile-identity">
         <div className="profile-avatar-wrap">
           <div className="large-avatar">
-            {avatar === "fox" ? <img src={foxIcon} alt="Róka profilkép" /> : <span className="avatar-emoji">{avatar === "book" ? "📚" : avatar === "star" ? "⭐" : "✨"}</span>}
+            {avatarImage ? <img src={avatarImage} alt="Egyéni profilkép" /> : avatar === "fox" ? <img src={foxIcon} alt="Róka profilkép" /> : <span className="avatar-emoji">{defaultAvatar}</span>}
           </div>
-          <button className="profile-avatar-edit" type="button" onClick={() => openSettings("profile-avatar-options")} aria-label="Profilkép szerkesztése"><Pencil size={19} strokeWidth={2.5} /></button>
+          <button className="profile-avatar-edit" type="button" onClick={() => avatarInputRef.current?.click()} aria-label="Profilkép kiválasztása a galériából"><Pencil size={18} strokeWidth={2.5} /></button>
+          <input ref={avatarInputRef} className="profile-file-input" type="file" accept="image/*" aria-label="Profilkép kiválasztása" onChange={event => { void handleGalleryImage(event.target.files?.[0], "avatar"); event.currentTarget.value = "" }} />
         </div>
         <h1 className="profile-display-name">{userName || "Tanuló"}</h1>
         <p className="profile-handle">@{(userName || "tanulo").normalize("NFKD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "").slice(0, 20) || "tanulo"}</p>
       </div>
     </section>
 
+    <input ref={bannerInputRef} className="profile-file-input" type="file" accept="image/*" aria-label="Borítókép kiválasztása" onChange={event => { void handleGalleryImage(event.target.files?.[0], "banner"); event.currentTarget.value = "" }} />
+
     <section className="profile-social-stats" aria-label="Profilstatisztikák">
-      <button className="profile-social-stat" type="button" onClick={() => showComingSoon("A széria követése még nem aktív. A leckék és a pontjaid már számolódnak.")}>
-        <span className="profile-stat-icon profile-stat-fire"><Flame size={25} fill="currentColor" /></span>
-        <strong>0</strong><span>Széria</span><ChevronRight className="profile-stat-chevron" size={17} />
-      </button>
-      <button className="profile-social-stat" type="button" onClick={() => showComingSoon("A barátlista a közösségi funkciók bevezetésekor lesz elérhető.")}>
-        <span className="profile-stat-icon profile-stat-friends"><UserRound size={25} /></span>
-        <strong>0</strong><span>Barát</span><ChevronRight className="profile-stat-chevron" size={17} />
-      </button>
-      <button className="profile-social-stat" type="button" onClick={() => showComingSoon("Az XP a tanulási fejlődésedet mutatja. A jelenlegi összesítés a haladási kártyán található.")}>
-        <span className="profile-stat-icon profile-stat-points"><Star size={25} fill="currentColor" /></span>
-        <strong>{xp.toLocaleString("en-US")}</strong><span>Pont</span><ChevronRight className="profile-stat-chevron" size={17} />
-      </button>
+      <div className="profile-social-stat"><span className="profile-stat-icon profile-stat-fire"><Flame size={25} fill="currentColor" /></span><strong>0</strong><span>Széria</span></div>
+      <div className="profile-social-stat"><span className="profile-stat-icon profile-stat-friends"><UserRound size={25} /></span><strong>0</strong><span>Barát</span></div>
+      <div className="profile-social-stat"><span className="profile-stat-icon profile-stat-points"><Star size={25} fill="currentColor" /></span><strong>{xp.toLocaleString("en-US")}</strong><span>Pont</span></div>
     </section>
 
     <section className="profile-learning-card">
-      <button className="profile-section-link" type="button" onClick={() => showComingSoon("A haladás a 10 alaptémából elolvasott leckék és a teljesített feladatcsomagok alapján frissül.")}>
-        <span><strong>Tanulási haladás</strong><small>Folytasd a fejlődést!</small></span><ChevronRight size={21} />
-      </button>
+      <div className="profile-section-link"><span><strong>Tanulási haladás</strong><small>Folytasd a fejlődést!</small></span><ChevronRight size={21} /></div>
       <div className="profile-learning-content">
         <div className="profile-progress-ring" role="progressbar" aria-label="Teljesített alaptémák" aria-valuemin={0} aria-valuemax={10} aria-valuenow={Math.min(completedCount, 10)} style={{ background: "conic-gradient(#4f9b36 " + progressPercent + "%, #e6eaf0 " + progressPercent + "% 100%)" }}>
           <div><strong>{progressPercent}%</strong><span>kész</span></div>
@@ -569,46 +599,22 @@ function Profile({ completedCount, readCount, completedTaskCount, xp, stars, use
       <div className="profile-learning-foot"><span>{readCount} lecke elolvasva</span><span>{Math.min(completedCount, 10)} / {lessons.length} alaptéma</span></div>
     </section>
 
-    <section className="profile-goals-card">
-      <div className="profile-card-heading"><span><strong>Kitűzések</strong><small>Találj egy új célt!</small></span><Target size={21} /></div>
-      <button className="profile-goal-row" type="button" onClick={() => showComingSoon("A napi célbeállítás még fejlesztés alatt áll.")}>
-        <span className="profile-goal-icon goal-daily"><Zap size={23} fill="currentColor" /></span>
-        <span className="profile-goal-copy"><strong>Napi cél</strong><small>Állíts be napi tanulási célt</small></span><ChevronRight size={19} />
-      </button>
-      <button className="profile-goal-row" type="button" onClick={() => showComingSoon("A heti célok és a heti összesítés hamarosan érkeznek.")}>
-        <span className="profile-goal-icon goal-weekly"><CalendarDays size={23} /></span>
-        <span className="profile-goal-copy"><strong>Heti cél</strong><small>Érd el a heti céljaidat</small></span><ChevronRight size={19} />
-      </button>
-      <button className="profile-goal-row" type="button" onClick={() => showComingSoon("Eddig " + completedCount + " leckét és " + completedTaskCount + " feladatcsomagot teljesítettél.")}>
-        <span className="profile-goal-icon goal-achievements"><Trophy size={23} fill="currentColor" /></span>
-        <span className="profile-goal-copy"><strong>Eredmények</strong><small>Nézd meg az elért eredményeidet</small></span><ChevronRight size={19} />
-      </button>
-    </section>
-
-    <section className="profile-custom-card">
-      <div className="profile-card-heading"><span><strong>Testreszabás</strong><small>Tedd egyedivé az élményt!</small></span><Sparkles size={21} /></div>
-      <div className="profile-custom-actions">
-        <button type="button" onClick={() => openSettings("profile-avatar-options")}><span>🦊</span><strong>Profilkép</strong><ChevronRight size={17} /></button>
-        <button type="button" onClick={() => { setProfileTheme(profileTheme === "mist" ? "sage" : "mist"); setProfileFeedback("Téma váltva: " + (profileTheme === "mist" ? "zsálya" : "ködös szürke") + ".") }}><Palette size={20} /><strong>Téma</strong><ChevronRight size={17} /></button>
-        <button type="button" onClick={cycleAvatar}><Sparkles size={20} /><strong>Stílus</strong><ChevronRight size={17} /></button>
-      </div>
-    </section>
-
-    {profileFeedback && <div className="profile-feedback" role="status" aria-live="polite"><span>{profileFeedback}</span><button type="button" onClick={() => setProfileFeedback("")} aria-label="Üzenet bezárása"><X size={17} /></button></div>}
-
-    <section className="profile-settings" id="profile-settings" aria-label="Profilbeállítások">
-      <button className="settings-section-heading" onClick={() => setShowSettings(!showSettings)} aria-expanded={showSettings}><span>Profil és beállítások</span><span>{showSettings ? "−" : "+"}</span></button>
-      {showSettings && <>
-        <label className="setting-label" htmlFor="profile-name">Név</label>
-        <div className="profile-name-form"><input id="profile-name" maxLength={32} value={draftName} onChange={(event) => { setDraftName(event.target.value); setSaved(false) }} placeholder="Írd be a neved" /><button type="button" onClick={() => { const value = draftName.trim(); if (value) { setUserName(value); setSaved(true) } }}>Mentés</button></div>
-        {saved && <p className="setting-success" role="status" aria-live="polite">A profilnév frissítve.</p>}
-        <span className="setting-label">Profilkép</span>
-        <div className="avatar-options" id="profile-avatar-options">{[["fox","🦊"],["book","📚"],["star","⭐"],["spark","✨"]].map(([id,emoji]) => <button key={id} type="button" className={"avatar-option " + (avatar === id ? "selected" : "")} onClick={() => setAvatar(id)} aria-label={"Profilkép: " + emoji} aria-pressed={avatar === id}>{emoji}</button>)}</div>
-        <label className="setting-toggle"><span><strong>Értesítések</strong><small>Tanulási emlékeztetők (felület-beállítás)</small></span><input type="checkbox" checked={notifications} onChange={(event) => setNotifications(event.target.checked)} /></label>
-        <label className="setting-toggle"><span><strong>Kompakt felület</strong><small>Kisebb térközök és tömörebb kártyák</small></span><input type="checkbox" checked={compactMode} onChange={(event) => { setCompactMode(event.target.checked); document.documentElement.classList.toggle("compact-ui", event.target.checked) }} /></label>
-        <p className="setting-footnote">Ezek a beállítások ezen az eszközön, a megnyitott munkamenet alatt tárolódnak. A rendszer értesítéseit még nem küldi ki.</p>
-      </>}
-    </section>
+    {showSettings && <div className="profile-edit-backdrop" role="presentation" onMouseDown={event => { if (event.target === event.currentTarget) setShowSettings(false) }}>
+      <section className="profile-edit-sheet" role="dialog" aria-modal="true" aria-labelledby="profile-edit-title">
+        <div className="profile-edit-heading"><div><h2 id="profile-edit-title">Profil szerkesztése</h2><p>Állítsd be a képeidet és a neved.</p></div><button type="button" onClick={() => setShowSettings(false)} aria-label="Bezárás"><X size={21} /></button></div>
+        <label className="setting-label" htmlFor="profile-name">Megjelenített név</label>
+        <div className="profile-name-form"><input id="profile-name" maxLength={32} value={draftName} onChange={event => { setDraftName(event.target.value); setSaved(false) }} placeholder="Írd be a neved" /><button type="button" onClick={() => { const value = draftName.trim(); if (value) { setUserName(value); setSaved(true) } }}>Mentés</button></div>
+        {saved && <p className="setting-success" role="status">A profilnév frissítve.</p>}
+        <div className="profile-gallery-actions">
+          <button type="button" onClick={() => avatarInputRef.current?.click()}><UserRound size={19} /><span><strong>Profilkép cseréje</strong><small>Válassz képet a galériából</small></span><ChevronRight size={18} /></button>
+          <button type="button" onClick={() => bannerInputRef.current?.click()}><Palette size={19} /><span><strong>Borítókép cseréje</strong><small>Válassz egy széles képet</small></span><ChevronRight size={18} /></button>
+        </div>
+        <span className="setting-label">Gyors profilképek</span>
+        <div className="avatar-options">{avatarOptions.map(id => <button key={id} type="button" className={"avatar-option " + (!avatarImage && avatar === id ? "selected" : "")} onClick={() => { setAvatar(id); setAvatarImage("") }} aria-label={"Profilkép: " + id} aria-pressed={!avatarImage && avatar === id}>{id === "fox" ? "🦊" : id === "book" ? "📚" : id === "star" ? "⭐" : "✨"}</button>)}</div>
+        {bannerImage && <button className="profile-remove-banner" type="button" onClick={() => setBannerImage("")}>Borítókép visszaállítása</button>}
+        {imageError && <p className="profile-image-error" role="alert">{imageError}</p>}
+      </section>
+    </div>}
   </div>
 }
 function PageHeader({ title }: { title: string }) { return <header className="page-header"><div className="brand compact"><img src={foxIcon} alt="Evölingo róka" /><div><h1>Evölingo</h1></div></div><h1>{title}</h1></header> }
