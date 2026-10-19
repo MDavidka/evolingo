@@ -1946,3 +1946,42 @@ html, body { background: #fff; }
     transition: none !important;
   }
 }
+
+
+/* Frosted glass reset — subtle 20–40% surface frost, no Liquid Glass shine.
+   Keep the fixed tab bar and draggable selection behavior unchanged. */
+.bottom-nav {
+  background: rgba(242, 244, 246, 0.34) !important;
+  border: 1px solid rgba(255, 255, 255, 0.38) !important;
+  box-shadow: 0 8px 24px rgba(18, 24, 32, 0.08) !important;
+  -webkit-backdrop-filter: blur(12px) saturate(115%) !important;
+  backdrop-filter: blur(12px) saturate(115%) !important;
+}
+.nav-selection-indicator {
+  background: rgba(206, 212, 218, 0.38) !important;
+  border: 1px solid rgba(255, 255, 255, 0.34);
+  box-shadow: 0 2px 8px rgba(18, 24, 32, 0.055) !important;
+  -webkit-backdrop-filter: blur(8px) saturate(110%) !important;
+  backdrop-filter: blur(8px) saturate(110%) !important;
+}
+.profile-avatar-edit {
+  background: rgba(242, 244, 246, 0.36) !important;
+  border-color: rgba(255, 255, 255, 0.42) !important;
+  box-shadow: 0 3px 10px rgba(20, 28, 36, 0.08) !important;
+  -webkit-backdrop-filter: blur(10px) saturate(115%) !important;
+  backdrop-filter: blur(10px) saturate(115%) !important;
+}
+@supports not ((backdrop-filter: blur(1px))) {
+  .bottom-nav { background: rgba(242, 244, 246, 0.96) !important; }
+  .nav-selection-indicator { background: rgba(206, 212, 218, 0.96) !important; }
+  .profile-avatar-edit { background: rgba(242, 244, 246, 0.96) !important; }
+}
+@media (prefers-reduced-transparency: reduce) {
+  .bottom-nav { background: #f2f4f6 !important; }
+  .nav-selection-indicator { background: #dce1e5 !important; }
+  .profile-avatar-edit { background: #f2f4f6 !important; }
+  .bottom-nav, .nav-selection-indicator, .profile-avatar-edit {
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+  }
+}
