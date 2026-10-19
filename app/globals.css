@@ -1985,3 +1985,126 @@ html, body { background: #fff; }
     backdrop-filter: none !important;
   }
 }
+
+
+/* Profile refinement: shorter cover, three key stats, and banner settings. */
+.profile-page .profile-cover {
+  height: 130px !important;
+  background:
+    radial-gradient(ellipse at 10% 0%, rgba(255,255,255,.42), transparent 52%),
+    linear-gradient(135deg, #d7dce1, #cbd4dd 62%, #c3ccd5) !important;
+}
+.profile-page .profile-identity { padding-top: 74px !important; }
+.profile-banner-settings {
+  position: absolute;
+  z-index: 4;
+  top: 15px;
+  right: 18px;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 1px solid rgba(255,255,255,.42);
+  border-radius: 16px;
+  color: #252c32;
+  background: rgba(245,247,249,.34);
+  box-shadow: 0 3px 10px rgba(20,28,36,.055);
+  -webkit-backdrop-filter: blur(10px) saturate(115%);
+  backdrop-filter: blur(10px) saturate(115%);
+  transition: background .16s ease, transform .16s ease;
+}
+.profile-banner-settings:active { transform: scale(.96); }
+.profile-banner-settings:focus-visible {
+  outline: 3px solid rgba(79,155,54,.64);
+  outline-offset: 3px;
+}
+.profile-social-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin: 54px 18px 0;
+  padding: 0 0 28px;
+}
+.profile-social-stat {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 13px;
+  text-align: center;
+}
+.profile-social-stat strong {
+  max-width: 100%;
+  color: #090b0d;
+  font-size: clamp(25px, 7vw, 32px);
+  line-height: 1.1;
+  font-weight: 780;
+  letter-spacing: -.7px;
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+.profile-social-stat span {
+  color: #15191d;
+  font-size: 15px;
+  line-height: 1.25;
+  font-weight: 700;
+}
+.profile-page .profile-settings { margin-top: 0; }
+
+/* Strong active navigation contrast, with deliberately quieter-but-readable inactive tabs. */
+.bottom-nav {
+  background: rgba(242,244,246,.40) !important;
+  border-color: rgba(255,255,255,.5) !important;
+  box-shadow: 0 8px 24px rgba(18,24,32,.08) !important;
+}
+.nav-selection-indicator {
+  z-index: 2 !important;
+  background: rgba(197,205,213,.62) !important;
+  border: 1px solid rgba(255,255,255,.46) !important;
+  box-shadow: 0 2px 8px rgba(18,24,32,.075), inset 0 1px 0 rgba(255,255,255,.72) !important;
+  -webkit-backdrop-filter: blur(8px) saturate(110%) !important;
+  backdrop-filter: blur(8px) saturate(110%) !important;
+}
+.bottom-nav button {
+  z-index: auto !important;
+  color: #626d77 !important;
+}
+.bottom-nav button svg,
+.bottom-nav button span {
+  position: relative;
+  z-index: 3;
+  pointer-events: none;
+}
+.bottom-nav button svg { opacity: .82; }
+.bottom-nav button span { opacity: .88; }
+.bottom-nav button.active { color: #11171c !important; }
+.bottom-nav button.active svg {
+  color: #327c21 !important;
+  opacity: 1;
+  stroke-width: 2.5;
+}
+.bottom-nav button.active span {
+  color: #11171c !important;
+  opacity: 1;
+  font-weight: 800;
+}
+@supports not ((backdrop-filter: blur(1px))) {
+  .profile-banner-settings { background: rgba(245,247,249,.96); }
+}
+@media (prefers-reduced-transparency: reduce) {
+  .profile-banner-settings { background: #f1f3f5; -webkit-backdrop-filter:none; backdrop-filter:none; }
+  .bottom-nav { background: #f2f4f6 !important; -webkit-backdrop-filter:none !important; backdrop-filter:none !important; }
+  .nav-selection-indicator { background: #c5cdd5 !important; -webkit-backdrop-filter:none !important; backdrop-filter:none !important; }
+}
+@media (max-width: 360px) {
+  .profile-page .profile-cover { height: 122px !important; }
+  .profile-page .profile-identity { padding-top: 68px !important; }
+  .profile-social-stats { margin-top: 45px; margin-left: 10px; margin-right: 10px; }
+  .profile-social-stat span { font-size: 13px; }
+  .profile-banner-settings { top: 12px; right: 13px; width: 40px; height: 40px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .profile-banner-settings { transition: none !important; }
+}
