@@ -277,7 +277,7 @@ export default function App() {
       />}
       {screen === "shop" && <Shop stars={stars} purchasedItems={purchasedItems} onPurchase={(id, cost) => { if (stars >= cost && !purchasedItems.includes(id)) { setStars((value) => value - cost); setPurchasedItems((items) => [...items, id]); setNotice("Sikeres vásárlás!"); } }} />}
       {screen === "leaderboard" && <Leaderboard />}
-      {screen === "friends" && <Friends userName={userName} />}
+      {screen === "friends" && <Friends userName={userName} stars={stars} lives={lives} />}
       {screen === "profile" && <Profile completedCount={completedLessons.length} readCount={readLessons.length} completedTaskCount={answeredTasks.length} xp={xp} stars={stars} userName={userName} setUserName={setUserName} avatar={avatar} setAvatar={setAvatar} notifications={notifications} setNotifications={setNotifications} compactMode={compactMode} setCompactMode={setCompactMode} showSettings={showSettings} setShowSettings={setShowSettings} />}
     </section>
     {screen !== "lessonIntro" && screen !== "task" && <Nav screen={screen} setScreen={setScreen} />}
@@ -467,12 +467,26 @@ function Shop({ stars, purchasedItems, onPurchase }: { stars: number; purchasedI
   })}</div><p className="shop-footnote">A bolt bemutató funkció: a megvett jutalmak egyelőre csak az alkalmazás aktuális munkamenetében maradnak meg.</p></>
 }
 function Leaderboard() { return <><PageHeader title="Ranglista" /><div className="league-card"><div className="league-top"><div className="league-badge"><Trophy size={26} /></div><div><h3>Bronz liga</h3><p>Vége: 2 nap múlva</p></div></div><div className="league-progress"><span style={{ width: "68%" }} /></div></div><div className="rank-list">{ranks.map((rank) => <div className={"rank-row " + (rank.name === "You" ? "you" : "")} key={rank.name}><div className="rank-number">{rank.place <= 3 ? <Medal size={21} /> : rank.place}</div><div className="rank-avatar">{rank.name.charAt(0)}</div><div className="rank-name"><strong>{rank.name === "You" ? "Te" : rank.name}</strong><span>{rank.name === "You" ? "Csak így tovább!" : "Angolt tanul"}</span></div><strong className="rank-xp">{rank.xp}</strong></div>)}</div></> }
-function Friends({ userName }: { userName: string }) {
+type FriendTab = "friends" | "requests" | "suggested"
+type FriendProfile = { id: string; name: string; handle: string; evoTag: string; avatar: string; streak: number; xp: number; status: string; online: boolean }
+
+const suggestedFriendProfiles: FriendProfile[] = [
+  { id: "sofia", name: "Sofia K.", handle: "@sofia", evoTag: "EVO-SOFIA-1024", avatar: "🦊", streak: 12, xp: 2480, status: "Most tanul", online: true },
+  { id: "marton", name: "Márton D.", handle: "@martond", evoTag: "EVO-MARTON-2201", avatar: "🐱", streak: 8, xp: 2210, status: "Ma aktív volt", online: false },
+  { id: "liam", name: "Liam R.", handle: "@liamr", evoTag: "EVO-LIAM-1960", avatar: "🐧", streak: 6, xp: 1960, status: "Most tanul", online: true },
+  { id: "anna", name: "Anna T.", handle: "@anna", evoTag: "EVO-ANNA-1420", avatar: "🐼", streak: 3, xp: 1420, status: "3 napja aktív volt", online: false },
+  { id: "david", name: "David P.", handle: "@davidp", evoTag: "EVO-DAVID-0980", avatar: "🦊", streak: 1, xp: 980, status: "1 hete aktív volt", online: false },
+]
+
+function Friends({ userName, stars, lives }: { userName: string; stars: number; lives: number }) {
   const [tag, setTag] = useState("")
-  const [, setSearched] = useState("")
+  const [tab, setTab] = useState<FriendTab>("friends")
   const [message, setMessage] = useState("")
-  const [requests, setRequests] = useState<string[]>([])
+  const [match, setMatch] = useState<FriendProfile | null>(null)
   const [friends, setFriends] = useState<string[]>([])
+  const [requests, setRequests] = useState<string[]>([])
+  const ownTag = "EVO-" + userName.normalize("NFKD").replace(/[\u0300-\u036f]/g, "").toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0,8).padEnd(4,"X") + "-0001"
+
   useEffect(() => {
     try {
       const saved = JSON.parse(localStorage.getItem("evolingo.friends.v1") || "{}") as { friends?: unknown; requests?: unknown }
@@ -483,35 +497,84 @@ function Friends({ userName }: { userName: string }) {
   useEffect(() => {
     try { localStorage.setItem("evolingo.friends.v1", JSON.stringify({ friends, requests })) } catch { /* Optional local persistence. */ }
   }, [friends, requests])
-  const ownTag = "EVO-" + userName.normalize("NFKD").replace(/[\u0300-\u036f]/g, "").toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0,8).padEnd(4,"X") + "-0001"
+
   const search = (value: string) => {
-    const normalizedSearch = value.trim().toUpperCase().replace(/\s+/g,"")
-    if (!normalizedSearch) { setMessage("Írd be a barátod Evo-tagjét."); return }
-    if (normalizedSearch === ownTag.replace(/-/g,"")) { setMessage("Ez a saját Evo-tag-ed."); return }
-    setMessage("A valódi fiókok közötti kereséshez közös felhasználói adatbázis szükséges. Ez a felület már elő van készítve a keresés bekötésére.")
+    const normalized = value.trim().toUpperCase().replace(/\s+/g, "")
+    setMessage("")
+    setMatch(null)
+    if (!normalized) { setMessage("Írd be a barátod Evo-tagjét."); return }
+    if (normalized === ownTag.replace(/-/g,"")) { setMessage("Ez a saját Evo-tag-ed."); return }
+    const found = suggestedFriendProfiles.find(friend =>
+      friend.evoTag.replace(/-/g,"") === normalized ||
+      friend.handle.replace("@","").toUpperCase() === normalized ||
+      friend.name.replace(/[^a-z0-9]/gi,"").toUpperCase() === normalized
+    )
+    if (found) {
+      if (friends.includes(found.id)) { setMessage("Már a barátaid között van."); return }
+      if (requests.includes(found.id)) { setMessage("Már elküldted a felkérést ennek a felhasználónak."); return }
+      setMatch(found)
+      return
+    }
+    setMessage("Ezt a taget nem találtuk a bemutató profilok között. Valódi felhasználók kereséséhez szerveroldali adatbázis szükséges.")
   }
+  const sendRequest = (friend: FriendProfile) => {
+    setRequests(items => items.includes(friend.id) ? items : [...items, friend.id])
+    setMatch(null)
+    setTag("")
+    setMessage("Felkérés rögzítve ezen az eszközön.")
+  }
+  const myFriends = suggestedFriendProfiles.filter(friend => friends.includes(friend.id))
+  const pendingProfiles = suggestedFriendProfiles.filter(friend => requests.includes(friend.id))
+  const list = tab === "friends" ? myFriends : tab === "requests" ? pendingProfiles : suggestedFriendProfiles.filter(friend => !friends.includes(friend.id) && !requests.includes(friend.id))
+
+  const friendRow = (friend: FriendProfile, mode: "friend" | "request" | "suggested") => <article className="friend-person-card" key={friend.id}>
+    <div className={"friend-person-avatar friend-avatar-" + friend.id}><span>{friend.avatar}</span><i className={friend.online ? "is-online" : ""} /></div>
+    <div className="friend-person-main">
+      <strong>{friend.name}</strong>
+      <span className="friend-person-handle">{friend.handle}</span>
+      <span className={"friend-person-status" + (friend.online ? " online" : "")}><i />{friend.status}</span>
+    </div>
+    <div className="friend-person-stats">
+      <span className="friend-streak"><Flame size={19} fill="currentColor" /><b>{friend.streak}</b></span>
+      <span className="friend-xp"><Star size={20} fill="currentColor" /><b>{friend.xp.toLocaleString("en-US")}</b></span>
+    </div>
+    {mode === "suggested" && <button className="friend-row-action" type="button" onClick={() => sendRequest(friend)} aria-label={friend.name + " hozzáadása"}><UserPlus size={19} /></button>}
+    {mode === "request" && <button className="friend-row-action is-pending" type="button" onClick={() => setRequests(items => items.filter(id => id !== friend.id))} aria-label={friend.name + " felkérés visszavonása"}><X size={18} /></button>}
+    {mode === "friend" && <button className="friend-row-action" type="button" onClick={() => setMessage(friend.name + " · " + friend.evoTag)} aria-label={friend.name + " adatainak megjelenítése"}><ChevronRight size={20} /></button>}
+  </article>
+
   return <div className="friends-page">
-    <header className="friends-heading"><div className="friends-heading-icon"><Users size={24} /></div><div><h1>Barátok</h1><p>Tanuljatok és fejlődjetek együtt.</p></div></header>
-    <section className="friends-own-tag">
-      <span className="friends-eyebrow">A TE EVO-TAG-ED</span>
-      <strong>{ownTag}</strong>
-      <p>Oszd meg a tag-edet, hogy mások könnyebben megtaláljanak.</p>
-      <button type="button" onClick={() => { void navigator.clipboard?.writeText(ownTag).then(() => setMessage("Evo-tag másolva."), () => setMessage("Nem sikerült másolni. Jelöld ki a tag-et, és másold ki kézzel.")) }}><ClipboardCheck size={17} /> Evo-tag másolása</button>
+    <header className="friends-app-header">
+      <div className="friends-brand"><img src={foxIcon} alt="" /><strong>Evölingo</strong></div>
+      <div className="friends-counters">
+        <span><Star size={20} fill="currentColor" /><b>{stars}</b></span>
+        <span><Heart size={20} fill="currentColor" /><b>{lives}</b></span>
+      </div>
+    </header>
+    <header className="friends-title-block"><h1>Barátok</h1><p>Kövess barátokat, és tanuljatok együtt!</p></header>
+    <form className="friends-search-bar" onSubmit={event => { event.preventDefault(); search(tag) }}>
+      <div className="friends-search-input"><Search size={22} /><input aria-label="Evo-tag alapján keresés" value={tag} onChange={event => { setTag(event.target.value); setMessage(""); setMatch(null) }} placeholder="Evo tag alapján keresés..." autoCapitalize="characters" autoComplete="off" /></div>
+      <button type="submit"><UserPlus size={19} /><span>Hozzáadás</span></button>
+    </form>
+    {match && <article className="friend-search-result">
+      <div className={"friend-person-avatar friend-avatar-" + match.id}><span>{match.avatar}</span><i className={match.online ? "is-online" : ""} /></div>
+      <div className="friend-person-main"><strong>{match.name}</strong><span className="friend-person-handle">{match.evoTag}</span></div>
+      <button type="button" onClick={() => sendRequest(match)}>Felkérés</button>
+    </article>}
+    {message && <p className="friends-message" role="status">{message}</p>}
+    <div className="friends-tabs" role="tablist" aria-label="Barátok nézetei">
+      {([["friends","Barátaim",Users],["requests","Kérések",UserPlus],["suggested","Ajánlott",Users]] as [FriendTab,string,React.ElementType][]).map(([id,label,Icon]) =>
+        <button key={id} type="button" role="tab" aria-selected={tab === id} className={tab === id ? "active" : ""} onClick={() => setTab(id)}><Icon size={19} /><span>{label}</span>{id === "requests" && requests.length > 0 && <b className="friends-tab-count">{requests.length}</b>}</button>
+      )}
+    </div>
+    <section className="friends-people-list" aria-label={tab === "friends" ? "Barátaim" : tab === "requests" ? "Küldött felkérések" : "Ajánlott profilok"}>
+      {list.map(friend => friendRow(friend, tab === "friends" ? "friend" : tab === "requests" ? "request" : "suggested"))}
+      {list.length === 0 && <div className="friends-empty"><Users size={28} /><strong>{tab === "friends" ? "Még nincsenek barátaid" : tab === "requests" ? "Nincsenek függő felkérések" : "Most nincs ajánlott profil"}</strong><p>{tab === "friends" ? "Keress rá valakire az Evo-tagje alapján, vagy nézd meg az ajánlásokat." : tab === "requests" ? "Az elküldött felkéréseid itt jelennek majd meg." : "Nézz vissza később új tanulókért."}</p></div>}
     </section>
-    <section className="friends-search-card">
-      <h2>Barát keresése</h2><p>Add meg a barátod egyedi Evo-tag-jét.</p>
-      <form onSubmit={event => { event.preventDefault(); setSearched(tag); search(tag) }}>
-        <label htmlFor="evo-tag-search">Evo-tag</label>
-        <div className="friends-search-row"><Search size={19} /><input id="evo-tag-search" value={tag} onChange={event => { setTag(event.target.value); setMessage("") }} placeholder="Például: EVO-DAVID-1234" autoCapitalize="characters" autoComplete="off" /><button type="submit">Keresés</button></div>
-      </form>
-      {message && <p className="friends-message" role="status">{message}</p>}
-    </section>
-    <section className="friends-list-card"><div className="friends-list-heading"><h2>Barátaim</h2><span>{friends.length}</span></div>
-      {friends.length ? friends.map(friend => <div className="friends-list-row" key={friend}><span className="friends-avatar"><UserRound size={20} /></span><span className="friends-list-copy"><strong>{friend}</strong><small>Helyben mentett kapcsolat</small></span><button type="button" onClick={() => setFriends(items => items.filter(item => item !== friend))} aria-label={friend + " eltávolítása"}><X size={18} /></button></div>) : <div className="friends-empty"><Users size={26} /><strong>Még nincsenek barátaid</strong><p>Keress rá valakire az Evo-tag-je alapján, és itt jelennek majd meg a kapcsolataid.</p></div>}
-    </section>
-    <p className="friends-note">A kereső felülete elkészült, de a valódi Evo-tag kereséshez és meghívók küldéséhez szerveroldali felhasználói rendszer szükséges.</p>
+    <p className="friends-note">A profilok bemutató adatok. A valódi felhasználók kereséséhez és felkérések küldéséhez szerveroldali fiókrendszer szükséges.</p>
   </div>
 }
+
 function Profile({ completedCount, readCount, completedTaskCount, xp, stars, userName, setUserName, avatar, setAvatar, notifications, setNotifications, compactMode, setCompactMode, showSettings, setShowSettings }: {
   completedCount: number; readCount: number; completedTaskCount: number; xp: number; stars: number; userName: string; setUserName: (value: string) => void;
   avatar: string; setAvatar: (value: string) => void; notifications: boolean; setNotifications: (value: boolean) => void;
