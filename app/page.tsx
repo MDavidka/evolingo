@@ -8,7 +8,7 @@ import {
 } from "lucide-react"
 
 const foxIcon = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Image-D15751D4-6Ne8AGNrryN8wlvyBepC8VDGQkHTw4.jpeg"
-type Screen = "home" | "lesson" | "worlds" | "leaderboard" | "profile"
+type Screen = "home" | "lessonIntro" | "lesson" | "worlds" | "leaderboard" | "profile"
 type World = { name: string; color: string; icon: string; progress: number }
 const worlds: World[] = [
   { name: "English", color: "#ff7900", icon: "EN", progress: 32 },
@@ -94,19 +94,19 @@ export default function App() {
     setCompletedTasks((previous) => previous.includes(1) ? previous : [...previous, 1])
     setScreen("home")
   }
-  return <main className={`app-shell ${screen === "lesson" ? "lesson-open" : ""}`}>
-    <section className={`screen-content ${screen === "lesson" ? "lesson-page" : ""}`}>
+  return <main className={`app-shell ${(screen === "lesson" || screen === "lessonIntro") ? "lesson-open" : ""}`}>
+    <section className={`screen-content ${(screen === "lesson" || screen === "lessonIntro") ? "lesson-page" : ""}`}>
       {screen === "home" && <Home completedTasks={completedTasks} onStart={(number) => {
-        if (number === 1 && !completedTasks.includes(1)) setScreen("lesson")
-        else if (number === 1 && completedTasks.includes(1)) setScreen("lesson")
+        if (number === 1) setScreen("lessonIntro")
         else setNotice("This lesson is being prepared. Present Simple is ready to practise!")
       }} notice={notice} clearNotice={() => setNotice("")} />}
-      {screen === "lesson" && <Lesson onExit={() => setScreen("home")} onComplete={finishLesson} />}
+      {screen === "lessonIntro" && <LessonIntro onExit={() => setScreen("home")} onStart={() => setScreen("lesson")} />}
+      {screen === "lesson" && <Lesson onExit={() => setScreen("lessonIntro")} onComplete={finishLesson} />}
       {screen === "worlds" && <Worlds selected={selectedWorld} setSelected={setSelectedWorld} />}
       {screen === "leaderboard" && <Leaderboard />}
       {screen === "profile" && <Profile completedCount={completedTasks.length} />}
     </section>
-    {screen !== "lesson" && <Nav screen={screen} setScreen={setScreen} />}
+    {screen !== "lesson" && screen !== "lessonIntro" && <Nav screen={screen} setScreen={setScreen} />}
   </main>
 }
 
@@ -132,6 +132,50 @@ function TaskNode({ number, title, unlocked, completed, inDevelopment, onClick }
     <span className="task-dot"><Icon size={24} strokeWidth={2.25} /></span>
     <span className="task-labels"><span className="task-name">{title}</span>{inDevelopment && <span className="task-status">Kidolgozás alatt</span>}</span>
   </button>
+}
+
+
+function LessonIntro({ onExit, onStart }: { onExit: () => void; onStart: () => void }) {
+  return <div className="lesson-layout lesson-intro-layout">
+    <header className="lesson-topbar">
+      <button className="exit-lesson" onClick={onExit} aria-label="Vissza a tanulási útvonalhoz"><X size={27} /></button>
+      <div className="intro-top-title"><span>1. LECKE</span><strong>Present Simple</strong></div>
+      <span className="intro-book-icon"><BookOpen size={25} /></span>
+    </header>
+    <div className="intro-scroll-content">
+      <div className="intro-hero">
+        <div className="intro-hero-mascot"><img src={foxIcon} alt="Evölingo róka" /></div>
+        <span className="intro-eyebrow">ANGOL NYELVTAN · A1</span>
+        <h1>Present Simple</h1>
+        <p>Beszélj a szokásaidról, a mindennapi tevékenységeidről és az általános igazságokról.</p>
+        <div className="intro-meta"><span><BookOpen size={15} /> 4 perc tanulás</span><span><Zap size={15} /> +50 XP gyakorlásért</span></div>
+      </div>
+      <article className="lesson-note"><span className="note-number">01</span><div><h2>Mikor használjuk?</h2><p>A <strong>Present Simple</strong> igeidőt rendszeresen ismétlődő cselekvésekhez, szokásokhoz és általános tényekhez használjuk.</p></div></article>
+      <section className="lesson-note-block">
+        <h2>1. Állító mondatok</h2><p>Az alany után az ige alapformáját használjuk. <strong>He, she, it</strong> esetén általában <strong>-s</strong> vagy <strong>-es</strong> kerül az ige végére.</p>
+        <div className="grammar-table"><div><span>I / You / We / They</span><strong>play</strong></div><div><span>He / She / It</span><strong>plays</strong></div></div>
+        <div className="example-card"><span className="example-label">PÉLDA</span><p>I play football every Saturday.</p><small>Szombatonként focizom.</small></div>
+        <div className="example-card"><span className="example-label">PÉLDA</span><p>She <strong>likes</strong> music.</p><small>Szereti a zenét.</small></div>
+      </section>
+      <section className="lesson-note-block">
+        <h2>2. Tagadás</h2><p>Használd a <strong>don't</strong> vagy <strong>doesn't</strong> segédigét. A segédige után az ige mindig alapformában áll.</p>
+        <div className="example-card"><p>I <strong>don't eat</strong> meat.</p><small>Nem eszem húst.</small></div>
+        <div className="example-card"><p>He <strong>doesn't eat</strong> meat.</p><small>Ő nem eszik húst.</small></div>
+        <div className="lesson-callout"><Lightbulb size={19} /><p>Figyelj! Nem „doesn't eats”, hanem <strong>doesn't eat</strong>.</p></div>
+      </section>
+      <section className="lesson-note-block">
+        <h2>3. Kérdések</h2><p>A mondat elejére a <strong>Do</strong> vagy <strong>Does</strong> kerül.</p>
+        <div className="grammar-table"><div><span>Do</span><strong>I / you / we / they</strong></div><div><span>Does</span><strong>he / she / it</strong></div></div>
+        <div className="example-card"><p><strong>Do</strong> you like pizza?</p><small>Szereted a pizzát?</small></div>
+        <div className="example-card"><p><strong>Does</strong> she speak English?</p><small>Beszél angolul?</small></div>
+      </section>
+      <section className="lesson-note-block"><h2>4. Gyakori időhatározók</h2><p>Ezek gyakran jelzik, hogy Present Simple-t használunk:</p><div className="vocab-chips"><span>always – mindig</span><span>usually – általában</span><span>often – gyakran</span><span>sometimes – néha</span><span>never – soha</span><span>every day – minden nap</span></div></section>
+      <section className="lesson-note-block"><h2>Gyors összefoglaló</h2><ul className="lesson-summary-list"><li>Szokás vagy tény → Present Simple</li><li>He / She / It → az állító ige általában -s végződést kap</li><li>Tagadás → don't / doesn't + alapige</li><li>Kérdés → Do / Does + alany + alapige?</li></ul></section>
+      <section className="future-media-card"><span><Lightbulb size={21} /></span><div><strong>Videók és illusztrációk</strong><p>Később ide kerülhetnek rövid magyarázó videók, nyelvtani ábrák és példamondat-illusztrációk.</p><small>Multimédiás tananyag előkészítve</small></div></section>
+      <div className="intro-practice-note"><CheckCircle2 size={19} /><span>Ha átolvastad az anyagot, jöhet az 5 gyakorlófeladat.</span></div>
+    </div>
+    <footer className="lesson-action-bar intro-action-bar"><button className="primary-action" onClick={onStart}>Gyakorlás indítása <ArrowRight size={20} /></button></footer>
+  </div>
 }
 
 function Lesson({ onExit, onComplete }: { onExit: () => void; onComplete: () => void }) {
