@@ -3,12 +3,12 @@
 import { useCallback, useEffect, useState } from "react"
 import {
   ArrowRight, BarChart3, BookOpen, Check, CheckCircle2, ChevronRight,
-  Flame, Globe2, Heart, Lightbulb, Medal, RotateCcw, Trophy, UserRound,
-  X, Zap, LockKeyhole, ClipboardCheck,
+  Flame, Heart, Lightbulb, Medal, RotateCcw, Trophy, UserRound,
+  X, Zap, LockKeyhole, ClipboardCheck, Star, ShoppingBag, Gift, Palette,
 } from "lucide-react"
 
 const foxIcon = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Image-D15751D4-6Ne8AGNrryN8wlvyBepC8VDGQkHTw4.jpeg"
-type Screen = "home" | "lessonIntro" | "task" | "worlds" | "leaderboard" | "profile"
+type Screen = "home" | "lessonIntro" | "task" | "shop" | "leaderboard" | "profile"
 type Example = { sentence: string; translation: string }
 type LessonSection = { title: string; body: string; rows?: [string, string][]; examples?: Example[]; tip?: string }
 type Question = {
@@ -227,7 +227,7 @@ export default function App() {
     const taskKey = lessonId + "-" + taskIndex
     const nextAnswered = answeredTasks.includes(taskKey) ? answeredTasks : [...answeredTasks, taskKey]
     setAnsweredTasks(nextAnswered)
-    setXp((current) => current + (answeredTasks.includes(taskKey) ? 0 : 5))
+    setXp((current) => current + (answeredTasks.includes(taskKey) ? 0 : 5))\n    setStars((current) => current + (answeredTasks.includes(taskKey) ? 0 : 1))
     const lesson = lessons.find((item) => item.id === lessonId)
     if (lesson && lesson.questions.every((_, index) => nextAnswered.includes(lessonId + "-" + index))) {
       setCompletedLessons((previous) => previous.includes(lessonId) ? previous : [...previous, lessonId])
@@ -260,7 +260,7 @@ export default function App() {
         onExit={() => setScreen("home")}
         onComplete={() => completeTask(activeLesson.id, activeTaskIndex)}
       />}
-      {screen === "worlds" && <Worlds selected={selectedWorld} setSelected={setSelectedWorld} />}
+      {screen === "shop" && <Shop stars={stars} purchasedItems={purchasedItems} onPurchase={(id, cost) => { if (stars >= cost && !purchasedItems.includes(id)) { setStars((value) => value - cost); setPurchasedItems((items) => [...items, id]); setNotice("Sikeres vásárlás!"); } }} />}
       {screen === "leaderboard" && <Leaderboard />}
       {screen === "profile" && <Profile completedCount={completedLessons.length} xp={xp} />}
     </section>
@@ -275,7 +275,7 @@ function Home({ readLessons, completedLessons, answeredTasks, notice, clearNotic
   onOpenLesson: (id: number) => void; onOpenTask: (lessonId: number, index: number) => void
 }) {
   return <>
-    <header className="app-header home-header"><Brand /><div className="health"><Heart fill="currentColor" size={20} /><strong>5</strong></div></header>
+    <header className="app-header home-header"><Brand /><div className="home-currencies"><div className="star-balance" aria-label={stars + " csillag"}><Star size={21} fill="currentColor" /><strong>{stars}</strong></div><div className="health"><Heart fill="currentColor" size={20} /><strong>5</strong></div></div></header>
     <div className="section-heading home-heading"><div><p className="eyebrow">ANGOL</p><h2>Tanulási útvonal</h2></div></div>
     {notice && <button className="inline-notice" onClick={clearNotice}><span>{notice}</span><X size={16} /></button>}
     <div className="learning-path">
@@ -408,7 +408,7 @@ function TaskExercise({ lesson, taskIndex, onExit, onComplete, alreadyAnswered }
     <div className="task-exercise-content">
       <span className="lesson-kicker">GYAKORLÁS · {lesson.level}</span>
       <h1 className="task-screen-title">{question.instruction}</h1>
-      <div className="lesson-question-card"><div className="question-mascot"><img src={foxIcon} alt="Evölingo róka" /></div><div className="question-main"><span className="question-label">{question.type === "choice" ? "VÁLASSZ EGYET" : question.type === "text" ? "ÍRD BE A VÁLASZT" : "MONDATÉPÍTÉS"}</span><p className={question.type === "arrange" ? "question-prompt translation-prompt" : "question-prompt"}>{question.prompt}</p></div></div>
+      <TaskIllustration type={question.type} lessonId={lesson.id} taskIndex={taskIndex} /><div className="lesson-question-card"><div className="question-mascot"><img src={foxIcon} alt="Evölingo róka" /></div><div className="question-main"><span className="question-label">{question.type === "choice" ? "VÁLASSZ EGYET" : question.type === "text" ? "ÍRD BE A VÁLASZT" : "MONDATÉPÍTÉS"}</span><p className={question.type === "arrange" ? "question-prompt translation-prompt" : "question-prompt"}>{question.prompt}</p></div></div>
       {question.type === "choice" && <div className="answer-options" role="group" aria-label="Válaszlehetőségek">{question.options?.map((option, index) => {
         const selected = selectedAnswer === option
         const isRight = checked && option === question.answer
@@ -424,8 +424,34 @@ function TaskExercise({ lesson, taskIndex, onExit, onComplete, alreadyAnswered }
   </div>
 }
 
-function Worlds({ selected, setSelected }: { selected: World; setSelected: (world: World) => void }) { return <><PageHeader title="Nyelvek" /><div className="world-list">{worlds.map((world) => <button key={world.name} className={"world-card " + (selected.name === world.name ? "selected" : "")} onClick={() => setSelected(world)}><div className="world-icon" style={{ background: world.color }}>{world.icon}</div><div className="world-info"><strong>{world.name}</strong><div className="progress-track"><span style={{ width: world.progress + "%", background: world.color }} /></div><small>{world.progress}% teljesítve</small></div><ChevronRight /></button>)}</div></> }
+function TaskIllustration({ type, lessonId, taskIndex }: { type: Question["type"]; lessonId: number; taskIndex: number }) {
+  const themes = [
+    { icon: BookOpen, label: "Nyelvtani minta", color: "#58a83c", pale: "#eef8e9" },
+    { icon: Lightbulb, label: "Gondold át", color: "#58a83c", pale: "#eef8e9" },
+    { icon: ClipboardCheck, label: "Rakd sorrendbe", color: "#58a83c", pale: "#eef8e9" },
+  ]
+  const theme = themes[type === "choice" ? 0 : type === "text" ? 1 : 2]
+  const Icon = theme.icon
+  return <div className="task-illustration" role="img" aria-label={theme.label}>
+    <div className="task-illustration-sun" />
+    <div className="task-illustration-art"><span className="task-art-card task-art-card-back" /><span className="task-art-card task-art-card-front"><Icon size={43} strokeWidth={1.8} /></span><span className="task-art-spark task-art-spark-one">✦</span><span className="task-art-spark task-art-spark-two">✧</span></div>
+    <div className="task-illustration-caption"><strong>{lessonId < 3 ? "Tanulj példákból" : "Gyakorolj lépésről lépésre"}</strong><span>{theme.label} · {taskIndex + 1}. feladat</span></div>
+  </div>
+}
+function Shop({ stars, purchasedItems, onPurchase }: { stars: number; purchasedItems: string[]; onPurchase: (id: string, cost: number) => void }) {
+  const items = [
+    { id: "fox-green", name: "Zöld róka téma", description: "Zöld kiemelések az alkalmazásban", cost: 5, icon: Palette },
+    { id: "streak-freeze", name: "Sorozatvédő", description: "Egy napig megőrzi a tanulási sorozatot", cost: 10, icon: Gift },
+    { id: "fox-badge", name: "Róka jelvény", description: "Egy különleges profiljelvény", cost: 8, icon: Star },
+  ]
+  return <><PageHeader title="Bolt" /><div className="shop-balance"><Star size={25} fill="currentColor" /><div><strong>{stars} csillag</strong><span>Jutalmak feladatok megoldásáért</span></div></div><div className="shop-intro"><h2>Jutalmak</h2><p>Használd a csillagokat a gyűjteményed bővítésére.</p></div><div className="shop-items">{items.map((item) => {
+    const Icon = item.icon
+    const owned = purchasedItems.includes(item.id)
+    const canAfford = stars >= item.cost
+    return <article className="shop-item" key={item.id}><div className="shop-item-icon"><Icon size={26} /></div><div className="shop-item-copy"><strong>{item.name}</strong><p>{item.description}</p><span><Star size={14} fill="currentColor" /> {item.cost} csillag</span></div><button className="shop-buy" disabled={owned || !canAfford} onClick={() => onPurchase(item.id, item.cost)}>{owned ? "Megvéve" : canAfford ? "Megveszem" : "Kevés csillag"}</button></article>
+  })}</div><p className="shop-footnote">A bolt bemutató funkció: a megvett jutalmak egyelőre csak az alkalmazás aktuális munkamenetében maradnak meg.</p></>
+}
 function Leaderboard() { return <><PageHeader title="Ranglista" /><div className="league-card"><div className="league-top"><div className="league-badge"><Trophy size={26} /></div><div><h3>Bronz liga</h3><p>Vége: 2 nap múlva</p></div></div><div className="league-progress"><span style={{ width: "68%" }} /></div></div><div className="rank-list">{ranks.map((rank) => <div className={"rank-row " + (rank.name === "You" ? "you" : "")} key={rank.name}><div className="rank-number">{rank.place <= 3 ? <Medal size={21} /> : rank.place}</div><div className="rank-avatar">{rank.name.charAt(0)}</div><div className="rank-name"><strong>{rank.name === "You" ? "Te" : rank.name}</strong><span>{rank.name === "You" ? "Csak így tovább!" : "Angolt tanul"}</span></div><strong className="rank-xp">{rank.xp}</strong></div>)}</div></> }
 function Profile({ completedCount, xp }: { completedCount: number; xp: number }) { return <><PageHeader title="Profil" /><div className="profile-card"><div className="large-avatar"><img src={foxIcon} alt="Evölingo profilkép" /></div><div><h2>Márton Dávid</h2><p>Tanulás kezdete: 2026. október</p></div></div><div className="profile-stats"><div><Flame /><strong>7</strong><span>napos sorozat</span></div><div><Zap /><strong>{xp.toLocaleString("en-US")}</strong><span>XP</span></div><div><BookOpen /><strong>{completedCount}</strong><span>kész lecke</span></div></div></> }
 function PageHeader({ title }: { title: string }) { return <header className="page-header"><div className="brand compact"><img src={foxIcon} alt="Evölingo róka" /><div><h1>Evölingo</h1></div></div><h1>{title}</h1></header> }
-function Nav({ screen, setScreen }: { screen: Screen; setScreen: (screen: Screen) => void }) { const items: [Screen, string, React.ElementType][] = [["home", "Tanulás", BookOpen], ["worlds", "Nyelvek", Globe2], ["leaderboard", "Ranglista", BarChart3], ["profile", "Profil", UserRound]]; return <nav className="bottom-nav">{items.map(([id, label, Icon]) => <button key={id} className={screen === id ? "active" : ""} onClick={() => setScreen(id)} aria-current={screen === id ? "page" : undefined}><Icon size={23} /><span>{label}</span></button>)}</nav> }
+function Nav({ screen, setScreen }: { screen: Screen; setScreen: (screen: Screen) => void }) { const items: [Screen, string, React.ElementType][] = [["home", "Tanulás", BookOpen], ["shop", "Bolt", ShoppingBag], ["leaderboard", "Ranglista", BarChart3], ["profile", "Profil", UserRound]]; return <nav className="bottom-nav">{items.map(([id, label, Icon]) => <button key={id} className={screen === id ? "active" : ""} onClick={() => setScreen(id)} aria-current={screen === id ? "page" : undefined}><Icon size={23} /><span>{label}</span></button>)}</nav> }
