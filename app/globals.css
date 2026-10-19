@@ -961,3 +961,131 @@ html, body { background: #fff; }
 .compact-lesson-name span { color:#777; font-size:11px; line-height:1.4; font-weight:500; }
 .compact-lesson-name:disabled span { color:#aaa; }
 @media (prefers-reduced-motion: reduce) { .local-art-paper { transform:none; } }
+
+
+/* Frosted-glass controls and navigation, tuned for readable contrast */
+.bottom-nav {
+  background: rgba(255,255,255,.58) !important;
+  border: 1px solid rgba(255,255,255,.82) !important;
+  box-shadow: 0 14px 38px rgba(0,0,0,.13), inset 0 1px 0 rgba(255,255,255,.85) !important;
+  backdrop-filter: blur(28px) saturate(185%) !important;
+  -webkit-backdrop-filter: blur(28px) saturate(185%) !important;
+}
+.bottom-nav button {
+  background: rgba(255,255,255,.18);
+  transition: background .18s ease, transform .18s ease, color .18s ease;
+}
+.bottom-nav button.active {
+  background: rgba(88,168,60,.16) !important;
+  box-shadow: inset 0 0 0 1px rgba(88,168,60,.24), 0 3px 12px rgba(88,168,60,.08) !important;
+}
+.bottom-nav button:active { transform: scale(.96); }
+.primary-action,
+.lesson-choice-popover button,
+.lesson-modal-primary,
+.lesson-modal-secondary,
+.shop-buy,
+.profile-name-form button {
+  backdrop-filter: blur(16px) saturate(160%);
+  -webkit-backdrop-filter: blur(16px) saturate(160%);
+}
+.primary-action {
+  border: 1px solid rgba(255,255,255,.38) !important;
+  box-shadow: 0 8px 24px rgba(0,0,0,.12), inset 0 1px 0 rgba(255,255,255,.16) !important;
+  transition: transform .18s ease, box-shadow .18s ease, background .18s ease;
+}
+.primary-action:active:not(:disabled) { transform: translateY(1px) scale(.99); }
+.lesson-choice-popover {
+  background: rgba(255,255,255,.68) !important;
+  border: 1px solid rgba(255,255,255,.86) !important;
+  box-shadow: 0 12px 32px rgba(0,0,0,.16), inset 0 1px 0 rgba(255,255,255,.9) !important;
+  backdrop-filter: blur(24px) saturate(190%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(190%) !important;
+}
+.lesson-choice-popover button {
+  border: 1px solid rgba(255,255,255,.5);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.22), 0 3px 9px rgba(0,0,0,.05);
+}
+.lesson-choice-popover button:disabled {
+  color: #8d8d8d !important;
+  border: 1px solid rgba(150,150,150,.12) !important;
+  background: rgba(225,225,225,.62) !important;
+  box-shadow: none !important;
+  cursor: not-allowed;
+}
+.lesson-choice-popover button:disabled svg { opacity:.8; }
+
+/* Actual web-sourced, topic-specific images for the lesson reading view. */
+.web-lesson-image { margin: 16px 0 25px !important; }
+.web-lesson-image img {
+  display:block;
+  width:100%;
+  height:clamp(170px, 48vw, 260px);
+  max-height:none !important;
+  object-fit:cover !important;
+  border-radius:20px;
+  background:#f1f1f1;
+  box-shadow:0 9px 24px rgba(0,0,0,.08);
+}
+.web-lesson-image figcaption {
+  padding:9px 2px 0;
+  color:#777;
+  font-size:11px;
+  line-height:1.45;
+}
+.web-lesson-image img:not([src]) { display:none; }
+
+/* Every lesson reading page receives its own quiet color treatment.
+   The task screen and the rest of the app are not affected. */
+.lesson-reader {
+  --reader-accent:#438b2b;
+  --reader-soft:#f1f8ed;
+  --reader-line:#dcebd5;
+  --reader-ink:#243c1d;
+}
+.lesson-reader[data-lesson-theme="1"] { --reader-accent:#438b2b; --reader-soft:#f1f8ed; --reader-line:#dcebd5; --reader-ink:#243c1d; }
+.lesson-reader[data-lesson-theme="2"] { --reader-accent:#277a83; --reader-soft:#edf8f8; --reader-line:#cde9e9; --reader-ink:#17464b; }
+.lesson-reader[data-lesson-theme="3"] { --reader-accent:#84632e; --reader-soft:#faf4e8; --reader-line:#eadfc7; --reader-ink:#503d20; }
+.lesson-reader[data-lesson-theme="4"] { --reader-accent:#4e70a5; --reader-soft:#eff4fc; --reader-line:#d7e2f3; --reader-ink:#263d60; }
+.lesson-reader[data-lesson-theme="5"] { --reader-accent:#8a5ab1; --reader-soft:#f7f0fc; --reader-line:#e7d7f2; --reader-ink:#513269; }
+.lesson-reader[data-lesson-theme="6"] { --reader-accent:#b05b42; --reader-soft:#fcf1ec; --reader-line:#f1d9cd; --reader-ink:#663526; }
+.lesson-reader[data-lesson-theme="7"] { --reader-accent:#4f8c5b; --reader-soft:#f0f8f0; --reader-line:#d2e8d3; --reader-ink:#285331; }
+.lesson-reader[data-lesson-theme="8"] { --reader-accent:#3777a6; --reader-soft:#eef6fc; --reader-line:#d3e6f3; --reader-ink:#214d6d; }
+.lesson-reader[data-lesson-theme="9"] { --reader-accent:#b06b30; --reader-soft:#fbf3e9; --reader-line:#efddc8; --reader-ink:#663e1e; }
+.lesson-reader[data-lesson-theme="10"] { --reader-accent:#5d6c91; --reader-soft:#f1f3fa; --reader-line:#d9dfef; --reader-ink:#303b5b; }
+.lesson-reader .intro-hero {
+  padding:18px 17px 20px !important;
+  margin:0 0 18px !important;
+  border-radius:22px !important;
+  background:linear-gradient(135deg, var(--reader-soft), #fff 88%) !important;
+  border:1px solid var(--reader-line) !important;
+}
+.lesson-reader .intro-eyebrow,
+.lesson-reader .lesson-note-block h2,
+.lesson-reader .reading-inline-status svg { color:var(--reader-accent) !important; }
+.lesson-reader .intro-hero h1 { color:var(--reader-ink); }
+.lesson-reader .lesson-note-block h2 { border-bottom-color:var(--reader-line); }
+.lesson-reader .example-card {
+  border-left-color:var(--reader-accent) !important;
+  background:var(--reader-soft) !important;
+}
+.lesson-reader .lesson-callout {
+  color:var(--reader-ink) !important;
+  background:var(--reader-soft) !important;
+  border:1px solid var(--reader-line);
+}
+.lesson-reader .lesson-callout svg,
+.lesson-reader .lesson-tip > span { color:var(--reader-accent) !important; }
+.lesson-reader .reading-clock { color:#111 !important; }
+.lesson-reader .reading-clock-progress { stroke:#111 !important; }
+.lesson-reader .intro-meta svg { color:var(--reader-accent); }
+.lesson-reader .primary-action {
+  color:#fff !important;
+  background:rgba(17,17,17,.88) !important;
+  border:1px solid rgba(255,255,255,.38) !important;
+}
+.lesson-reader .primary-action:hover:not(:disabled) { background:rgba(38,38,38,.92) !important; }
+
+@media (prefers-reduced-motion: reduce) {
+  .bottom-nav button,.primary-action,.lesson-choice-popover button { transition:none !important; }
+}
