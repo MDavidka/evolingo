@@ -143,7 +143,7 @@ function Lesson({ onExit, onComplete }: { onExit: () => void; onComplete: () => 
   const [answerCorrect, setAnswerCorrect] = useState(false)
   const [complete, setComplete] = useState(false)
   const question = presentSimpleQuestions[questionIndex]
-  const currentAnswer = question.type === "choice" ? selectedAnswer : question.type === "text" ? typedAnswer : selectedWords.join(" ")
+  const currentAnswer = question.type === "choice" ? selectedAnswer : question.type === "text" ? typedAnswer : selectedWords.map((item) => item.split(":").slice(1).join(":")).join(" ")
   const canCheck = currentAnswer.trim().length > 0
   const acceptedAnswers = [question.answer, ...(question.accepted ?? [])]
   const progress = complete ? 100 : (questionIndex / presentSimpleQuestions.length) * 100
