@@ -921,3 +921,43 @@ html, body { background: #fff; }
  .lesson-choice-popover.path-row-right { right:50px; }
  .lesson-choice-popover button { min-width:72px; padding:9px 10px; }
 }
+
+
+/* Reliable local lesson artwork; no remote illustration host required */
+.local-lesson-art { overflow:hidden; }
+.local-lesson-art .local-art-scene { position:relative; display:grid; place-items:center; width:100%; min-height:178px; overflow:hidden; border-radius:22px; background:linear-gradient(135deg,#edf8e8,#f7fbf4); }
+.local-art-paper { z-index:2; display:grid; place-items:center; width:112px; height:112px; border:3px solid #fff; border-radius:28px; color:#fff; background:#58a83c; box-shadow:0 12px 28px rgba(55,126,37,.2); transform:rotate(-7deg); }
+.local-art-orbit { position:absolute; display:block; border:2px solid #c8e7bb; border-radius:50%; }
+.local-art-orbit.orbit-one { width:154px; height:154px; transform:translate(-18px,5px); }
+.local-art-orbit.orbit-two { width:220px; height:220px; transform:translate(30px,-4px); border-style:dashed; }
+.local-art-spark { position:absolute; z-index:3; top:27px; right:calc(50% - 91px); color:#d99a12; font-size:34px; }
+.local-art-dot { position:absolute; z-index:3; bottom:27px; left:calc(50% - 93px); display:grid; place-items:center; width:42px; height:42px; border:3px solid #fff; border-radius:50%; color:#fff; background:#1d1d1d; font-size:12px; font-weight:900; }
+.reading-art-scene { background:linear-gradient(135deg,#f4f0ff,#f7fbf4) !important; }
+.reading-art-scene .local-art-paper { background:#6f64bf; box-shadow:0 12px 28px rgba(83,71,161,.2); }
+.reading-art-scene .local-art-orbit { border-color:#d9d3fa; }
+.reading-art-scene .local-art-dot { background:#6f64bf; }
+.local-lesson-art figcaption { padding-top:10px; }
+/* Lesson countdown and practice UI use black/neutral controls for contrast. */
+.reading-clock { color:#111 !important; }
+.reading-clock span { color:#111 !important; font-weight:850; }
+.reading-clock svg { color:#111; }
+.reading-clock .reading-clock-track { stroke:#dedede !important; }
+.reading-clock .reading-clock-progress { stroke:#111 !important; }
+.reading-clock.is-complete { color:#111 !important; background:#f1f1f1 !important; }
+.lesson-intro-layout .lesson-topbar .exit-lesson,
+.task-exercise-layout .lesson-topbar .exit-lesson { color:#111 !important; border-color:#222 !important; }
+.lesson-intro-layout .primary-action,
+.task-exercise-layout .primary-action { color:#fff !important; background:#111 !important; box-shadow:inset 0 -3px 0 rgba(255,255,255,.12); }
+.lesson-intro-layout .primary-action:hover:not(:disabled),
+.task-exercise-layout .primary-action:hover:not(:disabled) { background:#292929 !important; }
+.task-exercise-layout .lesson-progress-track span { background:#111 !important; }
+.task-exercise-layout .lesson-hearts strong { color:#111 !important; }
+.task-exercise-layout .option-letter { color:#111; }
+.task-exercise-layout .answer-option.selected { border-color:#111; background:#f3f3f3; }
+.task-exercise-layout .answer-option.selected .option-letter { border-color:#111; background:#111; color:#fff; }
+.compact-lesson-name { display:flex; flex-direction:column; align-items:flex-start; gap:4px; text-align:left; }
+.compact-lesson-row.path-row-right .compact-lesson-name { align-items:flex-end; text-align:right; }
+.compact-lesson-name strong { font-size:15px; line-height:1.25; font-weight:850; }
+.compact-lesson-name span { color:#777; font-size:11px; line-height:1.4; font-weight:500; }
+.compact-lesson-name:disabled span { color:#aaa; }
+@media (prefers-reduced-motion: reduce) { .local-art-paper { transform:none; } }
