@@ -513,7 +513,7 @@ function Profile({ completedCount, xp, userName, setUserName, avatar, setAvatar,
           <button className="profile-avatar-edit" onClick={() => setShowSettings(true)} aria-label="Profilkép szerkesztése"><Pencil size={20} strokeWidth={2.8} /></button>
         </div>
         <h1 className="profile-display-name">{userName || "Tanuló"}</h1>
-        <p className="profile-handle">@{(userName || "tanulo").normalize("NFKD").replace(/[\\u0300-\\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "").slice(0, 20) || "tanulo"}</p>
+        <p className="profile-handle">@{(userName || "tanulo").normalize("NFKD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "").slice(0, 20) || "tanulo"}</p>
       </div>
     </section>
     <section className="profile-overview" aria-label="Tanulási áttekintés">
