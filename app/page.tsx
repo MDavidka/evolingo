@@ -469,7 +469,7 @@ function Shop({ stars, purchasedItems, onPurchase }: { stars: number; purchasedI
 function Leaderboard() { return <><PageHeader title="Ranglista" /><div className="league-card"><div className="league-top"><div className="league-badge"><Trophy size={26} /></div><div><h3>Bronz liga</h3><p>Vége: 2 nap múlva</p></div></div><div className="league-progress"><span style={{ width: "68%" }} /></div></div><div className="rank-list">{ranks.map((rank) => <div className={"rank-row " + (rank.name === "You" ? "you" : "")} key={rank.name}><div className="rank-number">{rank.place <= 3 ? <Medal size={21} /> : rank.place}</div><div className="rank-avatar">{rank.name.charAt(0)}</div><div className="rank-name"><strong>{rank.name === "You" ? "Te" : rank.name}</strong><span>{rank.name === "You" ? "Csak így tovább!" : "Angolt tanul"}</span></div><strong className="rank-xp">{rank.xp}</strong></div>)}</div></> }
 function Friends({ userName }: { userName: string }) {
   const [tag, setTag] = useState("")
-  const [searched, setSearched] = useState("")
+  const [, setSearched] = useState("")
   const [message, setMessage] = useState("")
   const [requests, setRequests] = useState<string[]>([])
   const [friends, setFriends] = useState<string[]>([])
@@ -484,8 +484,8 @@ function Friends({ userName }: { userName: string }) {
     try { localStorage.setItem("evolingo.friends.v1", JSON.stringify({ friends, requests })) } catch { /* Optional local persistence. */ }
   }, [friends, requests])
   const ownTag = "EVO-" + userName.normalize("NFKD").replace(/[\u0300-\u036f]/g, "").toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0,8).padEnd(4,"X") + "-0001"
-  const normalizedSearch = searched.trim().toUpperCase().replace(/\s+/g,"")
-  const search = () => {
+  const search = (value: string) => {
+    const normalizedSearch = value.trim().toUpperCase().replace(/\s+/g,"")
     if (!normalizedSearch) { setMessage("Írd be a barátod Evo-tagjét."); return }
     if (normalizedSearch === ownTag.replace(/-/g,"")) { setMessage("Ez a saját Evo-tag-ed."); return }
     setMessage("A valódi fiókok közötti kereséshez közös felhasználói adatbázis szükséges. Ez a felület már elő van készítve a keresés bekötésére.")
@@ -500,7 +500,7 @@ function Friends({ userName }: { userName: string }) {
     </section>
     <section className="friends-search-card">
       <h2>Barát keresése</h2><p>Add meg a barátod egyedi Evo-tag-jét.</p>
-      <form onSubmit={event => { event.preventDefault(); setSearched(tag); search() }}>
+      <form onSubmit={event => { event.preventDefault(); setSearched(tag); search(tag) }}>
         <label htmlFor="evo-tag-search">Evo-tag</label>
         <div className="friends-search-row"><Search size={19} /><input id="evo-tag-search" value={tag} onChange={event => { setTag(event.target.value); setMessage("") }} placeholder="Például: EVO-DAVID-1234" autoCapitalize="characters" autoComplete="off" /><button type="submit">Keresés</button></div>
       </form>
