@@ -305,7 +305,7 @@ function Home({ readLessons, completedLessons, answeredTasks, stars, notice, cle
         const side = index % 2 === 0 ? "path-row-left" : "path-row-right"
         if (!lesson) return <div className={"compact-lesson-row " + side + " compact-future-row"} key={item.id}><span className="compact-lesson-icon node-locked"><LockKeyhole size={24} /></span><span className="compact-lesson-name muted">{item.title}</span></div>
         return <div className={"compact-lesson-row " + side} key={lesson.id}>
-          <button className={"compact-lesson-icon-button " + (isUnlocked ? "node-unlocked" : "node-locked") + (complete ? " node-complete" : "")} disabled={!isUnlocked} onClick={() => setSelectedLessonId(selectedLessonId === lesson.id ? null : lesson.id)} aria-label={"Lecke vagy feladat: " + lesson.title} aria-expanded={selectedLessonId === lesson.id}>
+          <button className={"compact-lesson-icon-button " + (isUnlocked ? "node-unlocked" : "node-locked") + (complete ? " node-complete" : "")} disabled={!isUnlocked} onClick={() => setSelectedLessonId(selectedLessonId === lesson.id ? null : lesson.id)} aria-label={"Lecke vagy feladat: " + lesson.title} aria-expanded={selectedLessonId === lesson.id} aria-label={lesson.title + (complete ? ", teljesítve" : "")}>
             <span className="compact-lesson-icon"><BookOpen size={28} />{complete && <span className="compact-lesson-check"><Check size={13} /></span>}</span>
           </button>
           <button className="compact-lesson-name" disabled={!isUnlocked} onClick={() => setSelectedLessonId(selectedLessonId === lesson.id ? null : lesson.id)}><strong>{lesson.title}</strong><span>{lesson.summary}</span></button>
@@ -339,9 +339,9 @@ function LessonIntro({ lesson, onExit, onReadComplete, onPractice, alreadyRead }
   const progress = (30 - secondsLeft) / 30
   return <div className="lesson-layout lesson-intro-layout lesson-reader" data-lesson-theme={lesson.id}>
     <header className="lesson-topbar">
-      <button className="exit-lesson" onClick={onExit} aria-label="Vissza a tanulási útvonalhoz"><X size={27} /></button>
+      <button className="exit-lesson ios-glass-button" onClick={onExit} aria-label="Vissza a tanulási útvonalhoz"><X size={27} /></button>
       <div className="intro-top-title"><span>LECKE {String(lesson.id).padStart(2, "0")}</span><strong>{lesson.title}</strong></div>
-      <div className={"reading-clock " + (readingComplete ? "is-complete" : "")} aria-label={readingComplete ? "Olvasás kész" : "Hátralévő idő: " + secondsLeft + " másodperc"}>
+      <div className={"reading-clock liquid-glass-control " + (readingComplete ? "is-complete" : "")} aria-label={readingComplete ? "Olvasás kész" : "Hátralévő idő: " + secondsLeft + " másodperc"}>
         {readingComplete ? <CheckCircle2 size={23} /> : <><svg viewBox="0 0 44 44" aria-hidden="true"><circle className="reading-clock-track" cx="22" cy="22" r="18" /><circle className="reading-clock-progress" cx="22" cy="22" r="18" strokeDasharray={circumference} strokeDashoffset={circumference * progress} /></svg><span>{secondsLeft}</span></>}
       </div>
     </header>
@@ -417,7 +417,7 @@ function TaskExercise({ lesson, taskIndex, onExit, onComplete, lives, onWrongAns
   if (lives <= 0) return <div className="lesson-layout task-exercise-layout"><header className="lesson-topbar"><button className="exit-lesson" onClick={onOutOfLives} aria-label="Kilépés"><X size={27} /></button><div className="intro-top-title"><span>{lesson.title}</span><strong>Próba vége</strong></div><div className="lesson-hearts"><Heart size={21} fill="#e94f64" /><strong>0</strong></div></header><div className="session-ended"><div className="session-ended-heart"><Heart size={52} fill="currentColor" /></div><h1>Elfogytak az életeid</h1><p>A kérdéssort most nem tudod folytatni. Térj vissza az útvonalhoz, és később indíts új próbát.</p><button className="primary-action" onClick={onOutOfLives}>Vissza a tanuláshoz</button></div></div>
   return <div className="lesson-layout task-exercise-layout">
     <header className="lesson-topbar">
-      <button className="exit-lesson" onClick={onExit} aria-label="Kilépés a feladatból"><X size={27} /></button>
+      <button className="exit-lesson ios-glass-button" onClick={onExit} aria-label="Kilépés a feladatból"><X size={27} /></button>
       <div className="lesson-progress-wrap"><div className="lesson-progress-track" aria-label="Haladás"><span style={{ width: progress + "%" }} /></div><strong className="lesson-progress-label">{taskIndex + 1}<span>/</span>{lesson.questions.length}</strong></div>
       <div className={"lesson-hearts " + (heartLost ? "heart-lost" : "")}><Heart size={22} fill="#e94f64" /><strong>{Math.max(0, lives)}</strong></div>
     </header>
