@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import {
   ArrowRight, BarChart3, BookOpen, Check, CheckCircle2, ChevronRight, Flame,
   Globe2, Heart, Lightbulb, Medal, RotateCcw, Trophy, UserRound,
@@ -90,6 +90,14 @@ export default function App() {
   const [selectedWorld, setSelectedWorld] = useState(worlds[0])
   const [completedTasks, setCompletedTasks] = useState<number[]>([])
   const [readLessons, setReadLessons] = useState<number[]>([])
+  const [xp, setXp] = useState(1420)
+  const handleReadComplete = useCallback(() => {
+    setReadLessons((previous) => {
+      if (previous.includes(1)) return previous
+      setXp((current) => current + 10)
+      return [...previous, 1]
+    })
+  }, [])
   const [notice, setNotice] = useState("")
   const finishLesson = () => {
     setCompletedTasks((previous) => previous.includes(1) ? previous : [...previous, 1])
@@ -101,11 +109,11 @@ export default function App() {
         if (number === 1) setScreen("lessonIntro")
         else setNotice("This lesson is being prepared. Present Simple is ready to practise!")
       }} notice={notice} clearNotice={() => setNotice("")} />}
-      {screen === "lessonIntro" && <LessonIntro onExit={() => setScreen("home")} onStart={() => setScreen("lesson")} onReadComplete={() => setReadLessons((previous) => previous.includes(1) ? previous : [...previous, 1])} onNextLevel={() => { setCompletedTasks((previous) => previous.includes(1) ? previous : [...previous, 1]); setScreen("home") }} />}
+      {screen === "lessonIntro" && <LessonIntro onExit={() => setScreen("home")} onStart={() => setScreen("lesson")} alreadyRead={readLessons.includes(1)} onReadComplete={handleReadComplete} onNextLevel={() => { setCompletedTasks((previous) => previous.includes(1) ? previous : [...previous, 1]); setScreen("home") }} />}
       {screen === "lesson" && <Lesson onExit={() => setScreen("lessonIntro")} onComplete={finishLesson} />}
       {screen === "worlds" && <Worlds selected={selectedWorld} setSelected={setSelectedWorld} />}
       {screen === "leaderboard" && <Leaderboard />}
-      {screen === "profile" && <Profile completedCount={completedTasks.length} />}
+      {screen === "profile" && <Profile completedCount={completedTasks.length} xp={xp} /> }
     </section>
     {screen !== "lesson" && screen !== "lessonIntro" && <Nav screen={screen} setScreen={setScreen} />}
   </main>
@@ -136,11 +144,11 @@ function TaskNode({ number, title, unlocked, completed, inDevelopment, onClick }
 }
 
 
-function LessonIntro({ onExit, onStart, onReadComplete, onNextLevel }: { onExit: () => void; onStart: () => void; onReadComplete: () => void; onNextLevel: () => void }) {
+function LessonIntro({ onExit, onStart, onReadComplete, onNextLevel, alreadyRead }: { onExit: () => void; onStart: () => void; onReadComplete: () => void; onNextLevel: () => void; alreadyRead: boolean }) {
   const [duration, setDuration] = useState(30)
   const [secondsLeft, setSecondsLeft] = useState(30)
   const [timerStarted, setTimerStarted] = useState(false)
-  const [readingComplete, setReadingComplete] = useState(false)
+  const [readingComplete, setReadingComplete] = useState(alreadyRead)
   useEffect(() => {
     if (!timerStarted || readingComplete || secondsLeft <= 0) return
     const timer = window.setInterval(() => setSecondsLeft((seconds) => Math.max(0, seconds - 1)), 1000)
@@ -332,6 +340,6 @@ function Lesson({ onExit, onComplete }: { onExit: () => void; onComplete: () => 
 
 function Worlds({ selected, setSelected }: { selected: World; setSelected: (world: World) => void }) { return <><PageHeader title="Worlds" /><div className="world-list">{worlds.map((world) => <button key={world.name} className={`world-card ${selected.name === world.name ? "selected" : ""}`} onClick={() => setSelected(world)}><div className="world-icon" style={{ background: world.color }}>{world.icon}</div><div className="world-info"><strong>{world.name}</strong><div className="progress-track"><span style={{ width: `${world.progress}%`, background: world.color }} /></div><small>{world.progress}% complete</small></div><ChevronRight /></button>)}</div></> }
 function Leaderboard() { return <><PageHeader title="Leaderboard" /><div className="league-card"><div className="league-top"><div className="league-badge"><Trophy size={26} /></div><div><h3>Bronze League</h3><p>Ends in 2 days</p></div></div><div className="league-progress"><span style={{ width: "68%" }} /></div></div><div className="rank-list">{ranks.map((rank) => <div className={`rank-row ${rank.name === "You" ? "you" : ""}`} key={rank.name}><div className="rank-number" style={{ color: rank.color }}>{rank.place <= 3 ? <Medal size={21} /> : rank.place}</div><div className="rank-avatar">{rank.name.charAt(0)}</div><div className="rank-name"><strong>{rank.name}</strong><span>{rank.name === "You" ? "Keep going" : "Learning English"}</span></div><strong className="rank-xp">{rank.xp}</strong></div>)}</div></> }
-function Profile({ completedCount }: { completedCount: number }) { return <><PageHeader title="Profile" /><div className="profile-card"><div className="large-avatar"><img src={foxIcon} alt="Evölingo fox avatar" /></div><div><h2>Márton Dávid</h2><p>Learning since October 2026</p></div></div><div className="profile-stats"><div><Flame /><strong>7</strong><span>streak</span></div><div><Zap /><strong>1,420</strong><span>XP</span></div><div><BookOpen /><strong>{12 + completedCount}</strong><span>lessons</span></div></div></> }
+function Profile({ completedCount, xp }: { completedCount: number; xp: number }) { return <><PageHeader title="Profile" /><div className="profile-card"><div className="large-avatar"><img src={foxIcon} alt="Evölingo fox avatar" /></div><div><h2>Márton Dávid</h2><p>Learning since October 2026</p></div></div><div className="profile-stats"><div><Flame /><strong>7</strong><span>streak</span></div><div><Zap /><strong>{xp.toLocaleString("en-US")}</strong><span>XP</span></div><div><BookOpen /><strong>{12 + completedCount}</strong><span>lessons</span></div></div></> }
 function PageHeader({ title }: { title: string }) { return <header className="page-header"><div className="brand compact"><img src={foxIcon} alt="Evölingo fox mascot" /><div><h1>Evölingo</h1></div></div><h1>{title}</h1></header> }
 function Nav({ screen, setScreen }: { screen: Screen; setScreen: (screen: Screen) => void }) { const items: [Screen, string, React.ElementType][] = [["home", "Home", BookOpen], ["worlds", "Worlds", Globe2], ["leaderboard", "Ranks", BarChart3], ["profile", "Profile", UserRound]]; return <nav className="bottom-nav">{items.map(([id, label, Icon]) => <button key={id} className={screen === id ? "active" : ""} onClick={() => setScreen(id)} aria-current={screen === id ? "page" : undefined}><Icon size={23} /><span>{label}</span></button>)}</nav> }
