@@ -2753,3 +2753,140 @@ html, body { background: #fff; }
   .profile-page .profile-identity { padding-top: 79px !important; }
   .profile-page .profile-avatar-wrap { width: 104px !important; height: 104px !important; min-width: 104px !important; min-height: 104px !important; }
 }
+
+
+/* Friends tab — mobile-first, consistent with the frosted Evölingo UI. */
+.friends-page {
+  width: 100%;
+  max-width: 620px;
+  min-width: 0;
+  margin: 0 auto;
+  padding: 22px 16px max(116px, calc(env(safe-area-inset-bottom) + 108px));
+  color: #15191d;
+}
+.friends-heading {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  margin: 4px 2px 22px;
+}
+.friends-heading-icon {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  flex: none;
+  border: 1px solid rgba(255,255,255,.8);
+  border-radius: 17px;
+  color: #4f963c;
+  background: rgba(237,245,234,.72);
+}
+.friends-heading h1 { margin: 0; font-size: 27px; line-height: 1.15; font-weight: 820; letter-spacing: -.7px; }
+.friends-heading p { margin: 5px 0 0; color: #737e88; font-size: 13px; }
+.friends-own-tag,
+.friends-search-card,
+.friends-list-card {
+  margin-top: 13px;
+  padding: 18px 16px;
+  border: 1px solid rgba(224,229,234,.92);
+  border-radius: 22px;
+  background: linear-gradient(150deg, rgba(255,255,255,.94), rgba(250,251,252,.9));
+  box-shadow: 0 4px 16px rgba(19,31,43,.035);
+}
+.friends-eyebrow { display: block; margin-bottom: 8px; color: #77818b; font-size: 10px; font-weight: 800; letter-spacing: 1.2px; }
+.friends-own-tag > strong {
+  display: block;
+  color: #20272d;
+  font-size: clamp(22px, 6vw, 28px);
+  font-weight: 850;
+  letter-spacing: .3px;
+  overflow-wrap: anywhere;
+  font-variant-numeric: tabular-nums;
+}
+.friends-own-tag > p,
+.friends-search-card > p {
+  margin: 7px 0 14px;
+  color: #76808a;
+  font-size: 12px;
+  line-height: 1.5;
+}
+.friends-own-tag > button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 0 13px;
+  border: 1px solid rgba(255,255,255,.65);
+  border-radius: 13px;
+  color: #285d20;
+  background: rgba(230,242,225,.72);
+  font-size: 12px;
+  font-weight: 750;
+}
+.friends-search-card h2,
+.friends-list-heading h2 { margin: 0; color: #171c21; font-size: 17px; font-weight: 800; letter-spacing: -.25px; }
+.friends-search-card form > label { display: block; margin-bottom: 7px; color: #5e6973; font-size: 12px; font-weight: 700; }
+.friends-search-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  min-height: 49px;
+  padding: 5px;
+  border: 1px solid #dfe4e8;
+  border-radius: 15px;
+  background: #fff;
+}
+.friends-search-row > svg { flex: none; margin-left: 7px; color: #818b94; }
+.friends-search-row input {
+  width: 100%;
+  min-width: 0;
+  height: 36px;
+  border: 0;
+  outline: 0;
+  color: #1b2228;
+  background: transparent;
+  font-size: 12px;
+}
+.friends-search-row input::placeholder { color: #a0a8af; }
+.friends-search-row button {
+  flex: none;
+  min-height: 37px;
+  padding: 0 12px;
+  border-radius: 11px;
+  color: #fff;
+  background: #4f963c;
+  font-size: 12px;
+  font-weight: 750;
+}
+.friends-message {
+  margin: 12px 0 0;
+  padding: 10px 12px;
+  border-radius: 12px;
+  color: #47545e;
+  background: #f0f3f5;
+  font-size: 12px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+.friends-list-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 13px; }
+.friends-list-heading > span { display: grid; place-items: center; min-width: 26px; height: 26px; padding: 0 7px; border-radius: 9px; color: #4f963c; background: #edf6e9; font-size: 12px; font-weight: 800; }
+.friends-empty { display: flex; align-items: center; flex-direction: column; padding: 22px 10px 12px; text-align: center; }
+.friends-empty > svg { margin-bottom: 10px; color: #99a3ac; }
+.friends-empty > strong { font-size: 13px; font-weight: 780; }
+.friends-empty > p { max-width: 260px; margin: 6px 0 0; color: #7b858e; font-size: 11px; line-height: 1.5; }
+.friends-list-row { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-top: 1px solid #edf0f2; }
+.friends-avatar { display: grid; place-items: center; width: 40px; height: 40px; flex: none; border-radius: 14px; color: #4f963c; background: #edf6e9; }
+.friends-list-copy { display: flex; flex: 1; min-width: 0; flex-direction: column; gap: 3px; }
+.friends-list-copy strong { font-size: 13px; font-weight: 750; overflow-wrap: anywhere; }
+.friends-list-copy small { color: #7b858e; font-size: 11px; }
+.friends-list-row > button { display: grid; place-items: center; width: 34px; height: 34px; flex: none; border-radius: 11px; color: #737e88; background: #f2f4f6; }
+.friends-note { margin: 14px 4px 0; color: #87919a; font-size: 10px; line-height: 1.5; text-align: center; }
+@media (max-width: 360px) {
+  .friends-page { padding-left: 11px; padding-right: 11px; }
+  .friends-own-tag, .friends-search-card, .friends-list-card { padding: 15px 12px; border-radius: 18px; }
+  .friends-search-row { gap: 5px; }
+  .friends-search-row button { padding: 0 9px; }
+  .friends-search-row input { font-size: 11px; }
+}
