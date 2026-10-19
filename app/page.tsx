@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { BarChart3, BookOpen, Check, Flame, Globe2, Heart, LockKeyhole, Medal, Trophy, UserRound, Zap } from "lucide-react"
+import { BarChart3, BookOpen, Check, ChevronRight, Flame, Globe2, Heart, LockKeyhole, Medal, Trophy, UserRound, Zap } from "lucide-react"
 
 const foxIcon = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Image-D15751D4-6Ne8AGNrryN8wlvyBepC8VDGQkHTw4.jpeg"
 type Screen = "home" | "worlds" | "leaderboard" | "profile"
