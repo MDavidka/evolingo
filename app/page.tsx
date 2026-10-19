@@ -92,12 +92,10 @@ export default function App() {
   const [readLessons, setReadLessons] = useState<number[]>([])
   const [xp, setXp] = useState(1420)
   const handleReadComplete = useCallback(() => {
-    setReadLessons((previous) => {
-      if (previous.includes(1)) return previous
-      setXp((current) => current + 10)
-      return [...previous, 1]
-    })
-  }, [])
+    if (readLessons.includes(1)) return
+    setReadLessons((previous) => previous.includes(1) ? previous : [...previous, 1])
+    setXp((current) => current + 10)
+  }, [readLessons])
   const [notice, setNotice] = useState("")
   const finishLesson = () => {
     setCompletedTasks((previous) => previous.includes(1) ? previous : [...previous, 1])
