@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react"
 import {
   ArrowRight, BarChart3, BookOpen, Check, CheckCircle2,
   Flame, Heart, Lightbulb, Medal, RotateCcw, Trophy, UserRound,
-  X, Zap, LockKeyhole, ClipboardCheck, Star, ShoppingBag, Gift, Palette,
+  X, Zap, LockKeyhole, ClipboardCheck, Star, ShoppingBag, Gift, Palette, Pencil,
 } from "lucide-react"
 
 const foxIcon = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Image-D15751D4-6Ne8AGNrryN8wlvyBepC8VDGQkHTw4.jpeg"
@@ -200,7 +200,7 @@ export default function App() {
   const [stars, setStars] = useState(0)
   const [purchasedItems, setPurchasedItems] = useState<string[]>([])
   const [lives, setLives] = useState(5)
-  const [userName, setUserName] = useState("Márton Dávid")
+  const [userName, setUserName] = useState("MDavid")
   const [avatar, setAvatar] = useState("fox")
   const [notifications, setNotifications] = useState(false)
   const [compactMode, setCompactMode] = useState(false)
@@ -474,27 +474,42 @@ function Profile({ completedCount, xp, userName, setUserName, avatar, setAvatar,
   const [draftName, setDraftName] = useState(userName)
   const [saved, setSaved] = useState(false)
   useEffect(() => setDraftName(userName), [userName])
-  return <>
-    <PageHeader title="Profil" />
-    <div className="profile-card profile-edit-card">
-      <div className="large-avatar">{avatar === "fox" ? <img src={foxIcon} alt="Róka profilkép" /> : <span className="avatar-emoji">{avatar === "book" ? "📚" : avatar === "star" ? "⭐" : "🦊"}</span>}</div>
-      <div><h2>{userName || "Tanuló"}</h2><p>Saját tanulói profil</p></div>
-    </div>
-    <div className="profile-stats"><div><Flame /><strong>7</strong><span>napos sorozat</span></div><div><Zap /><strong>{xp.toLocaleString("en-US")}</strong><span>XP</span></div><div><BookOpen /><strong>{completedCount}</strong><span>kész lecke</span></div></div>
-    <section className="profile-settings">
-      <button className="settings-section-heading" onClick={() => setShowSettings(!showSettings)} aria-expanded={showSettings}><span>Profil és beállítások</span><span>{showSettings ? "−" : "+"}</span></button>
-      {showSettings && <>
-        <label className="setting-label" htmlFor="profile-name">Név</label>
-        <div className="profile-name-form"><input id="profile-name" maxLength={32} value={draftName} onChange={(event) => { setDraftName(event.target.value); setSaved(false) }} placeholder="Írd be a neved" /><button onClick={() => { const value = draftName.trim(); if (value) { setUserName(value); setSaved(true) } }}>Mentés</button></div>
-        {saved && <p className="setting-success">A profilnév frissítve.</p>}
-        <span className="setting-label">Profilkép</span>
-        <div className="avatar-options">{[["fox","🦊"],["book","📚"],["star","⭐"],["spark","✨"]].map(([id,emoji]) => <button key={id} className={"avatar-option " + (avatar === id ? "selected" : "")} onClick={() => setAvatar(id)} aria-label={"Profilkép: " + emoji}>{emoji}</button>)}</div>
-        <label className="setting-toggle"><span><strong>Értesítések</strong><small>Tanulási emlékeztetők (felület-beállítás)</small></span><input type="checkbox" checked={notifications} onChange={(event) => setNotifications(event.target.checked)} /></label>
-        <label className="setting-toggle"><span><strong>Kompakt felület</strong><small>Kisebb térközök és tömörebb kártyák</small></span><input type="checkbox" checked={compactMode} onChange={(event) => { setCompactMode(event.target.checked); document.documentElement.classList.toggle("compact-ui", event.target.checked) }} /></label>
-        <p className="setting-footnote">Ezek a beállítások jelenleg ezen az oldalon, a megnyitott munkamenet alatt működnek. A rendszer értesítéseit még nem küldi ki.</p>
-      </>}
+  return <div className="profile-page">
+    <section className="profile-hero">
+      <div className="profile-cover" aria-hidden="true" />
+      <div className="profile-identity">
+        <div className="profile-avatar-wrap">
+          <div className="large-avatar">
+            {avatar === "fox" ? <img src={foxIcon} alt="Róka profilkép" /> : <span className="avatar-emoji">{avatar === "book" ? "📚" : avatar === "star" ? "⭐" : "🦊"}</span>}
+          </div>
+          <button className="profile-avatar-edit" onClick={() => setShowSettings(true)} aria-label="Profilkép szerkesztése"><Pencil size={20} strokeWidth={2.8} /></button>
+        </div>
+        <h1 className="profile-display-name">{userName || "Tanuló"}</h1>
+        <p className="profile-handle">@mdavid7</p>
+      </div>
     </section>
-  </>
+    <div className="profile-feature-placeholder" aria-hidden="true" />
+    <div className="profile-lower-content">
+      <div className="profile-stats">
+        <div><Flame /><strong>7</strong><span>napos sorozat</span></div>
+        <div><Zap /><strong>{xp.toLocaleString("en-US")}</strong><span>XP</span></div>
+        <div><BookOpen /><strong>{completedCount}</strong><span>kész lecke</span></div>
+      </div>
+      <section className="profile-settings">
+        <button className="settings-section-heading" onClick={() => setShowSettings(!showSettings)} aria-expanded={showSettings}><span>Profil és beállítások</span><span>{showSettings ? "−" : "+"}</span></button>
+        {showSettings && <>
+          <label className="setting-label" htmlFor="profile-name">Név</label>
+          <div className="profile-name-form"><input id="profile-name" maxLength={32} value={draftName} onChange={(event) => { setDraftName(event.target.value); setSaved(false) }} placeholder="Írd be a neved" /><button onClick={() => { const value = draftName.trim(); if (value) { setUserName(value); setSaved(true) } }}>Mentés</button></div>
+          {saved && <p className="setting-success">A profilnév frissítve.</p>}
+          <span className="setting-label">Profilkép</span>
+          <div className="avatar-options">{[["fox","🦊"],["book","📚"],["star","⭐"],["spark","✨"]].map(([id,emoji]) => <button key={id} className={"avatar-option " + (avatar === id ? "selected" : "")} onClick={() => setAvatar(id)} aria-label={"Profilkép: " + emoji}>{emoji}</button>)}</div>
+          <label className="setting-toggle"><span><strong>Értesítések</strong><small>Tanulási emlékeztetők (felület-beállítás)</small></span><input type="checkbox" checked={notifications} onChange={(event) => setNotifications(event.target.checked)} /></label>
+          <label className="setting-toggle"><span><strong>Kompakt felület</strong><small>Kisebb térközök és tömörebb kártyák</small></span><input type="checkbox" checked={compactMode} onChange={(event) => { setCompactMode(event.target.checked); document.documentElement.classList.toggle("compact-ui", event.target.checked) }} /></label>
+          <p className="setting-footnote">Ezek a beállítások jelenleg ezen az oldalon, a megnyitott munkamenet alatt működnek. A rendszer értesítéseit még nem küldi ki.</p>
+        </>}
+      </section>
+    </div>
+  </div>
 }
 function PageHeader({ title }: { title: string }) { return <header className="page-header"><div className="brand compact"><img src={foxIcon} alt="Evölingo róka" /><div><h1>Evölingo</h1></div></div><h1>{title}</h1></header> }
 function Nav({ screen, setScreen }: { screen: Screen; setScreen: (screen: Screen) => void }) {
