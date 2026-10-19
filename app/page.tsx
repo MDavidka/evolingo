@@ -143,31 +143,28 @@ function TaskNode({ number, title, unlocked, completed, inDevelopment, onClick }
 
 
 function LessonIntro({ onExit, onStart, onReadComplete, onNextLevel, alreadyRead }: { onExit: () => void; onStart: () => void; onReadComplete: () => void; onNextLevel: () => void; alreadyRead: boolean }) {
-  const [duration, setDuration] = useState(30)
-  const [secondsLeft, setSecondsLeft] = useState(30)
-  const [timerStarted, setTimerStarted] = useState(false)
+  const [secondsLeft, setSecondsLeft] = useState(alreadyRead ? 0 : 30)
   const [readingComplete, setReadingComplete] = useState(alreadyRead)
   useEffect(() => {
-    if (!timerStarted || readingComplete || secondsLeft <= 0) return
+    if (readingComplete) return
     const timer = window.setInterval(() => setSecondsLeft((seconds) => Math.max(0, seconds - 1)), 1000)
     return () => window.clearInterval(timer)
-  }, [timerStarted, readingComplete, secondsLeft])
+  }, [readingComplete])
   useEffect(() => {
-    if (secondsLeft === 0 && timerStarted && !readingComplete) {
+    if (secondsLeft === 0 && !readingComplete) {
       setReadingComplete(true)
       onReadComplete()
     }
-  }, [secondsLeft, timerStarted, readingComplete, onReadComplete])
-  const startReadingTimer = () => {
-    setSecondsLeft(duration)
-    setTimerStarted(true)
-    setReadingComplete(false)
-  }
+  }, [secondsLeft, readingComplete, onReadComplete])
+  const circumference = 2 * Math.PI * 18
+  const progress = (30 - secondsLeft) / 30
   return <div className="lesson-layout lesson-intro-layout">
     <header className="lesson-topbar">
       <button className="exit-lesson" onClick={onExit} aria-label="Vissza a tanulási útvonalhoz"><X size={27} /></button>
       <div className="intro-top-title"><span>1. LECKE</span><strong>Present Simple</strong></div>
-      <span className="intro-book-icon"><BookOpen size={25} /></span>
+      <div className={"reading-clock " + (readingComplete ? "is-complete" : "")} aria-label={readingComplete ? "Olvasás kész" : "Hátralévő idő: " + secondsLeft + " másodperc"}>
+        {readingComplete ? <CheckCircle2 size={23} /> : <><svg viewBox="0 0 44 44" aria-hidden="true"><circle className="reading-clock-track" cx="22" cy="22" r="18" /><circle className="reading-clock-progress" cx="22" cy="22" r="18" strokeDasharray={circumference} strokeDashoffset={circumference * progress} /></svg><span>{secondsLeft}</span></>}
+      </div>
     </header>
     <div className="intro-scroll-content">
       <div className="intro-hero">
@@ -199,24 +196,12 @@ function LessonIntro({ onExit, onStart, onReadComplete, onNextLevel, alreadyRead
       </section>
       <section className="lesson-note-block"><h2>4. Gyakori időhatározók</h2><p>Ezek gyakran jelzik, hogy Present Simple-t használunk:</p><div className="vocab-chips"><span>always – mindig</span><span>usually – általában</span><span>often – gyakran</span><span>sometimes – néha</span><span>never – soha</span><span>every day – minden nap</span></div></section>
       <section className="lesson-note-block"><h2>Gyors összefoglaló</h2><ul className="lesson-summary-list"><li>Szokás vagy tény → Present Simple</li><li>He / She / It → az állító ige általában -s végződést kap</li><li>Tagadás → don't / doesn't + alapige</li><li>Kérdés → Do / Does + alany + alapige?</li></ul></section>
-      <section className="future-media-card"><span><Lightbulb size={21} /></span><div><strong>Videók és illusztrációk</strong><p>Később ide kerülhetnek rövid magyarázó videók, nyelvtani ábrák és példamondat-illusztrációk.</p><small>Multimédiás tananyag előkészítve</small></div></section>
-      <section className="reading-timer-card">
-        {!readingComplete ? <>
-          <div className="reading-timer-heading"><span className="reading-timer-icon"><BookOpen size={20} /></span><div><strong>Olvasási idő</strong><p>Olvasd át a leckét, majd feloldhatod a következő szintet.</p></div></div>
-          <div className="timer-duration-options">
-            <button className={duration === 30 ? "selected" : ""} onClick={() => { setDuration(30); if (!timerStarted) setSecondsLeft(30) }} disabled={timerStarted}>30 másodperc</button>
-            <button className={duration === 60 ? "selected" : ""} onClick={() => { setDuration(60); if (!timerStarted) setSecondsLeft(60) }} disabled={timerStarted}>60 másodperc</button>
-          </div>
-          {timerStarted && <div className="reading-countdown"><span className="countdown-track"><span style={{ width: `${((duration - secondsLeft) / duration) * 100}%` }} /></span><strong>{secondsLeft} mp</strong></div>}
-          <button className="reading-timer-start" onClick={startReadingTimer} disabled={timerStarted}>{timerStarted ? "Olvasási idő folyamatban…" : "Olvasás indítása"}</button>
-        </> : <div className="reading-complete-state"><span className="reading-success-icon"><CheckCircle2 size={26} /></span><div><strong>Lecke elolvasva! +10 XP</strong><p>Jó munkát! A következő lecke most már feloldható.</p></div><button className="primary-action" onClick={onNextLevel}>Következő szint feloldása <ArrowRight size={19} /></button></div>}
-      </section>
-      <div className="intro-practice-note"><CheckCircle2 size={19} /><span>Ha szeretnéd, a tananyag után a gyakorlófeladatokat is elvégezheted.</span></div>
+      <figure className="lesson-illustration second-lesson-illustration"><img src="https://undraw.co/illustrations/reading-time.svg" alt="Olvasás és tanulás illusztráció" /><figcaption>Olvass, gondold át a példákat, és folytasd a tanulást.</figcaption></figure>
+      <div className="reading-inline-status">{readingComplete ? <><CheckCircle2 size={19} /><span>Tananyag elolvasva · +10 XP</span></> : <><BookOpen size={19} /><span>Olvasd át a tananyagot. A körben láthatod a hátralévő időt.</span></>}</div>
+      {readingComplete && <div className="reading-complete-state"><div><strong>Mehetünk tovább!</strong><p>A következő lecke most már feloldható.</p></div><button className="primary-action" onClick={onNextLevel}>Következő szint feloldása <ArrowRight size={19} /></button><button className="secondary-practice-action" onClick={onStart}>Gyakorlás indítása</button></div>}
     </div>
-    <footer className="lesson-action-bar intro-action-bar"><button className="primary-action" onClick={onStart}>Gyakorlás indítása <ArrowRight size={20} /></button></footer>
   </div>
 }
-
 function Lesson({ onExit, onComplete }: { onExit: () => void; onComplete: () => void }) {
   const [questionIndex, setQuestionIndex] = useState(0)
   const [selectedAnswer, setSelectedAnswer] = useState("")
