@@ -256,7 +256,6 @@ export default function App() {
       {screen === "task" && <TaskExercise
         lesson={activeLesson}
         taskIndex={activeTaskIndex}
-        alreadyAnswered={answeredTasks.includes(activeLesson.id + "-" + activeTaskIndex)}
         onExit={() => setScreen("home")}
         onComplete={() => { setStars((current) => current + (answeredTasks.includes(activeLesson.id + "-" + activeTaskIndex) ? 0 : 1)); setXp((current) => current + (answeredTasks.includes(activeLesson.id + "-" + activeTaskIndex) ? 0 : 5)); completeTask(activeLesson.id, activeTaskIndex); }}
         lives={lives}
@@ -374,8 +373,8 @@ function LessonIntro({ lesson, onExit, onReadComplete, onPractice, alreadyRead }
   </div>
 }
 
-function TaskExercise({ lesson, taskIndex, onExit, onComplete, alreadyAnswered, lives, onWrongAnswer, onNextQuestion, onOutOfLives }: {
-  lesson: LessonUnit; taskIndex: number; onExit: () => void; onComplete: () => void; alreadyAnswered: boolean;
+function TaskExercise({ lesson, taskIndex, onExit, onComplete, lives, onWrongAnswer, onNextQuestion, onOutOfLives }: {
+  lesson: LessonUnit; taskIndex: number; onExit: () => void; onComplete: () => void;
   lives: number; onWrongAnswer: () => void; onNextQuestion: (index: number) => void; onOutOfLives: () => void
 }) {
   const question = lesson.questions[taskIndex]
