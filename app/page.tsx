@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useEffect, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import {
   ArrowRight, BarChart3, BookOpen, Check, CheckCircle2,
   Flame, Heart, Lightbulb, Medal, RotateCcw, Trophy, UserRound,
@@ -499,8 +499,44 @@ function Profile({ completedCount, xp, userName, setUserName, avatar, setAvatar,
 function PageHeader({ title }: { title: string }) { return <header className="page-header"><div className="brand compact"><img src={foxIcon} alt="Evölingo róka" /><div><h1>Evölingo</h1></div></div><h1>{title}</h1></header> }
 function Nav({ screen, setScreen }: { screen: Screen; setScreen: (screen: Screen) => void }) {
   const items: [Screen, string, React.ElementType][] = [["home", "Tanulás", BookOpen], ["shop", "Bolt", ShoppingBag], ["leaderboard", "Ranglista", BarChart3], ["profile", "Profil", UserRound]]
+  const activeIndex = Math.max(0, items.findIndex(([id]) => id === screen))
+  const [dragIndex, setDragIndex] = useState<number | null>(null)
+  const dragStart = useRef<{ x: number; index: number; width: number } | null>(null)
+  const startIndicatorDrag = (event: React.PointerEvent<HTMLDivElement>) => {
+    const nav = event.currentTarget.parentElement
+    if (!nav) return
+    event.preventDefault()
+    dragStart.current = { x: event.clientX, index: activeIndex, width: nav.clientWidth / items.length }
+    setDragIndex(activeIndex)
+    event.currentTarget.setPointerCapture(event.pointerId)
+  }
+  const moveIndicatorDrag = (event: React.PointerEvent<HTMLDivElement>) => {
+    if (!dragStart.current) return
+    const delta = (event.clientX - dragStart.current.x) / dragStart.current.width
+    setDragIndex(Math.max(0, Math.min(items.length - 1, dragStart.current.index + delta)))
+  }
+  const finishIndicatorDrag = () => {
+    if (dragStart.current && dragIndex !== null) {
+      const index = Math.max(0, Math.min(items.length - 1, Math.round(dragIndex)))
+      setScreen(items[index][0])
+    }
+    dragStart.current = null
+    setDragIndex(null)
+  }
   return <nav className="bottom-nav">
-    <div className="nav-selection-indicator" aria-hidden="true" />
+    <div
+      className={"nav-selection-indicator " + (dragIndex !== null ? "is-dragging" : "")}
+      aria-label="Húzd jobbra vagy balra a kiválasztott fület"
+      role="slider"
+      aria-valuemin={0}
+      aria-valuemax={items.length - 1}
+      aria-valuenow={Math.round(dragIndex ?? activeIndex)}
+      style={{ transform: `translateX(calc(${(dragIndex ?? activeIndex) * 100}%))` }}
+      onPointerDown={startIndicatorDrag}
+      onPointerMove={moveIndicatorDrag}
+      onPointerUp={finishIndicatorDrag}
+      onPointerCancel={finishIndicatorDrag}
+    />
     {items.map(([id, label, Icon], index) => <button key={id} data-tab-index={index} className={screen === id ? "active" : ""} onClick={() => setScreen(id)} aria-current={screen === id ? "page" : undefined}><Icon size={23} /><span>{label}</span></button>)}
   </nav>
 }
