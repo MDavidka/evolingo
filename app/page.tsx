@@ -2,29 +2,15 @@
 
 import { useCallback, useEffect, useState } from "react"
 import {
-  ArrowRight, BarChart3, BookOpen, Check, CheckCircle2, ChevronRight, Flame,
-  Globe2, Heart, Lightbulb, Medal, RotateCcw, Trophy, UserRound,
-  X, Zap,
+  ArrowRight, BarChart3, BookOpen, Check, CheckCircle2, ChevronRight,
+  Flame, Globe2, Heart, Lightbulb, Medal, RotateCcw, Trophy, UserRound,
+  X, Zap, LockKeyhole, ClipboardCheck,
 } from "lucide-react"
 
 const foxIcon = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Image-D15751D4-6Ne8AGNrryN8wlvyBepC8VDGQkHTw4.jpeg"
-type Screen = "home" | "lessonIntro" | "lesson" | "worlds" | "leaderboard" | "profile"
-type World = { name: string; color: string; icon: string; progress: number }
-const worlds: World[] = [
-  { name: "English", color: "#ff7900", icon: "EN", progress: 32 },
-  { name: "Magyar", color: "#e94f64", icon: "HU", progress: 12 },
-  { name: "Español", color: "#4b8fe8", icon: "ES", progress: 0 },
-]
-const TASK_LIMIT = 100
-const taskNames = ["Present Simple", "Present Continuous", "Past Simple", "Past Continuous", "Future Simple", "Future Perfect", "Some and Any", "Much and Many", "Comparatives and Superlatives", "Conditionals"]
-const tasks = Array.from({ length: TASK_LIMIT }, (_, index) => ({ number: index + 1, title: taskNames[index] ?? `Task ${index + 1}`, inDevelopment: index >= taskNames.length }))
-const ranks = [
-  { name: "Sofia K.", xp: "2,480 XP", place: 1, color: "#f5ba33" },
-  { name: "Márton D.", xp: "2,210 XP", place: 2, color: "#a6b3bd" },
-  { name: "Liam R.", xp: "1,960 XP", place: 3, color: "#c88752" },
-  { name: "You", xp: "1,420 XP", place: 8, color: "#ff7900" },
-]
-
+type Screen = "home" | "lessonIntro" | "task" | "worlds" | "leaderboard" | "profile"
+type Example = { sentence: string; translation: string }
+type LessonSection = { title: string; body: string; rows?: [string, string][]; examples?: Example[]; tip?: string }
 type Question = {
   type: "choice" | "text" | "arrange"
   instruction: string
@@ -36,113 +22,309 @@ type Question = {
   explanation: string
   tip: string
 }
-const presentSimpleQuestions: Question[] = [
+type LessonUnit = { id: number; title: string; summary: string; sections: LessonSection[]; questions: Question[]; level: string }
+type World = { name: string; color: string; icon: string; progress: number }
+
+const worlds: World[] = [
+  { name: "English", color: "#ff7900", icon: "EN", progress: 32 },
+  { name: "Magyar", color: "#e94f64", icon: "HU", progress: 12 },
+  { name: "Español", color: "#4b8fe8", icon: "ES", progress: 0 },
+]
+
+const lessons: LessonUnit[] = [
   {
-    type: "choice",
-    instruction: "Choose the correct answer",
-    prompt: "My sister _____ coffee every morning.",
-    options: ["drink", "drinks", "is drinking", "drinking"],
-    answer: "drinks",
-    explanation: "With he, she, or it, we usually add -s or -es to the verb in the Present Simple.",
-    tip: "He / She / It → verb + s",
+    id: 1, title: "Present Simple", level: "A1", summary: "Szokások, napi rutinok és általános tények leírása.",
+    sections: [
+      { title: "Mikor használjuk?", body: "A Present Simple-t rendszeresen ismétlődő cselekvésekhez, szokásokhoz és általános igazságokhoz használjuk.", examples: [{ sentence: "I play football every Saturday.", translation: "Minden szombaton focizom." }, { sentence: "Water boils at 100°C.", translation: "A víz 100 °C-on forr." }] },
+      { title: "Állító mondatok", body: "Az I, you, we és they után az ige alapformája áll. He, she és it esetén az igéhez általában -s vagy -es végződés kerül.", rows: [["I / You / We / They", "play"], ["He / She / It", "plays"]], examples: [{ sentence: "She likes music.", translation: "Szereti a zenét." }, { sentence: "Tom watches TV after dinner.", translation: "Tom vacsora után tévét néz." }], tip: "Ha az alany he, she vagy it, ellenőrizd az ige végződését!" },
+      { title: "Tagadás és kérdés", body: "Tagadásnál don't vagy doesn't segédigét használunk. Kérdésnél a Do vagy Does kerül a mondat elejére. A segédige után az ige alapformában marad.", rows: [["Tagadás", "don't / doesn't + alapige"], ["Kérdés", "Do / Does + alany + alapige?"]], examples: [{ sentence: "He doesn't eat meat.", translation: "Nem eszik húst." }, { sentence: "Do you like pizza?", translation: "Szereted a pizzát?" }], tip: "Helyesen: She doesn't like it. Nem: She doesn't likes it." },
+      { title: "Gyakori időhatározók", body: "Az always, usually, often, sometimes, never és every day gyakran fordul elő Present Simple-ben.", examples: [{ sentence: "I usually get up at seven.", translation: "Általában hétkor kelek." }] },
+    ],
+    questions: [
+      { type: "choice", instruction: "Válaszd ki a helyes alakot", prompt: "My sister _____ coffee every morning.", options: ["drink", "drinks", "is drinking", "drinking"], answer: "drinks", explanation: "A my sister jelentése she, ezért az igéhez -s végződés kell.", tip: "He / She / It → ige + s" },
+      { type: "text", instruction: "Egészítsd ki a mondatot", prompt: "I _____ breakfast at 7 a.m.", answer: "eat", accepted: ["have"], explanation: "Az I után az ige alapformáját használjuk.", tip: "I / You / We / They → alapige" },
+      { type: "arrange", instruction: "Rakd helyes sorrendbe a szavakat", prompt: "Ő általában gyalog jár iskolába.", words: ["school.", "usually", "walks", "He", "to"], answer: "He usually walks to school.", explanation: "A sorrend: alany + gyakoriságot jelölő szó + ige + a mondat többi része.", tip: "He usually walks… — a usually az ige előtt áll." },
+      { type: "choice", instruction: "Melyik mondat helyes?", prompt: "Válaszd ki a helyes mondatot.", options: ["She like music.", "She likes music.", "She liking music.", "She is like music."], answer: "She likes music.", explanation: "A she egyes szám harmadik személy, ezért a like alakja likes.", tip: "Figyeld meg, ki végzi a cselekvést." },
+    ],
   },
   {
-    type: "text",
-    instruction: "Complete the sentence",
-    prompt: "I _____ breakfast at 7 a.m.",
-    answer: "eat",
-    accepted: ["have"],
-    explanation: "Use the base form of the verb with I, you, we, and they.",
-    tip: "I / You / We / They → base verb",
+    id: 2, title: "Present Continuous", level: "A1", summary: "Éppen most zajló cselekvések és átmeneti helyzetek.",
+    sections: [
+      { title: "Mikor használjuk?", body: "A Present Continuous olyan cselekvést ír le, amely éppen most történik, vagy csak átmenetileg igaz.", examples: [{ sentence: "I am reading now.", translation: "Most éppen olvasok." }, { sentence: "She is staying with her aunt this week.", translation: "Ezen a héten a nagynénjénél lakik." }] },
+      { title: "A mondat szerkezete", body: "A szerkezet: alany + am / is / are + ige -ing alakja.", rows: [["I", "am working"], ["He / She / It", "is working"], ["You / We / They", "are working"]], examples: [{ sentence: "They are playing outside.", translation: "Kint játszanak." }], tip: "Ne hagyd ki a létigét: I am studying." },
+      { title: "Helyesírás -ing előtt", body: "A legtöbb igéhez -ing kerül. A néma -e általában kiesik (make → making), és egyes rövid igéknél a végső mássalhangzó megkettőződik (run → running).", examples: [{ sentence: "He is making a cake.", translation: "Éppen süteményt készít." }, { sentence: "I am running.", translation: "Éppen futok." }] },
+    ],
+    questions: [
+      { type: "choice", instruction: "Válaszd ki a megfelelő alakot", prompt: "Look! The dog _____ in the garden.", options: ["runs", "is running", "run", "running"], answer: "is running", explanation: "A Look! jelzi, hogy a cselekvés éppen most történik.", tip: "Most történik → am / is / are + -ing" },
+      { type: "text", instruction: "Írd be a hiányzó segédigét", prompt: "They _____ watching a film now.", answer: "are", explanation: "A they alanyhoz az are tartozik.", tip: "They are…" },
+      { type: "arrange", instruction: "Rakd össze a mondatot", prompt: "Éppen vacsorát készítünk.", words: ["dinner.", "making", "are", "We"], answer: "We are making dinner.", explanation: "A we után are áll, majd a making igealak következik.", tip: "Alany + are + ige-ing" },
+      { type: "choice", instruction: "Válaszd ki a helyes mondatot", prompt: "Which sentence is correct?", options: ["He is make lunch.", "He making lunch.", "He is making lunch.", "He are making lunch."], answer: "He is making lunch.", explanation: "A he alanyhoz is kell, és a make alakja making lesz.", tip: "He / She / It → is + -ing" },
+    ],
   },
   {
-    type: "arrange",
-    instruction: "Build the sentence",
-    prompt: "Ő általában gyalog jár iskolába.",
-    words: ["school.", "usually", "walks", "He", "to"],
-    answer: "He usually walks to school.",
-    explanation: "In a normal English sentence, the subject comes before the verb: He + usually + walks.",
-    tip: "Subject + frequency word + verb + rest",
+    id: 3, title: "Past Simple", level: "A1–A2", summary: "Lezárult múltbeli események és időpontok.",
+    sections: [
+      { title: "Mikor használjuk?", body: "A Past Simple olyan eseményről szól, amely a múltban történt és lezárult. Gyakori időjelölők: yesterday, last week, two days ago.", examples: [{ sentence: "We visited grandma yesterday.", translation: "Tegnap meglátogattuk a nagymamát." }] },
+      { title: "Szabályos és rendhagyó igék", body: "A szabályos igék általában -ed végződést kapnak. A rendhagyó igék alakját külön meg kell tanulni.", rows: [["play → played", "játszott"], ["visit → visited", "meglátogatott"], ["go → went", "ment"], ["see → saw", "látott"]], examples: [{ sentence: "She went home early.", translation: "Korán hazament." }] },
+      { title: "Tagadás és kérdés", body: "A did not / didn't után alapige áll. Kérdésben a Did kerül az alany elé, az ige szintén alapformájú.", examples: [{ sentence: "I didn't watch TV.", translation: "Nem néztem tévét." }, { sentence: "Did you call me?", translation: "Felhívtál?" }], tip: "Helyes: Did she go? Nem: Did she went?" },
+    ],
+    questions: [
+      { type: "choice", instruction: "Válaszd ki a múlt idejű alakot", prompt: "Yesterday, we _____ football.", options: ["play", "played", "plays", "playing"], answer: "played", explanation: "A yesterday múltbeli időpontot jelöl, a szabályos play alakja played.", tip: "Szabályos ige → általában -ed" },
+      { type: "text", instruction: "Egészítsd ki", prompt: "Last year, I _____ to London.", answer: "went", explanation: "A go rendhagyó múlt idejű alakja went.", tip: "go → went" },
+      { type: "arrange", instruction: "Állítsd össze a kérdést", prompt: "Tegnap láttad a filmet?", words: ["the film?", "Did", "you", "see"], answer: "Did you see the film?", explanation: "A Did után az alany és az alapige következik.", tip: "Did + alany + alapige?" },
+      { type: "choice", instruction: "Melyik mondat helyes?", prompt: "Válaszd ki a helyes múlt idejű tagadást.", options: ["He didn't went.", "He doesn't went.", "He didn't go.", "He not go."], answer: "He didn't go.", explanation: "A didn't után a go alapformája áll.", tip: "didn't + alapige" },
+    ],
   },
   {
-    type: "choice",
-    instruction: "Select the correct sentence",
-    prompt: "Which sentence is correct?",
-    options: ["She like music.", "She likes music.", "She liking music.", "She is like music."],
-    answer: "She likes music.",
-    explanation: "The subject 'she' is third-person singular, so 'like' becomes 'likes'.",
-    tip: "Check who is doing the action.",
+    id: 4, title: "Past Continuous", level: "A2", summary: "A múlt egy adott pillanatában éppen folyamatban lévő cselekvések.",
+    sections: [
+      { title: "Mikor használjuk?", body: "A Past Continuous azt mutatja meg, hogy valami egy múltbeli pillanatban éppen zajlott. Gyakran egy rövidebb esemény szakítja félbe.", examples: [{ sentence: "I was sleeping at ten.", translation: "Tíz órakor éppen aludtam." }, { sentence: "I was reading when he called.", translation: "Olvastam, amikor felhívott." }] },
+      { title: "Szerkezet", body: "Alany + was / were + ige -ing alakja.", rows: [["I / He / She / It", "was reading"], ["You / We / They", "were reading"]], tip: "Az egyes szám első és harmadik személyhez was, a többiekhez were tartozik." },
+      { title: "When és while", body: "A while gyakran a folyamatban lévő cselekvést vezeti be. A when sokszor a közben bekövetkező esemény előtt áll.", examples: [{ sentence: "While I was cooking, he arrived.", translation: "Miközben főztem, megérkezett." }] },
+    ],
+    questions: [
+      { type: "choice", instruction: "Válaszd ki a megfelelő alakot", prompt: "At 8 p.m. yesterday, I _____ a book.", options: ["read", "was reading", "were reading", "am reading"], answer: "was reading", explanation: "Az at 8 p.m. yesterday egy múltbeli pillanatot jelöl.", tip: "was / were + ige-ing" },
+      { type: "text", instruction: "Írd be a hiányzó szót", prompt: "They _____ playing when it started to rain.", answer: "were", explanation: "A they alanyhoz were tartozik.", tip: "They were…" },
+      { type: "arrange", instruction: "Rakd össze a mondatot", prompt: "Éppen főztem, amikor megérkeztél.", words: ["you", "arrived.", "was", "I", "cooking", "when"], answer: "I was cooking when you arrived.", explanation: "A hosszabb folyamat: I was cooking; a rövidebb esemény: you arrived.", tip: "Folyamatban lévő múlt + when + lezárt esemény" },
+      { type: "choice", instruction: "Válaszd ki a helyes mondatot", prompt: "Which is correct?", options: ["They was working.", "They were working.", "They are working yesterday.", "They were work."], answer: "They were working.", explanation: "A they alanyhoz were és -ing alak tartozik.", tip: "They / we / you → were" },
+    ],
   },
   {
-    type: "text",
-    instruction: "Fill in the missing word",
-    prompt: "The sun _____ in the east.",
-    answer: "rises",
-    explanation: "We use the Present Simple for facts and things that are generally true.",
-    tip: "A fact that is always true → Present Simple",
+    id: 5, title: "Future Simple", level: "A2", summary: "Jövőbeli döntések, ígéretek és jóslatok a will segítségével.",
+    sections: [
+      { title: "Mikor használjuk?", body: "A will gyakori hirtelen döntéseknél, ígéreteknél, felajánlásoknál és véleményen alapuló jóslatoknál.", examples: [{ sentence: "I'll help you.", translation: "Segítek neked." }, { sentence: "I think it will rain.", translation: "Azt hiszem, esni fog." }] },
+      { title: "Szerkezet", body: "Állító mondatban alany + will + alapige. A will minden alannyal ugyanaz marad.", rows: [["Állítás", "She will come."], ["Tagadás", "She won't come."], ["Kérdés", "Will she come?"]], tip: "A will után nem teszünk -s vagy -ed végződést." },
+      { title: "Will vagy going to?", body: "A will gyakran azonnali döntés vagy jóslat. A going to inkább előre eltervezett szándékot vagy látható bizonyítékból levont következtetést jelöl.", examples: [{ sentence: "I'll answer the phone.", translation: "Felveszem a telefont. (Most döntöttem.)" }, { sentence: "Look at those clouds! It's going to rain.", translation: "Nézd a felhőket! Esni fog." }] },
+    ],
+    questions: [
+      { type: "choice", instruction: "Válaszd ki a jövő idejű alakot", prompt: "I think you _____ the test.", options: ["pass", "passed", "will pass", "will passed"], answer: "will pass", explanation: "A will után az ige alapformája, a pass áll.", tip: "will + alapige" },
+      { type: "text", instruction: "Egészítsd ki", prompt: "Don't worry. I _____ help you.", answer: "will", explanation: "A will segít jövőbeli ígéret kifejezésében.", tip: "I will help you." },
+      { type: "arrange", instruction: "Állítsd össze a mondatot", prompt: "Holnap felhívlak.", words: ["tomorrow.", "will", "call", "I", "you"], answer: "I will call you tomorrow.", explanation: "Alany + will + alapige + tárgy + időhatározó.", tip: "A will után call áll, nem called." },
+      { type: "choice", instruction: "Melyik kérdés helyes?", prompt: "Ask about the future.", options: ["Will they come?", "Do they will come?", "Will they came?", "They will come?"], answer: "Will they come?", explanation: "Kérdésben a will kerül az alany elé, utána alapige jön.", tip: "Will + alany + alapige?" },
+    ],
+  },
+  {
+    id: 6, title: "Future Perfect", level: "B1", summary: "Egy jövőbeli időpontig befejeződő cselekvések.",
+    sections: [
+      { title: "Jelentés", body: "A Future Perfect azt fejezi ki, hogy egy cselekvés egy megadott jövőbeli időpont előtt vagy addigra befejeződik.", examples: [{ sentence: "By Friday, I will have finished the project.", translation: "Péntekre befejezem a projektet." }] },
+      { title: "Szerkezet", body: "Alany + will have + az ige harmadik alakja (past participle). Minden alannyal ugyanaz a szerkezet.", rows: [["Állítás", "will have finished"], ["Tagadás", "won't have finished"], ["Kérdés", "Will you have finished?"]], examples: [{ sentence: "She will have left by noon.", translation: "Délre már elmegy." }] },
+      { title: "Időjelölők", body: "Gyakori a by, by the time, before és by next year. Ezek a határidőt vagy a jövőbeli viszonyítási pontot jelölik.", examples: [{ sentence: "By 2030, they will have built the bridge.", translation: "2030-ra megépítik a hidat." }], tip: "A will have után a befejezett melléknévi igenév alakja áll: done, seen, written." },
+    ],
+    questions: [
+      { type: "choice", instruction: "Válaszd ki a helyes szerkezetet", prompt: "By 6 p.m., she _____ her work.", options: ["will finish", "will have finished", "has finished", "will finished"], answer: "will have finished", explanation: "A Future Perfect szerkezete will have + past participle.", tip: "will have + ige harmadik alakja" },
+      { type: "text", instruction: "Írd be a hiányzó segédigét", prompt: "By Monday, we will _____ completed the task.", answer: "have", explanation: "A Future Perfect szerkezetéhez a will után have kell.", tip: "will have completed" },
+      { type: "arrange", instruction: "Rakd sorrendbe", prompt: "Délre befejezem a munkát.", words: ["noon.", "have", "finished", "will", "I", "by"], answer: "I will have finished by noon.", explanation: "Alany + will have + finished + határidő.", tip: "A by noon jelzi, hogy addigra kész lesz." },
+      { type: "choice", instruction: "Melyik mondat helyes?", prompt: "Choose the correct form.", options: ["He will has left.", "He will have leave.", "He will have left.", "He has will left."], answer: "He will have left.", explanation: "A will have után a leave rendhagyó harmadik alakja, left áll.", tip: "leave → left → left" },
+    ],
+  },
+  {
+    id: 7, title: "Some and Any", level: "A2", summary: "Mennyiségek és határozatlan mennyiségű dolgok kifejezése.",
+    sections: [
+      { title: "Some", body: "A some leginkább állító mondatokban használatos megszámlálható többes számú vagy megszámlálhatatlan főnevekkel.", examples: [{ sentence: "There are some apples.", translation: "Van néhány alma." }, { sentence: "I'd like some water.", translation: "Kérek egy kis vizet." }] },
+      { title: "Any", body: "Az any gyakran kérdésekben és tagadó mondatokban fordul elő.", examples: [{ sentence: "Are there any apples?", translation: "Van alma?" }, { sentence: "We don't have any milk.", translation: "Nincs tejünk." }] },
+      { title: "Ajánlatok és kérések", body: "Kérésekben és felajánlásokban a some szintén gyakori, ha pozitív választ várunk vagy udvariasan kínálunk valamit.", examples: [{ sentence: "Would you like some tea?", translation: "Kérsz teát?" }], tip: "Some = gyakran állítás / kínálás; any = gyakran kérdés / tagadás." },
+    ],
+    questions: [
+      { type: "choice", instruction: "Válaszd ki a helyes szót", prompt: "There are _____ books on the table.", options: ["any", "some", "much", "a"], answer: "some", explanation: "Állító mondatban általában some szerepel.", tip: "Állító mondat → gyakran some" },
+      { type: "text", instruction: "Írd be a hiányzó szót", prompt: "We don't have _____ bread.", answer: "any", explanation: "Tagadásban általában any-t használunk.", tip: "don't have any…" },
+      { type: "arrange", instruction: "Rakd össze a kérdést", prompt: "Van egy kis teád?", words: ["tea?", "you", "Do", "have", "any"], answer: "Do you have any tea?", explanation: "Kérdésben a Do + alany + ige + any + főnév szerkezetet használjuk.", tip: "Do you have any…?" },
+      { type: "choice", instruction: "Válaszd ki a természetes ajánlatot", prompt: "You are offering a drink.", options: ["Would you like any tea?", "Would you like some tea?", "Would you like many tea?", "Would like some teas you?"], answer: "Would you like some tea?", explanation: "Udvarias kínálásban természetes a some.", tip: "Ajánlat vagy kérés → gyakran some" },
+    ],
+  },
+  {
+    id: 8, title: "Much and Many", level: "A2", summary: "Megszámlálható és megszámlálhatatlan főnevek mennyisége.",
+    sections: [
+      { title: "Many", body: "A many megszámlálható, többes számú főnevekkel áll.", examples: [{ sentence: "How many books have you got?", translation: "Hány könyved van?" }] },
+      { title: "Much", body: "A much megszámlálhatatlan főnevekkel használatos, például water, time, money vagy milk.", examples: [{ sentence: "How much water do you drink?", translation: "Mennyi vizet iszol?" }] },
+      { title: "Állításokban", body: "A much és many gyakoribb kérdésben és tagadásban. Állító mondatokban a lot of mindkét főnévtípussal természetes lehet.", rows: [["many", "many cars"], ["much", "much time"], ["a lot of", "a lot of cars / water"]], tip: "Tedd fel a kérdést: meg tudom számolni darabonként? Igen → many; nem → much." },
+    ],
+    questions: [
+      { type: "choice", instruction: "Válaszd ki a megfelelő szót", prompt: "How _____ apples do we need?", options: ["much", "many", "any", "some"], answer: "many", explanation: "Az apples megszámlálható többes szám, ezért many kell.", tip: "many + megszámlálható főnév" },
+      { type: "text", instruction: "Egészítsd ki", prompt: "How _____ time do we have?", answer: "much", explanation: "A time megszámlálhatatlan főnév, ezért much használatos.", tip: "much + megszámlálhatatlan főnév" },
+      { type: "arrange", instruction: "Rakd sorrendbe a kérdést", prompt: "Mennyi pénzed van?", words: ["money?", "much", "you", "How", "do", "have"], answer: "How much money do you have?", explanation: "How much + főnév + do + alany + ige.", tip: "How much money…?" },
+      { type: "choice", instruction: "Válaszd ki a helyes mondatot", prompt: "Which sentence is correct?", options: ["There are much cars.", "We don't have many time.", "There isn't much milk.", "How many sugar?"], answer: "There isn't much milk.", explanation: "A milk megszámlálhatatlan, ezért much illik hozzá.", tip: "milk → much" },
+    ],
+  },
+  {
+    id: 9, title: "Comparatives and Superlatives", level: "A2", summary: "Összehasonlítás: két dolog és egy csoport kiemelkedő tagja.",
+    sections: [
+      { title: "Középfok", body: "Rövid mellékneveknél általában -er kerül a végére. Hosszabb mellékneveknél a more + melléknév szerkezetet használjuk.", examples: [{ sentence: "My bike is faster than yours.", translation: "A biciklim gyorsabb, mint a tiéd." }, { sentence: "This book is more interesting.", translation: "Ez a könyv érdekesebb." }] },
+      { title: "Felsőfok", body: "Rövid mellékneveknél -est, hosszabbaknál the most + melléknév használatos. A felsőfok előtt általában the áll.", rows: [["fast", "faster — the fastest"], ["interesting", "more interesting — the most interesting"], ["good", "better — the best"]], tip: "A good rendhagyó alakjai: good – better – the best." },
+      { title: "A than használata", body: "Két dolgot összehasonlítva a középfok után gyakran than következik.", examples: [{ sentence: "Anna is taller than Ben.", translation: "Anna magasabb Bennél." }] },
+    ],
+    questions: [
+      { type: "choice", instruction: "Válaszd ki a helyes középfokot", prompt: "A train is _____ than a bike.", options: ["fast", "faster", "fastest", "more fast"], answer: "faster", explanation: "A fast rövid melléknév, középfoka faster.", tip: "Rövid melléknév → általában -er" },
+      { type: "text", instruction: "Írd be a hiányzó szót", prompt: "This is the _____ (good) day of my life.", answer: "best", explanation: "A good felsőfoka the best.", tip: "good → better → the best" },
+      { type: "arrange", instruction: "Rakd össze a mondatot", prompt: "Ez a feladat nehezebb, mint az előző.", words: ["than", "harder", "This", "the", "is", "last."], answer: "This is harder than the last.", explanation: "Alany + létige + középfok + than + összehasonlított dolog.", tip: "hard → harder" },
+      { type: "choice", instruction: "Válaszd ki a helyes felsőfokot", prompt: "This is _____ building in town.", options: ["the tallest", "taller", "the most tall", "tallest"], answer: "the tallest", explanation: "A tall rövid melléknév; felsőfoka the tallest.", tip: "Rövid melléknév → the + -est" },
+    ],
+  },
+  {
+    id: 10, title: "Conditionals", level: "B1", summary: "Feltételes mondatok: valószínű jövőbeli helyzetek.",
+    sections: [
+      { title: "First Conditional", body: "A First Conditional reális vagy lehetséges jövőbeli feltételről és annak következményéről szól.", examples: [{ sentence: "If it rains, we'll stay home.", translation: "Ha esik, otthon maradunk." }] },
+      { title: "Szerkezet", body: "If + Present Simple, will + alapige. Az if-es mellékmondatban általában nem használunk will-t.", rows: [["Feltétel", "If + Present Simple"], ["Eredmény", "will + alapige"]], examples: [{ sentence: "If you study, you will pass.", translation: "Ha tanulsz, át fogsz menni." }], tip: "Helyesen: If it rains, we will stay. Nem: If it will rain…" },
+      { title: "A sorrend változhat", body: "Az if-es rész állhat a mondat elején vagy a végén. Ha az if-es rész kerül előre, általában vessző választja el a főmondattól.", examples: [{ sentence: "We'll go out if the weather is nice.", translation: "Elmegyünk, ha szép lesz az idő." }] },
+    ],
+    questions: [
+      { type: "choice", instruction: "Válaszd ki a helyes alakot", prompt: "If it _____, we'll stay at home.", options: ["will rain", "rains", "rain", "rained"], answer: "rains", explanation: "Az if-es részben Present Simple áll, nem will.", tip: "If + Present Simple" },
+      { type: "text", instruction: "Egészítsd ki", prompt: "If you study, you _____ pass the test.", answer: "will", explanation: "A következményt a főmondatban will + alapige fejezi ki.", tip: "will + alapige" },
+      { type: "arrange", instruction: "Állítsd össze a mondatot", prompt: "Ha sietsz, eléred a buszt.", words: ["the bus.", "catch", "you", "will", "If", "hurry,"], answer: "If you hurry, you will catch the bus.", explanation: "If + alany + Present Simple, majd will + alapige.", tip: "Az if-es részben ne használj will-t." },
+      { type: "choice", instruction: "Melyik mondat helyes?", prompt: "Choose the correct First Conditional.", options: ["If she will call, I answer.", "If she calls, I'll answer.", "If she called, I'll answer.", "If she call, I will answered."], answer: "If she calls, I'll answer.", explanation: "If + Present Simple, a főmondatban will + alapige.", tip: "calls + will answer" },
+    ],
   },
 ]
 
+const placeholders = Array.from({ length: 90 }, (_, index) => ({ id: index + 11, title: "Lecke " + (index + 11), inDevelopment: true }))
+const pathItems = [...lessons, ...placeholders]
+const ranks = [
+  { name: "Sofia K.", xp: "2,480 XP", place: 1, color: "#b0b7bf" },
+  { name: "Márton D.", xp: "2,210 XP", place: 2, color: "#b0b7bf" },
+  { name: "Liam R.", xp: "1,960 XP", place: 3, color: "#b0b7bf" },
+  { name: "You", xp: "1,420 XP", place: 8, color: "#ff7900" },
+]
 const normalizeAnswer = (value: string) => value.toLowerCase().trim().replace(/[.!?]+$/g, "").replace(/\s+/g, " ")
 
 export default function App() {
   const [screen, setScreen] = useState<Screen>("home")
   const [selectedWorld, setSelectedWorld] = useState(worlds[0])
-  const [completedTasks, setCompletedTasks] = useState<number[]>([])
+  const [activeLessonId, setActiveLessonId] = useState(1)
+  const [activeTaskIndex, setActiveTaskIndex] = useState(0)
   const [readLessons, setReadLessons] = useState<number[]>([])
-  const [xp, setXp] = useState(1420)
-  const handleReadComplete = useCallback(() => {
-    if (readLessons.includes(1)) return
-    setReadLessons((previous) => previous.includes(1) ? previous : [...previous, 1])
-    setXp((current) => current + 10)
-  }, [readLessons])
+  const [completedLessons, setCompletedLessons] = useState<number[]>([])
+  const [answeredTasks, setAnsweredTasks] = useState<string[]>([])
+  const [xp, setXp] = useState(0)
   const [notice, setNotice] = useState("")
-  const finishLesson = () => {
-    setCompletedTasks((previous) => previous.includes(1) ? previous : [...previous, 1])
-    setScreen("home")
+  const activeLesson = lessons.find((lesson) => lesson.id === activeLessonId) ?? lessons[0]
+  const handleReadComplete = useCallback((lessonId: number) => {
+    setReadLessons((previous) => {
+      if (previous.includes(lessonId)) return previous
+      return [...previous, lessonId]
+    })
+    setXp((current) => current + (readLessons.includes(lessonId) ? 0 : 10))
+  }, [readLessons])
+  const openLesson = (lessonId: number) => {
+    setActiveLessonId(lessonId)
+    setScreen("lessonIntro")
   }
-  return <main className={`app-shell ${(screen === "lesson" || screen === "lessonIntro") ? "lesson-open" : ""}`}>
-    <section className={`screen-content ${(screen === "lesson" || screen === "lessonIntro") ? "lesson-page" : ""}`}>
-      {screen === "home" && <Home completedTasks={completedTasks} readLessons={readLessons} onStart={(number) => {
-        if (number === 1) setScreen("lessonIntro")
-        else setNotice("This lesson is being prepared. Present Simple is ready to practise!")
-      }} notice={notice} clearNotice={() => setNotice("")} />}
-      {screen === "lessonIntro" && <LessonIntro onExit={() => setScreen("home")} onStart={() => setScreen("lesson")} alreadyRead={readLessons.includes(1)} onReadComplete={handleReadComplete} onNextLevel={() => { setCompletedTasks((previous) => previous.includes(1) ? previous : [...previous, 1]); setScreen("home") }} />}
-      {screen === "lesson" && <Lesson onExit={() => setScreen("lessonIntro")} onComplete={finishLesson} />}
+  const openTask = (lessonId: number, taskIndex: number) => {
+    setActiveLessonId(lessonId)
+    setActiveTaskIndex(taskIndex)
+    const isUnlocked = lessonId === 1 || completedLessons.includes(lessonId - 1)
+    if (!isUnlocked) {
+      setNotice("Először fejezd be az előző leckét!")
+      setScreen("home")
+      return
+    }
+    if (!readLessons.includes(lessonId)) {
+      setScreen("lessonIntro")
+      setNotice("Előbb olvasd át a leckét; utána megnyílnak a feladatok.")
+      return
+    }
+    setScreen("task")
+  }
+  const completeTask = (lessonId: number, taskIndex: number) => {
+    const taskKey = lessonId + "-" + taskIndex
+    const nextAnswered = answeredTasks.includes(taskKey) ? answeredTasks : [...answeredTasks, taskKey]
+    setAnsweredTasks(nextAnswered)
+    setXp((current) => current + (answeredTasks.includes(taskKey) ? 0 : 5))
+    const lesson = lessons.find((item) => item.id === lessonId)
+    if (lesson && lesson.questions.every((_, index) => nextAnswered.includes(lessonId + "-" + index))) {
+      setCompletedLessons((previous) => previous.includes(lessonId) ? previous : [...previous, lessonId])
+    }
+    setScreen("home")
+    setNotice("Feladat elvégezve! " + (answeredTasks.includes(taskKey) ? "" : "+5 XP"))
+  }
+  return <main className={"app-shell " + ((screen === "lessonIntro" || screen === "task") ? "lesson-open" : "")}>
+    <section className={"screen-content " + ((screen === "lessonIntro" || screen === "task") ? "lesson-page" : "")}>
+      {screen === "home" && <Home
+        readLessons={readLessons}
+        completedLessons={completedLessons}
+        answeredTasks={answeredTasks}
+        notice={notice}
+        clearNotice={() => setNotice("")}
+        onOpenLesson={(id) => openLesson(id)}
+        onOpenTask={(lessonId, index) => openTask(lessonId, index)}
+      />}
+      {screen === "lessonIntro" && <LessonIntro
+        lesson={activeLesson}
+        alreadyRead={readLessons.includes(activeLesson.id)}
+        onExit={() => { setNotice(""); setScreen("home") }}
+        onReadComplete={() => handleReadComplete(activeLesson.id)}
+        onPractice={() => { setScreen("home"); setNotice("A feladatok megnyíltak — válassz egy narancssárga pontot!") }}
+      />}
+      {screen === "task" && <TaskExercise
+        lesson={activeLesson}
+        taskIndex={activeTaskIndex}
+        alreadyAnswered={answeredTasks.includes(activeLesson.id + "-" + activeTaskIndex)}
+        onExit={() => setScreen("home")}
+        onComplete={() => completeTask(activeLesson.id, activeTaskIndex)}
+      />}
       {screen === "worlds" && <Worlds selected={selectedWorld} setSelected={setSelectedWorld} />}
       {screen === "leaderboard" && <Leaderboard />}
-      {screen === "profile" && <Profile completedCount={completedTasks.length} xp={xp} /> }
+      {screen === "profile" && <Profile completedCount={completedLessons.length} xp={xp} />}
     </section>
-    {screen !== "lesson" && screen !== "lessonIntro" && <Nav screen={screen} setScreen={setScreen} />}
+    {screen !== "lessonIntro" && screen !== "task" && <Nav screen={screen} setScreen={setScreen} />}
   </main>
 }
 
 function Brand() { return <div className="brand"><img src={foxIcon} alt="Evölingo fox mascot" /><div><h1>Evölingo</h1></div></div> }
 
-function Home({ completedTasks, readLessons, onStart, notice, clearNotice }: { completedTasks: number[]; readLessons: number[]; onStart: (number: number) => void; notice: string; clearNotice: () => void }) {
-  const nextUnlocked = completedTasks.includes(1) || readLessons.includes(1) ? 2 : 1
+function Home({ readLessons, completedLessons, answeredTasks, notice, clearNotice, onOpenLesson, onOpenTask }: {
+  readLessons: number[]; completedLessons: number[]; answeredTasks: string[]; notice: string; clearNotice: () => void
+  onOpenLesson: (id: number) => void; onOpenTask: (lessonId: number, index: number) => void
+}) {
   return <>
     <header className="app-header home-header"><Brand /><div className="health"><Heart fill="currentColor" size={20} /><strong>5</strong></div></header>
-    <div className="section-heading home-heading"><div><p className="eyebrow">ENGLISH</p><h2>Your learning path</h2></div></div>
+    <div className="section-heading home-heading"><div><p className="eyebrow">ANGOL</p><h2>Tanulási útvonal</h2></div></div>
     {notice && <button className="inline-notice" onClick={clearNotice}><span>{notice}</span><X size={16} /></button>}
-    <div className="task-path">{tasks.map((task) => {
-      const completed = completedTasks.includes(task.number)
-      const unlocked = !task.inDevelopment && (task.number === 1 || task.number === nextUnlocked)
-      return <TaskNode key={task.number} number={task.number} title={task.title} inDevelopment={task.inDevelopment} unlocked={unlocked || completed} completed={completed} onClick={() => onStart(task.number)} />
-    })}</div>
+    <div className="learning-path">
+      {pathItems.map((item) => {
+        const lesson = "questions" in item ? item as LessonUnit : null
+        const unlocked = item.id === 1 || completedLessons.includes(item.id - 1)
+        const read = readLessons.includes(item.id)
+        const complete = completedLessons.includes(item.id)
+        if (!lesson) return <div className="future-path-node" key={item.id}><span className="future-book-dot"><LockKeyhole size={23} /></span><div><strong>{item.title}</strong><span>Kidolgozás alatt</span></div></div>
+        return <article className={"path-lesson " + (unlocked ? "path-lesson-open" : "path-lesson-locked") + (complete ? " path-lesson-complete" : "")} key={lesson.id}>
+          <div className="path-lesson-main">
+            <button className="path-lesson-book" disabled={!unlocked} onClick={() => onOpenLesson(lesson.id)} aria-label={"Tananyag: " + lesson.title}>
+              <BookOpen size={25} />
+              {read && <span className="lesson-read-mark"><Check size={11} /></span>}
+            </button>
+            <button className="path-lesson-title" disabled={!unlocked} onClick={() => onOpenLesson(lesson.id)}>
+              <span className="path-lesson-overline">LECKE {String(lesson.id).padStart(2, "0")} · {lesson.level}</span>
+              <strong>{lesson.title}</strong>
+              <span>{lesson.summary}</span>
+            </button>
+            {complete && <span className="lesson-completed-badge"><CheckCircle2 size={17} /></span>}
+          </div>
+          <div className="path-task-row">
+            <span className="path-task-caption"><ClipboardCheck size={14} /> FELADATOK</span>
+            <div className="path-task-dots">
+              {lesson.questions.map((_, index) => {
+                const answered = answeredTasks.includes(lesson.id + "-" + index)
+                const taskOpen = unlocked && read
+                return <button
+                  key={index}
+                  className={"path-task-dot " + (answered ? "task-answered" : taskOpen ? "task-available" : "task-locked")}
+                  disabled={!unlocked}
+                  onClick={() => onOpenTask(lesson.id, index)}
+                  aria-label={lesson.title + " — " + (index + 1) + ". feladat" + (answered ? ", megoldva" : "")}
+                  title={(index + 1) + ". feladat" + (answered ? " · Megoldva" : "")}
+                >{answered ? <Check size={15} /> : taskOpen ? index + 1 : <LockKeyhole size={12} />}</button>
+              })}
+            </div>
+            <span className="task-completion-count">{lesson.questions.filter((_, index) => answeredTasks.includes(lesson.id + "-" + index)).length}/{lesson.questions.length}</span>
+          </div>
+        </article>
+      })}
+    </div>
   </>
 }
 
-function TaskNode({ number, title, unlocked, completed, inDevelopment, onClick }: { number: number; title: string; unlocked: boolean; completed: boolean; inDevelopment: boolean; onClick: () => void }) {
-  const Icon = BookOpen
-  return <button className={`task-node ${unlocked ? "unlocked" : "locked"} ${completed ? "completed" : ""}`} disabled={!unlocked} onClick={onClick} aria-label={inDevelopment ? `${title}, Kidolgozás alatt` : title}>
-    <span className="task-dot"><Icon size={24} strokeWidth={2.25} /></span>
-    <span className="task-labels"><span className="task-name">{title}</span>{inDevelopment && <span className="task-status">Kidolgozás alatt</span>}</span>
-  </button>
-}
-
-
-function LessonIntro({ onExit, onStart, onReadComplete, onNextLevel, alreadyRead }: { onExit: () => void; onStart: () => void; onReadComplete: () => void; onNextLevel: () => void; alreadyRead: boolean }) {
+function LessonIntro({ lesson, onExit, onReadComplete, onPractice, alreadyRead }: {
+  lesson: LessonUnit; onExit: () => void; onReadComplete: () => void; onPractice: () => void; alreadyRead: boolean
+}) {
   const [secondsLeft, setSecondsLeft] = useState(alreadyRead ? 0 : 30)
   const [readingComplete, setReadingComplete] = useState(alreadyRead)
   useEffect(() => {
@@ -161,7 +343,7 @@ function LessonIntro({ onExit, onStart, onReadComplete, onNextLevel, alreadyRead
   return <div className="lesson-layout lesson-intro-layout">
     <header className="lesson-topbar">
       <button className="exit-lesson" onClick={onExit} aria-label="Vissza a tanulási útvonalhoz"><X size={27} /></button>
-      <div className="intro-top-title"><span>1. LECKE</span><strong>Present Simple</strong></div>
+      <div className="intro-top-title"><span>LECKE {String(lesson.id).padStart(2, "0")}</span><strong>{lesson.title}</strong></div>
       <div className={"reading-clock " + (readingComplete ? "is-complete" : "")} aria-label={readingComplete ? "Olvasás kész" : "Hátralévő idő: " + secondsLeft + " másodperc"}>
         {readingComplete ? <CheckCircle2 size={23} /> : <><svg viewBox="0 0 44 44" aria-hidden="true"><circle className="reading-clock-track" cx="22" cy="22" r="18" /><circle className="reading-clock-progress" cx="22" cy="22" r="18" strokeDasharray={circumference} strokeDashoffset={circumference * progress} /></svg><span>{secondsLeft}</span></>}
       </div>
@@ -169,160 +351,81 @@ function LessonIntro({ onExit, onStart, onReadComplete, onNextLevel, alreadyRead
     <div className="intro-scroll-content">
       <div className="intro-hero">
         <div className="intro-hero-mascot"><img src={foxIcon} alt="Evölingo róka" /></div>
-        <span className="intro-eyebrow">ANGOL NYELVTAN · A1</span>
-        <h1>Present Simple</h1>
-        <p>Beszélj a szokásaidról, a mindennapi tevékenységeidről és az általános igazságokról.</p>
-        <div className="intro-meta"><span><BookOpen size={15} /> 4 perc tanulás</span><span><Zap size={15} /> +50 XP gyakorlásért</span></div>
+        <span className="intro-eyebrow">ANGOL NYELVTAN · {lesson.level}</span>
+        <h1>{lesson.title}</h1>
+        <p>{lesson.summary}</p>
+        <div className="intro-meta"><span><BookOpen size={15} /> Tananyag</span><span><Zap size={15} /> +10 XP olvasásért</span></div>
       </div>
-      <figure className="lesson-illustration"><img src="https://undraw.co/illustrations/education_3vwh.svg" alt="Illusztráció a tanulásról" /><figcaption>A mindennapi tevékenységek és szokások leírása</figcaption></figure>
-      <article className="lesson-note"><span className="note-number">01</span><div><h2>Mikor használjuk?</h2><p>A <strong>Present Simple</strong> igeidőt rendszeresen ismétlődő cselekvésekhez, szokásokhoz és általános tényekhez használjuk.</p></div></article>
-      <section className="lesson-note-block">
-        <h2>1. Állító mondatok</h2><p>Az alany után az ige alapformáját használjuk. <strong>He, she, it</strong> esetén általában <strong>-s</strong> vagy <strong>-es</strong> kerül az ige végére.</p>
-        <div className="grammar-table"><div><span>I / You / We / They</span><strong>play</strong></div><div><span>He / She / It</span><strong>plays</strong></div></div>
-        <div className="example-card"><span className="example-label">PÉLDA</span><p>I play football every Saturday.</p><small>Szombatonként focizom.</small></div>
-        <div className="example-card"><span className="example-label">PÉLDA</span><p>She <strong>likes</strong> music.</p><small>Szereti a zenét.</small></div>
-      </section>
-      <section className="lesson-note-block">
-        <h2>2. Tagadás</h2><p>Használd a <strong>don't</strong> vagy <strong>doesn't</strong> segédigét. A segédige után az ige mindig alapformában áll.</p>
-        <div className="example-card"><p>I <strong>don't eat</strong> meat.</p><small>Nem eszem húst.</small></div>
-        <div className="example-card"><p>He <strong>doesn't eat</strong> meat.</p><small>Ő nem eszik húst.</small></div>
-        <div className="lesson-callout"><Lightbulb size={19} /><p>Figyelj! Nem „doesn't eats”, hanem <strong>doesn't eat</strong>.</p></div>
-      </section>
-      <section className="lesson-note-block">
-        <h2>3. Kérdések</h2><p>A mondat elejére a <strong>Do</strong> vagy <strong>Does</strong> kerül.</p>
-        <div className="grammar-table"><div><span>Do</span><strong>I / you / we / they</strong></div><div><span>Does</span><strong>he / she / it</strong></div></div>
-        <div className="example-card"><p><strong>Do</strong> you like pizza?</p><small>Szereted a pizzát?</small></div>
-        <div className="example-card"><p><strong>Does</strong> she speak English?</p><small>Beszél angolul?</small></div>
-      </section>
-      <section className="lesson-note-block"><h2>4. Gyakori időhatározók</h2><p>Ezek gyakran jelzik, hogy Present Simple-t használunk:</p><div className="vocab-chips"><span>always – mindig</span><span>usually – általában</span><span>often – gyakran</span><span>sometimes – néha</span><span>never – soha</span><span>every day – minden nap</span></div></section>
-      <section className="lesson-note-block"><h2>Gyors összefoglaló</h2><ul className="lesson-summary-list"><li>Szokás vagy tény → Present Simple</li><li>He / She / It → az állító ige általában -s végződést kap</li><li>Tagadás → don't / doesn't + alapige</li><li>Kérdés → Do / Does + alany + alapige?</li></ul></section>
+      <figure className="lesson-illustration"><img src="https://undraw.co/illustrations/education_3vwh.svg" alt="Tanulási illusztráció" /><figcaption>{lesson.summary}</figcaption></figure>
+      {lesson.sections.map((section, index) => <section className="lesson-note-block" key={section.title}>
+        <h2>{index + 1}. {section.title}</h2><p>{section.body}</p>
+        {section.rows && <div className="grammar-table">{section.rows.map(([left, right]) => <div key={left}><span>{left}</span><strong>{right}</strong></div>)}</div>}
+        {section.examples?.map((example) => <div className="example-card" key={example.sentence}><span className="example-label">PÉLDA</span><p>{example.sentence}</p><small>{example.translation}</small></div>)}
+        {section.tip && <div className="lesson-callout"><Lightbulb size={19} /><p>{section.tip}</p></div>}
+      </section>)}
+      <section className="lesson-note-block"><h2>Gyors összefoglaló</h2><ul className="lesson-summary-list">{lesson.sections.slice(0, 3).map((section) => <li key={section.title}>{section.title}: {section.body.split(".")[0]}.</li>)}</ul></section>
       <figure className="lesson-illustration second-lesson-illustration"><img src="https://undraw.co/illustrations/reading-time.svg" alt="Olvasás és tanulás illusztráció" /><figcaption>Olvass, gondold át a példákat, és folytasd a tanulást.</figcaption></figure>
       <div className="reading-inline-status">{readingComplete ? <><CheckCircle2 size={19} /><span>Tananyag elolvasva · +10 XP</span></> : <><BookOpen size={19} /><span>Olvasd át a tananyagot. A körben láthatod a hátralévő időt.</span></>}</div>
-      {readingComplete && <div className="reading-complete-state"><div><strong>Mehetünk tovább!</strong><p>A következő lecke most már feloldható.</p></div><button className="primary-action" onClick={onNextLevel}>Következő szint feloldása <ArrowRight size={19} /></button><button className="secondary-practice-action" onClick={onStart}>Gyakorlás indítása</button></div>}
+      {readingComplete && <div className="reading-complete-state"><div><strong>Mehetünk tovább!</strong><p>A leckéhez tartozó négy feladat most már elérhető az útvonalon.</p></div><button className="primary-action" onClick={onPractice}>Feladatok megnyitása <ArrowRight size={19} /></button></div>}
     </div>
   </div>
 }
-function Lesson({ onExit, onComplete }: { onExit: () => void; onComplete: () => void }) {
-  const [questionIndex, setQuestionIndex] = useState(0)
+
+function TaskExercise({ lesson, taskIndex, onExit, onComplete, alreadyAnswered }: {
+  lesson: LessonUnit; taskIndex: number; onExit: () => void; onComplete: () => void; alreadyAnswered: boolean
+}) {
+  const question = lesson.questions[taskIndex]
   const [selectedAnswer, setSelectedAnswer] = useState("")
   const [typedAnswer, setTypedAnswer] = useState("")
   const [selectedWords, setSelectedWords] = useState<string[]>([])
   const [checked, setChecked] = useState(false)
   const [answerCorrect, setAnswerCorrect] = useState(false)
-  const [complete, setComplete] = useState(false)
-  const question = presentSimpleQuestions[questionIndex]
   const currentAnswer = question.type === "choice" ? selectedAnswer : question.type === "text" ? typedAnswer : selectedWords.map((item) => item.split(":").slice(1).join(":")).join(" ")
   const canCheck = currentAnswer.trim().length > 0
   const acceptedAnswers = [question.answer, ...(question.accepted ?? [])]
-  const progress = complete ? 100 : (questionIndex / presentSimpleQuestions.length) * 100
   const submitAnswer = () => {
-    if (checked) {
-      if (answerCorrect) {
-        if (questionIndex === presentSimpleQuestions.length - 1) setComplete(true)
-        else {
-          setQuestionIndex((value) => value + 1)
-          setSelectedAnswer("")
-          setTypedAnswer("")
-          setSelectedWords([])
-          setChecked(false)
-          setAnswerCorrect(false)
-        }
-      } else {
-        setSelectedAnswer("")
-        setTypedAnswer("")
-        setSelectedWords([])
-        setChecked(false)
-        setAnswerCorrect(false)
-      }
+    if (checked && !answerCorrect) {
+      setSelectedAnswer(""); setTypedAnswer(""); setSelectedWords([]); setChecked(false); setAnswerCorrect(false)
       return
     }
+    if (checked && answerCorrect) { onComplete(); return }
     const correct = acceptedAnswers.some((answer) => normalizeAnswer(answer) === normalizeAnswer(currentAnswer))
     setAnswerCorrect(correct)
     setChecked(true)
   }
   const toggleWord = (word: string, position: number) => {
     if (checked) return
-    setSelectedWords((previous) => {
-      if (previous.includes(`${position}:${word}`)) return previous.filter((item) => item !== `${position}:${word}`)
-      return [...previous, `${position}:${word}`]
-    })
+    setSelectedWords((previous) => previous.includes(position + ":" + word) ? previous.filter((item) => item !== position + ":" + word) : [...previous, position + ":" + word])
   }
-  const chosenWordText = selectedWords.map((item) => item.split(":").slice(1).join(":"))
-  const nextActionText = checked ? (answerCorrect ? (questionIndex === presentSimpleQuestions.length - 1 ? "Lecke befejezése" : "Folytatás") : "Próbáld újra") : "Válasz ellenőrzése"
-
-  if (complete) return <div className="lesson-completion">
-    <div className="completion-confetti" aria-hidden="true"><span>✦</span><span>✦</span><span>✧</span><span>✦</span><span>✧</span></div>
-    <div className="completion-mascot"><img src={foxIcon} alt="Evölingo fox celebrating" /></div>
-    <span className="completion-tag"><CheckCircle2 size={16} /> LESSON COMPLETE</span>
-    <h1>Remek munka!</h1>
-    <p>Befejezted a <strong>Present Simple</strong> leckét. Minden lépés számít.</p>
-    <div className="xp-reward"><span className="xp-bolt"><Zap size={24} fill="currentColor" /></span><div><strong>+50 XP</strong><span>Megszerezted a jutalmat</span></div><CheckCircle2 size={22} /></div>
-    <div className="completion-stats"><div><strong>5/5</strong><span>Kérdés</span></div><div><strong>1</strong><span>Lecke kész</span></div><div><strong>+1</strong><span>Feloldott szint</span></div></div>
-    <button className="primary-action completion-action" onClick={onComplete}>Tanulás folytatása <ArrowRight size={19} /></button>
-  </div>
-
-  return <div className="lesson-layout">
+  const chosenWords = selectedWords.map((item) => item.split(":").slice(1).join(":"))
+  const buttonLabel = checked ? (answerCorrect ? (alreadyAnswered ? "Vissza a tanulási útvonalhoz" : "Feladat befejezése · +5 XP") : "Próbáld újra") : "Válasz ellenőrzése"
+  return <div className="lesson-layout task-exercise-layout">
     <header className="lesson-topbar">
-      <button className="exit-lesson" onClick={onExit} aria-label="Kilépés a leckéből"><X size={27} /></button>
-      <div className="lesson-progress-wrap">
-        <div className="lesson-progress-track"><span style={{ width: `${progress}%` }} /></div>
-        <span className="lesson-progress-label">{questionIndex + 1} <span>/</span> {presentSimpleQuestions.length}</span>
-      </div>
-      <div className="lesson-hearts"><Heart fill="currentColor" size={27} /><strong>5</strong></div>
+      <button className="exit-lesson" onClick={onExit} aria-label="Kilépés a feladatból"><X size={27} /></button>
+      <div className="intro-top-title"><span>{lesson.title.toLocaleUpperCase("en-US")}</span><strong>{taskIndex + 1}. feladat / {lesson.questions.length}</strong></div>
+      <div className="task-top-icon"><ClipboardCheck size={23} /></div>
     </header>
-
-        <div className="lesson-question-card">
-      <div className="question-mascot"><img src={foxIcon} alt="Evölingo fox mascot" /></div>
-      <div className="question-main">
-        <span className="question-label">{question.type === "choice" ? "CHOOSE ONE" : question.type === "text" ? "TYPE YOUR ANSWER" : "WORD ORDER"}</span>
-        <p className={question.type === "arrange" ? "question-prompt translation-prompt" : "question-prompt"}>{question.prompt}</p>
-      </div>
-    </div>
-
-    {question.type === "choice" && <div className="answer-options" role="group" aria-label="Válaszlehetőségek">
-      {question.options?.map((option, index) => {
+    <div className="task-exercise-content">
+      <span className="lesson-kicker">GYAKORLÁS · {lesson.level}</span>
+      <h1 className="task-screen-title">{question.instruction}</h1>
+      <div className="lesson-question-card"><div className="question-mascot"><img src={foxIcon} alt="Evölingo róka" /></div><div className="question-main"><span className="question-label">{question.type === "choice" ? "VÁLASSZ EGYET" : question.type === "text" ? "ÍRD BE A VÁLASZT" : "MONDATÉPÍTÉS"}</span><p className={question.type === "arrange" ? "question-prompt translation-prompt" : "question-prompt"}>{question.prompt}</p></div></div>
+      {question.type === "choice" && <div className="answer-options" role="group" aria-label="Válaszlehetőségek">{question.options?.map((option, index) => {
         const selected = selectedAnswer === option
         const isRight = checked && option === question.answer
-        const isWrongChoice = checked && selected && !answerCorrect
-        return <button key={option} className={`answer-option ${selected ? "selected" : ""} ${isRight ? "correct" : ""} ${isWrongChoice ? "incorrect" : ""}`} disabled={checked && answerCorrect} onClick={() => !checked && setSelectedAnswer(option)}>
-          <span className="option-letter">{String.fromCharCode(65 + index)}</span><span>{option}</span>{isRight && <Check size={19} />}
-        </button>
-      })}
-    </div>}
-
-    {question.type === "text" && <div className={`answer-input-wrap ${checked ? (answerCorrect ? "is-correct" : "is-incorrect") : ""}`}>
-      <label htmlFor="typed-answer">Válaszod</label>
-      <input id="typed-answer" autoComplete="off" autoCapitalize="none" placeholder="Írd be a hiányzó szót…" value={typedAnswer} disabled={checked && answerCorrect} onChange={(event) => setTypedAnswer(event.target.value)} onKeyDown={(event) => { if (event.key === "Enter" && canCheck && !checked) submitAnswer() }} />
-      {checked && answerCorrect && <CheckCircle2 size={20} />}
-    </div>}
-
-    {question.type === "arrange" && <div className="word-arrange-area">
-      <div className={`word-answer-line ${checked ? (answerCorrect ? "is-correct" : "is-incorrect") : ""}`} aria-label="Your sentence">
-        {chosenWordText.length ? chosenWordText.map((word, index) => <button key={`chosen-${index}-${word}`} onClick={() => !checked && setSelectedWords((previous) => previous.filter((_, itemIndex) => itemIndex !== index))} disabled={checked} className="chosen-word">{word}</button>) : <span className="word-placeholder">Koppints a szavakra a mondat összeállításához</span>}
-      </div>
-      <div className="word-bank">{question.words?.map((word, index) => {
-        const token = `${index}:${word}`
-        const used = selectedWords.includes(token)
-        return <button key={token} className={`word-chip ${used ? "used" : ""}`} disabled={used || checked} onClick={() => toggleWord(word, index)}>{word}</button>
-      })}</div>
-    </div>}
-
-    <div className="lesson-tip"><span><Lightbulb size={18} /></span><div><strong>Gyors tipp</strong><p>{question.tip}</p></div></div>
-
-    {checked && <div className={`answer-feedback ${answerCorrect ? "feedback-correct" : "feedback-incorrect"}`} role="status">
-      <span className="feedback-icon">{answerCorrect ? <CheckCircle2 size={23} /> : <RotateCcw size={22} />}</span>
-      <div><strong>{answerCorrect ? "Helyes! Szép munka." : "Még nem jó — próbáld újra."}</strong><p>{question.explanation}</p></div>
-    </div>}
-
-    <footer className={`lesson-action-bar ${checked ? (answerCorrect ? "action-correct" : "action-incorrect") : ""}`}>
-      {!checked && <span className="action-hint">{canCheck ? "Ellenőrizheted a válaszodat." : "Válassz vagy írj be egy választ a folytatáshoz."}</span>}
-      <button className={`primary-action ${!checked && !canCheck ? "disabled" : ""} ${checked && !answerCorrect ? "retry-action" : ""}`} disabled={!checked && !canCheck} onClick={submitAnswer}>{nextActionText}{checked && answerCorrect ? <ArrowRight size={19} /> : checked && !answerCorrect ? <RotateCcw size={18} /> : null}</button>
-    </footer>
+        const isWrong = checked && selected && !answerCorrect
+        return <button key={option} className={"answer-option " + (selected ? "selected " : "") + (isRight ? "correct " : "") + (isWrong ? "incorrect" : "")} onClick={() => !checked && setSelectedAnswer(option)} disabled={checked}><span className="option-letter">{String.fromCharCode(65 + index)}</span><span>{option}</span>{isRight && <Check size={19} />}</button>
+      })}</div>}
+      {question.type === "text" && <div className={"answer-input-wrap " + (checked ? (answerCorrect ? "is-correct" : "is-incorrect") : "")}><label htmlFor="typed-answer">Válaszod</label><input id="typed-answer" autoComplete="off" autoCapitalize="none" placeholder="Írd be a hiányzó szót…" value={typedAnswer} onChange={(event) => setTypedAnswer(event.target.value)} onKeyDown={(event) => { if (event.key === "Enter" && canCheck && !checked) submitAnswer() }} />{checked && answerCorrect && <CheckCircle2 size={20} />}</div>}
+      {question.type === "arrange" && <div className="word-arrange-area"><div className={"word-answer-line " + (checked ? (answerCorrect ? "is-correct" : "is-incorrect") : "")} aria-label="Saját mondat">{chosenWords.length ? chosenWords.map((word, index) => <button key={index + "-" + word} onClick={() => !checked && setSelectedWords((previous) => previous.filter((_, itemIndex) => itemIndex !== index))} disabled={checked} className="chosen-word">{word}</button>) : <span className="word-placeholder">Koppints a szavakra a mondat összeállításához</span>}</div><div className="word-bank">{question.words?.map((word, index) => { const token = index + ":" + word; const used = selectedWords.includes(token); return <button key={token} className={"word-chip " + (used ? "used" : "")} disabled={used || checked} onClick={() => toggleWord(word, index)}>{word}</button> })}</div></div>}
+      <div className="lesson-tip"><span><Lightbulb size={18} /></span><div><strong>Gyors tipp</strong><p>{question.tip}</p></div></div>
+      {checked && <div className={"answer-feedback " + (answerCorrect ? "feedback-correct" : "feedback-incorrect")} role="status"><span className="feedback-icon">{answerCorrect ? <CheckCircle2 size={23} /> : <RotateCcw size={22} />}</span><div><strong>{answerCorrect ? "Helyes! Szép munka." : "Még nem jó — próbáld újra."}</strong><p>{question.explanation}</p></div></div>}
+    </div>
+    <footer className="lesson-action-bar task-action-bar"><span className="action-hint">{checked ? (answerCorrect ? "Szép munka, sikerült a feladat." : "Nézd meg a tippet, majd próbáld újra.") : "Válassz vagy írj be egy választ a folytatáshoz."}</span><button className="primary-action" disabled={!checked && !canCheck} onClick={submitAnswer}>{buttonLabel}{checked && answerCorrect && <ArrowRight size={19} />}</button></footer>
   </div>
 }
 
-function Worlds({ selected, setSelected }: { selected: World; setSelected: (world: World) => void }) { return <><PageHeader title="Worlds" /><div className="world-list">{worlds.map((world) => <button key={world.name} className={`world-card ${selected.name === world.name ? "selected" : ""}`} onClick={() => setSelected(world)}><div className="world-icon" style={{ background: world.color }}>{world.icon}</div><div className="world-info"><strong>{world.name}</strong><div className="progress-track"><span style={{ width: `${world.progress}%`, background: world.color }} /></div><small>{world.progress}% complete</small></div><ChevronRight /></button>)}</div></> }
-function Leaderboard() { return <><PageHeader title="Leaderboard" /><div className="league-card"><div className="league-top"><div className="league-badge"><Trophy size={26} /></div><div><h3>Bronze League</h3><p>Ends in 2 days</p></div></div><div className="league-progress"><span style={{ width: "68%" }} /></div></div><div className="rank-list">{ranks.map((rank) => <div className={`rank-row ${rank.name === "You" ? "you" : ""}`} key={rank.name}><div className="rank-number" style={{ color: rank.color }}>{rank.place <= 3 ? <Medal size={21} /> : rank.place}</div><div className="rank-avatar">{rank.name.charAt(0)}</div><div className="rank-name"><strong>{rank.name}</strong><span>{rank.name === "You" ? "Keep going" : "Learning English"}</span></div><strong className="rank-xp">{rank.xp}</strong></div>)}</div></> }
-function Profile({ completedCount, xp }: { completedCount: number; xp: number }) { return <><PageHeader title="Profile" /><div className="profile-card"><div className="large-avatar"><img src={foxIcon} alt="Evölingo fox avatar" /></div><div><h2>Márton Dávid</h2><p>Learning since October 2026</p></div></div><div className="profile-stats"><div><Flame /><strong>7</strong><span>streak</span></div><div><Zap /><strong>{xp.toLocaleString("en-US")}</strong><span>XP</span></div><div><BookOpen /><strong>{12 + completedCount}</strong><span>lessons</span></div></div></> }
-function PageHeader({ title }: { title: string }) { return <header className="page-header"><div className="brand compact"><img src={foxIcon} alt="Evölingo fox mascot" /><div><h1>Evölingo</h1></div></div><h1>{title}</h1></header> }
-function Nav({ screen, setScreen }: { screen: Screen; setScreen: (screen: Screen) => void }) { const items: [Screen, string, React.ElementType][] = [["home", "Home", BookOpen], ["worlds", "Worlds", Globe2], ["leaderboard", "Ranks", BarChart3], ["profile", "Profile", UserRound]]; return <nav className="bottom-nav">{items.map(([id, label, Icon]) => <button key={id} className={screen === id ? "active" : ""} onClick={() => setScreen(id)} aria-current={screen === id ? "page" : undefined}><Icon size={23} /><span>{label}</span></button>)}</nav> }
+function Worlds({ selected, setSelected }: { selected: World; setSelected: (world: World) => void }) { return <><PageHeader title="Nyelvek" /><div className="world-list">{worlds.map((world) => <button key={world.name} className={"world-card " + (selected.name === world.name ? "selected" : "")} onClick={() => setSelected(world)}><div className="world-icon" style={{ background: world.color }}>{world.icon}</div><div className="world-info"><strong>{world.name}</strong><div className="progress-track"><span style={{ width: world.progress + "%", background: world.color }} /></div><small>{world.progress}% teljesítve</small></div><ChevronRight /></button>)}</div></> }
+function Leaderboard() { return <><PageHeader title="Ranglista" /><div className="league-card"><div className="league-top"><div className="league-badge"><Trophy size={26} /></div><div><h3>Bronz liga</h3><p>Vége: 2 nap múlva</p></div></div><div className="league-progress"><span style={{ width: "68%" }} /></div></div><div className="rank-list">{ranks.map((rank) => <div className={"rank-row " + (rank.name === "You" ? "you" : "")} key={rank.name}><div className="rank-number">{rank.place <= 3 ? <Medal size={21} /> : rank.place}</div><div className="rank-avatar">{rank.name.charAt(0)}</div><div className="rank-name"><strong>{rank.name === "You" ? "Te" : rank.name}</strong><span>{rank.name === "You" ? "Csak így tovább!" : "Angolt tanul"}</span></div><strong className="rank-xp">{rank.xp}</strong></div>)}</div></> }
+function Profile({ completedCount, xp }: { completedCount: number; xp: number }) { return <><PageHeader title="Profil" /><div className="profile-card"><div className="large-avatar"><img src={foxIcon} alt="Evölingo profilkép" /></div><div><h2>Márton Dávid</h2><p>Tanulás kezdete: 2026. október</p></div></div><div className="profile-stats"><div><Flame /><strong>7</strong><span>napos sorozat</span></div><div><Zap /><strong>{xp.toLocaleString("en-US")}</strong><span>XP</span></div><div><BookOpen /><strong>{completedCount}</strong><span>kész lecke</span></div></div></> }
+function PageHeader({ title }: { title: string }) { return <header className="page-header"><div className="brand compact"><img src={foxIcon} alt="Evölingo róka" /><div><h1>Evölingo</h1></div></div><h1>{title}</h1></header> }
+function Nav({ screen, setScreen }: { screen: Screen; setScreen: (screen: Screen) => void }) { const items: [Screen, string, React.ElementType][] = [["home", "Tanulás", BookOpen], ["worlds", "Nyelvek", Globe2], ["leaderboard", "Ranglista", BarChart3], ["profile", "Profil", UserRound]]; return <nav className="bottom-nav">{items.map(([id, label, Icon]) => <button key={id} className={screen === id ? "active" : ""} onClick={() => setScreen(id)} aria-current={screen === id ? "page" : undefined}><Icon size={23} /><span>{label}</span></button>)}</nav> }
