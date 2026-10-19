@@ -150,6 +150,7 @@ function LessonIntro({ onExit, onStart }: { onExit: () => void; onStart: () => v
         <p>Beszélj a szokásaidról, a mindennapi tevékenységeidről és az általános igazságokról.</p>
         <div className="intro-meta"><span><BookOpen size={15} /> 4 perc tanulás</span><span><Zap size={15} /> +50 XP gyakorlásért</span></div>
       </div>
+      <figure className="lesson-illustration"><img src="https://undraw.co/illustrations/education_3vwh.svg" alt="Illusztráció a tanulásról" /><figcaption>A mindennapi tevékenységek és szokások leírása</figcaption></figure>
       <article className="lesson-note"><span className="note-number">01</span><div><h2>Mikor használjuk?</h2><p>A <strong>Present Simple</strong> igeidőt rendszeresen ismétlődő cselekvésekhez, szokásokhoz és általános tényekhez használjuk.</p></div></article>
       <section className="lesson-note-block">
         <h2>1. Állító mondatok</h2><p>Az alany után az ige alapformáját használjuk. <strong>He, she, it</strong> esetén általában <strong>-s</strong> vagy <strong>-es</strong> kerül az ige végére.</p>
