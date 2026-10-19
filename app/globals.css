@@ -2896,3 +2896,68 @@ html, body { background: #fff; }
 .bottom-nav .nav-selection-indicator {
   width: calc((100% - 12px) / 5) !important;
 }
+
+
+/* Profile banner: render custom images as a real layer, with a theme tint and a soft fade into the page. */
+.profile-page .profile-hero {
+  position: relative !important;
+  isolation: isolate;
+  overflow: visible !important;
+}
+.profile-page .profile-cover {
+  position: absolute !important;
+  z-index: 0 !important;
+  inset: 0 0 auto !important;
+  display: block !important;
+  width: 100% !important;
+  height: 154px !important;
+  min-height: 154px !important;
+  overflow: hidden !important;
+  border-radius: 0 0 22px 22px;
+  background:
+    radial-gradient(ellipse at 15% 0%, rgba(255,255,255,.72), transparent 55%),
+    linear-gradient(135deg, #dfe5eb 0%, #c9d3dd 54%, #e8edf1 100%) !important;
+}
+.profile-page .profile-cover.has-custom-banner {
+  background: #dbe2e9 !important;
+}
+.profile-page .profile-cover .profile-cover-image {
+  position: absolute !important;
+  z-index: 0 !important;
+  inset: 0 !important;
+  display: block !important;
+  width: 100% !important;
+  height: 100% !important;
+  max-width: none !important;
+  object-fit: cover !important;
+  object-position: center 42% !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  opacity: 1 !important;
+  transform: scale(1.015);
+}
+.profile-page .profile-cover::after {
+  content: "" !important;
+  position: absolute !important;
+  z-index: 1 !important;
+  inset: 0 !important;
+  display: block !important;
+  pointer-events: none !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.12) 0%, rgba(255,255,255,.02) 28%, rgba(255,255,255,.08) 52%, rgba(255,255,255,.62) 78%, var(--profile-canvas, #fff) 100%) !important;
+}
+.profile-page.profile-theme-sage .profile-cover {
+  background:
+    radial-gradient(ellipse at 15% 0%, rgba(255,255,255,.7), transparent 55%),
+    linear-gradient(135deg, #e4eadd 0%, #cbd8c4 54%, #e9eee5 100%) !important;
+}
+.profile-page .profile-identity {
+  position: relative !important;
+  z-index: 2 !important;
+}
+.profile-page .profile-banner-settings {
+  z-index: 4 !important;
+}
+@media (max-width: 390px) {
+  .profile-page .profile-cover { height: 140px !important; min-height: 140px !important; }
+}
