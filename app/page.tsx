@@ -510,7 +510,7 @@ function Profile({ completedCount, xp, userName, setUserName, avatar, setAvatar,
           <div className="large-avatar">
             {avatar === "fox" ? <img src={foxIcon} alt="Róka profilkép" /> : <span className="avatar-emoji">{avatar === "book" ? "📚" : avatar === "star" ? "⭐" : "🦊"}</span>}
           </div>
-          <button className="profile-avatar-edit" onClick={() => setShowSettings(true)} aria-label="Profilkép szerkesztése"><Pencil size={20} strokeWidth={2.8} /></button>
+          <button className="profile-avatar-edit" type="button" onClick={() => { setShowSettings(true); document.getElementById("profile-settings")?.scrollIntoView({ behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "center" }) }} aria-label="Profilkép szerkesztése"><Pencil size={20} strokeWidth={2.8} /></button>
         </div>
         <h1 className="profile-display-name">{userName || "Tanuló"}</h1>
         <p className="profile-handle">@{(userName || "tanulo").normalize("NFKD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "").slice(0, 20) || "tanulo"}</p>
@@ -522,19 +522,14 @@ function Profile({ completedCount, xp, userName, setUserName, avatar, setAvatar,
       <div className="profile-overview-track" role="progressbar" aria-label="Teljesített leckék" aria-valuemin={0} aria-valuemax={10} aria-valuenow={Math.min(completedCount, 10)}><span style={{ width: Math.min(100, completedCount * 10) + "%" }} /></div>
     </section>
     <div className="profile-lower-content">
-      <div className="profile-stats">
-        <div><Flame /><strong>7</strong><span>napos sorozat</span></div>
-        <div><Zap /><strong>{xp.toLocaleString("en-US")}</strong><span>XP</span></div>
-        <div><BookOpen /><strong>{completedCount}</strong><span>kész lecke</span></div>
-      </div>
-      <section className="profile-settings">
+      <section className="profile-settings" id="profile-settings" aria-label="Profilbeállítások">
         <button className="settings-section-heading" onClick={() => setShowSettings(!showSettings)} aria-expanded={showSettings}><span>Profil és beállítások</span><span>{showSettings ? "−" : "+"}</span></button>
         {showSettings && <>
           <label className="setting-label" htmlFor="profile-name">Név</label>
           <div className="profile-name-form"><input id="profile-name" maxLength={32} value={draftName} onChange={(event) => { setDraftName(event.target.value); setSaved(false) }} placeholder="Írd be a neved" /><button onClick={() => { const value = draftName.trim(); if (value) { setUserName(value); setSaved(true) } }}>Mentés</button></div>
-          {saved && <p className="setting-success">A profilnév frissítve.</p>}
+          {saved && <p className="setting-success" role="status" aria-live="polite">A profilnév frissítve.</p>}
           <span className="setting-label">Profilkép</span>
-          <div className="avatar-options">{[["fox","🦊"],["book","📚"],["star","⭐"],["spark","✨"]].map(([id,emoji]) => <button key={id} className={"avatar-option " + (avatar === id ? "selected" : "")} onClick={() => setAvatar(id)} aria-label={"Profilkép: " + emoji}>{emoji}</button>)}</div>
+          <div className="avatar-options">{[["fox","🦊"],["book","📚"],["star","⭐"],["spark","✨"]].map(([id,emoji]) => <button key={id} className={"avatar-option " + (avatar === id ? "selected" : "")} onClick={() => setAvatar(id)} aria-label={"Profilkép: " + emoji} aria-pressed={avatar === id}>{emoji}</button>)}</div>
           <label className="setting-toggle"><span><strong>Értesítések</strong><small>Tanulási emlékeztetők (felület-beállítás)</small></span><input type="checkbox" checked={notifications} onChange={(event) => setNotifications(event.target.checked)} /></label>
           <label className="setting-toggle"><span><strong>Kompakt felület</strong><small>Kisebb térközök és tömörebb kártyák</small></span><input type="checkbox" checked={compactMode} onChange={(event) => { setCompactMode(event.target.checked); document.documentElement.classList.toggle("compact-ui", event.target.checked) }} /></label>
           <p className="setting-footnote">Ezek a beállítások jelenleg ezen az oldalon, a megnyitott munkamenet alatt működnek. A rendszer értesítéseit még nem küldi ki.</p>
@@ -578,11 +573,23 @@ function Nav({ screen, setScreen }: { screen: Screen; setScreen: (screen: Screen
       aria-valuemin={0}
       aria-valuemax={items.length - 1}
       aria-valuenow={Math.round(dragIndex ?? activeIndex)}
+      aria-valuetext={items[Math.round(dragIndex ?? activeIndex)]?.[1]}
+      tabIndex={0}
       style={{ transform: `translateX(calc(${(dragIndex ?? activeIndex) * 100}%))` }}
       onPointerDown={startIndicatorDrag}
       onPointerMove={moveIndicatorDrag}
       onPointerUp={finishIndicatorDrag}
       onPointerCancel={finishIndicatorDrag}
+      onKeyDown={(event) => {
+        let nextIndex = activeIndex
+        if (event.key === "ArrowRight") nextIndex = Math.min(items.length - 1, activeIndex + 1)
+        else if (event.key === "ArrowLeft") nextIndex = Math.max(0, activeIndex - 1)
+        else if (event.key === "Home") nextIndex = 0
+        else if (event.key === "End") nextIndex = items.length - 1
+        else return
+        event.preventDefault()
+        setScreen(items[nextIndex][0])
+      }}
     />
     {items.map(([id, label, Icon], index) => <button key={id} data-tab-index={index} className={screen === id ? "active" : ""} onClick={() => setScreen(id)} aria-current={screen === id ? "page" : undefined}><Icon size={23} /><span>{label}</span></button>)}
   </nav>
