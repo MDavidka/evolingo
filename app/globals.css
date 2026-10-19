@@ -20,3 +20,41 @@
 .task-status{font-size:10px;line-height:1.2;font-weight:800;color:#ff7900}
 .task-node:disabled{cursor:default;opacity:1}
 @media(max-width:360px){.task-node{width:100%;gap:10px}.task-node.task-size-0 .task-dot{width:58px;height:58px}.task-node.task-size-1 .task-dot{width:44px;height:44px}.task-node.task-size-3 .task-dot{width:64px;height:64px}}
+
+
+/* Uniform task nodes with icons; yellow is reserved for the currently unlocked level */
+.task-node .task-dot,
+.task-node.task-size-0 .task-dot,
+.task-node.task-size-1 .task-dot,
+.task-node.task-size-2 .task-dot,
+.task-node.task-size-3 .task-dot,
+.task-node.active .task-dot {
+  width: 58px;
+  height: 58px;
+  min-width: 58px;
+  border-radius: 50%;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  background: #ff7900;
+  color: #fff;
+  box-shadow: none;
+  outline: none;
+  font-size: 20px;
+}
+.task-node.unlocked .task-dot {
+  background: #ffc400;
+  color: #fff;
+  box-shadow: none;
+}
+.task-node.locked .task-dot {
+  background: #ff7900;
+  color: #fff;
+  box-shadow: none;
+}
+.task-node .task-dot svg {
+  width: 24px;
+  height: 24px;
+  stroke-width: 2.25;
+}
+.task-node .task-labels { flex: 1; }
