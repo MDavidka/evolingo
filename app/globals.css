@@ -2890,3 +2890,9 @@ html, body { background: #fff; }
   .friends-search-row button { padding: 0 9px; }
   .friends-search-row input { font-size: 11px; }
 }
+
+
+/* Five equally sized destinations; the draggable pill moves by one fifth per tab. */
+.bottom-nav .nav-selection-indicator {
+  width: calc((100% - 12px) / 5) !important;
+}
