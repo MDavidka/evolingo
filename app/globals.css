@@ -889,3 +889,35 @@ html, body { background: #fff; }
 @media (prefers-reduced-motion: reduce) {
  .lesson-modal-backdrop,.lesson-modal,.star-flight-active { animation:none !important; }
 }
+
+
+/* Zig-zag lesson path with adjacent labels and a tiny two-choice popover */
+.compact-learning-path { align-items:stretch; gap:22px; padding:18px 0 120px; }
+.compact-lesson-row { position:relative; display:flex; align-items:center; gap:13px; width:82%; min-height:78px; }
+.compact-lesson-row.path-row-left { align-self:flex-start; margin-left:2%; }
+.compact-lesson-row.path-row-right { align-self:flex-end; flex-direction:row-reverse; margin-right:2%; text-align:right; }
+.compact-lesson-icon-button { display:block; flex:none; padding:0; border-radius:50%; background:transparent; }
+.compact-lesson-icon { width:68px; height:68px; border-radius:50%; }
+.compact-lesson-icon svg { width:28px; height:28px; }
+.compact-lesson-icon-button.node-locked .compact-lesson-icon,
+.compact-lesson-icon.node-locked { color:#8a8a8a; background:#dedede; box-shadow:none; }
+.compact-lesson-name { display:block; min-width:0; padding:8px 0; color:#222; font-size:15px; line-height:1.3; font-weight:800; text-align:inherit; overflow-wrap:anywhere; }
+.compact-lesson-name:disabled { color:#999; cursor:default; }
+.compact-lesson-name.muted { color:#999; }
+.compact-future-row { color:#999; }
+.lesson-choice-popover { position:absolute; z-index:20; top:calc(50% + 30px); display:flex; gap:6px; width:max-content; padding:6px; border:1px solid #e9e9e9; border-radius:14px; background:#fff; box-shadow:0 9px 28px rgba(0,0,0,.14); animation:modalRise .16s ease-out; }
+.lesson-choice-popover.path-row-left { left:58px; }
+.lesson-choice-popover.path-row-right { right:58px; }
+.lesson-choice-popover button { min-width:81px; padding:10px 13px; border-radius:10px; color:#fff; background:#58a83c; font-size:12px; font-weight:850; }
+.lesson-choice-popover button:last-child { color:#438b2b; border:1px solid #cde8c2; background:#f1f9ed; }
+.lesson-choice-popover button:active { transform:scale(.97); }
+@media(max-width:360px) {
+ .compact-lesson-row { width:88%; gap:10px; }
+ .compact-lesson-row.path-row-left { margin-left:0; }
+ .compact-lesson-row.path-row-right { margin-right:0; }
+ .compact-lesson-icon { width:60px; height:60px; }
+ .compact-lesson-name { font-size:13px; }
+ .lesson-choice-popover.path-row-left { left:50px; }
+ .lesson-choice-popover.path-row-right { right:50px; }
+ .lesson-choice-popover button { min-width:72px; padding:9px 10px; }
+}
