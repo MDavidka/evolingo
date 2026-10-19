@@ -277,50 +277,43 @@ function Home({ readLessons, completedLessons, answeredTasks, stars, notice, cle
   readLessons: number[]; completedLessons: number[]; answeredTasks: string[]; stars: number; notice: string; clearNotice: () => void
   onOpenLesson: (id: number) => void; onOpenTask: (lessonId: number, index: number) => void
 }) {
+  const [selectedLessonId, setSelectedLessonId] = useState<number | null>(null)
+  const selectedLesson = lessons.find((lesson) => lesson.id === selectedLessonId)
+  const nextTaskIndex = selectedLesson ? selectedLesson.questions.findIndex((_, index) => !answeredTasks.includes(selectedLesson.id + "-" + index)) : -1
+  const unlocked = selectedLesson ? selectedLesson.id === 1 || completedLessons.includes(selectedLesson.id - 1) : false
+  const alreadyRead = selectedLesson ? readLessons.includes(selectedLesson.id) : false
+  const continueIndex = nextTaskIndex === -1 ? 0 : nextTaskIndex
   return <>
     <header className="app-header home-header"><Brand /><div className="home-currencies"><div className="star-balance" aria-label={stars + " csillag"}><Star size={21} fill="currentColor" /><strong>{stars}</strong></div><div className="health"><Heart fill="currentColor" size={20} /><strong>5</strong></div></div></header>
     <div className="section-heading home-heading"><div><p className="eyebrow">ANGOL</p><h2>Tanulási útvonal</h2></div></div>
     {notice && <button className="inline-notice" onClick={clearNotice}><span>{notice}</span><X size={16} /></button>}
-    <div className="learning-path">
+    <div className="learning-path compact-learning-path">
       {pathItems.map((item) => {
         const lesson = "questions" in item ? item as LessonUnit : null
-        const unlocked = item.id === 1 || completedLessons.includes(item.id - 1)
-        const read = readLessons.includes(item.id)
+        const isUnlocked = item.id === 1 || completedLessons.includes(item.id - 1)
         const complete = completedLessons.includes(item.id)
-        if (!lesson) return <div className="future-path-node" key={item.id}><span className="future-book-dot"><LockKeyhole size={23} /></span><div><strong>{item.title}</strong><span>Kidolgozás alatt</span></div></div>
-        return <article className={"path-lesson " + (unlocked ? "path-lesson-open" : "path-lesson-locked") + (complete ? " path-lesson-complete" : "")} key={lesson.id}>
-          <div className="path-lesson-main">
-            <button className="path-lesson-book" disabled={!unlocked} onClick={() => onOpenLesson(lesson.id)} aria-label={"Tananyag: " + lesson.title}>
-              <BookOpen size={25} />
-              {read && <span className="lesson-read-mark"><Check size={11} /></span>}
-            </button>
-            <button className="path-lesson-title" disabled={!unlocked} onClick={() => onOpenLesson(lesson.id)}>
-              <span className="path-lesson-overline">LECKE {String(lesson.id).padStart(2, "0")} · {lesson.level}</span>
-              <strong>{lesson.title}</strong>
-              <span>{lesson.summary}</span>
-            </button>
-            {complete && <span className="lesson-completed-badge"><CheckCircle2 size={17} /></span>}
-          </div>
-          <div className="path-task-row">
-            <span className="path-task-caption"><ClipboardCheck size={14} /> FELADATOK</span>
-            <div className="path-task-dots">
-              {lesson.questions.map((_, index) => {
-                const answered = answeredTasks.includes(lesson.id + "-" + index)
-                const taskOpen = unlocked && read
-                return <button
-                  key={index}
-                  className={"path-task-dot " + (answered ? "task-answered" : taskOpen ? "task-available" : "task-locked")}
-                  disabled={!unlocked}
-                  onClick={() => onOpenTask(lesson.id, index)}
-                  aria-label={lesson.title + " — " + (index + 1) + ". feladat" + (answered ? ", megoldva" : "")}
-                  title={(index + 1) + ". feladat" + (answered ? " · Megoldva" : "")}
-                >{answered ? <Check size={15} /> : taskOpen ? index + 1 : <LockKeyhole size={12} />}</button>
-              })}
-            </div>
-          </div>
-        </article>
+        if (!lesson) return <div className="future-path-node compact-future-node" key={item.id}><span className="future-book-dot"><LockKeyhole size={23} /></span></div>
+        return <button className={"compact-lesson-node " + (isUnlocked ? "node-unlocked" : "node-locked") + (complete ? " node-complete" : "")} key={lesson.id} disabled={!isUnlocked} onClick={() => setSelectedLessonId(lesson.id)} aria-label={"Lecke megnyitása: " + lesson.title} title={lesson.title}>
+          <span className="compact-lesson-icon"><BookOpen size={29} />{complete && <span className="compact-lesson-check"><Check size={14} /></span>}</span>
+        </button>
       })}
     </div>
+    {selectedLesson && <div className="lesson-modal-backdrop" role="presentation" onClick={() => setSelectedLessonId(null)}>
+      <section className="lesson-modal" role="dialog" aria-modal="true" aria-labelledby="lesson-modal-title" onClick={(event) => event.stopPropagation()}>
+        <button className="lesson-modal-close" onClick={() => setSelectedLessonId(null)} aria-label="Bezárás"><X size={22} /></button>
+        <div className={"lesson-modal-icon " + (completedLessons.includes(selectedLesson.id) ? "modal-complete" : "")}><BookOpen size={31} />{completedLessons.includes(selectedLesson.id) && <span><Check size={14} /></span>}</div>
+        <p className="lesson-modal-eyebrow">{selectedLesson.level} · ANGOL</p>
+        <h2 id="lesson-modal-title">{selectedLesson.title}</h2>
+        <p className="lesson-modal-summary">{selectedLesson.summary}</p>
+        <div className="lesson-modal-actions">
+          <button className="lesson-modal-secondary" disabled={!unlocked} onClick={() => { const id=selectedLesson.id; setSelectedLessonId(null); onOpenLesson(id) }}>{alreadyRead ? "Lecke újraolvasása" : "Lecke megnyitása"}</button>
+          <button className="lesson-modal-primary" disabled={!unlocked} onClick={() => { const id=selectedLesson.id; setSelectedLessonId(null); if (!alreadyRead) onOpenLesson(id); else onOpenTask(id, continueIndex) }}>
+            {completedLessons.includes(selectedLesson.id) ? "Újragyakorlás" : !alreadyRead ? "Lecke kezdése" : nextTaskIndex === -1 ? "Újragyakorlás" : "Folytatás · " + (continueIndex + 1) + ". feladat"} <ArrowRight size={18} />
+          </button>
+        </div>
+        {!unlocked && <p className="lesson-modal-locked">Előbb fejezd be az előző leckét.</p>}
+      </section>
+    </div>}
   </>
 }
 
@@ -435,8 +428,8 @@ function TaskExercise({ lesson, taskIndex, onExit, onComplete, lives, onWrongAns
       })}</div>}
       {question.type === "text" && <div className={"answer-input-wrap " + (checked ? (answerCorrect ? "is-correct" : "is-incorrect") : "")}><label htmlFor="typed-answer">Válaszod</label><input id="typed-answer" autoComplete="off" autoCapitalize="none" disabled={lives <= 0 || checked} placeholder="Írd be a választ…" value={typedAnswer} onChange={(event) => setTypedAnswer(event.target.value)} onKeyDown={(event) => { if (event.key === "Enter" && canCheck && !checked) submitAnswer() }} />{checked && answerCorrect && <CheckCircle2 size={20} />}</div>}
       {question.type === "arrange" && <div className="word-arrange-area"><div className={"word-answer-line " + (checked ? (answerCorrect ? "is-correct" : "is-incorrect") : "")} aria-label="Saját mondat">{chosenWords.length ? chosenWords.map((word, index) => <button key={index + "-" + word} onClick={() => !checked && setSelectedWords((previous) => previous.filter((_, itemIndex) => itemIndex !== index))} disabled={checked || lives <= 0} className="chosen-word">{word}</button>) : <span className="word-placeholder">Koppints a szavakra a mondat összeállításához</span>}</div><div className="word-bank">{question.words?.map((word, index) => { const token = index + ":" + word; const used = selectedWords.includes(token); return <button key={token} className="word-chip" disabled={used || checked || lives <= 0} onClick={() => toggleWord(word, index)}>{word}</button> })}</div></div>}
-      {checked && <div className={"answer-feedback " + (answerCorrect ? "feedback-correct" : "feedback-incorrect")} role="status"><span className="feedback-icon">{answerCorrect ? <CheckCircle2 size={23} /> : <RotateCcw size={22} />}</span><div><strong>{answerCorrect ? "Helyes! +1 csillag" : "Ez most nem sikerült"}</strong>{!answerCorrect && <p>Próbáld újra. A hibás válasz egy életbe kerül.</p>}</div></div>}
-      {checked && answerCorrect && <div className={"star-reward " + (rewardPulse ? "star-reward-pop" : "")}><Star size={22} fill="currentColor" /><strong>+1 csillag</strong></div>}
+      {checked && answerCorrect && <span className={"star-flight " + (rewardPulse ? "star-flight-active" : "")} aria-label="Egy csillag megszerezve"><Star size={25} fill="currentColor" /></span>}
+      {checked && !answerCorrect && <p className="retry-hint">Nem egészen — próbáld újra.</p>}
     </div>
     <footer className="lesson-action-bar task-action-bar"><button className="primary-action" disabled={!checked && !canCheck} onClick={lives <= 0 ? onOutOfLives : submitAnswer}>{buttonLabel}{checked && answerCorrect && <ArrowRight size={19} />}</button></footer>
   </div>
