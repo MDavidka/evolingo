@@ -25,7 +25,48 @@ if(!session)return <main className="auth-screen"><Brand large/><form className="
 if(active)return <LessonView lesson={active} index={index} answer={answer} setAnswer={setAnswer} feedback={feedback} check={check} next={next} back={()=>setActive(null)}/>
 const words=lessons.flatMap(l=>l.vocabulary),admin=session.email===ADMIN;return <main className="app-shell"><section className="screen-content">{screen==="home"&&<Home lessons={lessons} lives={lives} progress={progress} open={l=>{setActive(l);setIndex(0);setAnswer("");setFeedback("")}}/>}{screen==="words"&&<Simple title="Words"><p className="screen-lede">Review vocabulary from your lessons.</p>{words.map((w,i)=><div className="word-row" key={i}><strong>{w.word}</strong><span>{w.translation}</span></div>)}</Simple>}{screen==="stats"&&<Simple title="Stats"><p className="screen-lede">Your local demo progress.</p><div className="stat-line"><strong>{Object.keys(progress).length}</strong><span>lessons completed of {lessons.length}</span></div>{!Object.keys(progress).length&&<p className="empty">Complete a lesson to see your progress here.</p>}</Simple>}{screen==="profile"&&<Simple title="Profile"><div className="profile-block"><div className="avatar"><UserRound/></div><strong>{session.name}</strong><span>{session.email}</span></div>{admin&&<><p className="admin-note">Demo admin session. Client-side access checks are not secure.</p><button className="secondary" onClick={()=>setScreen("admin")}>Open lesson editor</button></>}<button className="text-button" onClick={()=>{localStorage.removeItem("evolingo-session");setSession(null)}}>Sign out</button></Simple>}{screen==="admin"&&admin&&<Simple title="Lesson editor"><p className="screen-lede">Paste a version 1 lesson JSON object. It is stored only in this browser.</p><textarea value={json} onChange={e=>setJson(e.target.value)} placeholder={'{\n  "schemaVersion": 1,\n  "id": "my-lesson",\n  "title": "My lesson",\n  "exercises": []\n}'}/><button className="primary" onClick={save}>Validate and save</button>{message&&<p className="validation" role="status">{message}</p>}</Simple>}</section><Nav screen={screen==="admin"?"profile":screen} setScreen={setScreen}/></main>}
 function Brand({large=false}:{large?:boolean}){return <div className={`brand ${large?"large":""}`}><img src={logo} alt="Evölingo logo"/><div><h1>Evölingo</h1><p>By MDávid</p></div></div>}
-function Home({lessons,lives,progress,open}:{lessons:Lesson[];lives:number;progress:Record<string,boolean>;open:(l:Lesson)=>void}){return <><header className="app-header"><Brand/><div className="lives"><Heart fill="currentColor"/><strong>{lives}</strong></div></header><div className="lesson-path">{lessons.map((l,i)=><button key={l.id} className={`lesson-node node-${i%2} ${i===0?"available":"locked"}`} disabled={i>0||lives===0} onClick={()=>open(l)}><span className="circle">{progress[l.id]?<Check/>:i>0?<Lock size={24}/>:null}</span><span>{l.title}</span></button>)}</div></>}
+const TASK_LIMIT = 100
+const taskNames = [
+  "Present Simple",
+  "Present Continuous",
+  "Past Simple",
+  "Past Continuous",
+  "Future Simple",
+  "Future Perfect",
+  "Some and Any",
+  "Much and Many",
+  "Comparatives and Superlatives",
+  "Conditionals"
+]
+function Home({lessons,lives,progress,open}:{lessons:Lesson[];lives:number;progress:Record<string,boolean>;open:(l:Lesson)=>void}) {
+  const tasks = Array.from({length:Math.min(TASK_LIMIT, Math.max(TASK_LIMIT, lessons.length))}, (_, i) => ({
+    id: i < taskNames.length ? (lessons[i]?.id ?? `task-${i+1}`) : `task-${i+1}`,
+    title: i < taskNames.length ? taskNames[i] : "Kidolgozás alatt",
+    lesson: lessons[i],
+    index: i
+  }))
+  return <>
+    <header className="app-header"><Brand/><div className="lives"><Heart fill="currentColor"/><strong>{lives}</strong></div></header>
+    <div className="task-count">Tasks <strong>{Math.min(tasks.length, TASK_LIMIT)}/100</strong></div>
+    <div className="lesson-path">
+      {tasks.map((task) => {
+        const available = task.index === 0 && Boolean(task.lesson) && lives > 0
+        const completed = Boolean(task.lesson && progress[task.lesson.id])
+        return <button
+          key={task.id}
+          className={`lesson-node node-${task.index%2} ${available ? "available" : "locked"} ${task.index < 10 ? "named-task" : "unfinished-task"}`}
+          disabled={!available}
+          onClick={() => task.lesson && open(task.lesson)}
+          aria-label={task.index < 10 ? `Task ${task.index+1}: ${task.title}` : `Task ${task.index+1}: Kidolgozás alatt`}
+        >
+          <span className="circle">{completed ? <Check/> : available ? <span className="task-number">{task.index+1}</span> : <Lock size={20}/>}</span>
+          <span className="task-title">{task.title}</span>
+          {task.index >= taskNames.length && <span className="task-status">Kidolgozás alatt</span>}
+        </button>
+      })}
+    </div>
+  </>
+}
 function Simple({title,children}:{title:string;children:React.ReactNode}){return <div className="simple-screen"><h2>{title}</h2>{children}</div>}
 function LessonView({lesson,index,answer,setAnswer,feedback,check,next,back}:{lesson:Lesson;index:number;answer:string;setAnswer:(s:string)=>void;feedback:string;check:()=>void;next:()=>void;back:()=>void}){const ex=lesson.exercises[index];return <main className="lesson-screen"><button className="back-button" onClick={back}>Back</button><div className="lesson-progress"><span style={{width:`${(index+1)/lesson.exercises.length*100}%`}}/></div><p className="eyebrow">{lesson.level} · Lesson {index+1} of {lesson.exercises.length}</p><h1>{lesson.title}</h1><div className="exercise"><h2>{ex.prompt}</h2>{ex.type==="multiple-choice"?<div className="choices">{ex.options?.map(o=><button className={answer===o?"selected":""} key={o} onClick={()=>setAnswer(o)}>{o}</button>)}</div>:<input className="answer-input" value={answer} onChange={e=>setAnswer(e.target.value)} placeholder="Type your answer"/>}{feedback&&<p className={feedback==="Correct"?"feedback correct":"feedback incorrect"}>{feedback}</p>}<button className="primary exercise-action" onClick={feedback?next:check}>{feedback?(index===lesson.exercises.length-1?"Finish lesson":"Continue"):"Check answer"}</button></div></main>}
 function Nav({screen,setScreen}:{screen:Screen;setScreen:(s:Screen)=>void}){const items:[Screen,string,any][]=[["home","Home",Home],["words","Words",BookOpen],["stats","Stats",BarChart3],["profile","Profile",UserRound]];return <nav className="bottom-nav">{items.map(([id,label,Icon])=><button key={id} className={screen===id?"active":""} onClick={()=>setScreen(id)} aria-label={label} aria-current={screen===id?"page":undefined}><Icon size={27}/><span>{label}</span></button>)}</nav>}
