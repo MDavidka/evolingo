@@ -277,3 +277,149 @@ html, body { background: #fff; }
   .note-number { width: 31px; height: 31px; }
   .lesson-note h2,.lesson-note-block h2 { font-size: 18px; }
 }
+
+
+/* Notion-inspired lesson notes */
+.intro-scroll-content {
+  padding: 0 0 24px;
+  color: #262626;
+}
+.intro-hero {
+  border: 0;
+  border-radius: 0;
+  padding: 18px 2px 22px;
+  margin: 0 0 14px;
+  background: #fff;
+}
+.intro-eyebrow {
+  display: inline-block;
+  color: #8a8a8a;
+  letter-spacing: .7px;
+  font-size: 10px;
+}
+.intro-hero h1 {
+  clear: none;
+  font-size: clamp(32px, 8vw, 40px);
+  letter-spacing: -1.5px;
+  line-height: 1.08;
+}
+.intro-hero > p {
+  max-width: 100%;
+  color: #5b5b5b;
+  font-size: 15px;
+  line-height: 1.75;
+}
+.intro-hero-mascot {
+  width: 76px;
+  height: 76px;
+  border-radius: 18px;
+  background: #fff8f0;
+}
+.lesson-illustration {
+  margin: 4px 0 25px;
+  padding: 10px 14px 8px;
+  background: #fffaf4;
+  border-radius: 16px;
+}
+.lesson-illustration img {
+  display: block;
+  width: 100%;
+  max-height: 220px;
+  object-fit: contain;
+}
+.lesson-illustration figcaption {
+  padding-top: 8px;
+  color: #888;
+  font-size: 11px;
+  line-height: 1.4;
+  text-align: center;
+}
+.lesson-note {
+  grid-template-columns: 32px minmax(0,1fr);
+  padding: 14px 0 18px;
+  margin-bottom: 24px;
+  border: 0;
+  border-bottom: 1px solid #e9e9e7;
+  border-radius: 0;
+  background: #fff;
+}
+.note-number {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+}
+.lesson-note h2,
+.lesson-note-block h2 {
+  font-size: 20px;
+  letter-spacing: -.35px;
+  font-weight: 780;
+}
+.lesson-note p,
+.lesson-note-block > p {
+  font-size: 15px;
+  color: #4a4a4a;
+  line-height: 1.8;
+}
+.lesson-note-block {
+  margin-bottom: 29px;
+}
+.lesson-note-block h2 {
+  padding-bottom: 9px;
+  border-bottom: 1px solid #ececea;
+}
+.grammar-table {
+  border-color: #e8e8e6;
+  border-radius: 10px;
+}
+.grammar-table > div {
+  padding: 14px 13px;
+  font-size: 13px;
+}
+.example-card {
+  position: relative;
+  margin: 12px 0;
+  padding: 12px 14px;
+  border: 0;
+  border-left: 3px solid #f2a04c;
+  border-radius: 0 9px 9px 0;
+  background: #f8f8f7;
+}
+.example-card p {
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.65;
+}
+.example-card small { font-size: 12px; }
+.lesson-callout {
+  align-items: flex-start;
+  padding: 13px;
+  background: #fff7e5;
+}
+.vocab-chips span {
+  border-color: #ece5dc;
+  background: #faf8f5;
+  border-radius: 8px;
+  font-size: 12px;
+}
+.lesson-summary-list {
+  gap: 12px;
+  padding-left: 24px;
+  line-height: 1.75;
+}
+.future-media-card {
+  border-style: dashed;
+  background: #fafaf9;
+}
+.intro-practice-note {
+  padding: 15px 0 18px;
+  border-top: 1px solid #ececea;
+  line-height: 1.6;
+}
+.intro-action-bar {
+  padding-top: 12px;
+}
+@media (max-width: 360px) {
+  .intro-hero { padding-left: 0; padding-right: 0; }
+  .lesson-illustration { padding: 8px; }
+  .lesson-illustration img { max-height: 180px; }
+}
