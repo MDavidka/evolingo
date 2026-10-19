@@ -204,7 +204,7 @@ export default function App() {
   const [avatar, setAvatar] = useState("fox")
   const [notifications, setNotifications] = useState(false)
   const [compactMode, setCompactMode] = useState(false)
-  const [showSettings, setShowSettings] = useState(true)
+  const [showSettings, setShowSettings] = useState(false)
   const [notice, setNotice] = useState("")
   const activeLesson = lessons.find((lesson) => lesson.id === activeLessonId) ?? lessons[0]
   const handleReadComplete = useCallback((lessonId: number) => {
@@ -509,10 +509,10 @@ function Profile({ completedCount, readCount, completedTaskCount, xp, stars, use
   const openSettings = (target?: string) => {
     setShowSettings(true)
     setProfileFeedback("")
-    window.requestAnimationFrame(() => {
+    window.requestAnimationFrame(() => window.requestAnimationFrame(() => {
       const element = document.getElementById(target || "profile-settings")
       element?.scrollIntoView({ behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "center" })
-    })
+    }))
   }
   const progressPercent = Math.max(0, Math.min(100, Math.round((completedCount / lessons.length) * 100)))
   const avatarOptions = ["fox", "book", "star", "spark"]
