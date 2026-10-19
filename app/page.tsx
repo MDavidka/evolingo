@@ -1,9 +1,9 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import {
   ArrowRight, BarChart3, BookOpen, Check, CheckCircle2, ChevronRight, Flame,
-  Globe2, Heart, Lightbulb, LockKeyhole, Medal, RotateCcw, Trophy, UserRound,
+  Globe2, Heart, Lightbulb, Medal, RotateCcw, Trophy, UserRound,
   X, Zap,
 } from "lucide-react"
 
@@ -89,6 +89,7 @@ export default function App() {
   const [screen, setScreen] = useState<Screen>("home")
   const [selectedWorld, setSelectedWorld] = useState(worlds[0])
   const [completedTasks, setCompletedTasks] = useState<number[]>([])
+  const [readLessons, setReadLessons] = useState<number[]>([])
   const [notice, setNotice] = useState("")
   const finishLesson = () => {
     setCompletedTasks((previous) => previous.includes(1) ? previous : [...previous, 1])
@@ -96,11 +97,11 @@ export default function App() {
   }
   return <main className={`app-shell ${(screen === "lesson" || screen === "lessonIntro") ? "lesson-open" : ""}`}>
     <section className={`screen-content ${(screen === "lesson" || screen === "lessonIntro") ? "lesson-page" : ""}`}>
-      {screen === "home" && <Home completedTasks={completedTasks} onStart={(number) => {
+      {screen === "home" && <Home completedTasks={completedTasks} readLessons={readLessons} onStart={(number) => {
         if (number === 1) setScreen("lessonIntro")
         else setNotice("This lesson is being prepared. Present Simple is ready to practise!")
       }} notice={notice} clearNotice={() => setNotice("")} />}
-      {screen === "lessonIntro" && <LessonIntro onExit={() => setScreen("home")} onStart={() => setScreen("lesson")} />}
+      {screen === "lessonIntro" && <LessonIntro onExit={() => setScreen("home")} onStart={() => setScreen("lesson")} onReadComplete={() => setReadLessons((previous) => previous.includes(1) ? previous : [...previous, 1])} onNextLevel={() => { setCompletedTasks((previous) => previous.includes(1) ? previous : [...previous, 1]); setScreen("home") }} />}
       {screen === "lesson" && <Lesson onExit={() => setScreen("lessonIntro")} onComplete={finishLesson} />}
       {screen === "worlds" && <Worlds selected={selectedWorld} setSelected={setSelectedWorld} />}
       {screen === "leaderboard" && <Leaderboard />}
@@ -112,8 +113,8 @@ export default function App() {
 
 function Brand() { return <div className="brand"><img src={foxIcon} alt="Evölingo fox mascot" /><div><h1>Evölingo</h1></div></div> }
 
-function Home({ completedTasks, onStart, notice, clearNotice }: { completedTasks: number[]; onStart: (number: number) => void; notice: string; clearNotice: () => void }) {
-  const nextUnlocked = completedTasks.includes(1) ? 2 : 1
+function Home({ completedTasks, readLessons, onStart, notice, clearNotice }: { completedTasks: number[]; readLessons: number[]; onStart: (number: number) => void; notice: string; clearNotice: () => void }) {
+  const nextUnlocked = completedTasks.includes(1) || readLessons.includes(1) ? 2 : 1
   return <>
     <header className="app-header home-header"><Brand /><div className="health"><Heart fill="currentColor" size={20} /><strong>5</strong></div></header>
     <div className="section-heading home-heading"><div><p className="eyebrow">ENGLISH</p><h2>Your learning path</h2></div></div>
@@ -127,7 +128,7 @@ function Home({ completedTasks, onStart, notice, clearNotice }: { completedTasks
 }
 
 function TaskNode({ number, title, unlocked, completed, inDevelopment, onClick }: { number: number; title: string; unlocked: boolean; completed: boolean; inDevelopment: boolean; onClick: () => void }) {
-  const Icon = completed ? Check : unlocked ? BookOpen : LockKeyhole
+  const Icon = completed ? Check : BookOpen
   return <button className={`task-node ${unlocked ? "unlocked" : "locked"} ${completed ? "completed" : ""}`} disabled={!unlocked} onClick={onClick} aria-label={inDevelopment ? `${title}, Kidolgozás alatt` : title}>
     <span className="task-dot"><Icon size={24} strokeWidth={2.25} /></span>
     <span className="task-labels"><span className="task-name">{title}</span>{inDevelopment && <span className="task-status">Kidolgozás alatt</span>}</span>
@@ -135,7 +136,27 @@ function TaskNode({ number, title, unlocked, completed, inDevelopment, onClick }
 }
 
 
-function LessonIntro({ onExit, onStart }: { onExit: () => void; onStart: () => void }) {
+function LessonIntro({ onExit, onStart, onReadComplete, onNextLevel }: { onExit: () => void; onStart: () => void; onReadComplete: () => void; onNextLevel: () => void }) {
+  const [duration, setDuration] = useState(30)
+  const [secondsLeft, setSecondsLeft] = useState(30)
+  const [timerStarted, setTimerStarted] = useState(false)
+  const [readingComplete, setReadingComplete] = useState(false)
+  useEffect(() => {
+    if (!timerStarted || readingComplete || secondsLeft <= 0) return
+    const timer = window.setInterval(() => setSecondsLeft((seconds) => Math.max(0, seconds - 1)), 1000)
+    return () => window.clearInterval(timer)
+  }, [timerStarted, readingComplete, secondsLeft])
+  useEffect(() => {
+    if (secondsLeft === 0 && timerStarted && !readingComplete) {
+      setReadingComplete(true)
+      onReadComplete()
+    }
+  }, [secondsLeft, timerStarted, readingComplete, onReadComplete])
+  const startReadingTimer = () => {
+    setSecondsLeft(duration)
+    setTimerStarted(true)
+    setReadingComplete(false)
+  }
   return <div className="lesson-layout lesson-intro-layout">
     <header className="lesson-topbar">
       <button className="exit-lesson" onClick={onExit} aria-label="Vissza a tanulási útvonalhoz"><X size={27} /></button>
@@ -173,7 +194,18 @@ function LessonIntro({ onExit, onStart }: { onExit: () => void; onStart: () => v
       <section className="lesson-note-block"><h2>4. Gyakori időhatározók</h2><p>Ezek gyakran jelzik, hogy Present Simple-t használunk:</p><div className="vocab-chips"><span>always – mindig</span><span>usually – általában</span><span>often – gyakran</span><span>sometimes – néha</span><span>never – soha</span><span>every day – minden nap</span></div></section>
       <section className="lesson-note-block"><h2>Gyors összefoglaló</h2><ul className="lesson-summary-list"><li>Szokás vagy tény → Present Simple</li><li>He / She / It → az állító ige általában -s végződést kap</li><li>Tagadás → don't / doesn't + alapige</li><li>Kérdés → Do / Does + alany + alapige?</li></ul></section>
       <section className="future-media-card"><span><Lightbulb size={21} /></span><div><strong>Videók és illusztrációk</strong><p>Később ide kerülhetnek rövid magyarázó videók, nyelvtani ábrák és példamondat-illusztrációk.</p><small>Multimédiás tananyag előkészítve</small></div></section>
-      <div className="intro-practice-note"><CheckCircle2 size={19} /><span>Ha átolvastad az anyagot, jöhet az 5 gyakorlófeladat.</span></div>
+      <section className="reading-timer-card">
+        {!readingComplete ? <>
+          <div className="reading-timer-heading"><span className="reading-timer-icon"><BookOpen size={20} /></span><div><strong>Olvasási idő</strong><p>Olvasd át a leckét, majd feloldhatod a következő szintet.</p></div></div>
+          <div className="timer-duration-options">
+            <button className={duration === 30 ? "selected" : ""} onClick={() => { setDuration(30); if (!timerStarted) setSecondsLeft(30) }} disabled={timerStarted}>30 másodperc</button>
+            <button className={duration === 60 ? "selected" : ""} onClick={() => { setDuration(60); if (!timerStarted) setSecondsLeft(60) }} disabled={timerStarted}>60 másodperc</button>
+          </div>
+          {timerStarted && <div className="reading-countdown"><span className="countdown-track"><span style={{ width: `${((duration - secondsLeft) / duration) * 100}%` }} /></span><strong>{secondsLeft} mp</strong></div>}
+          <button className="reading-timer-start" onClick={startReadingTimer} disabled={timerStarted}>{timerStarted ? "Olvasási idő folyamatban…" : "Olvasás indítása"}</button>
+        </> : <div className="reading-complete-state"><span className="reading-success-icon"><CheckCircle2 size={26} /></span><div><strong>Lecke elolvasva! +10 XP</strong><p>Jó munkát! A következő lecke most már feloldható.</p></div><button className="primary-action" onClick={onNextLevel}>Következő szint feloldása <ArrowRight size={19} /></button></div>}
+      </section>
+      <div className="intro-practice-note"><CheckCircle2 size={19} /><span>Ha szeretnéd, a tananyag után a gyakorlófeladatokat is elvégezheted.</span></div>
     </div>
     <footer className="lesson-action-bar intro-action-bar"><button className="primary-action" onClick={onStart}>Gyakorlás indítása <ArrowRight size={20} /></button></footer>
   </div>
