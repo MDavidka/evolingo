@@ -222,3 +222,58 @@ html, body { background: #fff; }
   .lesson-hearts strong { font-size: 18px; }
   .primary-action { min-height: 60px; }
 }
+
+
+/* Lesson theory stage: readable, markdown-like study notes */
+.lesson-intro-layout { min-height: calc(100dvh - 12px); }
+.intro-top-title { min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.intro-top-title span { color: #ff7900; font-size: 10px; font-weight: 850; letter-spacing: 1px; }
+.intro-top-title strong { font-size: 17px; line-height: 1.2; letter-spacing: -.35px; }
+.intro-book-icon { display: grid; place-items: center; width: 46px; height: 46px; border-radius: 14px; color: #ff7900; background: #fff3e5; }
+.intro-scroll-content { flex: 1; min-height: 0; padding: 0 0 22px; }
+.intro-hero { padding: 22px 19px 19px; margin: 0 0 20px; border-radius: 22px; background: linear-gradient(145deg,#fff7ed,#fff); border: 1px solid #ffead5; }
+.intro-hero-mascot { float: right; width: 80px; height: 80px; margin: 0 0 10px 10px; border-radius: 23px; overflow: hidden; background: #ffead5; }
+.intro-hero-mascot img { width: 100%; height: 100%; object-fit: cover; }
+.intro-eyebrow { color: #d96c0a; font-size: 10px; font-weight: 850; letter-spacing: 1px; }
+.intro-hero h1 { clear: left; margin: 10px 0 9px; font-size: clamp(30px,8vw,38px); line-height: 1.04; letter-spacing: -1.5px; }
+.intro-hero > p { margin: 0; max-width: 330px; color: #656565; font-size: 14px; line-height: 1.6; }
+.intro-meta { display: flex; flex-wrap: wrap; gap: 9px 15px; margin-top: 17px; color: #80684e; font-size: 11px; font-weight: 750; }
+.intro-meta span { display: inline-flex; align-items: center; gap: 5px; }
+.lesson-note { display: grid; grid-template-columns: 38px minmax(0,1fr); gap: 12px; padding: 17px; margin-bottom: 23px; border: 1px solid #f0e8dd; border-radius: 17px; background: #fffaf4; }
+.note-number { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 11px; color: #b66c25; background: #ffecd7; font-size: 12px; font-weight: 850; }
+.lesson-note h2,.lesson-note-block h2 { margin: 0 0 9px; font-size: 19px; line-height: 1.25; letter-spacing: -.45px; }
+.lesson-note p,.lesson-note-block > p { margin: 0 0 13px; color: #555; font-size: 14px; line-height: 1.7; }
+.lesson-note p:last-child { margin-bottom: 0; }
+.lesson-note-block { margin: 0 0 25px; padding: 0 2px; }
+.lesson-note-block h2 { font-size: 20px; margin-bottom: 10px; }
+.grammar-table { display: grid; gap: 0; overflow: hidden; margin: 13px 0; border: 1px solid #eaeaea; border-radius: 13px; }
+.grammar-table > div { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 13px 12px; background: #fff; font-size: 12px; }
+.grammar-table > div + div { border-top: 1px solid #eee; background: #fffaf4; }
+.grammar-table span { color: #666; }
+.grammar-table strong { color: #222; font-size: 13px; }
+.example-card { padding: 13px 14px; margin: 10px 0; border: 1px solid #eee; border-left: 3px solid #ff9b3d; border-radius: 12px; background: #fff; }
+.example-label { color: #c06a1b; font-size: 9px; font-weight: 850; letter-spacing: 1px; }
+.example-card p { margin: 4px 0 3px; font-size: 15px; line-height: 1.5; font-weight: 650; }
+.example-card small { color: #858585; font-size: 12px; line-height: 1.5; }
+.lesson-callout { display: flex; align-items: flex-start; gap: 9px; padding: 12px; margin-top: 12px; border-radius: 12px; background: #fff5d9; color: #8d6717; }
+.lesson-callout svg { flex: none; margin-top: 1px; }
+.lesson-callout p { margin: 0; font-size: 12px; line-height: 1.6; }
+.vocab-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 13px; }
+.vocab-chips span { padding: 9px 11px; border: 1px solid #f0e4d7; border-radius: 10px; background: #fff8f0; color: #6d563f; font-size: 12px; font-weight: 650; }
+.lesson-summary-list { display: grid; gap: 10px; padding-left: 22px; margin: 12px 0 0; color: #4d4d4d; font-size: 13px; line-height: 1.6; }
+.lesson-summary-list li::marker { color: #ff7900; }
+.future-media-card { display: flex; align-items: flex-start; gap: 12px; padding: 15px; margin: 20px 0; border: 1px dashed #e5c9aa; border-radius: 15px; background: #fffaf4; }
+.future-media-card > span { display: grid; place-items: center; width: 38px; height: 38px; flex: none; border-radius: 12px; color: #bd741f; background: #ffecd3; }
+.future-media-card strong { font-size: 13px; }
+.future-media-card p { margin: 5px 0; color: #6c6257; font-size: 12px; line-height: 1.55; }
+.future-media-card small { color: #a18464; font-size: 10px; }
+.intro-practice-note { display: flex; align-items: center; gap: 9px; padding: 12px 0 15px; color: #43845d; font-size: 12px; line-height: 1.5; }
+.intro-practice-note svg { flex: none; }
+.intro-action-bar { position: sticky; bottom: 0; margin-top: 0; }
+@media (max-width: 360px) {
+  .intro-hero { padding: 17px 14px; }
+  .intro-hero-mascot { width: 66px; height: 66px; border-radius: 18px; }
+  .lesson-note { grid-template-columns: 32px minmax(0,1fr); gap: 9px; padding: 13px; }
+  .note-number { width: 31px; height: 31px; }
+  .lesson-note h2,.lesson-note-block h2 { font-size: 18px; }
+}
