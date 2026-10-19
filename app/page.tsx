@@ -605,7 +605,7 @@ function Profile({ completedCount, readCount, completedTaskCount, xp, stars, use
 
   return <div className={"profile-page profile-theme-" + profileTheme}>
     <section className="profile-hero">
-      <div className={"profile-cover" + (bannerImage ? " has-custom-banner" : "")} aria-hidden="true" style={bannerImage ? { backgroundImage: "linear-gradient(180deg, rgba(12,18,24,.05), rgba(12,18,24,.18)), url(" + bannerImage + ")" } : undefined} />
+      <div className={"profile-cover" + (bannerImage ? " has-custom-banner" : "")} aria-hidden="true">{bannerImage && <img className="profile-cover-image" src={bannerImage} alt="" />}</div>
       <button className="profile-banner-settings" type="button" aria-label="Profil és borítókép szerkesztése" title="Profil szerkesztése" onClick={openSettings}>
         <Pencil size={20} strokeWidth={2.2} />
       </button>
@@ -665,7 +665,7 @@ function Profile({ completedCount, readCount, completedTaskCount, xp, stars, use
 }
 function PageHeader({ title }: { title: string }) { return <header className="page-header"><div className="brand compact"><img src={foxIcon} alt="Evölingo róka" /><div><h1>Evölingo</h1></div></div><h1>{title}</h1></header> }
 function Nav({ screen, setScreen }: { screen: Screen; setScreen: (screen: Screen) => void }) {
-  const items: [Screen, string, React.ElementType][] = [["home", "Tanulás", BookOpen], ["shop", "Bolt", ShoppingBag], ["friends", "Barátok", Users], ["leaderboard", "Ranglista", BarChart3], ["profile", "Profil", UserRound]]
+  const items: [Screen, string, React.ElementType][] = [["home", "Tanulás", BookOpen], ["friends", "Barátok", Users], ["leaderboard", "Ranglista", BarChart3], ["profile", "Profil", UserRound]]
   const activeIndex = Math.max(0, items.findIndex(([id]) => id === screen))
   const [dragIndex, setDragIndex] = useState<number | null>(null)
   const dragStart = useRef<{ x: number; index: number; width: number } | null>(null)
