@@ -241,6 +241,7 @@ export default function App() {
         readLessons={readLessons}
         completedLessons={completedLessons}
         answeredTasks={answeredTasks}
+        stars={stars}
         notice={notice}
         clearNotice={() => setNotice("")}
         onOpenLesson={(id) => openLesson(id)}
@@ -270,8 +271,8 @@ export default function App() {
 
 function Brand() { return <div className="brand"><img src={foxIcon} alt="Evölingo fox mascot" /><div><h1>Evölingo</h1></div></div> }
 
-function Home({ readLessons, completedLessons, answeredTasks, notice, clearNotice, onOpenLesson, onOpenTask }: {
-  readLessons: number[]; completedLessons: number[]; answeredTasks: string[]; notice: string; clearNotice: () => void
+function Home({ readLessons, completedLessons, answeredTasks, stars, notice, clearNotice, onOpenLesson, onOpenTask }: {
+  readLessons: number[]; completedLessons: number[]; answeredTasks: string[]; stars: number; notice: string; clearNotice: () => void
   onOpenLesson: (id: number) => void; onOpenTask: (lessonId: number, index: number) => void
 }) {
   return <>
@@ -314,7 +315,6 @@ function Home({ readLessons, completedLessons, answeredTasks, notice, clearNotic
                 >{answered ? <Check size={15} /> : taskOpen ? index + 1 : <LockKeyhole size={12} />}</button>
               })}
             </div>
-            <span className="task-completion-count">{lesson.questions.filter((_, index) => answeredTasks.includes(lesson.id + "-" + index)).length}/{lesson.questions.length}</span>
           </div>
         </article>
       })}
