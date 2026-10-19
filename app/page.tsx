@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { BarChart3, BookOpen, Check, ChevronRight, Flame, Globe2, Heart, LockKeyhole, Medal, Trophy, UserRound, Zap } from "lucide-react"
+import { BarChart3, BookOpen, Check, Flame, Globe2, Heart, LockKeyhole, Medal, Trophy, UserRound, Zap } from "lucide-react"
 
 const foxIcon = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Image-D15751D4-6Ne8AGNrryN8wlvyBepC8VDGQkHTw4.jpeg"
 type Screen = "home" | "worlds" | "leaderboard" | "profile"
@@ -25,7 +25,7 @@ export default function App() {
   const [screen, setScreen] = useState<Screen>("home")
   const [selectedWorld, setSelectedWorld] = useState(worlds[0])
   return <main className="app-shell"><section className="screen-content">
-    {screen === "home" && <Home onWorlds={() => setScreen("worlds")} />}
+    {screen === "home" && <Home />}
     {screen === "worlds" && <Worlds selected={selectedWorld} setSelected={setSelectedWorld} />}
     {screen === "leaderboard" && <Leaderboard />}
     {screen === "profile" && <Profile />}
@@ -33,10 +33,9 @@ export default function App() {
 }
 
 function Brand() { return <div className="brand"><img src={foxIcon} alt="Evölingo fox mascot" /><div><h1>Evölingo</h1></div></div> }
-function Home({ onWorlds }: { onWorlds: () => void }) { return <>
+function Home() { return <>
   <header className="app-header home-header"><Brand /><div className="health"><Heart fill="currentColor" size={20} /><strong>5</strong></div></header>
-  <div className="section-heading home-heading"><div><p className="eyebrow">ENGLISH</p><h2>Your learning path</h2></div><button className="link-button" onClick={onWorlds}>Worlds <ChevronRight size={17} /></button></div>
-  <div className="task-count"><strong>{TASK_LIMIT} tasks</strong><span>10 named · 90 in development</span></div>
+  <div className="section-heading home-heading"><div><p className="eyebrow">ENGLISH</p><h2>Your learning path</h2></div></div>
   <div className="task-path">{tasks.map((task) => <TaskNode key={task.number} number={task.number} title={task.title} inDevelopment={task.inDevelopment} unlocked={task.number === 1} completed={false} />)}</div>
 </> }
 function TaskNode({ number, title, unlocked, completed, inDevelopment }: { number: number; title: string; unlocked: boolean; completed: boolean; inDevelopment: boolean }) { const Icon = completed ? Check : unlocked ? BookOpen : LockKeyhole; return <button className={`task-node ${unlocked ? "unlocked" : "locked"} ${completed ? "completed" : ""}`} disabled={!unlocked} aria-label={inDevelopment ? `${title}, Kidolgozás alatt` : title}><span className="task-dot"><Icon size={24} strokeWidth={2.25} /></span><span className="task-labels"><span className="task-name">{title}</span>{inDevelopment && <span className="task-status">Kidolgozás alatt</span>}</span></button> }
