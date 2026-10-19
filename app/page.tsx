@@ -497,8 +497,14 @@ function Friends({ userName, stars, lives }: { userName: string; stars: number; 
     try {
       const raw = localStorage.getItem("evolingo.friends.v1")
       if (raw) {
-        const saved = JSON.parse(raw) as { friends?: unknown; requests?: unknown }
-        if (Array.isArray(saved.friends)) setFriends(saved.friends.filter((v): v is string => typeof v === "string").slice(0,100))
+        const saved = JSON.parse(raw) as { version?: unknown; friends?: unknown; requests?: unknown }
+        if (Array.isArray(saved.friends)) {
+          const savedFriends = saved.friends.filter((v): v is string => typeof v === "string").slice(0,100)
+          // Migrate older empty preview data to the current reference-style demo list once.
+          setFriends(saved.version === 2 || savedFriends.length > 0 ? savedFriends : ["sofia", "marton", "liam", "anna", "david"])
+        } else {
+          setFriends(["sofia", "marton", "liam", "anna", "david"])
+        }
         if (Array.isArray(saved.requests)) setRequests(saved.requests.filter((v): v is string => typeof v === "string").slice(0,100))
       } else {
         // First-run preview data mirrors the design reference; users can remove any demo contact.
@@ -509,7 +515,7 @@ function Friends({ userName, stars, lives }: { userName: string; stars: number; 
   }, [])
   useEffect(() => {
     if (!storageReady) return
-    try { localStorage.setItem("evolingo.friends.v1", JSON.stringify({ friends, requests })) } catch { /* Optional local persistence. */ }
+    try { localStorage.setItem("evolingo.friends.v1", JSON.stringify({ version: 2, friends, requests })) } catch { /* Optional local persistence. */ }
   }, [storageReady, friends, requests])
 
   const search = (value: string) => {
