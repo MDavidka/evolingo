@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react"
 import {
   ArrowRight, BarChart3, BookOpen, Check, CheckCircle2,
   Flame, Heart, Lightbulb, Medal, RotateCcw, Trophy, UserRound,
-  X, Zap, LockKeyhole, ClipboardCheck, Star, ShoppingBag, Gift, Palette, Pencil,
+  X, Zap, LockKeyhole, ClipboardCheck, Star, ShoppingBag, Gift, Palette, Pencil, Settings,
 } from "lucide-react"
 
 const foxIcon = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Image-D15751D4-6Ne8AGNrryN8wlvyBepC8VDGQkHTw4.jpeg"
@@ -505,6 +505,19 @@ function Profile({ completedCount, xp, userName, setUserName, avatar, setAvatar,
   return <div className="profile-page">
     <section className="profile-hero">
       <div className="profile-cover" aria-hidden="true" />
+      <button
+        className="profile-banner-settings"
+        type="button"
+        aria-label="Profilbeállítások megnyitása"
+        title="Beállítások"
+        onClick={() => {
+          setShowSettings(true)
+          document.getElementById("profile-settings")?.scrollIntoView({
+            behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
+            block: "center",
+          })
+        }}
+      ><Settings size={21} strokeWidth={2.1} /></button>
       <div className="profile-identity">
         <div className="profile-avatar-wrap">
           <div className="large-avatar">
@@ -516,10 +529,10 @@ function Profile({ completedCount, xp, userName, setUserName, avatar, setAvatar,
         <p className="profile-handle">@{(userName || "tanulo").normalize("NFKD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "").slice(0, 20) || "tanulo"}</p>
       </div>
     </section>
-    <section className="profile-overview" aria-label="Tanulási áttekintés">
-      <div className="profile-overview-heading"><div><span className="profile-overview-kicker">TANULÁSI HALADÁS</span><h2>{completedCount > 0 ? `Már ${completedCount} leckét teljesítettél.` : "Építsd fel az angoltudásod."}</h2></div><span className="profile-overview-icon"><BookOpen size={21} /></span></div>
-      <div className="profile-overview-metrics"><div><strong>{completedCount}</strong><span>leckék készen</span></div><div><strong>{xp.toLocaleString("en-US")}</strong><span>összegyűjtött XP</span></div></div>
-      <div className="profile-overview-progress-label"><span>Alapleckék</span><strong>{Math.min(completedCount, 10)} / 10</strong></div><div className="profile-overview-track" role="progressbar" aria-label="Teljesített alapleckék" aria-valuemin={0} aria-valuemax={10} aria-valuenow={Math.min(completedCount, 10)}><span style={{ width: Math.min(100, completedCount * 10) + "%" }} /></div>
+    <section className="profile-social-stats" aria-label="Profilstatisztikák">
+      <div className="profile-social-stat"><strong>0</strong><span>Széria</span></div>
+      <div className="profile-social-stat"><strong>0</strong><span>Barát</span></div>
+      <div className="profile-social-stat"><strong>{xp.toLocaleString("en-US")}</strong><span>Pont</span></div>
     </section>
     <div className="profile-lower-content">
       <section className="profile-settings" id="profile-settings" aria-label="Profilbeállítások">
