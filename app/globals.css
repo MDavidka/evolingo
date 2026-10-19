@@ -423,3 +423,27 @@ html, body { background: #fff; }
   .lesson-illustration { padding: 8px; }
   .lesson-illustration img { max-height: 180px; }
 }
+
+
+/* Timed reading gate for lesson notes */
+.reading-timer-card { padding: 17px; margin: 18px 0 10px; border: 1px solid #ece9e4; border-radius: 16px; background: #fafaf9; }
+.reading-timer-heading { display: flex; align-items: flex-start; gap: 11px; }
+.reading-timer-icon { display: grid; place-items: center; flex: none; width: 40px; height: 40px; border-radius: 12px; background: #fff0df; color: #ef790e; }
+.reading-timer-heading strong { display: block; margin: 2px 0 4px; font-size: 15px; }
+.reading-timer-heading p { margin: 0; color: #777; font-size: 12px; line-height: 1.55; }
+.timer-duration-options { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; margin: 15px 0 12px; }
+.timer-duration-options button { min-height: 43px; border: 1px solid #e5e5e5; border-radius: 10px; background: #fff; color: #555; font-size: 12px; font-weight: 750; }
+.timer-duration-options button.selected { border-color: #ff7900; color: #c45d00; background: #fff2e5; }
+.timer-duration-options button:disabled { opacity: .65; }
+.reading-timer-start { width: 100%; min-height: 48px; border-radius: 12px; background: #292929; color: #fff; font-size: 14px; font-weight: 800; }
+.reading-timer-start:disabled { background: #888; }
+.reading-countdown { display: flex; align-items: center; gap: 11px; margin: 14px 0; }
+.countdown-track { display: block; height: 8px; flex: 1; overflow: hidden; border-radius: 99px; background: #e8e8e8; }
+.countdown-track span { display: block; height: 100%; border-radius: inherit; background: #ff7900; transition: width .25s linear; }
+.reading-countdown strong { min-width: 44px; text-align: right; color: #555; font-size: 12px; font-variant-numeric: tabular-nums; }
+.reading-complete-state { display: flex; flex-direction: column; align-items: flex-start; gap: 10px; }
+.reading-success-icon { display: grid; place-items: center; width: 45px; height: 45px; border-radius: 50%; background: #e7f8ee; color: #218650; }
+.reading-complete-state > div strong { display: block; font-size: 16px; }
+.reading-complete-state p { margin: 5px 0 4px; color: #777; font-size: 13px; line-height: 1.55; }
+.reading-complete-state .primary-action { margin-top: 8px; min-height: 54px; }
+@media (max-width: 360px) { .reading-timer-card { padding: 13px; } .timer-duration-options button { font-size: 11px; } }
