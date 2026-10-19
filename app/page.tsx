@@ -280,40 +280,30 @@ function Home({ readLessons, completedLessons, answeredTasks, stars, notice, cle
   const [selectedLessonId, setSelectedLessonId] = useState<number | null>(null)
   const selectedLesson = lessons.find((lesson) => lesson.id === selectedLessonId)
   const nextTaskIndex = selectedLesson ? selectedLesson.questions.findIndex((_, index) => !answeredTasks.includes(selectedLesson.id + "-" + index)) : -1
-  const unlocked = selectedLesson ? selectedLesson.id === 1 || completedLessons.includes(selectedLesson.id - 1) : false
-  const alreadyRead = selectedLesson ? readLessons.includes(selectedLesson.id) : false
   const continueIndex = nextTaskIndex === -1 ? 0 : nextTaskIndex
   return <>
     <header className="app-header home-header"><Brand /><div className="home-currencies"><div className="star-balance" aria-label={stars + " csillag"}><Star size={21} fill="currentColor" /><strong>{stars}</strong></div><div className="health"><Heart fill="currentColor" size={20} /><strong>5</strong></div></div></header>
     <div className="section-heading home-heading"><div><p className="eyebrow">ANGOL</p><h2>Tanulási útvonal</h2></div></div>
     {notice && <button className="inline-notice" onClick={clearNotice}><span>{notice}</span><X size={16} /></button>}
     <div className="learning-path compact-learning-path">
-      {pathItems.map((item) => {
+      {pathItems.map((item, index) => {
         const lesson = "questions" in item ? item as LessonUnit : null
         const isUnlocked = item.id === 1 || completedLessons.includes(item.id - 1)
         const complete = completedLessons.includes(item.id)
-        if (!lesson) return <div className="future-path-node compact-future-node" key={item.id}><span className="future-book-dot"><LockKeyhole size={23} /></span></div>
-        return <button className={"compact-lesson-node " + (isUnlocked ? "node-unlocked" : "node-locked") + (complete ? " node-complete" : "")} key={lesson.id} disabled={!isUnlocked} onClick={() => setSelectedLessonId(lesson.id)} aria-label={"Lecke megnyitása: " + lesson.title} title={lesson.title}>
-          <span className="compact-lesson-icon"><BookOpen size={29} />{complete && <span className="compact-lesson-check"><Check size={14} /></span>}</span>
-        </button>
+        const side = index % 2 === 0 ? "path-row-left" : "path-row-right"
+        if (!lesson) return <div className={"compact-lesson-row " + side + " compact-future-row"} key={item.id}><span className="compact-lesson-icon node-locked"><LockKeyhole size={24} /></span><span className="compact-lesson-name muted">{item.title}</span></div>
+        return <div className={"compact-lesson-row " + side} key={lesson.id}>
+          <button className={"compact-lesson-icon-button " + (isUnlocked ? "node-unlocked" : "node-locked") + (complete ? " node-complete" : "")} disabled={!isUnlocked} onClick={() => setSelectedLessonId(selectedLessonId === lesson.id ? null : lesson.id)} aria-label={"Lecke vagy feladat: " + lesson.title} aria-expanded={selectedLessonId === lesson.id}>
+            <span className="compact-lesson-icon"><BookOpen size={28} />{complete && <span className="compact-lesson-check"><Check size={13} /></span>}</span>
+          </button>
+          <button className="compact-lesson-name" disabled={!isUnlocked} onClick={() => setSelectedLessonId(selectedLessonId === lesson.id ? null : lesson.id)}>{lesson.title}</button>
+          {selectedLessonId === lesson.id && <div className={"lesson-choice-popover " + side} role="group" aria-label="Lecke vagy feladat">
+            <button onClick={() => { setSelectedLessonId(null); onOpenLesson(lesson.id) }}>Lecke</button>
+            <button onClick={() => { setSelectedLessonId(null); onOpenTask(lesson.id, continueIndex) }}>Feladat</button>
+          </div>}
+        </div>
       })}
     </div>
-    {selectedLesson && <div className="lesson-modal-backdrop" role="presentation" onClick={() => setSelectedLessonId(null)}>
-      <section className="lesson-modal" role="dialog" aria-modal="true" aria-labelledby="lesson-modal-title" onClick={(event) => event.stopPropagation()}>
-        <button className="lesson-modal-close" onClick={() => setSelectedLessonId(null)} aria-label="Bezárás"><X size={22} /></button>
-        <div className={"lesson-modal-icon " + (completedLessons.includes(selectedLesson.id) ? "modal-complete" : "")}><BookOpen size={31} />{completedLessons.includes(selectedLesson.id) && <span><Check size={14} /></span>}</div>
-        <p className="lesson-modal-eyebrow">{selectedLesson.level} · ANGOL</p>
-        <h2 id="lesson-modal-title">{selectedLesson.title}</h2>
-        <p className="lesson-modal-summary">{selectedLesson.summary}</p>
-        <div className="lesson-modal-actions">
-          <button className="lesson-modal-secondary" disabled={!unlocked} onClick={() => { const id=selectedLesson.id; setSelectedLessonId(null); onOpenLesson(id) }}>{alreadyRead ? "Lecke újraolvasása" : "Lecke megnyitása"}</button>
-          <button className="lesson-modal-primary" disabled={!unlocked} onClick={() => { const id=selectedLesson.id; setSelectedLessonId(null); if (!alreadyRead) onOpenLesson(id); else onOpenTask(id, continueIndex) }}>
-            {completedLessons.includes(selectedLesson.id) ? "Újragyakorlás" : !alreadyRead ? "Lecke kezdése" : nextTaskIndex === -1 ? "Újragyakorlás" : "Folytatás · " + (continueIndex + 1) + ". feladat"} <ArrowRight size={18} />
-          </button>
-        </div>
-        {!unlocked && <p className="lesson-modal-locked">Előbb fejezd be az előző leckét.</p>}
-      </section>
-    </div>}
   </>
 }
 
