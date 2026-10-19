@@ -304,7 +304,7 @@ function Home({ readLessons, completedLessons, answeredTasks, stars, notice, cle
         const complete = completedLessons.includes(item.id)
         const side = index % 2 === 0 ? "path-row-left" : "path-row-right"
         if (!lesson) return <div className={"compact-lesson-row " + side + " compact-future-row"} key={item.id}><span className="compact-lesson-icon node-locked"><LockKeyhole size={24} /></span><span className="compact-lesson-name muted">{item.title}</span></div>
-        return <div className={"compact-lesson-row " + side} key={lesson.id}>
+        return <div className={"compact-lesson-row " + side + (complete ? " lesson-row-complete" : "")} key={lesson.id}>
           <button className={"compact-lesson-icon-button " + (isUnlocked ? "node-unlocked" : "node-locked") + (complete ? " node-complete" : "")} disabled={!isUnlocked} onClick={() => setSelectedLessonId(selectedLessonId === lesson.id ? null : lesson.id)} aria-label={"Lecke vagy feladat: " + lesson.title} aria-expanded={selectedLessonId === lesson.id} aria-label={lesson.title + (complete ? ", teljesítve" : "")}>
             <span className="compact-lesson-icon"><BookOpen size={28} />{complete && <span className="compact-lesson-check"><Check size={13} /></span>}</span>
           </button>
