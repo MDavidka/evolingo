@@ -2961,3 +2961,9 @@ html, body { background: #fff; }
 @media (max-width: 390px) {
   .profile-page .profile-cover { height: 140px !important; min-height: 140px !important; }
 }
+
+
+/* Four visible tabs after removing the shop destination. */
+.bottom-nav .nav-selection-indicator {
+  width: calc((100% - 12px) / 4) !important;
+}
