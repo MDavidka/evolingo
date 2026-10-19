@@ -447,3 +447,52 @@ html, body { background: #fff; }
 .reading-complete-state p { margin: 5px 0 4px; color: #777; font-size: 13px; line-height: 1.55; }
 .reading-complete-state .primary-action { margin-top: 8px; min-height: 54px; }
 @media (max-width: 360px) { .reading-timer-card { padding: 13px; } .timer-duration-options button { font-size: 11px; } }
+
+
+/* Minimal lesson header countdown; no sticky bottom action */
+.lesson-intro-layout .lesson-topbar { position: relative; }
+.reading-clock {
+  position: relative;
+  width: 46px;
+  height: 46px;
+  display: grid;
+  place-items: center;
+  color: #ff7900;
+  flex: none;
+}
+.reading-clock svg { position: absolute; inset: 0; width: 100%; height: 100%; transform: rotate(-90deg); }
+.reading-clock-track { fill: none; stroke: #f0f0f0; stroke-width: 3.5; }
+.reading-clock-progress { fill: none; stroke: #ff7900; stroke-width: 3.5; stroke-linecap: round; transition: stroke-dashoffset .25s linear; }
+.reading-clock > span { position: relative; z-index: 1; font-size: 14px; font-weight: 800; font-variant-numeric: tabular-nums; }
+.reading-clock.is-complete { border-radius: 50%; background: #e9f8ef; color: #218650; }
+.lesson-illustration,
+.lesson-illustration img {
+  border: 0 !important;
+  box-shadow: none !important;
+}
+.lesson-illustration {
+  padding: 0 !important;
+  margin: 12px 0 28px !important;
+  background: transparent !important;
+  border-radius: 0 !important;
+}
+.lesson-illustration img { max-height: 230px; object-fit: contain; }
+.lesson-illustration figcaption { color: #888; font-size: 11px; text-align: center; padding-top: 7px; }
+.lesson-intro-layout .intro-action-bar { display: none !important; }
+.reading-inline-status { display: flex; align-items: center; gap: 9px; padding: 14px 0; color: #777; font-size: 12px; line-height: 1.5; }
+.reading-inline-status svg { flex: none; color: #ff7900; }
+.reading-inline-status:has(svg:first-child) { color: #218650; }
+.reading-complete-state { margin: 12px 0 20px; }
+.reading-complete-state .primary-action,
+.secondary-practice-action {
+  width: 100%;
+  min-height: 54px;
+  border-radius: 14px;
+  font-size: 14px;
+  font-weight: 800;
+}
+.secondary-practice-action { margin-top: 8px; border: 1px solid #e6e6e6; background: #fff; color: #333; }
+@media (max-width: 360px) {
+  .reading-clock { width: 42px; height: 42px; }
+  .lesson-illustration img { max-height: 190px; }
+}
