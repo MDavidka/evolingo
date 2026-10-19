@@ -8,6 +8,18 @@ import {
 } from "lucide-react"
 
 const foxIcon = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Image-D15751D4-6Ne8AGNrryN8wlvyBepC8VDGQkHTw4.jpeg"
+const lessonIllustrations: Record<number, { src: string; alt: string }> = {
+  1: { src: "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=1200&q=85", alt: "Kávé és reggeli rutin" },
+  2: { src: "https://images.unsplash.com/photo-1590649804407-daf662463c08?auto=format&fit=crop&w=1200&q=85", alt: "Két ember éppen sétál és beszélget" },
+  3: { src: "https://images.unsplash.com/photo-1506784983877-45594efa4cbe?auto=format&fit=crop&w=1200&q=85", alt: "Naptár és jegyzetek a múltbeli eseményekhez" },
+  4: { src: "https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=1200&q=85", alt: "Éppen ételt készítő ember a konyhában" },
+  5: { src: "https://images.unsplash.com/photo-1519501025264-65ba15a82390?auto=format&fit=crop&w=1200&q=85", alt: "Városi látkép jövőbeli tervekről szóló leckéhez" },
+  6: { src: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=1200&q=85", alt: "Projekttervezés és munkadokumentumok" },
+  7: { src: "https://images.unsplash.com/photo-1583258292688-d0213dc5a3a8?auto=format&fit=crop&w=1200&q=85", alt: "Alma és más gyümölcsök a boltban" },
+  8: { src: "https://images.unsplash.com/photo-1507842217343-583bb7270b66?auto=format&fit=crop&w=1200&q=85", alt: "Könyvekkel teli könyvtár" },
+  9: { src: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1200&q=85", alt: "Különböző magasságú hegycsúcsok" },
+  10: { src: "https://images.unsplash.com/photo-1649843787933-a4e0d5313391?auto=format&fit=crop&w=1200&q=85", alt: "Sötét esőfelhők a feltételes mondatok példáihoz" },
+}
 type Screen = "home" | "lessonIntro" | "task" | "shop" | "leaderboard" | "profile"
 type Example = { sentence: string; translation: string }
 type LessonSection = { title: string; body: string; rows?: [string, string][]; examples?: Example[]; tip?: string }
@@ -299,7 +311,7 @@ function Home({ readLessons, completedLessons, answeredTasks, stars, notice, cle
           <button className="compact-lesson-name" disabled={!isUnlocked} onClick={() => setSelectedLessonId(selectedLessonId === lesson.id ? null : lesson.id)}><strong>{lesson.title}</strong><span>{lesson.summary}</span></button>
           {selectedLessonId === lesson.id && <div className={"lesson-choice-popover " + side} role="group" aria-label="Lecke vagy feladat">
             <button onClick={() => { setSelectedLessonId(null); onOpenLesson(lesson.id) }}>Lecke</button>
-            <button onClick={() => { setSelectedLessonId(null); onOpenTask(lesson.id, continueIndex) }}>Feladat</button>
+            <button disabled={!readLessons.includes(lesson.id)} onClick={() => { setSelectedLessonId(null); onOpenTask(lesson.id, continueIndex) }}><span>Feladat</span>{!readLessons.includes(lesson.id) && <LockKeyhole size={13} />}</button>
           </div>}
         </div>
       })}
@@ -325,7 +337,7 @@ function LessonIntro({ lesson, onExit, onReadComplete, onPractice, alreadyRead }
   }, [secondsLeft, readingComplete, onReadComplete])
   const circumference = 2 * Math.PI * 18
   const progress = (30 - secondsLeft) / 30
-  return <div className="lesson-layout lesson-intro-layout">
+  return <div className="lesson-layout lesson-intro-layout lesson-reader" data-lesson-theme={lesson.id}>
     <header className="lesson-topbar">
       <button className="exit-lesson" onClick={onExit} aria-label="Vissza a tanulási útvonalhoz"><X size={27} /></button>
       <div className="intro-top-title"><span>LECKE {String(lesson.id).padStart(2, "0")}</span><strong>{lesson.title}</strong></div>
@@ -341,7 +353,7 @@ function LessonIntro({ lesson, onExit, onReadComplete, onPractice, alreadyRead }
         <p>{lesson.summary}</p>
         <div className="intro-meta"><span><BookOpen size={15} /> Tananyag</span><span><Zap size={15} /> +10 XP olvasásért</span></div>
       </div>
-      <figure className="lesson-illustration local-lesson-art"><div className="local-art-scene"><span className="local-art-orbit orbit-one" /><span className="local-art-orbit orbit-two" /><span className="local-art-paper"><BookOpen size={56} strokeWidth={1.6} /></span><span className="local-art-spark">✦</span><span className="local-art-dot">A1</span></div><figcaption>{lesson.summary}</figcaption></figure>
+      <figure className="lesson-illustration web-lesson-image"><img src={(lessonIllustrations[lesson.id] ?? lessonIllustrations[1]).src} alt={(lessonIllustrations[lesson.id] ?? lessonIllustrations[1]).alt} loading="lazy" referrerPolicy="no-referrer" /><figcaption>{(lessonIllustrations[lesson.id] ?? lessonIllustrations[1]).alt}</figcaption></figure>
       {lesson.sections.map((section, index) => <section className="lesson-note-block" key={section.title}>
         <h2>{index + 1}. {section.title}</h2><p>{section.body}</p>
         {section.rows && <div className="grammar-table">{section.rows.map(([left, right]) => <div key={left}><span>{left}</span><strong>{right}</strong></div>)}</div>}
@@ -349,7 +361,7 @@ function LessonIntro({ lesson, onExit, onReadComplete, onPractice, alreadyRead }
         {section.tip && <div className="lesson-callout"><Lightbulb size={19} /><p>{section.tip}</p></div>}
       </section>)}
       <section className="lesson-note-block"><h2>Gyors összefoglaló</h2><ul className="lesson-summary-list">{lesson.sections.slice(0, 3).map((section) => <li key={section.title}>{section.title}: {section.body.split(".")[0]}.</li>)}</ul></section>
-      <figure className="lesson-illustration second-lesson-illustration local-lesson-art"><div className="local-art-scene reading-art-scene"><span className="local-art-orbit orbit-one" /><span className="local-art-orbit orbit-two" /><span className="local-art-paper"><BookOpen size={56} strokeWidth={1.6} /></span><span className="local-art-spark">✧</span><span className="local-art-dot">Aa</span></div><figcaption>Olvass, gondold át a példákat, és folytasd a tanulást.</figcaption></figure>
+      
       <div className="reading-inline-status">{readingComplete ? <><CheckCircle2 size={19} /><span>Tananyag elolvasva · +10 XP</span></> : <><BookOpen size={19} /><span>Olvasd át a tananyagot. A körben láthatod a hátralévő időt.</span></>}</div>
       {readingComplete && <div className="reading-complete-state"><div><strong>Mehetünk tovább!</strong><p>A leckéhez tartozó négy feladat most már elérhető az útvonalon.</p></div><button className="primary-action" onClick={onPractice}>Feladatok megnyitása <ArrowRight size={19} /></button></div>}
     </div>
@@ -372,6 +384,7 @@ function TaskExercise({ lesson, taskIndex, onExit, onComplete, lives, onWrongAns
   const canCheck = currentAnswer.trim().length > 0 && lives > 0
   const acceptedAnswers = [question.answer, ...(question.accepted ?? [])]
   const resetAnswer = () => { setSelectedAnswer(""); setTypedAnswer(""); setSelectedWords([]); setChecked(false); setAnswerCorrect(false); setHeartLost(false) }
+  useEffect(() => { resetAnswer(); setRewardPulse(false) }, [taskIndex])
   const submitAnswer = () => {
     if (lives <= 0) { onOutOfLives(); return }
     if (checked && !answerCorrect) { resetAnswer(); return }
