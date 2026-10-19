@@ -517,9 +517,9 @@ function Profile({ completedCount, xp, userName, setUserName, avatar, setAvatar,
       </div>
     </section>
     <section className="profile-overview" aria-label="Tanulási áttekintés">
-      <div className="profile-overview-heading"><div><span className="profile-overview-kicker">A TE HALADÁSOD</span><h2>Apró lépések, nagy eredmények.</h2></div><span className="profile-overview-icon"><BookOpen size={21} /></span></div>
+      <div className="profile-overview-heading"><div><span className="profile-overview-kicker">TANULÁSI HALADÁS</span><h2>{completedCount > 0 ? `Már ${completedCount} leckét teljesítettél.` : "Építsd fel az angoltudásod."}</h2></div><span className="profile-overview-icon"><BookOpen size={21} /></span></div>
       <div className="profile-overview-metrics"><div><strong>{completedCount}</strong><span>leckék készen</span></div><div><strong>{xp.toLocaleString("en-US")}</strong><span>összegyűjtött XP</span></div></div>
-      <div className="profile-overview-track" role="progressbar" aria-label="Teljesített leckék" aria-valuemin={0} aria-valuemax={10} aria-valuenow={Math.min(completedCount, 10)}><span style={{ width: Math.min(100, completedCount * 10) + "%" }} /></div>
+      <div className="profile-overview-progress-label"><span>Alapleckék</span><strong>{Math.min(completedCount, 10)} / 10</strong></div><div className="profile-overview-track" role="progressbar" aria-label="Teljesített alapleckék" aria-valuemin={0} aria-valuemax={10} aria-valuenow={Math.min(completedCount, 10)}><span style={{ width: Math.min(100, completedCount * 10) + "%" }} /></div>
     </section>
     <div className="profile-lower-content">
       <section className="profile-settings" id="profile-settings" aria-label="Profilbeállítások">
