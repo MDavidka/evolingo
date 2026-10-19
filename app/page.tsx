@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react"
 import {
   ArrowRight, BarChart3, BookOpen, Check, CheckCircle2,
   Flame, Heart, Lightbulb, Medal, RotateCcw, Trophy, UserRound,
-  X, Zap, LockKeyhole, ClipboardCheck, Star, ShoppingBag, Gift, Palette, Pencil, Settings, ChevronRight, CalendarDays, Sparkles, Target,
+  X, Zap, LockKeyhole, ClipboardCheck, Star, ShoppingBag, Gift, Palette, Pencil, Settings, ChevronRight, CalendarDays, Sparkles, Target, Search, UserPlus, Users,
 } from "lucide-react"
 
 const foxIcon = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Image-D15751D4-6Ne8AGNrryN8wlvyBepC8VDGQkHTw4.jpeg"
@@ -20,7 +20,7 @@ const lessonIllustrations: Record<number, { src: string; alt: string }> = {
   9: { src: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1200&q=85", alt: "Különböző magasságú hegycsúcsok" },
   10: { src: "https://images.unsplash.com/photo-1649843787933-a4e0d5313391?auto=format&fit=crop&w=1200&q=85", alt: "Sötét esőfelhők a feltételes mondatok példáihoz" },
 }
-type Screen = "home" | "lessonIntro" | "task" | "shop" | "leaderboard" | "profile"
+type Screen = "home" | "lessonIntro" | "task" | "shop" | "leaderboard" | "profile" | "friends"
 type Example = { sentence: string; translation: string }
 type LessonSection = { title: string; body: string; rows?: [string, string][]; examples?: Example[]; tip?: string }
 type Question = {
@@ -277,6 +277,7 @@ export default function App() {
       />}
       {screen === "shop" && <Shop stars={stars} purchasedItems={purchasedItems} onPurchase={(id, cost) => { if (stars >= cost && !purchasedItems.includes(id)) { setStars((value) => value - cost); setPurchasedItems((items) => [...items, id]); setNotice("Sikeres vásárlás!"); } }} />}
       {screen === "leaderboard" && <Leaderboard />}
+      {screen === "friends" && <Friends userName={userName} />}
       {screen === "profile" && <Profile completedCount={completedLessons.length} readCount={readLessons.length} completedTaskCount={answeredTasks.length} xp={xp} stars={stars} userName={userName} setUserName={setUserName} avatar={avatar} setAvatar={setAvatar} notifications={notifications} setNotifications={setNotifications} compactMode={compactMode} setCompactMode={setCompactMode} showSettings={showSettings} setShowSettings={setShowSettings} />}
     </section>
     {screen !== "lessonIntro" && screen !== "task" && <Nav screen={screen} setScreen={setScreen} />}
@@ -466,6 +467,51 @@ function Shop({ stars, purchasedItems, onPurchase }: { stars: number; purchasedI
   })}</div><p className="shop-footnote">A bolt bemutató funkció: a megvett jutalmak egyelőre csak az alkalmazás aktuális munkamenetében maradnak meg.</p></>
 }
 function Leaderboard() { return <><PageHeader title="Ranglista" /><div className="league-card"><div className="league-top"><div className="league-badge"><Trophy size={26} /></div><div><h3>Bronz liga</h3><p>Vége: 2 nap múlva</p></div></div><div className="league-progress"><span style={{ width: "68%" }} /></div></div><div className="rank-list">{ranks.map((rank) => <div className={"rank-row " + (rank.name === "You" ? "you" : "")} key={rank.name}><div className="rank-number">{rank.place <= 3 ? <Medal size={21} /> : rank.place}</div><div className="rank-avatar">{rank.name.charAt(0)}</div><div className="rank-name"><strong>{rank.name === "You" ? "Te" : rank.name}</strong><span>{rank.name === "You" ? "Csak így tovább!" : "Angolt tanul"}</span></div><strong className="rank-xp">{rank.xp}</strong></div>)}</div></> }
+function Friends({ userName }: { userName: string }) {
+  const [tag, setTag] = useState("")
+  const [searched, setSearched] = useState("")
+  const [message, setMessage] = useState("")
+  const [requests, setRequests] = useState<string[]>([])
+  const [friends, setFriends] = useState<string[]>([])
+  useEffect(() => {
+    try {
+      const saved = JSON.parse(localStorage.getItem("evolingo.friends.v1") || "{}") as { friends?: unknown; requests?: unknown }
+      if (Array.isArray(saved.friends)) setFriends(saved.friends.filter((v): v is string => typeof v === "string").slice(0,100))
+      if (Array.isArray(saved.requests)) setRequests(saved.requests.filter((v): v is string => typeof v === "string").slice(0,100))
+    } catch { /* Keep the friends page usable if local storage is unavailable. */ }
+  }, [])
+  useEffect(() => {
+    try { localStorage.setItem("evolingo.friends.v1", JSON.stringify({ friends, requests })) } catch { /* Optional local persistence. */ }
+  }, [friends, requests])
+  const ownTag = "EVO-" + userName.normalize("NFKD").replace(/[\u0300-\u036f]/g, "").toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0,8).padEnd(4,"X") + "-0001"
+  const normalizedSearch = searched.trim().toUpperCase().replace(/\s+/g,"")
+  const search = () => {
+    if (!normalizedSearch) { setMessage("Írd be a barátod Evo-tagjét."); return }
+    if (normalizedSearch === ownTag.replace(/-/g,"")) { setMessage("Ez a saját Evo-tag-ed."); return }
+    setMessage("A valódi fiókok közötti kereséshez közös felhasználói adatbázis szükséges. Ez a felület már elő van készítve a keresés bekötésére.")
+  }
+  return <div className="friends-page">
+    <header className="friends-heading"><div className="friends-heading-icon"><Users size={24} /></div><div><h1>Barátok</h1><p>Tanuljatok és fejlődjetek együtt.</p></div></header>
+    <section className="friends-own-tag">
+      <span className="friends-eyebrow">A TE EVO-TAG-ED</span>
+      <strong>{ownTag}</strong>
+      <p>Oszd meg a tag-edet, hogy mások könnyebben megtaláljanak.</p>
+      <button type="button" onClick={() => { void navigator.clipboard?.writeText(ownTag).then(() => setMessage("Evo-tag másolva."), () => setMessage("Nem sikerült másolni. Jelöld ki a tag-et, és másold ki kézzel.")) }}><ClipboardCheck size={17} /> Evo-tag másolása</button>
+    </section>
+    <section className="friends-search-card">
+      <h2>Barát keresése</h2><p>Add meg a barátod egyedi Evo-tag-jét.</p>
+      <form onSubmit={event => { event.preventDefault(); setSearched(tag); search() }}>
+        <label htmlFor="evo-tag-search">Evo-tag</label>
+        <div className="friends-search-row"><Search size={19} /><input id="evo-tag-search" value={tag} onChange={event => { setTag(event.target.value); setMessage("") }} placeholder="Például: EVO-DAVID-1234" autoCapitalize="characters" autoComplete="off" /><button type="submit">Keresés</button></div>
+      </form>
+      {message && <p className="friends-message" role="status">{message}</p>}
+    </section>
+    <section className="friends-list-card"><div className="friends-list-heading"><h2>Barátaim</h2><span>{friends.length}</span></div>
+      {friends.length ? friends.map(friend => <div className="friends-list-row" key={friend}><span className="friends-avatar"><UserRound size={20} /></span><span className="friends-list-copy"><strong>{friend}</strong><small>Helyben mentett kapcsolat</small></span><button type="button" onClick={() => setFriends(items => items.filter(item => item !== friend))} aria-label={friend + " eltávolítása"}><X size={18} /></button></div>) : <div className="friends-empty"><Users size={26} /><strong>Még nincsenek barátaid</strong><p>Keress rá valakire az Evo-tag-je alapján, és itt jelennek majd meg a kapcsolataid.</p></div>}
+    </section>
+    <p className="friends-note">A kereső felülete elkészült, de a valódi Evo-tag kereséshez és meghívók küldéséhez szerveroldali felhasználói rendszer szükséges.</p>
+  </div>
+}
 function Profile({ completedCount, readCount, completedTaskCount, xp, stars, userName, setUserName, avatar, setAvatar, notifications, setNotifications, compactMode, setCompactMode, showSettings, setShowSettings }: {
   completedCount: number; readCount: number; completedTaskCount: number; xp: number; stars: number; userName: string; setUserName: (value: string) => void;
   avatar: string; setAvatar: (value: string) => void; notifications: boolean; setNotifications: (value: boolean) => void;
@@ -619,7 +665,7 @@ function Profile({ completedCount, readCount, completedTaskCount, xp, stars, use
 }
 function PageHeader({ title }: { title: string }) { return <header className="page-header"><div className="brand compact"><img src={foxIcon} alt="Evölingo róka" /><div><h1>Evölingo</h1></div></div><h1>{title}</h1></header> }
 function Nav({ screen, setScreen }: { screen: Screen; setScreen: (screen: Screen) => void }) {
-  const items: [Screen, string, React.ElementType][] = [["home", "Tanulás", BookOpen], ["shop", "Bolt", ShoppingBag], ["leaderboard", "Ranglista", BarChart3], ["profile", "Profil", UserRound]]
+  const items: [Screen, string, React.ElementType][] = [["home", "Tanulás", BookOpen], ["shop", "Bolt", ShoppingBag], ["friends", "Barátok", Users], ["leaderboard", "Ranglista", BarChart3], ["profile", "Profil", UserRound]]
   const activeIndex = Math.max(0, items.findIndex(([id]) => id === screen))
   const [dragIndex, setDragIndex] = useState<number | null>(null)
   const dragStart = useRef<{ x: number; index: number; width: number } | null>(null)
