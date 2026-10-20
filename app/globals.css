@@ -2973,3 +2973,16 @@ html, body { background: #fff; }
     max-width: none;
   }
 }
+
+
+/* Hotfix: mobile nav must use edge anchors, not the desktop center transform. */
+@media (max-width: 599px) {
+  .bottom-nav {
+    left: 12px !important;
+    right: 12px !important;
+    width: auto !important;
+    max-width: none !important;
+    margin: 0 !important;
+    transform: none !important;
+  }
+}
