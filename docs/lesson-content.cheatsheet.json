@@ -1,0 +1,473 @@
+{
+  "version": "1.0.0",
+  "title": "EvoLingo Lesson Content JSON Cheatsheet",
+  "purpose": "Typed reference for every lesson-reading content component. This file documents component types and meanings; docs/lesson-content.schema.json is the formal validation schema.",
+  "conventions": {
+    "contentFormat": "Each section uses a `title` and preferably a `blocks` array. Each block is an object with a required `type`. If `blocks` is omitted, the current UI supports the legacy `body`, `rows`, `examples`, and `tip` fields.",
+    "sourceOfTruth": "When `blocks` exists, the renderer uses it instead of the legacy fields. Do not duplicate the same content in both shapes.",
+    "text": "A component's text field can be a string or an array of marked text runs.",
+    "noRawHtml": "Do not put HTML, JSX, CSS, or React component syntax in lesson JSON.",
+    "typography": "Let the UI establish text size and spacing. Do not add visual-only paragraphs or repeated punctuation to imitate layout.",
+    "images": "Use an existing repository asset or a verified URL, a meaningful alt description, and a layout suited to the content."
+  },
+  "textMarks": {
+    "type": "LessonText",
+    "accepts": [
+      "string",
+      "array of LessonTextRun"
+    ],
+    "inlineSyntax": {
+      "bold": "**important rule**",
+      "italic": "*light emphasis*",
+      "highlight": "==important phrase==",
+      "code": "`exact token or pattern`"
+    },
+    "marks": {
+      "bold": "Strong text for grammar terms and key rules.",
+      "italic": "Light emphasis for titles or contrast.",
+      "underline": "Underline a term when semantics warrant it; use sparingly.",
+      "highlight": "Subtle neutral-gray highlight behind a short phrase.",
+      "code": "Monospace treatment for exact grammar patterns, tokens, or literal syntax.",
+      "muted": "Secondary text that should be visually quieter but remain readable."
+    },
+    "runExample": [
+      {
+        "text": "He / She / It",
+        "marks": [
+          "bold"
+        ]
+      },
+      {
+        "text": " takes "
+      },
+      {
+        "text": "-s",
+        "marks": [
+          "code",
+          "highlight"
+        ]
+      }
+    ]
+  },
+  "imageLayouts": {
+    "hero": {
+      "meaning": "Primary illustration near the beginning of a lesson or concept.",
+      "imagePlacement": "Large image above/below its associated text.",
+      "recommendedUse": "One main image that establishes the subject.",
+      "textField": "Optional; when present, appears below the image."
+    },
+    "full": {
+      "meaning": "Large image spanning the available lesson content width.",
+      "imagePlacement": "Image full-width; text/caption follows.",
+      "recommendedUse": "Diagrams, timelines, screenshots, or visual references."
+    },
+    "contained": {
+      "meaning": "Centered image with a narrower maximum width.",
+      "imagePlacement": "Image centered; text/caption follows.",
+      "recommendedUse": "Small diagrams or illustrations that lose clarity when stretched."
+    },
+    "split-image-left": {
+      "meaning": "Image left, associated title and text right.",
+      "imagePlacement": "Two-column split on wide screens.",
+      "recommendedUse": "An illustration paired with one short explanation."
+    },
+    "split-image-right": {
+      "meaning": "Text left, associated image right.",
+      "imagePlacement": "Two-column split on wide screens.",
+      "recommendedUse": "A text-led explanation with a supporting image on the right."
+    },
+    "inline-image-left": {
+      "meaning": "Compact image left, short associated text right.",
+      "imagePlacement": "Narrow image column beside text.",
+      "recommendedUse": "Vocabulary, a small visual hint, or a short reminder."
+    },
+    "inline-image-right": {
+      "meaning": "Short associated text left, compact image right.",
+      "imagePlacement": "Narrow image column on the right.",
+      "recommendedUse": "A text-led reminder with a small illustration."
+    }
+  },
+  "commonImageFields": {
+    "src": "string, required: URL or public asset path for the image.",
+    "alt": "string, required: concise description of the image's relevant meaning.",
+    "layout": "one of hero | full | contained | split-image-left | split-image-right | inline-image-left | inline-image-right; defaults to full.",
+    "title": "optional string, short heading attached to the image.",
+    "text": "optional LessonText, associated explanation (required in practice for split/inline layouts).",
+    "caption": "optional string, source or context caption.",
+    "aspect": "optional natural | wide | square | portrait.",
+    "fit": "optional cover | contain."
+  },
+  "components": {
+    "paragraph": {
+      "type": "paragraph",
+      "definition": "Primary explanatory text. Prefer 1–3 sentences per block.",
+      "required": {
+        "text": "LessonText"
+      },
+      "optional": {
+        "size": [
+          "small",
+          "normal",
+          "large"
+        ],
+        "align": [
+          "left",
+          "center",
+          "right"
+        ]
+      },
+      "example": {
+        "type": "paragraph",
+        "text": "A **Present Simple** szokásokat és általános igazságokat ír le."
+      }
+    },
+    "heading": {
+      "type": "heading",
+      "definition": "A subheading within a section. Use a heading to organize a longer explanation, not for every paragraph.",
+      "required": {
+        "text": "LessonText"
+      },
+      "optional": {
+        "level": [
+          3,
+          4
+        ]
+      },
+      "example": {
+        "type": "heading",
+        "level": 3,
+        "text": "A mondat szerkezete"
+      }
+    },
+    "example": {
+      "type": "example",
+      "definition": "A target-language sample sentence, optionally paired with a translation and explanatory note. Rendered as prominent text with a subtle left rule, not as a heavy card.",
+      "required": {
+        "sentence": "LessonText"
+      },
+      "optional": {
+        "translation": "LessonText",
+        "label": "string",
+        "note": "LessonText"
+      },
+      "example": {
+        "type": "example",
+        "label": "Példa",
+        "sentence": "I play football every Saturday.",
+        "translation": "Minden szombaton focizom."
+      }
+    },
+    "table": {
+      "type": "table",
+      "definition": "Structured row-and-column reference for forms, endings, usage, or comparisons.",
+      "required": {
+        "rows": "array of string arrays; all rows should use the same number of cells"
+      },
+      "optional": {
+        "headers": "array of column labels",
+        "caption": "string"
+      },
+      "example": {
+        "type": "table",
+        "caption": "Present Simple — állító mondat",
+        "headers": [
+          "Alany",
+          "Ige"
+        ],
+        "rows": [
+          [
+            "I / You / We / They",
+            "play"
+          ],
+          [
+            "He / She / It",
+            "plays"
+          ]
+        ]
+      }
+    },
+    "callout": {
+      "type": "callout",
+      "definition": "A short note that deserves extra attention: tip, reminder, warning, or confirmation. Use sparingly.",
+      "required": {
+        "text": "LessonText"
+      },
+      "optional": {
+        "title": "string",
+        "tone": [
+          "neutral",
+          "tip",
+          "warning",
+          "success"
+        ],
+        "icon": [
+          "lightbulb",
+          "info",
+          "check",
+          "book"
+        ]
+      },
+      "example": {
+        "type": "callout",
+        "title": "Figyelj erre",
+        "text": "He, she és it esetén általában **-s** vagy **-es** kerül az igére.",
+        "tone": "tip",
+        "icon": "lightbulb"
+      }
+    },
+    "list": {
+      "type": "list",
+      "definition": "A short group of related items, sequence steps, or checklist criteria.",
+      "required": {
+        "items": "array of LessonText"
+      },
+      "optional": {
+        "style": [
+          "bullet",
+          "numbered",
+          "check"
+        ]
+      },
+      "example": {
+        "type": "list",
+        "style": "numbered",
+        "items": [
+          "Válaszd ki az alanyt.",
+          "Válaszd ki a megfelelő igealakot.",
+          "Ellenőrizd a végződést."
+        ]
+      }
+    },
+    "image": {
+      "type": "image",
+      "definition": "A meaningful illustration, diagram, or supporting visual. Image placement is controlled by `layout`.",
+      "required": {
+        "src": "string",
+        "alt": "string"
+      },
+      "optional": {
+        "layout": [
+          "hero",
+          "full",
+          "contained",
+          "split-image-left",
+          "split-image-right",
+          "inline-image-left",
+          "inline-image-right"
+        ],
+        "title": "string",
+        "text": "LessonText",
+        "caption": "string",
+        "aspect": [
+          "wide",
+          "square",
+          "portrait",
+          "natural"
+        ],
+        "fit": [
+          "cover",
+          "contain"
+        ]
+      },
+      "example": {
+        "type": "image",
+        "src": "/images/lessons/present-simple-example.jpg",
+        "alt": "A diák heti naptára, szombatra jelölt futballal",
+        "layout": "split-image-right",
+        "title": "Rendszeresen ismétlődő szokás",
+        "text": "A szokásokat often, usually vagy every Saturday kifejezésekkel is leírhatjuk.",
+        "caption": "Illusztráció a rendszeres cselekvésekhez.",
+        "aspect": "wide",
+        "fit": "cover"
+      },
+      "note": "The example path is a placeholder. Replace it with a real verified asset before using it."
+    },
+    "quote": {
+      "type": "quote",
+      "definition": "A memorable phrase, sample sentence, or rule shown with a quiet editorial quote treatment.",
+      "required": {
+        "text": "LessonText"
+      },
+      "optional": {
+        "attribution": "string"
+      },
+      "example": {
+        "type": "quote",
+        "text": "She doesn't like it. — a doesn't után az ige alapformában áll.",
+        "attribution": "Nyelvtani emlékeztető"
+      }
+    },
+    "formula": {
+      "type": "formula",
+      "definition": "A concise grammar pattern or reusable construction. Use this rather than a table for a single formula.",
+      "required": {
+        "value": "string"
+      },
+      "optional": {
+        "label": "string",
+        "explanation": "LessonText"
+      },
+      "example": {
+        "type": "formula",
+        "label": "Present Simple — állító forma",
+        "value": "subject + base verb (+ s/es)",
+        "explanation": "He, she és it esetén az igéhez általában -s vagy -es kerül."
+      }
+    },
+    "vocabulary": {
+      "type": "vocabulary",
+      "definition": "A compact glossary of terms or words with meanings and optional examples.",
+      "required": {
+        "items": "array of objects with term and meaning"
+      },
+      "optional": {
+        "itemsExample": "example is optional on each item"
+      },
+      "itemFields": {
+        "term": "string, required",
+        "meaning": "string, required",
+        "example": "string, optional"
+      },
+      "example": {
+        "type": "vocabulary",
+        "items": [
+          {
+            "term": "usually",
+            "meaning": "általában",
+            "example": "I usually get up at seven."
+          },
+          {
+            "term": "never",
+            "meaning": "soha",
+            "example": "He never drinks coffee."
+          }
+        ]
+      }
+    },
+    "comparison": {
+      "type": "comparison",
+      "definition": "Two short, related groups displayed side by side on wider screens and stacked on small screens.",
+      "required": {
+        "left": "object { title: string, items: string[] }",
+        "right": "object { title: string, items: string[] }"
+      },
+      "example": {
+        "type": "comparison",
+        "left": {
+          "title": "I / You / We / They",
+          "items": [
+            "play",
+            "watch",
+            "study"
+          ]
+        },
+        "right": {
+          "title": "He / She / It",
+          "items": [
+            "plays",
+            "watches",
+            "studies"
+          ]
+        }
+      }
+    },
+    "divider": {
+      "type": "divider",
+      "definition": "A subtle separator between distinct topics. Omit the label when no text is needed.",
+      "required": {},
+      "optional": {
+        "label": "string"
+      },
+      "example": {
+        "type": "divider",
+        "label": "További példák"
+      }
+    }
+  },
+  "legacySectionFields": {
+    "body": "string: one basic paragraph. Prefer blocks for new or rewritten sections.",
+    "rows": "[[left, right], ...]: legacy format converted to a two-column table.",
+    "examples": "[{ sentence, translation }, ...]: legacy format converted to example blocks.",
+    "tip": "string: legacy format converted to a tip callout."
+  },
+  "lessonSectionExample": {
+    "title": "Állító mondatok",
+    "blocks": [
+      {
+        "type": "paragraph",
+        "text": "Az **I, you, we, they** után az ige alapformája áll."
+      },
+      {
+        "type": "formula",
+        "label": "Alapszerkezet",
+        "value": "subject + base verb (+ s/es)"
+      },
+      {
+        "type": "table",
+        "headers": [
+          "Alany",
+          "Ige"
+        ],
+        "rows": [
+          [
+            "I / You / We / They",
+            "play"
+          ],
+          [
+            "He / She / It",
+            "plays"
+          ]
+        ]
+      },
+      {
+        "type": "example",
+        "sentence": "She likes music.",
+        "translation": "Szereti a zenét."
+      },
+      {
+        "type": "callout",
+        "title": "Gyakori hiba",
+        "text": "Helyesen: **She doesn't like it.** A doesn't után az ige alapformája marad.",
+        "tone": "tip",
+        "icon": "lightbulb"
+      }
+    ]
+  },
+  "questionTypes": {
+    "choice": {
+      "definition": "Learner selects one option.",
+      "requiredFields": [
+        "instruction",
+        "prompt",
+        "options",
+        "answer",
+        "explanation",
+        "tip"
+      ]
+    },
+    "text": {
+      "definition": "Learner types an answer.",
+      "requiredFields": [
+        "instruction",
+        "prompt",
+        "answer",
+        "explanation",
+        "tip"
+      ],
+      "optionalFields": [
+        "accepted"
+      ]
+    },
+    "arrange": {
+      "definition": "Learner arranges word tokens into the target sentence.",
+      "requiredFields": [
+        "instruction",
+        "prompt",
+        "words",
+        "answer",
+        "explanation",
+        "tip"
+      ]
+    }
+  }
+}
