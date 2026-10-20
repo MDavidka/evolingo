@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react"
 import {
   ArrowRight, BarChart3, BookOpen, Check, CheckCircle2,
   Flame, Heart, Lightbulb, Medal, RotateCcw, Trophy, UserRound, Dumbbell, Timer, Languages, Volume2,
-  X, Zap, LockKeyhole, ClipboardCheck, Star, ShoppingBag, Gift, Palette, Pencil, Settings, ChevronRight, CalendarDays, Sparkles, Target, Search, UserPlus, Users,
+  X, Zap, LockKeyhole, ClipboardCheck, Star, ShoppingBag, Gift, Palette, Pencil, Settings, ChevronRight, CalendarDays, Sparkles, Target, Search, UserPlus, Users, Link2,
 } from "lucide-react"
 
 const foxIcon = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Image-D15751D4-6Ne8AGNrryN8wlvyBepC8VDGQkHTw4.jpeg"
@@ -701,6 +701,32 @@ function Friends({ userName }: { userName: string }) {
     setTag("")
     setMessage("A felkérés csak helyben lett elmentve; valódi küldéshez szerveroldali fiókrendszer szükséges.")
   }
+  const shareInvite = async () => {
+    const inviteUrl = window.location.origin + "/?invite=" + encodeURIComponent(ownTag)
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: "Csatlakozz hozzám az Evölingóban!", text: "Tanuljunk együtt az Evölingóban!", url: inviteUrl })
+        return
+      }
+      await navigator.clipboard.writeText(inviteUrl)
+      setMessage("Meghívólink másolva.")
+    } catch {
+      setMessage("A megosztás nem érhető el. Próbáld újra, vagy másold ki a meghívólinket: " + inviteUrl)
+    }
+  }
+  const openContacts = async () => {
+    const contacts = (navigator as Navigator & { contacts?: { select: (properties: string[], options?: { multiple?: boolean }) => Promise<unknown[]> } }).contacts
+    if (!contacts?.select) {
+      setMessage("A névjegyek elérése ezen a böngészőn nem támogatott. Használd a Link megosztása lehetőséget.")
+      return
+    }
+    try {
+      const selected = await contacts.select(["name", "tel"], { multiple: true })
+      setMessage(selected.length ? "A kiválasztott névjegyeket a telefon megosztási funkciójával hívhatod meg." : "Nem választottál névjegyet.")
+    } catch {
+      setMessage("A névjegyek megnyitása megszakadt.")
+    }
+  }
   const myFriends = suggestedFriendProfiles.filter(friend => friends.includes(friend.id))
   const pendingProfiles = suggestedFriendProfiles.filter(friend => requests.includes(friend.id))
   const list = tab === "friends" ? myFriends : tab === "requests" ? pendingProfiles : suggestedFriendProfiles.filter(friend => !friends.includes(friend.id) && !requests.includes(friend.id))
@@ -722,10 +748,13 @@ function Friends({ userName }: { userName: string }) {
   </article>
 
   return <div className="friends-page">
-    <header className="friends-title-block"><h1>Barátok</h1><p>Kövess barátokat, és tanuljatok együtt!</p></header>
+    <header className="friends-title-block">
+      <h1>Barátok</h1>
+      <p>Kövess barátokat, és tanuljatok együtt</p>
+    </header>
     <form className="friends-search-bar" onSubmit={event => { event.preventDefault(); search(tag) }}>
-      <div className="friends-search-input"><Search size={22} /><input aria-label="Evo-tag alapján keresés" value={tag} onChange={event => { setTag(event.target.value); setMessage(""); setMatch(null) }} placeholder="Evo tag alapján keresés..." autoCapitalize="characters" autoComplete="off" /></div>
-      <button type="submit"><UserPlus size={19} /><span>Hozzáadás</span></button>
+      <div className="friends-search-input"><Search size={18} /><input aria-label="Evo-tag keresése" value={tag} onChange={event => { setTag(event.target.value); setMessage(""); setMatch(null) }} placeholder="Evo-tag keresése" autoCapitalize="characters" autoComplete="off" /></div>
+      <button type="submit" aria-label="Hozzáadás"><UserPlus size={20} /></button>
     </form>
     {match && <article className="friend-search-result">
       <div className={"friend-person-avatar friend-avatar-" + match.id}><span>{match.avatar}</span><i className={match.online ? "is-online" : ""} /></div>
@@ -734,15 +763,35 @@ function Friends({ userName }: { userName: string }) {
     </article>}
     {message && <p className="friends-message" role="status">{message}</p>}
     <div className="friends-tabs" role="tablist" aria-label="Barátok nézetei">
-      {([["friends","Barátaim",Users],["requests","Kérések",UserPlus],["suggested","Ajánlott",Users]] as [FriendTab,string,React.ElementType][]).map(([id,label,Icon]) =>
-        <button key={id} type="button" role="tab" aria-selected={tab === id} className={tab === id ? "active" : ""} onClick={() => setTab(id)}><Icon size={19} /><span>{label}</span>{id === "requests" && requests.length > 0 && <b className="friends-tab-count">{requests.length}</b>}</button>
+      {([["friends","Barátaim"],["requests","Kérések"],["suggested","Ajánlott"]] as [FriendTab,string][]).map(([id,label]) =>
+        <button key={id} type="button" role="tab" aria-selected={tab === id} className={tab === id ? "active" : ""} onClick={() => setTab(id)}><span>{label}</span>{id === "requests" && requests.length > 0 && <b className="friends-tab-count">{requests.length}</b>}</button>
       )}
     </div>
-    <section className="friends-people-list" aria-label={tab === "friends" ? "Barátaim" : tab === "requests" ? "Küldött felkérések" : "Ajánlott profilok"}>
+    {tab === "friends" && myFriends.length === 0 && !tag.trim() && !match && <section className="friends-empty" aria-label="Barátok meghívása">
+      <div className="friends-empty-icon"><Users size={28} /></div>
+      <strong>Hívd meg az első barátodat</strong>
+      <p>Együtt tanulva könnyebb a napi sorozatot tartani.</p>
+      <div className="friends-empty-actions">
+        <button type="button" className="friends-invite-primary" onClick={shareInvite}><Link2 size={17} />Link megosztása</button>
+        <button type="button" className="friends-invite-secondary" onClick={openContacts}>Névjegyek</button>
+      </div>
+    </section>}
+    {tab === "requests" && pendingProfiles.length === 0 && <section className="friends-empty friends-empty-compact">
+      <strong>Nincs új kérés</strong>
+      <p>Az új felkérések itt jelennek majd meg.</p>
+    </section>}
+    {tab === "suggested" && suggestedFriendProfiles.filter(friend => !friends.includes(friend.id) && !requests.includes(friend.id)).length === 0 && <section className="friends-empty friends-empty-compact">
+      <strong>Most nincs ajánlott tanulótárs</strong>
+      <p>Nézz vissza később, vagy keress rá valakire az Evo-tagje alapján.</p>
+    </section>}
+    <section className="friends-people-list" aria-label={tab === "friends" ? "Barátaim" : tab === "requests" ? "Kérések" : "Ajánlott profilok"}>
       {list.map(friend => friendRow(friend, tab === "friends" ? "friend" : tab === "requests" ? "request" : "suggested"))}
-      {list.length === 0 && <div className="friends-empty"><Users size={28} /><strong>{tab === "friends" ? "Még nincsenek barátaid" : tab === "requests" ? "Nincsenek függő felkérések" : "Most nincs ajánlott profil"}</strong><p>{tab === "friends" ? "Keress rá valakire az Evo-tagje alapján, vagy nézd meg az ajánlásokat." : tab === "requests" ? "Az elküldött felkéréseid itt jelennek majd meg." : "Nézz vissza később új tanulókért."}</p></div>}
     </section>
-    <p className="friends-note">A barátlista csak valódi, hozzáadott fiókokat mutat. A keresés és felkérések bekötéséhez szerveroldali fiókrendszer szükséges.</p>
+    {tab === "friends" && suggestedFriendProfiles.filter(friend => !friends.includes(friend.id) && !requests.includes(friend.id)).length > 0 && <section className="friends-recommendations">
+      <div className="friends-recommendations-heading"><h2>Ajánlott tanulótársak</h2><button type="button" onClick={() => setTab("suggested")}>Mind</button></div>
+      <div className="friends-recommendations-list">{suggestedFriendProfiles.filter(friend => !friends.includes(friend.id) && !requests.includes(friend.id)).slice(0,2).map(friend => friendRow(friend,"suggested"))}</div>
+    </section>}
+    {/* Developer note: friend search and requests need server-side account integration for real delivery. */}
   </div>
 }
 
