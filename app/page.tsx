@@ -740,7 +740,9 @@ function Friends({ userName }: { userName: string }) {
     return () => window.removeEventListener("keydown", onKeyDown)
   }, [showAdd, profileOpen])
 
-  const availableProfiles = profiles.length ? profiles : demoFriendProfiles
+  const availableProfiles = (profiles.length ? profiles : demoFriendProfiles)
+    .filter(friend => friend.handle.replace(/^@/, "").toLocaleLowerCase("hu") !== userName.toLocaleLowerCase("hu"))
+    .filter((friend, index, list) => list.findIndex(item => item.id === friend.id || item.handle.toLocaleLowerCase("hu") === friend.handle.toLocaleLowerCase("hu")) === index)
   const normalizedQuery = query.trim().toLocaleLowerCase("hu")
   const matchesQuery = (friend: FriendProfile, value: string) =>
     !value ||
@@ -886,6 +888,15 @@ function Friends({ userName }: { userName: string }) {
     {notice && <div className="friends-notice" role="status"><span>{notice}</span><button type="button" aria-label="Üzenet bezárása" onClick={() => setNotice("")}><X size={16} /></button></div>}
 
     {tab === "friends" && <>
+      {followedFriends.length > 0 && <>
+      <section className="friends-section friends-following-section friends-connected-first" aria-labelledby="friends-following-heading">
+        <div className="friends-section-heading"><h2 className="friends-section-title" id="friends-following-heading">BARÁTAIM</h2><span className="friends-count">{followedFriends.length}</span></div>
+        <div className="friends-list">
+          {!profilesReady || !stateReady ? <div className="friends-skeleton-row"/> : visibleFriends.map(friend => renderPerson(friend, "friend"))}
+          {profilesReady && stateReady && visibleFriends.length === 0 && <div className="friends-empty"><strong>Még nincsenek barátaid</strong><p>Kövess egy tanulótársat, vagy hívd meg az ismerőseidet.</p><button type="button" onClick={() => setTab("suggested")}>Ajánlott tanulók</button></div>}
+        </div>
+      </section>
+      </>}
       <section className="friends-section" aria-labelledby="friends-recommended-heading">
         <div className="friends-section-heading"><h2 className="friends-section-title" id="friends-recommended-heading">AJÁNLOTT TANULÓTÁRSAK</h2><button className="friends-see-all" type="button" onClick={() => setTab("suggested")}>Összes <ChevronRight size={17} /></button></div>
         <div className="friends-list">
@@ -899,13 +910,7 @@ function Friends({ userName }: { userName: string }) {
         <div className="friends-empty-banner-icon"><Users size={29} aria-hidden="true"/></div>
         <div><strong>Tanulj együtt másokkal</strong><p>Kövess más tanulókat, és motiváljátok egymást minden nap!</p><button type="button" onClick={() => setTab("suggested")}>Tanulótársak felfedezése</button></div>
       </section>}
-      <section className="friends-section friends-following-section" aria-labelledby="friends-following-heading">
-        <div className="friends-section-heading"><h2 className="friends-section-title" id="friends-following-heading">BARÁTAIM</h2><span className="friends-count">{followedFriends.length}</span></div>
-        <div className="friends-list">
-          {!profilesReady || !stateReady ? <div className="friends-skeleton-row"/> : visibleFriends.map(friend => renderPerson(friend, "friend"))}
-          {profilesReady && stateReady && visibleFriends.length === 0 && <div className="friends-empty"><strong>Még nincsenek barátaid</strong><p>Kövess egy tanulótársat, vagy hívd meg az ismerőseidet.</p><button type="button" onClick={() => setTab("suggested")}>Ajánlott tanulók</button></div>}
-        </div>
-      </section>
+
     </>}
 
     {tab === "requests" && <section className="friends-section" aria-labelledby="friends-requests-heading">
