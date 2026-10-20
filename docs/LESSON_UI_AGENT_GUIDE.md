@@ -66,7 +66,7 @@ Strings support these lightweight patterns:
 - `**bold phrase**` for a rule or key term.
 - `*italic phrase*` for light emphasis.
 - `==important phrase==` for restrained gray highlighting.
-- `\`code\`` for an exact formula or token.
+- Backtick-delimited text for an exact formula or token.
 
 For fully structured text, use an array of runs, for example:
 
