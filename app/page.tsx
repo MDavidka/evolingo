@@ -470,18 +470,7 @@ function Leaderboard() { return <><PageHeader title="Ranglista" /><div className
 type FriendTab = "friends" | "requests" | "suggested"
 type FriendProfile = { id: string; name: string; handle: string; evoTag: string; avatar: string; streak: number; xp: number; status: string; online: boolean }
 
-const suggestedFriendProfiles: FriendProfile[] = [
-  { id: "sofia", name: "Sofia K.", handle: "@sofia", evoTag: "EVO-SOFIA-1024", avatar: "🦊", streak: 12, xp: 2480, status: "Most tanul", online: true },
-  { id: "marton", name: "Márton D.", handle: "@martond", evoTag: "EVO-MARTON-2201", avatar: "🐱", streak: 8, xp: 2210, status: "Ma aktív volt", online: false },
-  { id: "liam", name: "Liam R.", handle: "@liamr", evoTag: "EVO-LIAM-1960", avatar: "🐧", streak: 6, xp: 1960, status: "Most tanul", online: true },
-  { id: "anna", name: "Anna T.", handle: "@anna", evoTag: "EVO-ANNA-1420", avatar: "🐼", streak: 3, xp: 1420, status: "3 napja aktív volt", online: false },
-  { id: "david", name: "David P.", handle: "@davidp", evoTag: "EVO-DAVID-0980", avatar: "🦊", streak: 1, xp: 980, status: "1 hete aktív volt", online: false },
-  { id: "mira", name: "Mira V.", handle: "@mirav", evoTag: "EVO-MIRA-0835", avatar: "🐨", streak: 5, xp: 835, status: "Tegnap aktív volt", online: false },
-  { id: "noah", name: "Noah B.", handle: "@noahb", evoTag: "EVO-NOAH-0740", avatar: "🐻", streak: 4, xp: 740, status: "Most tanul", online: true },
-  { id: "emma", name: "Emma L.", handle: "@emmal", evoTag: "EVO-EMMA-0620", avatar: "🐰", streak: 2, xp: 620, status: "Ma aktív volt", online: false },
-  { id: "alex", name: "Alex M.", handle: "@alexm", evoTag: "EVO-ALEX-0510", avatar: "🐸", streak: 2, xp: 510, status: "2 napja aktív volt", online: false },
-  { id: "oliver", name: "Oliver P.", handle: "@oliverp", evoTag: "EVO-OLIVER-0330", avatar: "🐶", streak: 1, xp: 330, status: "Ma aktív volt", online: false },
-]
+const suggestedFriendProfiles: FriendProfile[] = []
 
 function Friends({ userName }: { userName: string }) {
   const [tag, setTag] = useState("")
@@ -501,9 +490,9 @@ function Friends({ userName }: { userName: string }) {
         if (Array.isArray(saved.friends)) {
           const savedFriends = saved.friends.filter((v): v is string => typeof v === "string").slice(0,100)
           // Migrate older empty preview data to the current reference-style demo list once.
-          setFriends(saved.version === 2 || savedFriends.length > 0 ? savedFriends : ["sofia", "marton", "liam", "anna", "david"])
+          setFriends(savedFriends)
         } else {
-          setFriends(["sofia", "marton", "liam", "anna", "david"])
+          setFriends([])
         }
         if (Array.isArray(saved.requests)) setRequests(saved.requests.filter((v): v is string => typeof v === "string").slice(0,100))
       } else {
@@ -524,24 +513,20 @@ function Friends({ userName }: { userName: string }) {
     setMatch(null)
     if (!normalized) { setMessage("Írd be a barátod Evo-tagjét."); return }
     if (normalized === ownTag.replace(/-/g,"")) { setMessage("Ez a saját Evo-tag-ed."); return }
-    const found = suggestedFriendProfiles.find(friend =>
-      friend.evoTag.replace(/-/g,"") === normalized ||
-      friend.handle.replace("@","").toUpperCase() === normalized ||
-      friend.name.replace(/[^a-z0-9]/gi,"").toUpperCase() === normalized
-    )
+    const found = suggestedFriendProfiles.find(friend => friend.evoTag.replace(/-/g,"") === normalized)
     if (found) {
       if (friends.includes(found.id)) { setMessage("Már a barátaid között van."); return }
       if (requests.includes(found.id)) { setMessage("Már elküldted a felkérést ennek a felhasználónak."); return }
       setMatch(found)
       return
     }
-    setMessage("Ezt a taget nem találtuk a bemutató profilok között. Valódi felhasználók kereséséhez szerveroldali adatbázis szükséges.")
+    setMessage("A valódi Evo-tag kereséshez és barátok hozzáadásához szerveroldali felhasználói adatbázis szükséges. Még nincsenek csatlakoztatott fiókok.")
   }
   const sendRequest = (friend: FriendProfile) => {
     setRequests(items => items.includes(friend.id) ? items : [...items, friend.id])
     setMatch(null)
     setTag("")
-    setMessage("Felkérés rögzítve ezen az eszközön.")
+    setMessage("A felkérés csak helyben lett elmentve; valódi küldéshez szerveroldali fiókrendszer szükséges.")
   }
   const myFriends = suggestedFriendProfiles.filter(friend => friends.includes(friend.id))
   const pendingProfiles = suggestedFriendProfiles.filter(friend => requests.includes(friend.id))
@@ -584,7 +569,7 @@ function Friends({ userName }: { userName: string }) {
       {list.map(friend => friendRow(friend, tab === "friends" ? "friend" : tab === "requests" ? "request" : "suggested"))}
       {list.length === 0 && <div className="friends-empty"><Users size={28} /><strong>{tab === "friends" ? "Még nincsenek barátaid" : tab === "requests" ? "Nincsenek függő felkérések" : "Most nincs ajánlott profil"}</strong><p>{tab === "friends" ? "Keress rá valakire az Evo-tagje alapján, vagy nézd meg az ajánlásokat." : tab === "requests" ? "Az elküldött felkéréseid itt jelennek majd meg." : "Nézz vissza később új tanulókért."}</p></div>}
     </section>
-    <p className="friends-note">A profilok bemutató adatok. A valódi felhasználók kereséséhez és felkérések küldéséhez szerveroldali fiókrendszer szükséges.</p>
+    <p className="friends-note">A barátlista csak valódi, hozzáadott fiókokat mutat. A keresés és felkérések bekötéséhez szerveroldali fiókrendszer szükséges.</p>
   </div>
 }
 
