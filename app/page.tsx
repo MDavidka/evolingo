@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react"
 import {
   ArrowRight, BarChart3, BookOpen, Check, CheckCircle2,
-  Flame, Heart, Lightbulb, Medal, RotateCcw, Trophy, UserRound,
+  Flame, Heart, Lightbulb, Medal, RotateCcw, Trophy, UserRound, Dumbbell, Timer, Languages, Volume2,
   X, Zap, LockKeyhole, ClipboardCheck, Star, ShoppingBag, Gift, Palette, Pencil, Settings, ChevronRight, CalendarDays, Sparkles, Target, Search, UserPlus, Users,
 } from "lucide-react"
 
@@ -339,6 +339,20 @@ function Home({ readLessons, completedLessons, answeredTasks, stars, notice, cle
     <header className="app-header home-header"><Brand /><div className="home-currencies"><div className="star-balance" aria-label={stars + " csillag"}><Star size={21} fill="currentColor" /><strong>{stars}</strong></div><div className="health"><Heart fill="currentColor" size={20} /><strong>5</strong></div></div></header>
     <div className="section-heading home-heading"><div><p className="eyebrow">ANGOL</p><h2>Tanulási útvonal</h2></div></div>
     {notice && <button className="inline-notice" onClick={clearNotice}><span>{notice}</span><X size={16} /></button>}
+    <section className="extra-practice-section">
+      <div className="extra-practice-heading"><div><p className="eyebrow">VÁLASSZ KIHÍVÁST</p><h2>Másképp is tanulhatsz</h2></div><span><Sparkles size={17} /> Új</span></div>
+      <div className="extra-practice-grid">
+        <button className="extra-practice-card hard-practice" type="button" onClick={() => onOpenTask(10, 0)}>
+          <span className="extra-practice-icon"><Dumbbell size={25} strokeWidth={2.4} /></span><span className="extra-practice-copy"><strong>Hard mód</strong><small>Komolyabb nyelvtani kihívás</small></span><ChevronRight size={18} className="extra-practice-arrow" />
+        </button>
+        <button className="extra-practice-card timed-practice" type="button" onClick={() => onOpenTask(2, 0)}>
+          <span className="extra-practice-icon"><Timer size={25} strokeWidth={2.3} /></span><span className="extra-practice-copy"><strong>Időkihívás</strong><small>Gyakorolj gyors válaszokkal</small></span><ChevronRight size={18} className="extra-practice-arrow" />
+        </button>
+        <button className="extra-practice-card word-practice" type="button" onClick={() => onOpenTask(7, 0)}>
+          <span className="extra-practice-icon"><Languages size={25} strokeWidth={2.3} /></span><span className="extra-practice-copy"><strong>Szótanulás</strong><small>Szavak és jelentések gyakorlása</small></span><ChevronRight size={18} className="extra-practice-arrow" />
+        </button>
+      </div>
+    </section>
     <div className="learning-path compact-learning-path">
       {pathItems.map((item, index) => {
         const lesson = "questions" in item ? item as LessonUnit : null
@@ -408,6 +422,28 @@ function LessonIntro({ lesson, onExit, onReadComplete, onPractice, alreadyRead }
       {readingComplete && <div className="reading-complete-state"><div><strong>Mehetünk tovább!</strong><p>A leckéhez tartozó négy feladat most már elérhető az útvonalon.</p></div><button className="primary-action" onClick={onPractice}>Feladatok megnyitása <ArrowRight size={19} /></button></div>}
     </div>
   </div>
+}
+
+function playAnswerSound(correct: boolean) {
+  try {
+    const AudioContextClass = window.AudioContext || (window as typeof window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext
+    if (!AudioContextClass) return
+    const context = new AudioContextClass()
+    const oscillator = context.createOscillator()
+    const gain = context.createGain()
+    oscillator.connect(gain)
+    gain.connect(context.destination)
+    oscillator.type = "sine"
+    const now = context.currentTime
+    oscillator.frequency.setValueAtTime(correct ? 660 : 220, now)
+    if (correct) oscillator.frequency.setValueAtTime(880, now + 0.09)
+    gain.gain.setValueAtTime(0.0001, now)
+    gain.gain.exponentialRampToValueAtTime(0.12, now + 0.015)
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + (correct ? 0.18 : 0.14))
+    oscillator.start(now)
+    oscillator.stop(now + (correct ? 0.19 : 0.15))
+    oscillator.onended = () => { void context.close() }
+  } catch { /* Sound is optional; keep the exercise working if audio is unavailable. */ }
 }
 
 function TaskExercise({ lesson, taskIndex, onExit, onComplete, lives, onWrongAnswer, onNextQuestion, onOutOfLives }: {
