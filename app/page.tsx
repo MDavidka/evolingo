@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react"
 import {
   ArrowRight, BarChart3, BookOpen, Check, CheckCircle2,
   Flame, Heart, Lightbulb, Medal, RotateCcw, Trophy, UserRound, Dumbbell, Timer, Languages, Volume2,
-  X, Zap, LockKeyhole, ClipboardCheck, Star, ShoppingBag, Gift, Palette, Pencil, Settings, ChevronRight, CalendarDays, Sparkles, Target, Search, UserPlus, Users, Link2,
+  X, Zap, LockKeyhole, ClipboardCheck, Star, ShoppingBag, Gift, Palette, Pencil, Settings, ChevronRight, CalendarDays, Sparkles, Target, Search, UserPlus, Users, Link2, Bell,
 } from "lucide-react"
 
 const foxIcon = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Image-D15751D4-6Ne8AGNrryN8wlvyBepC8VDGQkHTw4.jpeg"
@@ -751,7 +751,7 @@ function Friends({ userName }: { userName: string }) {
     <header className="friends-title-block">
       <div className="friends-title-row">
         <h1>Barátok</h1>
-        <button className="friends-add-button" type="button" aria-label="Barát keresése Evo-tag alapján" onClick={() => { const field = document.querySelector<HTMLInputElement>(".friends-search-input input"); field?.focus(); search(tag) }}><UserPlus size={20} strokeWidth={1.8} /></button>
+        <button className="friends-notifications-button" type="button" aria-label={requests.length > 0 ? "Értesítések, " + requests.length + " függő kérés" : "Értesítések"} onClick={() => { setTab("requests"); setMessage(requests.length > 0 ? "" : "Nincs új értesítés.") }}><Bell size={20} strokeWidth={1.8} />{requests.length > 0 && <span className="friends-notifications-count">{requests.length}</span>}</button>
       </div>
     </header>
     <form className="friends-search-bar" onSubmit={event => { event.preventDefault(); search(tag) }}>
@@ -769,6 +769,7 @@ function Friends({ userName }: { userName: string }) {
         <button key={id} type="button" role="tab" aria-selected={tab === id} className={tab === id ? "active" : ""} onClick={() => setTab(id)}><span>{label}</span>{id === "requests" && requests.length > 0 && <b className="friends-tab-count">{requests.length}</b>}</button>
       )}
     </div>
+    {tab === "friends" && <p className="friends-intro-copy">Oszd meg a meghívódat, vagy keress rá barátaid Evo-tagjére.</p>}
     {tab === "friends" && <section className="friends-group">
       <h2 className="friends-section-label">Barátaim</h2>
       {!storageReady ? <div className="friends-grouped-list friends-loading-list" aria-label="Betöltés"><div className="friends-skeleton-row" /><div className="friends-skeleton-row" /></div> : myFriends.length > 0 ? <div className="friends-grouped-list">
@@ -787,7 +788,7 @@ function Friends({ userName }: { userName: string }) {
           <span className="friends-row-title">Névjegyek keresése</span><ChevronRight className="friends-row-chevron-icon" size={19} />
         </button>
       </div>}
-      {storageReady && myFriends.length === 0 && <p className="friends-group-footer">Együtt tanulva könnyebb a napi sorozatot tartani.</p>}
+      {storageReady && myFriends.length === 0 && <p className="friends-group-footer">Együtt tanulva könnyebb a napi sorozatot tartani. Hívd meg ismerőseidet, és motiváljátok egymást minden nap.</p>}
     </section>}
     {tab === "requests" && <section className="friends-group">
       <h2 className="friends-section-label">Kérések</h2>
