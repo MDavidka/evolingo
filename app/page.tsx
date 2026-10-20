@@ -803,6 +803,16 @@ function Friends({ userName }: { userName: string }) {
       </div>}
       {storageReady && myFriends.length === 0 && <p className="friends-group-footer">Együtt tanulva könnyebb a napi sorozatot tartani. Hívd meg ismerőseidet, és motiváljátok egymást minden nap.</p>}
     </section>}
+    {tab === "friends" && profiles.filter(friend => !friends.includes(friend.id) && !requests.includes(friend.id)).length > 0 && <section className="friends-group friends-recommendations">
+      <div className="friends-recommendations-heading"><h2 className="friends-section-label">Ajánlott tanulótársak</h2><button type="button" onClick={() => setTab("suggested")}>Mind <ChevronRight size={15} /></button></div>
+      <div className="friends-grouped-list">
+        {profiles.filter(friend => !friends.includes(friend.id) && !requests.includes(friend.id)).slice(0, 2).map(friend => <article className="friends-native-row" key={friend.id}>
+          <div className="friends-native-avatar">{friend.avatarImage ? <img src={friend.avatarImage} alt="" /> : <span>{friend.avatar}</span>}</div>
+          <div className="friends-native-copy"><strong>{friend.name}</strong><span>{friend.streak === null ? String(friend.xp.toLocaleString("hu-HU")) + " XP" : String(friend.streak) + " napos sorozat"}</span></div>
+          <button className="friends-follow-button" type="button" onClick={() => sendRequest(friend)}>Követés</button>
+        </article>)}
+      </div>
+    </section>}
     {tab === "requests" && <section className="friends-group">
       <h2 className="friends-section-label">Kérések</h2>
       {pendingProfiles.length > 0 ? <div className="friends-grouped-list">{pendingProfiles.map(friend => friendRow(friend,"request"))}</div> : <p className="friends-group-footer friends-empty-request">Nincs új kérés</p>}
@@ -811,8 +821,8 @@ function Friends({ userName }: { userName: string }) {
       {profiles.filter(friend => !friends.includes(friend.id) && !requests.includes(friend.id)).length > 0 ? <>
         <h2 className="friends-section-label">Ajánlott tanulótársak</h2>
         <div className="friends-grouped-list">{profiles.filter(friend => !friends.includes(friend.id) && !requests.includes(friend.id)).slice(0,2).map(friend => <article className="friends-native-row" key={friend.id}>
-          <div className={"friends-native-avatar friend-avatar-" + friend.id}><span>{friend.name.trim().split(/\s+/).map(part => part[0]).slice(0,2).join("").toUpperCase()}</span></div>
-          <div className="friends-native-copy"><strong>{friend.name}</strong><span>{friend.streak} napos sorozat</span></div>
+          <div className={"friends-native-avatar friend-avatar-" + friend.id}>{friend.avatarImage ? <img src={friend.avatarImage} alt="" /> : <span>{friend.avatar}</span>}</div>
+          <div className="friends-native-copy"><strong>{friend.name}</strong><span>{friend.streak === null ? String(friend.xp.toLocaleString("hu-HU")) + " XP" : String(friend.streak) + " napos sorozat"}</span></div>
           <button className="friends-follow-button" type="button" onClick={() => sendRequest(friend)}>Követés</button>
         </article>)}</div>
       </> : <p className="friends-group-footer friends-empty-request">Most nincs ajánlott tanulótárs.</p>}
