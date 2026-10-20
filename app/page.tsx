@@ -473,12 +473,16 @@ function TaskExercise({ lesson, taskIndex, onExit, onComplete, lives, onWrongAns
   const [checked, setChecked] = useState(false)
   const [answerCorrect, setAnswerCorrect] = useState(false)
   const [rewardPulse, setRewardPulse] = useState(false)
-  const [heartLost, setHeartLost] = useState(false)\n  const [secondsLeft, setSecondsLeft] = useState(30)\n  const isTimedChallenge = lesson.specialType === "timed"
+  const [heartLost, setHeartLost] = useState(false)
+  const [secondsLeft, setSecondsLeft] = useState(30)
+  const isTimedChallenge = lesson.specialType === "timed"
   const currentAnswer = question.type === "choice" ? selectedAnswer : question.type === "text" ? typedAnswer : selectedWords.map((item) => item.split(":").slice(1).join(":")).join(" ")
   const canCheck = currentAnswer.trim().length > 0 && lives > 0
   const acceptedAnswers = [question.answer, ...(question.accepted ?? [])]
   const resetAnswer = () => { setSelectedAnswer(""); setTypedAnswer(""); setSelectedWords([]); setChecked(false); setAnswerCorrect(false); setHeartLost(false) }
-  useEffect(() => { setSelectedAnswer(""); setTypedAnswer(""); setSelectedWords([]); setChecked(false); setAnswerCorrect(false); setHeartLost(false); setRewardPulse(false); setSecondsLeft(30) }, [taskIndex])\n  useEffect(() => { if (!isTimedChallenge || checked || secondsLeft <= 0) return; const timer = window.setTimeout(() => setSecondsLeft(value => value - 1), 1000); return () => window.clearTimeout(timer) }, [isTimedChallenge, checked, secondsLeft])\n  useEffect(() => { if (isTimedChallenge && secondsLeft === 0 && !checked) { setChecked(true); setAnswerCorrect(false); setHeartLost(true); onWrongAnswer() } }, [isTimedChallenge, secondsLeft, checked, onWrongAnswer])
+  useEffect(() => { setSelectedAnswer(""); setTypedAnswer(""); setSelectedWords([]); setChecked(false); setAnswerCorrect(false); setHeartLost(false); setRewardPulse(false); setSecondsLeft(30) }, [taskIndex])
+  useEffect(() => { if (!isTimedChallenge || checked || secondsLeft <= 0) return; const timer = window.setTimeout(() => setSecondsLeft(value => value - 1), 1000); return () => window.clearTimeout(timer) }, [isTimedChallenge, checked, secondsLeft])
+  useEffect(() => { if (isTimedChallenge && secondsLeft === 0 && !checked) { setChecked(true); setAnswerCorrect(false); setHeartLost(true); onWrongAnswer() } }, [isTimedChallenge, secondsLeft, checked, onWrongAnswer])
   const submitAnswer = () => {
     if (lives <= 0) { onOutOfLives(); return }
     if (checked && !answerCorrect) { resetAnswer(); return }
