@@ -2870,3 +2870,106 @@ html, body { background: #fff; }
   .friends-shortcut,.friends-follow-button,.friends-tabs button { transition:none !important; }
   .friends-modal-backdrop * { scroll-behavior:auto !important; animation:none !important; }
 }
+
+
+/* /add — monochrome glass navigation and edge-to-edge mobile layout */
+@media (max-width: 599px) {
+  html, body {
+    width: 100%;
+    min-width: 0;
+    overflow-x: hidden;
+    background: #fff;
+  }
+  .app-shell {
+    width: 100%;
+    max-width: none;
+    min-height: 100dvh;
+    margin: 0;
+    padding-bottom: calc(94px + env(safe-area-inset-bottom, 0px));
+  }
+  .screen-content {
+    width: 100%;
+    max-width: none;
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+  .bottom-nav {
+    left: 12px;
+    right: 12px;
+    bottom: max(10px, env(safe-area-inset-bottom, 0px));
+    transform: none;
+    width: auto;
+    max-width: none;
+    padding: 7px 5px;
+    border: 1px solid rgba(255,255,255,.78);
+    border-radius: 24px;
+    background: rgba(255,255,255,.68);
+    box-shadow: 0 8px 28px rgba(0,0,0,.10);
+    -webkit-backdrop-filter: blur(24px) saturate(110%);
+    backdrop-filter: blur(24px) saturate(110%);
+  }
+  .bottom-nav button {
+    min-width: 0;
+    min-height: 48px;
+    color: #737373;
+  }
+  .bottom-nav button.active {
+    color: #171717;
+    background: rgba(0,0,0,.055);
+  }
+}
+/* Keep the lesson/classroom canvas clean and white; retain white, fillable controls. */
+.screen-content:not(.lesson-page),
+.app-shell,
+.app-shell > main {
+  background: #fff;
+}
+.lesson-page,
+.lesson-layout,
+.lesson-action-bar {
+  background: #fff;
+}
+.lesson-question-card,
+.lesson-tip,
+.lesson-level,
+.answer-option.selected,
+.chosen-word {
+  box-shadow: none;
+}
+.lesson-question-card {
+  border-color: #ededed;
+  background: #fff;
+}
+.question-mascot {
+  background: #f7f7f7;
+}
+.lesson-tip {
+  border: 1px solid #ededed;
+  background: #fff;
+}
+.lesson-tip > span {
+  background: #f3f3f3;
+  color: #555;
+}
+.lesson-tip strong,
+.lesson-tip p {
+  color: #555;
+}
+.answer-option.selected {
+  border-color: #bdbdbd;
+  background: #f7f7f7;
+}
+.answer-option.selected .option-letter {
+  border-color: #bdbdbd;
+  color: #222;
+  background: #ededed;
+}
+@media (max-width: 599px) {
+  .screen-content.lesson-page {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+  .lesson-layout {
+    max-width: none;
+  }
+}
