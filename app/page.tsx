@@ -508,12 +508,19 @@ function LessonIntro({ lesson, onExit, onReadComplete, onPractice, alreadyRead }
       </div>
       <figure className="lesson-illustration web-lesson-image"><img src={(lessonIllustrations[lesson.id] ?? lessonIllustrations[1]).src} alt={(lessonIllustrations[lesson.id] ?? lessonIllustrations[1]).alt} loading="lazy" referrerPolicy="no-referrer" /><figcaption>{(lessonIllustrations[lesson.id] ?? lessonIllustrations[1]).alt}</figcaption></figure>
       {lesson.sections.map((section, index) => <LessonSectionContent section={section} index={index} key={section.title} />)}
-      <section className="lesson-note-block"><h2>Gyors összefoglaló</h2><ul className="lesson-summary-list">{lesson.sections.slice(0, 3).map((section) => <li key={section.title}>{section.title}: {section.body.split(".")[0]}.</li>)}</ul></section>
+      <section className="lesson-note-block"><h2>Gyors összefoglaló</h2><ul className="lesson-summary-list">{lesson.sections.slice(0, 3).map((section) => <li key={section.title}>{section.title}: {getLessonSectionSummary(section)}.</li>)}</ul></section>
       
       <div className="reading-inline-status">{readingComplete ? <><CheckCircle2 size={19} /><span>Tananyag elolvasva · +10 XP</span></> : <><BookOpen size={19} /><span>Olvasd át a tananyagot. A körben láthatod a hátralévő időt.</span></>}</div>
       {readingComplete && <div className="reading-complete-state"><div><strong>Mehetünk tovább!</strong><p>A leckéhez tartozó négy feladat most már elérhető az útvonalon.</p></div><button className="primary-action" onClick={onPractice}>Feladatok megnyitása <ArrowRight size={19} /></button></div>}
     </div>
   </div>
+}
+
+function getLessonSectionSummary(section: LessonSection): string {
+  const paragraph = section.blocks?.find((block): block is Extract<LessonContentBlock, { type: "paragraph" }> => block.type === "paragraph")
+  const richText = paragraph?.text
+  const source = section.body ?? (typeof richText === "string" ? richText : richText?.map((run) => run.text).join(" ")) ?? section.title
+  return source.split(".")[0] || section.title
 }
 
 function LessonInlineText({ value }: { value: LessonText }) {
