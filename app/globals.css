@@ -4000,3 +4000,12 @@ body:has(.friends-page) .bottom-nav .nav-selection-indicator { display:none !imp
 @media (max-width:430px) { .friends-page { padding-left:16px !important; padding-right:16px !important; } }
 @media (max-width:360px) { .friends-tabs > button { font-size:12px !important; } .friends-row-title { font-size:15px; } }
 @media (prefers-reduced-motion:reduce) { .friends-tabs > button,.friends-native-row,.friends-follow-button,.friend-row-action { transition:none !important; } }
+
+
+/* Keep the search control visually field-only while retaining Enter-to-search. */
+.friends-search-bar { grid-template-columns:minmax(0,1fr) !important; }
+.friends-search-submit { display:none !important; }
+.friends-skeleton-row { position:relative; display:block; height:60px; border-bottom:.5px solid var(--friends-hairline); background:var(--friends-surface-2); }
+.friends-skeleton-row:last-child { border-bottom:0; }
+.friends-skeleton-row::before { content:""; position:absolute; left:12px; top:10px; width:40px; height:40px; border-radius:50%; background:var(--friends-fill-subtle); }
+.friends-skeleton-row::after { content:""; position:absolute; left:64px; top:17px; width:45%; max-width:150px; height:10px; border-radius:5px; background:var(--friends-fill-subtle); box-shadow:0 17px 0 -1px var(--friends-fill-subtle); }
