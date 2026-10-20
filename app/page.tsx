@@ -628,37 +628,50 @@ function Shop({ stars, purchasedItems, onPurchase }: { stars: number; purchasedI
   })}</div><p className="shop-footnote">A bolt bemutató funkció: a megvett jutalmak egyelőre csak az alkalmazás aktuális munkamenetében maradnak meg.</p></>
 }
 function Leaderboard() { return <><PageHeader title="Ranglista" /><div className="league-card"><div className="league-top"><div className="league-badge"><Trophy size={26} /></div><div><h3>Bronz liga</h3><p>Vége: 2 nap múlva</p></div></div><div className="league-progress"><span style={{ width: "68%" }} /></div></div><div className="rank-list">{ranks.map((rank) => <div className={"rank-row " + (rank.name === "You" ? "you" : "")} key={rank.name}><div className="rank-number">{rank.place <= 3 ? <Medal size={21} /> : rank.place}</div><div className="rank-avatar">{rank.name.charAt(0)}</div><div className="rank-name"><strong>{rank.name === "You" ? "Te" : rank.name}</strong><span>{rank.name === "You" ? "Csak így tovább!" : "Angolt tanul"}</span></div><strong className="rank-xp">{rank.xp}</strong></div>)}</div></> }
-type FriendProfile = { id: string; name: string; handle: string; evoTag: string; avatar: string; avatarImage?: string; streak: number | null; xp: number; status: string; online: boolean }
+type FriendProfile = {
+  id: string
+  name: string
+  handle: string
+  evoTag: string
+  avatar: string
+  avatarImage?: string
+  streak: number | null
+  xp: number
+  status: string
+  online: boolean
+}
 
 const demoFriendProfiles: FriendProfile[] = [
-  { id:"demo-bence", name:"Bence K.", handle:"@bencek", evoTag:"EVO-BENCE-0001", avatar:"BK", streak:12, xp:840, status:"Ma már tanult", online:false },
-  { id:"demo-zsofi", name:"Zsófi N.", handle:"@zsofin", evoTag:"EVO-ZSOFI-0001", avatar:"ZN", streak:5, xp:520, status:"Ma már tanult", online:false },
-  { id:"demo-daniel", name:"Dániel M.", handle:"@danielm", evoTag:"EVO-DANIEL-0001", avatar:"DM", streak:8, xp:690, status:"Épp tanul", online:true },
+  { id: "demo-bence", name: "Bence K.", handle: "@bencek", evoTag: "EVO-BENCE-0001", avatar: "BK", streak: 12, xp: 840, status: "Ma már tanult", online: false },
+  { id: "demo-zsofi", name: "Zsófi N.", handle: "@zsofin", evoTag: "EVO-ZSOFI-0001", avatar: "ZN", streak: 5, xp: 520, status: "Ma már tanult", online: false },
 ]
 
 function Friends({ userName }: { userName: string }) {
-  const [friendQuery, setFriendQuery] = useState("")
-  const [message, setMessage] = useState("")
+  const [query, setQuery] = useState("")
+  const [notice, setNotice] = useState("")
   const [friends, setFriends] = useState<string[]>([])
   const [requests, setRequests] = useState<string[]>([])
-  const [storageReady, setStorageReady] = useState(false)
   const [profiles, setProfiles] = useState<FriendProfile[]>([])
+  const [profilesReady, setProfilesReady] = useState(false)
+  const [stateReady, setStateReady] = useState(false)
   const [encouraged, setEncouraged] = useState<string[]>([])
   const [showAdd, setShowAdd] = useState(false)
   const [addQuery, setAddQuery] = useState("")
-  const [addFeedback, setAddFeedback] = useState("")
+  const [addNotice, setAddNotice] = useState("")
   const [profileOpen, setProfileOpen] = useState<FriendProfile | null>(null)
-  const ownTag = "EVO-" + userName.normalize("NFKD").replace(/[\u0300-\u036f]/g, "").toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0,8).padEnd(4,"X") + "-0001"
+
+  const ownTag = "EVO-" + userName.normalize("NFKD").replace(/[\u0300-\u036f]/g, "").toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 8).padEnd(4, "X") + "-0001"
 
   useEffect(() => {
     let cancelled = false
     fetch("/api/friends/suggestions", { credentials: "same-origin", cache: "no-store" })
       .then(async response => {
-        if (!response.ok) throw new Error("suggestions unavailable")
+        if (!response.ok) throw new Error("Friend suggestions unavailable")
         const result = await response.json() as { profiles?: FriendProfile[] }
         if (!cancelled && Array.isArray(result.profiles)) setProfiles(result.profiles)
       })
       .catch(() => { if (!cancelled) setProfiles([]) })
+      .finally(() => { if (!cancelled) setProfilesReady(true) })
     return () => { cancelled = true }
   }, [])
 
@@ -666,175 +679,265 @@ function Friends({ userName }: { userName: string }) {
     let cancelled = false
     fetch("/api/state", { credentials: "same-origin", cache: "no-store" })
       .then(async response => {
-        if (!response.ok) throw new Error("friends unavailable")
+        if (!response.ok) throw new Error("State unavailable")
         const result = await response.json() as { state?: { friends?: unknown; friendRequests?: unknown } }
-        const state = result.state || {}
         if (cancelled) return
-        if (Array.isArray(state.friends)) setFriends(state.friends.filter((v): v is string => typeof v === "string").slice(0,100))
-        if (Array.isArray(state.friendRequests)) setRequests(state.friendRequests.filter((v): v is string => typeof v === "string").slice(0,100))
+        const state = result.state || {}
+        if (Array.isArray(state.friends)) setFriends(state.friends.filter((value): value is string => typeof value === "string").slice(0, 100))
+        if (Array.isArray(state.friendRequests)) setRequests(state.friendRequests.filter((value): value is string => typeof value === "string").slice(0, 100))
       })
       .catch(() => {
         try {
           const raw = localStorage.getItem("evolingo.friends.v1")
           if (!cancelled && raw) {
-            const saved = JSON.parse(raw) as { friends?: unknown; requests?: unknown }
-            if (Array.isArray(saved.friends)) setFriends(saved.friends.filter((v): v is string => typeof v === "string").slice(0,100))
-            if (Array.isArray(saved.requests)) setRequests(saved.requests.filter((v): v is string => typeof v === "string").slice(0,100))
+            const stored = JSON.parse(raw) as { friends?: unknown; requests?: unknown }
+            if (Array.isArray(stored.friends)) setFriends(stored.friends.filter((value): value is string => typeof value === "string").slice(0, 100))
+            if (Array.isArray(stored.requests)) setRequests(stored.requests.filter((value): value is string => typeof value === "string").slice(0, 100))
           }
-        } catch { /* Keep the page usable if local storage is unavailable. */ }
+        } catch {
+          // The page still works if browser storage is unavailable.
+        }
       })
-      .finally(() => { if (!cancelled) setStorageReady(true) })
+      .finally(() => { if (!cancelled) setStateReady(true) })
     return () => { cancelled = true }
   }, [])
 
   useEffect(() => {
-    if (!storageReady) return
-    try { localStorage.setItem("evolingo.friends.v1", JSON.stringify({ version: 3, friends, requests })) } catch { /* Optional local persistence. */ }
+    if (!stateReady) return
+    try {
+      localStorage.setItem("evolingo.friends.v1", JSON.stringify({ version: 4, friends, requests }))
+    } catch {
+      // Local persistence is best-effort.
+    }
     const timer = window.setTimeout(() => {
       fetch("/api/state", {
-        method: "PATCH", credentials: "same-origin",
+        method: "PATCH",
+        credentials: "same-origin",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ friends, friendRequests: requests }),
-      }).catch(() => { setMessage("A barátlista felhőmentése nem sikerült.") })
-    }, 500)
+      }).catch(() => setNotice("A módosítást nem sikerült a felhőbe menteni."))
+    }, 450)
     return () => window.clearTimeout(timer)
-  }, [storageReady, friends, requests])
+  }, [stateReady, friends, requests])
+
+  useEffect(() => {
+    if (!showAdd && !profileOpen) return
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setShowAdd(false)
+        setProfileOpen(null)
+      }
+    }
+    window.addEventListener("keydown", onKeyDown)
+    return () => window.removeEventListener("keydown", onKeyDown)
+  }, [showAdd, profileOpen])
+
+  const availableProfiles = profiles.length ? profiles : demoFriendProfiles
+  const normalizedQuery = query.trim().toLocaleLowerCase("hu")
+  const matchesQuery = (friend: FriendProfile, value: string) =>
+    !value ||
+    friend.name.toLocaleLowerCase("hu").includes(value) ||
+    friend.handle.toLocaleLowerCase("hu").includes(value) ||
+    friend.evoTag.toLocaleLowerCase("hu").includes(value)
+
+  const followedFriends = availableProfiles.filter(friend => friends.includes(friend.id))
+  const recommendations = availableProfiles
+    .filter(friend => !friends.includes(friend.id) && matchesQuery(friend, normalizedQuery))
+    .slice(0, 3)
+  const visibleFriends = followedFriends.filter(friend => matchesQuery(friend, normalizedQuery))
 
   const shareInvite = async () => {
     const inviteUrl = window.location.origin + "/?invite=" + encodeURIComponent(ownTag)
     try {
       if (navigator.share) {
-        await navigator.share({ title: "Csatlakozz hozzám az Evölingóban!", text: "Tanuljunk együtt az Evölingóban!", url: inviteUrl })
-        return
+        await navigator.share({
+          title: "Csatlakozz hozzám az Evölingóban!",
+          text: "Tanuljunk együtt az Evölingóban!",
+          url: inviteUrl,
+        })
+      } else {
+        await navigator.clipboard.writeText(inviteUrl)
+        setNotice("Meghívólink másolva.")
       }
-      await navigator.clipboard.writeText(inviteUrl)
-      setMessage("Meghívólink másolva.")
     } catch {
-      setMessage("A megosztás nem érhető el. Próbáld újra, vagy másold ki a meghívólinket: " + inviteUrl)
+      setNotice("A megosztás nem sikerült. A meghívólinked: " + inviteUrl)
     }
   }
 
   const openContacts = async () => {
-    const contacts = (navigator as Navigator & { contacts?: { select: (properties: string[], options?: { multiple?: boolean }) => Promise<unknown[]> } }).contacts
-    if (!contacts?.select) {
-      setMessage("A névjegyek elérése ezen a böngészőn nem támogatott. Használd a meghívólink megosztását.")
+    const contactPicker = (navigator as Navigator & {
+      contacts?: { select: (properties: string[], options?: { multiple?: boolean }) => Promise<unknown[]> }
+    }).contacts
+    if (!contactPicker?.select) {
+      setNotice("A névjegyek keresése ezen a böngészőn nem támogatott. Oszd meg inkább a meghívólinkedet.")
       return
     }
     try {
-      const selected = await contacts.select(["name", "tel"], { multiple: true })
-      setMessage(selected.length ? "A kiválasztott névjegyeket a telefon megosztási funkciójával hívhatod meg." : "Nem választottál névjegyet.")
+      const chosen = await contactPicker.select(["name", "tel"], { multiple: true })
+      setNotice(chosen.length ? "A kiválasztott névjegyeket a telefon megosztási funkciójával hívhatod meg." : "Nem választottál névjegyet.")
     } catch {
-      setMessage("A névjegyek megnyitása megszakadt.")
+      setNotice("A névjegyek megnyitása megszakadt.")
     }
   }
 
-  const allProfiles = [...profiles, ...demoFriendProfiles].filter((friend, index, all) => all.findIndex(item => item.id === friend.id) === index)
-  const normalizedQuery = friendQuery.trim().toLocaleLowerCase("hu")
-  const displayedFriends = allProfiles.filter(friend => friends.includes(friend.id))
-  const visibleFriends = displayedFriends.filter(friend =>
-    !normalizedQuery || friend.name.toLocaleLowerCase("hu").includes(normalizedQuery) || friend.handle.toLocaleLowerCase("hu").includes(normalizedQuery)
-  )
-  const recommendations = allProfiles.filter(friend =>
-    !friends.includes(friend.id) &&
-    (!normalizedQuery || friend.name.toLocaleLowerCase("hu").includes(normalizedQuery) || friend.handle.toLocaleLowerCase("hu").includes(normalizedQuery) || friend.evoTag.toLocaleLowerCase("hu").includes(normalizedQuery))
-  ).slice(0, 3)
-
   const toggleFollow = (friend: FriendProfile) => {
-    setFriends(items => items.includes(friend.id) ? items.filter(id => id !== friend.id) : [...items, friend.id])
-    setRequests(items => items.filter(id => id !== friend.id))
-    setMessage(friends.includes(friend.id) ? "Már nem követed: " + friend.name : "Mostantól követed: " + friend.name)
+    const alreadyFollowing = friends.includes(friend.id)
+    setFriends(current => alreadyFollowing ? current.filter(id => id !== friend.id) : [...current, friend.id])
+    setRequests(current => current.filter(id => id !== friend.id))
+    setNotice(alreadyFollowing ? "Már nem követed: " + friend.name : "Mostantól követed: " + friend.name)
   }
 
-  const encourageFriend = (friend: FriendProfile) => {
+  const sendHighFive = (friend: FriendProfile) => {
     if (encouraged.includes(friend.id)) return
-    setEncouraged(items => [...items, friend.id])
-    setMessage("Pacsi küldve " + friend.name + " számára — prototípus-visszajelzés.")
+    setEncouraged(current => [...current, friend.id])
+    setNotice("Pacsi küldve " + friend.name + " számára. Ez az interakció jelenleg csak helyi visszajelzés.")
   }
 
-  const searchAndRequest = () => {
-    setAddFeedback("")
-    const normalized = addQuery.trim().toLocaleLowerCase("hu").replace(/^@/, "")
-    if (!normalized) { setAddFeedback("Írd be egy tanulótárs nevét, felhasználónevét vagy Evo-tagjét."); return }
-    if (normalized.replace(/-/g, "") === ownTag.toLocaleLowerCase("hu").replace(/-/g, "")) { setAddFeedback("Ez a saját Evo-tag-ed."); return }
-    const found = allProfiles.find(friend =>
-      friend.name.toLocaleLowerCase("hu") === normalized ||
-      friend.handle.toLocaleLowerCase("hu").replace(/^@/, "") === normalized ||
-      friend.evoTag.toLocaleLowerCase("hu") === normalized
+  const addFromSearch = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    setAddNotice("")
+    const value = addQuery.trim().toLocaleLowerCase("hu").replace(/^@/, "")
+    if (!value) {
+      setAddNotice("Írj be egy nevet, felhasználónevet vagy Evo-tag-et.")
+      return
+    }
+    if (value.replace(/-/g, "") === ownTag.toLocaleLowerCase("hu").replace(/-/g, "")) {
+      setAddNotice("Ez a saját Evo-tag-ed.")
+      return
+    }
+    const friend = availableProfiles.find(item =>
+      item.name.toLocaleLowerCase("hu") === value ||
+      item.handle.toLocaleLowerCase("hu").replace(/^@/, "") === value ||
+      item.evoTag.toLocaleLowerCase("hu") === value
     )
-    if (!found) { setAddFeedback("Nincs ilyen tanuló a betöltött profilok között."); return }
-    if (friends.includes(found.id)) { setAddFeedback("Már követed ezt a tanulót."); return }
-    if (requests.includes(found.id)) { setAddFeedback("Már van függőben lévő felkérésed ennél a tanulónál."); return }
-    setRequests(items => [...items, found.id])
-    setAddFeedback("A felkérés helyben lett elmentve; valódi értesítéshez szerveroldali felkéréskezelés szükséges.")
+    if (!friend) {
+      setAddNotice("Nincs ilyen tanuló a jelenleg betöltött profilok között.")
+      return
+    }
+    if (friends.includes(friend.id)) {
+      setAddNotice("Már követed ezt a tanulót.")
+      return
+    }
+    setFriends(current => current.includes(friend.id) ? current : [...current, friend.id])
+    setRequests(current => current.filter(id => id !== friend.id))
+    setShowAdd(false)
     setAddQuery("")
+    setAddNotice("")
+    setNotice("Mostantól követed: " + friend.name)
   }
 
-  return <div className="friends-screen">
-    <header className="friends-reference-header">
+  return <main className="friends-screen">
+    <header className="friends-header">
       <h1>Friends</h1>
-      <button className="friends-reference-add" type="button" aria-label="Tanulótárs hozzáadása" onClick={() => { setShowAdd(true); setMessage(""); setAddFeedback("") }}><UserPlus size={21} strokeWidth={1.8} /></button>
+      <button
+        className="friends-add-button"
+        type="button"
+        aria-label="Tanulótárs hozzáadása"
+        onClick={() => { setShowAdd(true); setAddNotice("") }}
+      >
+        <UserPlus size={21} strokeWidth={1.8} aria-hidden="true" />
+      </button>
     </header>
 
-    <label className="friends-reference-search">
+    <label className="friends-search">
       <Search size={18} aria-hidden="true" />
-      <input value={friendQuery} onChange={event => setFriendQuery(event.target.value)} placeholder="Keresés név vagy felhasználónév alapján..." aria-label="Barátok keresése" />
-      {friendQuery && <button type="button" aria-label="Keresés törlése" onClick={() => setFriendQuery("")}><X size={17}/></button>}
+      <input
+        value={query}
+        onChange={event => setQuery(event.target.value)}
+        placeholder="Keresés név vagy felhasználónév alapján..."
+        aria-label="Barátok keresése"
+      />
+      {query && <button type="button" aria-label="Keresés törlése" onClick={() => setQuery("")}><X size={17} /></button>}
     </label>
 
-    <section className="friends-reference-actions" aria-label="Barátok meghívása">
-      <button type="button" className="friends-reference-action" onClick={shareInvite}>
+    <section className="friends-shortcuts" aria-label="Tanulótársak meghívása">
+      <button type="button" className="friends-shortcut" onClick={shareInvite}>
         <Share2 size={21} strokeWidth={1.9} aria-hidden="true" />
         <span>Meghívó link megosztása</span>
         <ChevronRight size={19} aria-hidden="true" />
       </button>
-      <button type="button" className="friends-reference-action" onClick={openContacts}>
+      <button type="button" className="friends-shortcut" onClick={openContacts}>
         <Contact2 size={21} strokeWidth={1.9} aria-hidden="true" />
         <span>Névjegyek keresése</span>
         <ChevronRight size={19} aria-hidden="true" />
       </button>
     </section>
 
-    {message && <div className="friends-reference-feedback" role="status"><span>{message}</span><button type="button" aria-label="Üzenet bezárása" onClick={() => setMessage("")}><X size={16}/></button></div>}
+    {notice && <div className="friends-notice" role="status"><span>{notice}</span><button type="button" aria-label="Üzenet bezárása" onClick={() => setNotice("")}><X size={16} /></button></div>}
 
-    <section className="friends-reference-section">
-      <div className="friends-reference-section-heading"><h2>AJÁNLOTT TANULÓTÁRSAK</h2><span>{recommendations.length}</span></div>
-      {!storageReady ? <div className="friends-reference-card" aria-label="Betöltés"><div className="friends-reference-skeleton"/><div className="friends-reference-skeleton"/></div> :
-        <div className="friends-reference-card">
-          {recommendations.map(friend => <article className="friends-reference-person" key={friend.id}>
-            <button className="friends-reference-person-main" type="button" onClick={() => setProfileOpen(friend)} aria-label={friend.name + " profiljának megnyitása"}>
-              <span className="friends-reference-avatar">{friend.avatarImage ? <img src={friend.avatarImage} alt="" /> : friend.avatar}</span>
-              <span className="friends-reference-copy"><strong>{friend.name}</strong><span>{friend.streak ?? 0} napos sorozat</span></span>
-            </button>
-            <button className={"friends-reference-follow " + (requests.includes(friend.id) ? "pending" : "")} type="button" disabled={requests.includes(friend.id)} onClick={() => toggleFollow(friend)}>
-              {requests.includes(friend.id) ? "Függőben" : "Követés"}
-            </button>
-          </article>)}
-          {recommendations.length === 0 && <div className="friends-reference-empty"><strong>{friendQuery ? "Nincs találat" : "Nincs új ajánlás"}</strong><p>{friendQuery ? "Próbálj másik nevet vagy felhasználónevet." : "Kövess több tanulótársat, vagy hívj meg egy barátot."}</p></div>}
-        </div>
-      }
-      {recommendations.some(friend => friend.id.startsWith("demo-")) && <p className="friends-reference-note">A mintaprofilok csak a prototípus bemutatására szolgálnak.</p>}
+    <section className="friends-section" aria-labelledby="friends-recommended-heading">
+      <h2 className="friends-section-title" id="friends-recommended-heading">AJÁNLOTT TANULÓTÁRSAK</h2>
+      <div className="friends-card">
+        {!profilesReady || !stateReady ? <>
+          <div className="friends-skeleton-row" />
+          <div className="friends-skeleton-row" />
+        </> : recommendations.map(friend => <article className="friends-person" key={friend.id}>
+          <button className="friends-person-info" type="button" onClick={() => setProfileOpen(friend)} aria-label={friend.name + " profiljának megnyitása"}>
+            <span className="friends-avatar">{friend.avatarImage ? <img src={friend.avatarImage} alt="" /> : friend.avatar}</span>
+            <span className="friends-person-copy"><strong>{friend.name}</strong><span>{friend.streak ?? 0} napos sorozat</span></span>
+          </button>
+          <button className="friends-follow-button" type="button" onClick={() => toggleFollow(friend)}>Követés</button>
+        </article>)}
+        {profilesReady && stateReady && recommendations.length === 0 && <div className="friends-empty">
+          <strong>{query ? "Nincs találat" : "Nincs új ajánlás"}</strong>
+          <p>{query ? "Próbálj másik nevet vagy felhasználónevet." : "Kövess egy tanulótársat, vagy hívd meg egy barátodat."}</p>
+          {query && <button type="button" onClick={() => setQuery("")}>Keresés törlése</button>}
+        </div>}
+      </div>
+      {profilesReady && profiles.length === 0 && <p className="friends-demo-note">Bemutatóadatok láthatók, mert még nincs elérhető valódi ajánlás.</p>}
     </section>
 
-    <section className="friends-reference-section friends-reference-following">
-      <div className="friends-reference-section-heading"><h2>KÖVETETT BARÁTOK</h2><span>{displayedFriends.length}</span></div>
-      {!storageReady ? <div className="friends-reference-card"><div className="friends-reference-skeleton"/></div> :
-        <div className="friends-reference-card">
-          {visibleFriends.map(friend => <article className="friends-reference-person friends-reference-connected" key={friend.id}>
-            <button className="friends-reference-person-main" type="button" onClick={() => setProfileOpen(friend)} aria-label={friend.name + " profiljának megnyitása"}>
-              <span className="friends-reference-avatar">{friend.avatarImage ? <img src={friend.avatarImage} alt="" /> : friend.avatar}<i className={friend.online ? "is-online" : ""}/></span>
-              <span className="friends-reference-copy"><strong>{friend.name}</strong><span>{friend.status}</span><small><Flame size={13} aria-hidden="true"/>{friend.streak ?? 0} napos sorozat</small></span>
-            </button>
-            <button className={"friends-reference-nudge " + (encouraged.includes(friend.id) ? "sent" : "")} type="button" disabled={encouraged.includes(friend.id)} onClick={() => encourageFriend(friend)}>{encouraged.includes(friend.id) ? <Check size={17}/> : <Heart size={17}/>}<span>{encouraged.includes(friend.id) ? "Elküldve" : "Pacsi küldése"}</span></button>
-          </article>)}
-          {visibleFriends.length === 0 && <div className="friends-reference-empty"><strong>{friendQuery ? "Nincs találat" : "Még nincs követett barátod"}</strong><p>{friendQuery ? "Próbálj másik nevet." : "Kövess egy ajánlott tanulótársat, hogy itt lásd a sorozatát és bátoríthasd."}</p>{friendQuery && <button type="button" onClick={() => setFriendQuery("")}>Keresés törlése</button>}</div>}
-        </div>
-      }
+    <section className="friends-section friends-following-section" aria-labelledby="friends-following-heading">
+      <div className="friends-section-heading">
+        <h2 className="friends-section-title" id="friends-following-heading">KÖVETETT BARÁTOK</h2>
+        <span className="friends-count">{followedFriends.length}</span>
+      </div>
+      <div className="friends-card">
+        {!profilesReady || !stateReady ? <div className="friends-skeleton-row" /> : visibleFriends.map(friend => <article className="friends-person friends-followed-person" key={friend.id}>
+          <button className="friends-person-info" type="button" onClick={() => setProfileOpen(friend)} aria-label={friend.name + " profiljának megnyitása"}>
+            <span className="friends-avatar friends-avatar-status">{friend.avatarImage ? <img src={friend.avatarImage} alt="" /> : friend.avatar}<i className={friend.online ? "is-online" : ""} /></span>
+            <span className="friends-person-copy"><strong>{friend.name}</strong><span>{friend.status}</span><small><Flame size={14} aria-hidden="true" />{friend.streak ?? 0} napos sorozat</small></span>
+          </button>
+          <button className={"friends-high-five " + (encouraged.includes(friend.id) ? "is-sent" : "")} type="button" disabled={encouraged.includes(friend.id)} onClick={() => sendHighFive(friend)}>
+            {encouraged.includes(friend.id) ? <Check size={17} aria-hidden="true" /> : <Heart size={17} aria-hidden="true" />}
+            <span>{encouraged.includes(friend.id) ? "Elküldve" : "Pacsi küldése"}</span>
+          </button>
+        </article>)}
+        {profilesReady && stateReady && visibleFriends.length === 0 && <div className="friends-empty">
+          <strong>{query ? "Nincs találat" : "Még nincs követett barátod"}</strong>
+          <p>{query ? "Próbálj másik nevet." : "A követett tanulótársak itt jelennek meg, a sorozatukkal és a bátorítás lehetőségével."}</p>
+          {query && <button type="button" onClick={() => setQuery("")}>Keresés törlése</button>}
+        </div>}
+      </div>
     </section>
 
-    {showAdd && <div className="friends-sheet-backdrop" role="presentation" onClick={() => setShowAdd(false)}><section className="friends-sheet" role="dialog" aria-modal="true" aria-labelledby="friends-add-title" onClick={event => event.stopPropagation()}><header><h2 id="friends-add-title">Tanulótárs hozzáadása</h2><button type="button" className="friends-icon-button" aria-label="Bezárás" onClick={() => setShowAdd(false)}><X size={20}/></button></header><p>Keresés név, felhasználónév vagy Evo-tag alapján.</p>{addFeedback && <p className="friends-add-feedback" role="status">{addFeedback}</p>}<form onSubmit={event => { event.preventDefault(); searchAndRequest() }}><input autoFocus value={addQuery} onChange={event => setAddQuery(event.target.value)} placeholder="Név, @felhasználónév vagy Evo-tag" aria-label="Keresendő tanuló" /><button type="submit">Keresés</button></form><p className="friends-demo-caption">A mintaprofilok csak helyi prototípusadatok.</p></section></div>}
+    {showAdd && <div className="friends-modal-backdrop" role="presentation" onClick={() => setShowAdd(false)}>
+      <section className="friends-modal" role="dialog" aria-modal="true" aria-labelledby="friends-add-title" onClick={event => event.stopPropagation()}>
+        <header><h2 id="friends-add-title">Tanulótárs hozzáadása</h2><button type="button" aria-label="Bezárás" onClick={() => setShowAdd(false)}><X size={20} /></button></header>
+        <p>Keresés név, felhasználónév vagy Evo-tag alapján.</p>
+        <form onSubmit={addFromSearch}>
+          <input autoFocus value={addQuery} onChange={event => setAddQuery(event.target.value)} placeholder="Név, @felhasználónév vagy Evo-tag" aria-label="Keresendő tanuló" />
+          <button type="submit">Követés</button>
+        </form>
+        {addNotice && <p className="friends-modal-notice" role="status">{addNotice}</p>}
+      </section>
+    </div>}
 
-    {profileOpen && <div className="friends-sheet-backdrop" role="presentation" onClick={() => setProfileOpen(null)}><section className="friends-sheet friends-profile-sheet" role="dialog" aria-modal="true" aria-labelledby="friends-profile-title" onClick={event => event.stopPropagation()}><header><h2 id="friends-profile-title">Tanulói profil</h2><button type="button" className="friends-icon-button" aria-label="Bezárás" onClick={() => setProfileOpen(null)}><X size={20}/></button></header><div className="friends-profile-summary"><span className="friends-person-avatar">{profileOpen.avatarImage ? <img src={profileOpen.avatarImage} alt="" /> : profileOpen.avatar}</span><div><strong>{profileOpen.name}</strong><span>{profileOpen.handle}</span></div></div><p>{profileOpen.status}</p><div className="friends-profile-stats"><div><Flame size={19}/><strong>{profileOpen.streak ?? 0} nap</strong><span>Sorozat</span></div><div><Zap size={19}/><strong>{profileOpen.xp.toLocaleString("hu-HU")} XP</strong><span>XP összesen</span></div></div><p className="friends-demo-caption">A mintaprofilokban megjelenített adatok tesztadatok lehetnek.</p></section></div>}
-  </div>
+    {profileOpen && <div className="friends-modal-backdrop" role="presentation" onClick={() => setProfileOpen(null)}>
+      <section className="friends-modal friends-profile-modal" role="dialog" aria-modal="true" aria-labelledby="friends-profile-title" onClick={event => event.stopPropagation()}>
+        <header><h2 id="friends-profile-title">Tanulói profil</h2><button type="button" aria-label="Bezárás" onClick={() => setProfileOpen(null)}><X size={20} /></button></header>
+        <div className="friends-profile-summary">
+          <span className="friends-avatar">{profileOpen.avatarImage ? <img src={profileOpen.avatarImage} alt="" /> : profileOpen.avatar}</span>
+          <div><strong>{profileOpen.name}</strong><span>{profileOpen.handle}</span></div>
+        </div>
+        <p className="friends-profile-status">{profileOpen.status}</p>
+        <div className="friends-profile-stats"><div><Flame size={18} /><strong>{profileOpen.streak ?? 0} nap</strong><span>Sorozat</span></div><div><Zap size={18} /><strong>{profileOpen.xp.toLocaleString("hu-HU")} XP</strong><span>Összes XP</span></div></div>
+        {friends.includes(profileOpen.id) ?
+          <button className="friends-unfollow-button" type="button" onClick={() => { toggleFollow(profileOpen); setProfileOpen(null) }}>Követés visszavonása</button> :
+          <button className="friends-follow-button friends-profile-follow" type="button" onClick={() => { toggleFollow(profileOpen); setProfileOpen(null) }}>Követés</button>}
+      </section>
+    </div>}
+  </main>
 }
 
 function Profile({ completedCount, readCount, completedTaskCount, xp, stars, userName, setUserName, avatar, setAvatar, notifications, setNotifications, compactMode, setCompactMode, showSettings, setShowSettings }: {
