@@ -198,8 +198,72 @@ const specialTasks: LessonUnit[] = [
     { type: "choice", instruction: "Szóvilág · Szókincs", prompt: "Válaszd ki: usually", options: ["ritkán", "általában", "soha", "azonnal"], answer: "általában", explanation: "Usually = általában, rendszerint.", tip: "I usually get up at seven." }
   ] }
 ]
-const placeholders = Array.from({ length: 90 }, (_, index) => ({ id: index + 11, title: "Lecke " + (index + 11), inDevelopment: true }))
-const pathItems = [...lessons, ...specialTasks, ...placeholders]
+
+type CurriculumTopic = { title: string; summary: string; prompt: string; options: string[]; answer: string; explanation: string; tip: string }
+const curriculumTopics: CurriculumTopic[] = [
+{title:"Present Perfect Simple",summary:"Múltbeli esemény, amely kapcsolódik a jelenhez.",prompt:"I _____ finished my homework.",options:["have","has","did","am"],answer:"have",explanation:"I/you/we/they mellett have áll.",tip:"have/has + past participle"},
+{title:"Present Perfect Continuous",summary:"A múltban kezdődött és mostanáig tartó cselekvés.",prompt:"She has been _____ for two hours.",options:["study","studied","studying","studies"],answer:"studying",explanation:"A szerkezet: has/have been + -ing.",tip:"has been studying"},
+{title:"Past Perfect Simple",summary:"Egy másik múltbeli esemény előtt befejeződött cselekvés.",prompt:"They _____ left before I arrived.",options:["have","had","were","did"],answer:"had",explanation:"Past Perfect: had + past participle.",tip:"had left"},
+{title:"Future Continuous",summary:"Egy jövőbeli időpontban éppen zajló cselekvés.",prompt:"At 8 tomorrow, I _____ be studying.",options:["will","am","have","did"],answer:"will",explanation:"Future Continuous: will be + -ing.",tip:"will be studying"},
+{title:"Future Perfect Simple",summary:"Egy jövőbeli időpontig befejeződő cselekvés.",prompt:"By Friday, we will have _____ the project.",options:["finish","finished","finishing","finishes"],answer:"finished",explanation:"A will have után a past participle áll.",tip:"will have finished"},
+{title:"Be going to",summary:"Előre eltervezett jövő vagy jelenlegi bizonyítékon alapuló jóslat.",prompt:"Look at those clouds! It _____ rain.",options:["is going to","will be","did","has"],answer:"is going to",explanation:"Látható bizonyíték alapján going to-t használunk.",tip:"am/is/are going to + alapige"},
+{title:"Much / Many",summary:"Mennyiségek megszámlálhatatlan és megszámlálható főnevekkel.",prompt:"How _____ apples do we need?",options:["much","many","little","any"],answer:"many",explanation:"Az apples megszámlálható többes szám.",tip:"many + megszámlálható főnév"},
+{title:"A few / A little",summary:"Néhány darab és egy kevés mennyiség kifejezése.",prompt:"There is _____ milk left.",options:["a few","a little","many","few"],answer:"a little",explanation:"A milk megszámlálhatatlan főnév.",tip:"a little + megszámlálhatatlan"},
+{title:"Few / Little",summary:"Kevés, a vártnál kisebb mennyiség.",prompt:"We have very _____ time.",options:["few","little","many","several"],answer:"little",explanation:"A time ebben az értelemben megszámlálhatatlan.",tip:"little time"},
+{title:"A lot of / Lots of",summary:"Sok – megszámlálható és megszámlálhatatlan főnevekkel.",prompt:"She has _____ friends.",options:["a lot of","much of","a little","few of"],answer:"a lot of",explanation:"Az a lot of mindkét főnévtípussal használható.",tip:"a lot of friends"},
+{title:"Enough",summary:"Elegendő mennyiség vagy mérték.",prompt:"We have _____ chairs for everyone.",options:["enough","too","many of","little"],answer:"enough",explanation:"Az enough főnév előtt állhat.",tip:"enough + főnév"},
+{title:"Too much / Too many",summary:"A szükségesnél nagyobb mennyiség.",prompt:"There are _____ people in this room.",options:["too much","too many","enough","a little"],answer:"too many",explanation:"A people megszámlálható többes szám.",tip:"too many people"},
+{title:"Countable and Uncountable Nouns",summary:"Megszámlálható és megszámlálhatatlan főnevek.",prompt:"Which noun is uncountable?",options:["apple","chair","information","book"],answer:"information",explanation:"Az information angolul megszámlálhatatlan.",tip:"some information, not an information"},
+{title:"Comparative Adjectives",summary:"Két dolog összehasonlítása.",prompt:"A train is _____ than a bike.",options:["fast","faster","fastest","more fast"],answer:"faster",explanation:"A fast rövid melléknév, középfoka faster.",tip:"short adjective + -er"},
+{title:"Superlative Adjectives",summary:"Valaki vagy valami kiemelése egy csoportból.",prompt:"Mount Everest is _____ mountain in the world.",options:["higher","the highest","highest than","more high"],answer:"the highest",explanation:"Felsőfoknál rövid melléknévhez -est és általában the tartozik.",tip:"the + adjective-est"},
+{title:"Adjectives and Adverbs",summary:"Melléknevek és határozószók megkülönböztetése.",prompt:"She sings very _____.",options:["beautiful","beautifully","beauty","more beautiful"],answer:"beautifully",explanation:"Az éneklés módját határozószó írja le.",tip:"verb + adverb"},
+{title:"Irregular Comparatives and Superlatives",summary:"Rendhagyó fokozás: good, bad, far.",prompt:"This is _____ film I have ever seen.",options:["the goodest","better","the best","best than"],answer:"the best",explanation:"A good rendhagyó felsőfoka the best.",tip:"good – better – the best"},
+{title:"Zero Conditional",summary:"Általános igazságok és természeti törvények.",prompt:"If you heat ice, it _____.",options:["melt","melts","will melted","melted"],answer:"melts",explanation:"Zero Conditional: if + Present Simple, Present Simple.",tip:"If + present, present"},
+{title:"First Conditional",summary:"Valós lehetőség a jövőben.",prompt:"If it rains, we _____ at home.",options:["stayed","will stay","would stay","stays"],answer:"will stay",explanation:"First Conditional főmondata: will + alapige.",tip:"If + present, will + verb"},
+{title:"Second Conditional",summary:"Képzelt vagy kevéssé valószínű helyzet a jelenben/jövőben.",prompt:"If I _____ rich, I would travel the world.",options:["am","were","will be","have been"],answer:"were",explanation:"Second Conditional: if + Past Simple, would + alapige.",tip:"If I were…, I would…"},
+{title:"Third Conditional",summary:"Múltbeli, meg nem történt helyzetek és következmények.",prompt:"If she had studied, she _____ the test.",options:["would pass","will pass","would have passed","passed"],answer:"would have passed",explanation:"Third Conditional: would have + past participle.",tip:"If + past perfect, would have + V3"},
+{title:"Have / Has",summary:"Birtoklás és kapcsolatok kifejezése.",prompt:"My brother _____ a new bike.",options:["have","has","having","does"],answer:"has",explanation:"He/she/it mellett has áll.",tip:"he has"},
+{title:"Do / Does",summary:"Kérdés és tagadás Present Simple-ben.",prompt:"_____ your sister like music?",options:["Do","Does","Is","Has"],answer:"Does",explanation:"Egyes szám harmadik személyben Does áll a kérdés elején.",tip:"Does + subject + base verb?"},
+{title:"Have got / Has got",summary:"Birtoklás kifejezése, főleg beszélt angolban.",prompt:"He _____ got two sisters.",options:["have","has","is","does"],answer:"has",explanation:"He mellett has got használatos.",tip:"He has got"},
+{title:"Possessive Adjectives",summary:"Birtokos melléknevek: my, your, his, her, its, our, their.",prompt:"Anna has a cat. _____ cat is black.",options:["She","Her","Hers","She's"],answer:"Her",explanation:"A főnév előtt birtokos melléknév áll.",tip:"her cat"},
+{title:"Possessive Pronouns",summary:"Birtokos névmások: mine, yours, his, hers, ours, theirs.",prompt:"This book belongs to me. It is _____.",options:["my","mine","me","I"],answer:"mine",explanation:"A birtokos névmás főnév nélkül áll.",tip:"It is mine."},
+{title:"Can / Could",summary:"Képesség, lehetőség és udvarias kérés.",prompt:"When I was five, I _____ swim.",options:["can","could","may","must"],answer:"could",explanation:"A could múltbeli képességet fejez ki.",tip:"could = tudott / képes volt"},
+{title:"May / Might",summary:"Lehetőség vagy engedélykérés.",prompt:"It _____ rain later, so take an umbrella.",options:["might","mustn't","has to","does"],answer:"might",explanation:"A might bizonytalan lehetőséget fejez ki.",tip:"might + base verb"},
+{title:"Must",summary:"Erős kötelezettség vagy következtetés.",prompt:"You _____ wear a seat belt in a car.",options:["must","might","couldn't","would"],answer:"must",explanation:"A must kötelezettséget fejezhet ki.",tip:"must + base verb"},
+{title:"Have to / Has to",summary:"Külső szabályból vagy körülményből eredő kötelezettség.",prompt:"She _____ get up early for school.",options:["have to","has to","must to","having to"],answer:"has to",explanation:"She mellett has to áll.",tip:"he/she/it has to"},
+{title:"Should / Ought to",summary:"Tanács és ajánlás.",prompt:"You look tired. You _____ get some rest.",options:["should","mustn't","might to","have"],answer:"should",explanation:"A should tanácsot ad.",tip:"should + base verb"},
+{title:"Mustn't / Don't have to",summary:"Tiltás és a szükségesség hiánya közti különbség.",prompt:"You _____ park here. It is forbidden.",options:["don't have to","mustn't","might","should"],answer:"mustn't",explanation:"A mustn't tiltást fejez ki.",tip:"mustn't = tilos; don't have to = nem szükséges"},
+{title:"Would",summary:"Feltételes jelentés és udvarias kérés.",prompt:"_____ you like a cup of tea?",options:["Would","Must","Did","Have"],answer:"Would",explanation:"A Would you like…? udvarias felajánlás.",tip:"Would you like…?"},
+{title:"Used to",summary:"Régi szokások és állapotok, amelyek már megváltoztak.",prompt:"I _____ play outside every day when I was little.",options:["use to","used to","am used","was use"],answer:"used to",explanation:"A used to múltbeli szokást jelöl.",tip:"used to + base verb"},
+{title:"Passive Voice",summary:"A cselekvés elszenvedőjére helyezzük a hangsúlyt.",prompt:"The cake _____ by my sister yesterday.",options:["made","was made","is make","has make"],answer:"was made",explanation:"Past Simple passive: was/were + past participle.",tip:"be + V3"},
+{title:"Reported Speech",summary:"Mások szavainak közvetett elmondása.",prompt:"He said, “I am tired.” → He said that he _____ tired.",options:["is","was","has","will"],answer:"was",explanation:"Múlt idejű bevezető ige után gyakori az igeidő-visszaléptetés.",tip:"am → was"},
+{title:"Relative Clauses",summary:"Vonatkozó mellékmondatok: who, which, that, where.",prompt:"The woman _____ lives next door is a doctor.",options:["who","where","when","whose"],answer:"who",explanation:"Személyre a who használható.",tip:"who = személy"},
+{title:"Gerunds and Infinitives",summary:"-ing alak vagy to + ige használata.",prompt:"I enjoy _____ books.",options:["read","to read","reading","reads"],answer:"reading",explanation:"Az enjoy után gerundium (-ing) áll.",tip:"enjoy + -ing"},
+{title:"Articles",summary:"Az a, an és the névelők használata.",prompt:"She ate _____ apple.",options:["a","an","the","—"],answer:"an",explanation:"Magánhangzóhanggal kezdődő szó előtt an áll.",tip:"an apple"},
+{title:"Prepositions",summary:"Helyet, időt és kapcsolatot jelölő elöljárószavak.",prompt:"The meeting starts _____ 9 o’clock.",options:["in","on","at","by"],answer:"at",explanation:"Pontos időpont előtt at áll.",tip:"at 9 o’clock"},
+{title:"Question Tags",summary:"Rövid kérdésvégi megerősítések.",prompt:"You are a student, _____?",options:["are you","aren't you","do you","don't you"],answer:"aren't you",explanation:"Állító főmondat után általában tagadó kérdésvég áll.",tip:"positive statement + negative tag"},
+{title:"Word Formation",summary:"Szavak képzése elő- és utótagokkal.",prompt:"Choose the correct noun: happy → _____.",options:["happily","happiness","unhappy","happier"],answer:"happiness",explanation:"A -ness utótag főnevet képez a happy melléknévből.",tip:"happy → happiness"},
+{title:"Phrasal Verbs",summary:"Ige és partikula együttese, új jelentéssel.",prompt:"What does “give up” mean?",options:["continue","stop trying","wake up","arrive"],answer:"stop trying",explanation:"A give up jelentése feladni.",tip:"give up = feladni"},
+{title:"Conjunctions and Linking Words",summary:"Gondolatok összekapcsolása.",prompt:"I was tired, _____ I went to bed early.",options:["so","although","because of","unless"],answer:"so",explanation:"A so következményt vezet be.",tip:"cause → so → result"},
+{title:"Too / Enough",summary:"Túlzott mérték és elegendő mérték.",prompt:"This bag is _____ heavy for me to carry.",options:["enough","too","so enough","many"],answer:"too",explanation:"A too + melléknév túlzott mértéket jelent.",tip:"too heavy"},
+{title:"So / Such",summary:"Fokozás: so + melléknév, such + főnévi szerkezet.",prompt:"It was _____ a beautiful day.",options:["so","such","too","enough"],answer:"such",explanation:"Such + a/an + melléknév + főnév.",tip:"such a beautiful day"},
+{title:"Both / Either / Neither",summary:"Két személy vagy dolog együttes, választó vagy tagadó említése.",prompt:"_____ of my parents speak English; both do.",options:["Neither","Both","Either","None"],answer:"Both",explanation:"A both mindkettőt jelenti.",tip:"both = mindkettő"},
+{title:"Reflexive Pronouns",summary:"Visszaható névmások: myself, yourself, himself és társaik.",prompt:"She made the cake by _____.",options:["herself","her","hers","she"],answer:"herself",explanation:"A she visszaható alakja herself.",tip:"she → herself"},
+{title:"Question Forms",summary:"Kérdések felépítése segédigékkel és kérdőszavakkal.",prompt:"_____ you live near here?",options:["Do","Are","Have","Does"],answer:"Do",explanation:"Present Simple-ben you alannyal Do segédigét használunk.",tip:"Do + you + base verb?"},
+{title:"Direct and Indirect Questions",summary:"Közvetlen és udvarias közvetett kérdések.",prompt:"Could you tell me where _____?",options:["is the station","the station is","is station","does the station"],answer:"the station is",explanation:"Közvetett kérdésben kijelentő szórend van.",tip:"where the station is"},
+{title:"Present and Past Habits",summary:"Jelenlegi és múltbeli szokások kifejezése.",prompt:"She _____ drinks tea in the morning.",options:["usually","yesterday","last","ago"],answer:"usually",explanation:"A usually gyakoriságot jelölő határozószó.",tip:"usually + Present Simple"},
+{title:"Inversion",summary:"Fordított szórend hangsúlyos, formális szerkezetekben.",prompt:"Never _____ I seen such a view.",options:["have","did","am","was"],answer:"have",explanation:"Never mondat elején segédige kerül az alany elé.",tip:"Never have I seen…"},
+{title:"Wishes and Regrets",summary:"Kívánságok és megbánás kifejezése wish szerkezettel.",prompt:"I wish I _____ taller.",options:["am","were","will be","have been"],answer:"were",explanation:"Jelenlegi, nem valós helyzetre gyakran wish + Past Simple áll.",tip:"I wish I were…"}
+]
+const generatedLessons: LessonUnit[] = curriculumTopics.map((topic, index) => {
+  const id = 11 + index
+  const question: Question = { type: "choice", instruction: topic.title + " · Válaszd ki a helyes választ", prompt: topic.prompt, options: topic.options, answer: topic.answer, explanation: topic.explanation, tip: topic.tip }
+  const second: Question = { type: "text", instruction: topic.title + " · Emlékezz a szabályra", prompt: "Írd be a helyes választ: " + topic.prompt, answer: topic.answer, explanation: topic.explanation, tip: topic.tip }
+  return { id, title: topic.title, level: index < 11 ? "A2" : "B1", summary: topic.summary, sections: [{ title: "Mikor használjuk?", body: topic.summary, tip: topic.tip }, { title: "Példa és szabály", body: topic.explanation, examples: [{ sentence: topic.prompt, translation: topic.answer }] }], questions: [question, second], }
+})
+const fullLessons = [...lessons, ...generatedLessons]
+const placeholders = Array.from({ length: 90 }, (_, index) => ({ id: index + 11 + curriculumTopics.length, title: "Lecke " + (index + 11 + curriculumTopics.length), inDevelopment: true }))
+const pathItems = [...fullLessons, ...specialTasks, ...placeholders]
 const ranks = [
   { name: "Sofia K.", xp: "2,480 XP", place: 1, color: "#b0b7bf" },
   { name: "Márton D.", xp: "2,210 XP", place: 2, color: "#b0b7bf" },
@@ -266,7 +330,7 @@ export default function App() {
     }, 450)
     return () => window.clearTimeout(timer)
   }, [remoteReady, userName, avatar, notifications, compactMode, readLessons, completedLessons, answeredTasks, purchasedItems, xp, stars, lives])
-  const activeLesson = [...lessons, ...specialTasks].find((lesson) => lesson.id === activeLessonId) ?? lessons[0]
+  const activeLesson = [...fullLessons, ...specialTasks].find((lesson) => lesson.id === activeLessonId) ?? lessons[0]
   const handleReadComplete = useCallback((lessonId: number) => {
     setReadLessons((previous) => {
       if (previous.includes(lessonId)) return previous
@@ -283,7 +347,7 @@ export default function App() {
     setActiveTaskIndex(taskIndex)
     setLives(5)
     const special = specialTasks.find((item) => item.id === lessonId)
-    const isUnlocked = special ? (lessonId === 103 ? completedLessons.includes(1) || completedLessons.length > 0 : lessonId === 102 ? completedLessons.length >= 2 : completedLessons.length >= 4) : lessonId === 1 || completedLessons.includes(lessonId - 1)
+    const isUnlocked = special ? (lessonId === 103 ? completedLessons.length >= 1 : lessonId === 102 ? completedLessons.length >= 2 : completedLessons.length >= 4) : lessonId === 1 || completedLessons.includes(lessonId - 1)
     if (!isUnlocked) {
       setNotice("Először fejezd be az előző leckét!")
       setScreen("home")
