@@ -559,7 +559,7 @@ function LessonContentBlockView({ block }: { block: LessonContentBlock }) {
       {block.caption && <p className="lesson-table-caption">{block.caption}</p>}
       <table className="lesson-content-table">
         {block.headers?.length ? <thead><tr>{block.headers.map((header, index) => <th scope="col" key={index}>{header}</th>)}</tr></thead> : null}
-        <tbody>{block.rows.map((row, rowIndex) => <tr key={rowIndex}>{row.map((cell, cellIndex) => <td key={cellIndex}>{cellIndex === 0 && !block.headers?.length ? <span>{cell}</span> : <strong>{cell}</strong>}</td>)}</tr>)}</tbody>
+        <tbody>{block.rows.map((row, rowIndex) => <tr key={rowIndex}>{row.map((cell, cellIndex) => <td key={cellIndex}>{!block.headers?.length && cellIndex > 0 ? <strong>{cell}</strong> : <span>{cell}</span>}</td>)}</tr>)}</tbody>
       </table>
     </div>
   }
