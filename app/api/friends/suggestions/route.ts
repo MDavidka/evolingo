@@ -19,7 +19,7 @@ export async function GET() {
       return NextResponse.json({ profiles: [] })
     }
     const db = await getDatabase()
-    const users = await db.collection<Record<string, unknown>>("users")
+    const users = await db.collection<{ _id: string; userName?: unknown; avatar?: unknown; avatarImage?: unknown; xp?: unknown; streak?: unknown; lastSeenAt?: unknown; completedLessons?: unknown }>("users")
       .find({ _id: { $ne: sessionId }, userName: { $type: "string", $ne: "" } })
       .project({ userName: 1, avatar: 1, avatarImage: 1, xp: 1, streak: 1, lastSeenAt: 1, completedLessons: 1 })
       .sort({ lastSeenAt: -1 })
