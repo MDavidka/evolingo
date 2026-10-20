@@ -3747,3 +3747,40 @@ html, body { background: #fff; }
   height: 13px !important;
   stroke-width: 3 !important;
 }
+
+
+/* Additional practice modes */
+.extra-practice-section {
+  margin: 4px 0 26px;
+}
+.extra-practice-heading {
+  display:flex; align-items:flex-end; justify-content:space-between; gap:12px;
+  margin:0 2px 13px;
+}
+.extra-practice-heading h2 {
+  margin:5px 0 0; font-size:20px; line-height:1.15; letter-spacing:-.65px; font-weight:850;
+}
+.extra-practice-heading > span {
+  display:inline-flex; align-items:center; gap:5px; flex:none;
+  padding:6px 9px; border-radius:999px; background:#f3f8ef; color:#4c8c36;
+  font-size:10px; font-weight:800;
+}
+.extra-practice-grid { display:grid; gap:9px; }
+.extra-practice-card {
+  display:flex; align-items:center; gap:12px; width:100%; min-width:0;
+  padding:12px; border:1px solid #eceff1; border-radius:17px; background:#fff;
+  text-align:left; transition:transform .15s ease,background .15s ease;
+}
+.extra-practice-card:active { transform:scale(.985); }
+.extra-practice-icon {
+  display:grid; place-items:center; flex:none; width:48px; height:48px;
+  border-radius:15px; color:#fff; background:#f0444f;
+}
+.hard-practice .extra-practice-icon { background:#e94750; }
+.timed-practice .extra-practice-icon { color:#8b6500; background:#fff3c9; }
+.word-practice .extra-practice-icon { color:#397b2a; background:#edf7e8; }
+.extra-practice-copy { display:flex; flex:1; flex-direction:column; gap:4px; min-width:0; }
+.extra-practice-copy strong { color:#171b20; font-size:14px; font-weight:820; letter-spacing:-.2px; }
+.extra-practice-copy small { color:#858d94; font-size:11px; line-height:1.35; }
+.extra-practice-arrow { flex:none; color:#9aa1a7; }
+@media (prefers-reduced-motion: reduce) { .extra-practice-card { transition:none; } }
