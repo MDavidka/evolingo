@@ -629,7 +629,7 @@ function Shop({ stars, purchasedItems, onPurchase }: { stars: number; purchasedI
 }
 function Leaderboard() { return <><PageHeader title="Ranglista" /><div className="league-card"><div className="league-top"><div className="league-badge"><Trophy size={26} /></div><div><h3>Bronz liga</h3><p>Vége: 2 nap múlva</p></div></div><div className="league-progress"><span style={{ width: "68%" }} /></div></div><div className="rank-list">{ranks.map((rank) => <div className={"rank-row " + (rank.name === "You" ? "you" : "")} key={rank.name}><div className="rank-number">{rank.place <= 3 ? <Medal size={21} /> : rank.place}</div><div className="rank-avatar">{rank.name.charAt(0)}</div><div className="rank-name"><strong>{rank.name === "You" ? "Te" : rank.name}</strong><span>{rank.name === "You" ? "Csak így tovább!" : "Angolt tanul"}</span></div><strong className="rank-xp">{rank.xp}</strong></div>)}</div></> }
 type FriendTab = "friends" | "requests" | "suggested"
-type FriendProfile = { id: string; name: string; handle: string; evoTag: string; avatar: string; streak: number; xp: number; status: string; online: boolean }
+type FriendProfile = { id: string; name: string; handle: string; evoTag: string; avatar: string; avatarImage?: string; streak: number | null; xp: number; status: string; online: boolean }
 
 const suggestedFriendProfiles: FriendProfile[] = []
 
@@ -641,7 +641,20 @@ function Friends({ userName }: { userName: string }) {
   const [friends, setFriends] = useState<string[]>([])
   const [requests, setRequests] = useState<string[]>([])
   const [storageReady, setStorageReady] = useState(false)
+  const [profiles, setProfiles] = useState<FriendProfile[]>([])
   const ownTag = "EVO-" + userName.normalize("NFKD").replace(/[\u0300-\u036f]/g, "").toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0,8).padEnd(4,"X") + "-0001"
+
+  useEffect(() => {
+    let cancelled = false
+    fetch("/api/friends/suggestions", { credentials: "same-origin", cache: "no-store" })
+      .then(async response => {
+        if (!response.ok) throw new Error("suggestions unavailable")
+        const result = await response.json() as { profiles?: FriendProfile[] }
+        if (!cancelled && Array.isArray(result.profiles)) setProfiles(result.profiles)
+      })
+      .catch(() => { if (!cancelled) setProfiles([]) })
+    return () => { cancelled = true }
+  }, [])
 
   useEffect(() => {
     let cancelled = false
@@ -686,7 +699,7 @@ function Friends({ userName }: { userName: string }) {
     setMatch(null)
     if (!normalized) { setMessage("Írd be a barátod Evo-tagjét."); return }
     if (normalized === ownTag.replace(/-/g,"")) { setMessage("Ez a saját Evo-tag-ed."); return }
-    const found = suggestedFriendProfiles.find(friend => friend.evoTag.replace(/-/g,"") === normalized)
+    const found = profiles.find(friend => friend.evoTag.replace(/-/g,"") === normalized)
     if (found) {
       if (friends.includes(found.id)) { setMessage("Már a barátaid között van."); return }
       if (requests.includes(found.id)) { setMessage("Már elküldted a felkérést ennek a felhasználónak."); return }
@@ -727,9 +740,9 @@ function Friends({ userName }: { userName: string }) {
       setMessage("A névjegyek megnyitása megszakadt.")
     }
   }
-  const myFriends = suggestedFriendProfiles.filter(friend => friends.includes(friend.id))
-  const pendingProfiles = suggestedFriendProfiles.filter(friend => requests.includes(friend.id))
-  const list = tab === "friends" ? myFriends : tab === "requests" ? pendingProfiles : suggestedFriendProfiles.filter(friend => !friends.includes(friend.id) && !requests.includes(friend.id))
+  const myFriends = profiles.filter(friend => friends.includes(friend.id))
+  const pendingProfiles = profiles.filter(friend => requests.includes(friend.id))
+  const list = tab === "friends" ? myFriends : tab === "requests" ? pendingProfiles : profiles.filter(friend => !friends.includes(friend.id) && !requests.includes(friend.id))
 
   const friendRow = (friend: FriendProfile, mode: "friend" | "request" | "suggested") => <article className="friend-person-card" key={friend.id}>
     <div className={"friend-person-avatar friend-avatar-" + friend.id}><span>{friend.avatar}</span><i className={friend.online ? "is-online" : ""} /></div>
@@ -774,8 +787,8 @@ function Friends({ userName }: { userName: string }) {
       <h2 className="friends-section-label">Barátaim</h2>
       {!storageReady ? <div className="friends-grouped-list friends-loading-list" aria-label="Betöltés"><div className="friends-skeleton-row" /><div className="friends-skeleton-row" /></div> : myFriends.length > 0 ? <div className="friends-grouped-list">
         {myFriends.map(friend => <article className="friends-native-row" key={friend.id}>
-          <div className={"friends-native-avatar friend-avatar-" + friend.id}><span>{friend.avatar}</span></div>
-          <div className="friends-native-copy"><strong>{friend.name}</strong><span>{friend.streak} napos sorozat</span></div>
+          <div className={"friends-native-avatar friend-avatar-" + friend.id}>{friend.avatarImage ? <img src={friend.avatarImage} alt="" /> : <span>{friend.avatar}</span>}</div>
+          <div className="friends-native-copy"><strong>{friend.name}</strong><span>{friend.streak === null ? `${friend.xp.toLocaleString("hu-HU")} XP` : `${friend.streak} napos sorozat`}</span></div>
           <button className="friends-row-chevron" type="button" aria-label={friend.name + " adatainak megjelenítése"} onClick={() => setMessage(friend.name + " · " + friend.evoTag)}><ChevronRight size={19} /></button>
         </article>)}
       </div> : <div className="friends-grouped-list">
@@ -795,9 +808,9 @@ function Friends({ userName }: { userName: string }) {
       {pendingProfiles.length > 0 ? <div className="friends-grouped-list">{pendingProfiles.map(friend => friendRow(friend,"request"))}</div> : <p className="friends-group-footer friends-empty-request">Nincs új kérés</p>}
     </section>}
     {tab === "suggested" && <section className="friends-group">
-      {suggestedFriendProfiles.filter(friend => !friends.includes(friend.id) && !requests.includes(friend.id)).length > 0 ? <>
+      {profiles.filter(friend => !friends.includes(friend.id) && !requests.includes(friend.id)).length > 0 ? <>
         <h2 className="friends-section-label">Ajánlott tanulótársak</h2>
-        <div className="friends-grouped-list">{suggestedFriendProfiles.filter(friend => !friends.includes(friend.id) && !requests.includes(friend.id)).slice(0,2).map(friend => <article className="friends-native-row" key={friend.id}>
+        <div className="friends-grouped-list">{profiles.filter(friend => !friends.includes(friend.id) && !requests.includes(friend.id)).slice(0,2).map(friend => <article className="friends-native-row" key={friend.id}>
           <div className={"friends-native-avatar friend-avatar-" + friend.id}><span>{friend.name.trim().split(/\s+/).map(part => part[0]).slice(0,2).join("").toUpperCase()}</span></div>
           <div className="friends-native-copy"><strong>{friend.name}</strong><span>{friend.streak} napos sorozat</span></div>
           <button className="friends-follow-button" type="button" onClick={() => sendRequest(friend)}>Követés</button>
