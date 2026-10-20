@@ -2802,8 +2802,8 @@ html, body { background: #fff; }
 .friends-person-copy > span { overflow:hidden; color:#555; font-size:13px; line-height:1.25; font-weight:400; text-overflow:ellipsis; white-space:nowrap; }
 .friends-person-copy small { display:flex; align-items:center; gap:4px; color:#555; font-size:12px; line-height:1.25; }
 .friends-person-copy small svg { flex:none; }
-.friends-follow-button { display:inline-flex; align-items:center; justify-content:center; min-width:94px; min-height:40px; padding:0 14px; border:1px solid transparent; border-radius:999px; flex:none; color:#fff; background:#111; font-size:13px; line-height:1; font-weight:600; }
-.friends-follow-button:active { background:#333; }
+.friends-follow-button { display:inline-flex; align-items:center; justify-content:center; min-width:94px; min-height:40px; padding:0 14px; border:1px solid transparent; border-radius:999px; flex:none; color:#111; background:#f1f5f9; font-size:13px; line-height:1; font-weight:600; }
+.friends-follow-button:active { background:#e2e8f0; }
 .friends-followed-person { min-height:82px; }
 .friends-high-five { display:flex; align-items:center; justify-content:center; gap:6px; min-height:40px; padding:0 10px; border:1px solid #e4e4e4; border-radius:999px; color:#222; background:#f7f7f7; font-size:12px; line-height:1; font-weight:500; flex:none; }
 .friends-high-five svg { flex:none; }
