@@ -646,6 +646,7 @@ function Friends({ userName }: { userName: string }) {
   const [encouraged, setEncouraged] = useState<string[]>([])
   const [showAdd, setShowAdd] = useState(false)
   const [addQuery, setAddQuery] = useState("")
+  const [addFeedback, setAddFeedback] = useState("")
   const [profileOpen, setProfileOpen] = useState<FriendProfile | null>(null)
   const ownTag = "EVO-" + userName.normalize("NFKD").replace(/[\u0300-\u036f]/g, "").toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0,8).padEnd(4,"X") + "-0001"
 
@@ -751,26 +752,27 @@ function Friends({ userName }: { userName: string }) {
   }
 
   const searchAndRequest = () => {
+    setAddFeedback("")
     const normalized = addQuery.trim().toLocaleLowerCase("hu").replace(/^@/, "")
-    if (!normalized) { setMessage("Írd be egy tanulótárs nevét, felhasználónevét vagy Evo-tagjét."); return }
-    if (normalized.replace(/-/g, "") === ownTag.toLocaleLowerCase("hu").replace(/-/g, "")) { setMessage("Ez a saját Evo-tag-ed."); return }
+    if (!normalized) { setAddFeedback("Írd be egy tanulótárs nevét, felhasználónevét vagy Evo-tagjét."); return }
+    if (normalized.replace(/-/g, "") === ownTag.toLocaleLowerCase("hu").replace(/-/g, "")) { setAddFeedback("Ez a saját Evo-tag-ed."); return }
     const found = allProfiles.find(friend =>
       friend.name.toLocaleLowerCase("hu") === normalized ||
       friend.handle.toLocaleLowerCase("hu").replace(/^@/, "") === normalized ||
       friend.evoTag.toLocaleLowerCase("hu") === normalized
     )
-    if (!found) { setMessage("Nincs ilyen tanuló a betöltött profilok között."); return }
-    if (friends.includes(found.id)) { setMessage("Már követed ezt a tanulót."); return }
-    if (requests.includes(found.id)) { setMessage("Már van függőben lévő felkérésed ennél a tanulónál."); return }
+    if (!found) { setAddFeedback("Nincs ilyen tanuló a betöltött profilok között."); return }
+    if (friends.includes(found.id)) { setAddFeedback("Már követed ezt a tanulót."); return }
+    if (requests.includes(found.id)) { setAddFeedback("Már van függőben lévő felkérésed ennél a tanulónál."); return }
     setRequests(items => [...items, found.id])
-    setMessage("A felkérés helyben lett elmentve; valódi értesítéshez szerveroldali felkéréskezelés szükséges.")
+    setAddFeedback("A felkérés helyben lett elmentve; valódi értesítéshez szerveroldali felkéréskezelés szükséges.")
     setAddQuery("")
   }
 
   return <div className="friends-screen">
     <header className="friends-reference-header">
       <h1>Friends</h1>
-      <button className="friends-reference-add" type="button" aria-label="Tanulótárs hozzáadása" onClick={() => { setShowAdd(true); setMessage("") }}><UserPlus size={21} strokeWidth={1.8} /></button>
+      <button className="friends-reference-add" type="button" aria-label="Tanulótárs hozzáadása" onClick={() => { setShowAdd(true); setMessage(""); setAddFeedback("") }}><UserPlus size={21} strokeWidth={1.8} /></button>
     </header>
 
     <label className="friends-reference-search">
@@ -829,7 +831,7 @@ function Friends({ userName }: { userName: string }) {
       }
     </section>
 
-    {showAdd && <div className="friends-sheet-backdrop" role="presentation" onClick={() => setShowAdd(false)}><section className="friends-sheet" role="dialog" aria-modal="true" aria-labelledby="friends-add-title" onClick={event => event.stopPropagation()}><header><h2 id="friends-add-title">Tanulótárs hozzáadása</h2><button type="button" className="friends-icon-button" aria-label="Bezárás" onClick={() => setShowAdd(false)}><X size={20}/></button></header><p>Keresés név, felhasználónév vagy Evo-tag alapján.</p><form onSubmit={event => { event.preventDefault(); searchAndRequest() }}><input autoFocus value={addQuery} onChange={event => setAddQuery(event.target.value)} placeholder="Név, @felhasználónév vagy Evo-tag" aria-label="Keresendő tanuló" /><button type="submit">Keresés</button></form><p className="friends-demo-caption">A mintaprofilok csak helyi prototípusadatok.</p></section></div>}
+    {showAdd && <div className="friends-sheet-backdrop" role="presentation" onClick={() => setShowAdd(false)}><section className="friends-sheet" role="dialog" aria-modal="true" aria-labelledby="friends-add-title" onClick={event => event.stopPropagation()}><header><h2 id="friends-add-title">Tanulótárs hozzáadása</h2><button type="button" className="friends-icon-button" aria-label="Bezárás" onClick={() => setShowAdd(false)}><X size={20}/></button></header><p>Keresés név, felhasználónév vagy Evo-tag alapján.</p>{addFeedback && <p className="friends-add-feedback" role="status">{addFeedback}</p>}<form onSubmit={event => { event.preventDefault(); searchAndRequest() }}><input autoFocus value={addQuery} onChange={event => setAddQuery(event.target.value)} placeholder="Név, @felhasználónév vagy Evo-tag" aria-label="Keresendő tanuló" /><button type="submit">Keresés</button></form><p className="friends-demo-caption">A mintaprofilok csak helyi prototípusadatok.</p></section></div>}
 
     {profileOpen && <div className="friends-sheet-backdrop" role="presentation" onClick={() => setProfileOpen(null)}><section className="friends-sheet friends-profile-sheet" role="dialog" aria-modal="true" aria-labelledby="friends-profile-title" onClick={event => event.stopPropagation()}><header><h2 id="friends-profile-title">Tanulói profil</h2><button type="button" className="friends-icon-button" aria-label="Bezárás" onClick={() => setProfileOpen(null)}><X size={20}/></button></header><div className="friends-profile-summary"><span className="friends-person-avatar">{profileOpen.avatarImage ? <img src={profileOpen.avatarImage} alt="" /> : profileOpen.avatar}</span><div><strong>{profileOpen.name}</strong><span>{profileOpen.handle}</span></div></div><p>{profileOpen.status}</p><div className="friends-profile-stats"><div><Flame size={19}/><strong>{profileOpen.streak ?? 0} nap</strong><span>Sorozat</span></div><div><Zap size={19}/><strong>{profileOpen.xp.toLocaleString("hu-HU")} XP</strong><span>XP összesen</span></div></div><p className="friends-demo-caption">A mintaprofilokban megjelenített adatok tesztadatok lehetnek.</p></section></div>}
   </div>
