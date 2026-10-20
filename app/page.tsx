@@ -648,7 +648,7 @@ function Friends({ userName }: { userName: string }) {
   const [showAdd, setShowAdd] = useState(false)
   const [addQuery, setAddQuery] = useState("")
   const [profileOpen, setProfileOpen] = useState<FriendProfile | null>(null)
-  const ownTag = "EVO-" + userName.normalize("NFKD").replace(/[\\u0300-\\u036f]/g, "").toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0,8).padEnd(4,"X") + "-0001"
+  const ownTag = "EVO-" + userName.normalize("NFKD").replace(/[\u0300-\u036f]/g, "").toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0,8).padEnd(4,"X") + "-0001"
 
   useEffect(() => {
     let cancelled = false
