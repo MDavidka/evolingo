@@ -567,7 +567,6 @@
     },
     "questionBase": {
       "type": "object",
-      "additionalProperties": false,
       "properties": {
         "instruction": {
           "type": "string"
@@ -622,7 +621,8 @@
             "options"
           ]
         }
-      ]
+      ],
+      "unevaluatedProperties": false
     },
     "textQuestion": {
       "allOf": [
@@ -639,7 +639,8 @@
             "type"
           ]
         }
-      ]
+      ],
+      "unevaluatedProperties": false
     },
     "arrangeQuestion": {
       "allOf": [
@@ -664,7 +665,8 @@
             "words"
           ]
         }
-      ]
+      ],
+      "unevaluatedProperties": false
     },
     "question": {
       "oneOf": [
