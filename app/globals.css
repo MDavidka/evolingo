@@ -4235,3 +4235,5 @@ body:has(.friends-screen) .bottom-nav button.active { background:#e8ece7 !import
 @media (prefers-reduced-motion:reduce) {
   .friends-reference-action,.friends-reference-follow,.friends-reference-nudge { transition:none !important; }
 }
+
+.friends-add-feedback { margin:10px 0 !important; padding:9px 11px; border:1px solid #e2e8f0; border-radius:10px; color:#334155 !important; background:#f8fafc; font-size:12px !important; }
