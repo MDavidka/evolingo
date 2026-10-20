@@ -13,7 +13,7 @@ const allowed = new Set([
   "friends", "friendRequests", "createdAt", "updatedAt",
 ])
 const isStringArray = (v: unknown) => Array.isArray(v) && v.length <= 1000 && v.every(x => typeof x === "string" && x.length <= 160)
-const isNumberArray = (v: unknown) => Array.isArray(v) && v.length <= 500 && v.every(x => Number.isInteger(x) && x >= 0 && x <= 10000)
+const isNumberArray = (v: unknown) => Array.isArray(v) && v.length <= 500 && v.every(x => typeof x === "number" && Number.isInteger(x) && x >= 0 && x <= 10000)
 
 function safeState(doc: Record<string, unknown>) {
   const { _id, ...state } = doc
@@ -72,8 +72,8 @@ export async function PATCH(request: NextRequest) {
       if (key === "avatar" && (typeof value !== "string" || !["fox","book","star","spark"].includes(value))) continue
       if (["notifications","compactMode"].includes(key) && typeof value !== "boolean") continue
       if (key === "theme" && !["mist","sage"].includes(String(value))) continue
-      if (["xp","stars"].includes(key) && (!Number.isInteger(value) || Number(value) < 0 || Number(value) > 100000000)) continue
-      if (key === "lives" && (!Number.isInteger(value) || Number(value) < 0 || Number(value) > 5)) continue
+      if (["xp","stars"].includes(key) && (typeof value !== "number" || !Number.isInteger(value) || value < 0 || value > 100000000)) continue
+      if (key === "lives" && (typeof value !== "number" || !Number.isInteger(value) || value < 0 || value > 5)) continue
       if (["avatarImage","bannerImage"].includes(key) && (typeof value !== "string" || value.length > 5_000_000 || (value !== "" && !value.startsWith("data:image/")))) continue
       update[key] = value
     }
