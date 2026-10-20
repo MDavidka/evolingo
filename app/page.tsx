@@ -497,7 +497,7 @@ function Friends({ userName }: { userName: string }) {
         if (Array.isArray(saved.requests)) setRequests(saved.requests.filter((v): v is string => typeof v === "string").slice(0,100))
       } else {
         // First-run preview data mirrors the design reference; users can remove any demo contact.
-        setFriends(["sofia", "marton", "liam", "anna", "david"])
+        setFriends([])
       }
     } catch { /* Keep the friends page usable if local storage is unavailable. */ }
     finally { setStorageReady(true) }
