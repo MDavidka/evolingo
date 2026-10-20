@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useRef, useState, type FormEvent } from "react"
 import {
   ArrowRight, BarChart3, BookOpen, Check, CheckCircle2,
   Flame, Heart, Lightbulb, Medal, RotateCcw, Trophy, UserRound, Dumbbell, Timer, Languages, Volume2,
@@ -793,7 +793,7 @@ function Friends({ userName }: { userName: string }) {
     setNotice("Pacsi küldve " + friend.name + " számára. Ez az interakció jelenleg csak helyi visszajelzés.")
   }
 
-  const addFromSearch = (event: React.FormEvent<HTMLFormElement>) => {
+  const addFromSearch = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     setAddNotice("")
     const value = addQuery.trim().toLocaleLowerCase("hu").replace(/^@/, "")
@@ -826,7 +826,7 @@ function Friends({ userName }: { userName: string }) {
     setNotice("Mostantól követed: " + friend.name)
   }
 
-  return <main className="friends-screen">
+  return <div className="friends-screen">
     <header className="friends-header">
       <h1>Friends</h1>
       <button
@@ -937,7 +937,7 @@ function Friends({ userName }: { userName: string }) {
           <button className="friends-follow-button friends-profile-follow" type="button" onClick={() => { toggleFollow(profileOpen); setProfileOpen(null) }}>Követés</button>}
       </section>
     </div>}
-  </main>
+  </div>
 }
 
 function Profile({ completedCount, readCount, completedTaskCount, xp, stars, userName, setUserName, avatar, setAvatar, notifications, setNotifications, compactMode, setCompactMode, showSettings, setShowSettings }: {
