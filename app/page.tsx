@@ -192,10 +192,10 @@ const specialTasks: LessonUnit[] = [
     { type: "choice", instruction: "Időkihívás", prompt: "I _____ call you tomorrow.", options: ["will", "am", "did", "was"], answer: "will", explanation: "A will jövőbeli szándékot vagy előrejelzést fejezhet ki.", tip: "will + alapige." }
   ] },
   { id: 103, title: "Szóvilág", level: "Szókincs", summary: "Tanulj angol szavakat és jelentéseket.", specialType: "words", sections: [], questions: [
-    { type: "choice", instruction: "Szóvilág · Szókincs", prompt: "Mit jelent magyarul: "careful"?", options: ["óvatos", "hangos", "éhes", "fáradt"], answer: "óvatos", explanation: "Careful = óvatos, körültekintő.", tip: "Be careful! = Légy óvatos!" },
-    { type: "choice", instruction: "Szóvilág · Szókincs", prompt: "Mi az angol megfelelője: "környezet"?", options: ["appointment", "environment", "achievement", "development"], answer: "environment", explanation: "Environment = környezet.", tip: "environmental = környezeti." },
-    { type: "choice", instruction: "Szóvilág · Szókincs", prompt: "Mit jelent: "improve"?", options: ["elfelejt", "javít / fejlődik", "kölcsönkér", "megérkezik"], answer: "javít / fejlődik", explanation: "Improve = javítani, fejlődni.", tip: "I want to improve my English." },
-    { type: "choice", instruction: "Szóvilág · Szókincs", prompt: "Válaszd ki: "usually"", options: ["ritkán", "általában", "soha", "azonnal"], answer: "általában", explanation: "Usually = általában, rendszerint.", tip: "I usually get up at seven." }
+    { type: "choice", instruction: "Szóvilág · Szókincs", prompt: "Mit jelent magyarul: careful?", options: ["óvatos", "hangos", "éhes", "fáradt"], answer: "óvatos", explanation: "Careful = óvatos, körültekintő.", tip: "Be careful! = Légy óvatos!" },
+    { type: "choice", instruction: "Szóvilág · Szókincs", prompt: "Mi az angol megfelelője: környezet?", options: ["appointment", "environment", "achievement", "development"], answer: "environment", explanation: "Environment = környezet.", tip: "environmental = környezeti." },
+    { type: "choice", instruction: "Szóvilág · Szókincs", prompt: "Mit jelent: improve?", options: ["elfelejt", "javít / fejlődik", "kölcsönkér", "megérkezik"], answer: "javít / fejlődik", explanation: "Improve = javítani, fejlődni.", tip: "I want to improve my English." },
+    { type: "choice", instruction: "Szóvilág · Szókincs", prompt: "Válaszd ki: usually", options: ["ritkán", "általában", "soha", "azonnal"], answer: "általában", explanation: "Usually = általában, rendszerint.", tip: "I usually get up at seven." }
   ] }
 ]
 const placeholders = Array.from({ length: 90 }, (_, index) => ({ id: index + 11, title: "Lecke " + (index + 11), inDevelopment: true }))
