@@ -4062,3 +4062,16 @@ body:has(.friends-page) .bottom-nav button { min-height:54px; }
 @media (prefers-reduced-motion:reduce) {
   .friends-notifications-button { transition:none !important; }
 }
+
+
+/* Recommendation rows mirror the compact grouped list in the reference. */
+.friends-recommendations { margin-top:24px !important; }
+.friends-recommendations-heading { display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:8px; }
+.friends-recommendations-heading .friends-section-label { margin:0 0 0 12px; }
+.friends-recommendations-heading > button { display:flex; align-items:center; justify-content:center; gap:2px; min-height:44px; padding:0 8px; color:var(--friends-text-secondary); font-size:13px; font-weight:500; }
+.friends-native-avatar img { width:100%; height:100%; object-fit:cover; border-radius:50%; }
+.friends-native-row { min-height:72px; }
+.friends-native-copy strong { font-size:16px !important; }
+.friends-follow-button { min-height:40px !important; }
+.friends-grouped-list { box-shadow:0 6px 20px rgba(0,0,0,.035); }
+@media (prefers-color-scheme:dark) { .friends-grouped-list { box-shadow:none; } }
