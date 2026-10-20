@@ -22,7 +22,24 @@ const lessonIllustrations: Record<number, { src: string; alt: string }> = {
 }
 type Screen = "home" | "lessonIntro" | "task" | "shop" | "leaderboard" | "profile" | "friends"
 type Example = { sentence: string; translation: string }
-type LessonSection = { title: string; body: string; rows?: [string, string][]; examples?: Example[]; tip?: string }
+type LessonTextMark = "bold" | "italic" | "underline" | "highlight" | "code" | "muted"
+type LessonTextRun = { text: string; marks?: LessonTextMark[] }
+type LessonText = string | LessonTextRun[]
+type LessonImageLayout = "hero" | "full" | "contained" | "split-image-left" | "split-image-right" | "inline-image-left" | "inline-image-right"
+type LessonContentBlock =
+  | { type: "paragraph"; text: LessonText; size?: "small" | "normal" | "large"; align?: "left" | "center" | "right" }
+  | { type: "heading"; text: LessonText; level?: 3 | 4 }
+  | { type: "example"; sentence: LessonText; translation?: LessonText; label?: string; note?: LessonText }
+  | { type: "table"; headers?: string[]; rows: string[][]; caption?: string }
+  | { type: "callout"; text: LessonText; title?: string; tone?: "neutral" | "tip" | "warning" | "success"; icon?: "lightbulb" | "info" | "check" | "book" }
+  | { type: "list"; items: LessonText[]; style?: "bullet" | "numbered" | "check" }
+  | { type: "image"; src: string; alt: string; layout?: LessonImageLayout; title?: string; text?: LessonText; caption?: string; aspect?: "wide" | "square" | "portrait" | "natural"; fit?: "cover" | "contain" }
+  | { type: "quote"; text: LessonText; attribution?: string }
+  | { type: "formula"; value: string; label?: string; explanation?: LessonText }
+  | { type: "vocabulary"; items: { term: string; meaning: string; example?: string }[] }
+  | { type: "comparison"; left: { title: string; items: string[] }; right: { title: string; items: string[] } }
+  | { type: "divider"; label?: string }
+type LessonSection = { title: string; body?: string; blocks?: LessonContentBlock[]; rows?: [string, string][]; examples?: Example[]; tip?: string }
 type Question = {
   type: "choice" | "text" | "arrange"
   instruction: string
@@ -490,18 +507,105 @@ function LessonIntro({ lesson, onExit, onReadComplete, onPractice, alreadyRead }
         <div className="intro-meta"><span><BookOpen size={15} /> Tananyag</span><span><Zap size={15} /> +10 XP olvasásért</span></div>
       </div>
       <figure className="lesson-illustration web-lesson-image"><img src={(lessonIllustrations[lesson.id] ?? lessonIllustrations[1]).src} alt={(lessonIllustrations[lesson.id] ?? lessonIllustrations[1]).alt} loading="lazy" referrerPolicy="no-referrer" /><figcaption>{(lessonIllustrations[lesson.id] ?? lessonIllustrations[1]).alt}</figcaption></figure>
-      {lesson.sections.map((section, index) => <section className="lesson-note-block" key={section.title}>
-        <h2>{index + 1}. {section.title}</h2><p>{section.body}</p>
-        {section.rows && <div className="grammar-table">{section.rows.map(([left, right]) => <div key={left}><span>{left}</span><strong>{right}</strong></div>)}</div>}
-        {section.examples?.map((example) => <div className="example-card" key={example.sentence}><span className="example-label">PÉLDA</span><p>{example.sentence}</p><small>{example.translation}</small></div>)}
-        {section.tip && <div className="lesson-callout"><Lightbulb size={19} /><p>{section.tip}</p></div>}
-      </section>)}
+      {lesson.sections.map((section, index) => <LessonSectionContent section={section} index={index} key={section.title} />)}
       <section className="lesson-note-block"><h2>Gyors összefoglaló</h2><ul className="lesson-summary-list">{lesson.sections.slice(0, 3).map((section) => <li key={section.title}>{section.title}: {section.body.split(".")[0]}.</li>)}</ul></section>
       
       <div className="reading-inline-status">{readingComplete ? <><CheckCircle2 size={19} /><span>Tananyag elolvasva · +10 XP</span></> : <><BookOpen size={19} /><span>Olvasd át a tananyagot. A körben láthatod a hátralévő időt.</span></>}</div>
       {readingComplete && <div className="reading-complete-state"><div><strong>Mehetünk tovább!</strong><p>A leckéhez tartozó négy feladat most már elérhető az útvonalon.</p></div><button className="primary-action" onClick={onPractice}>Feladatok megnyitása <ArrowRight size={19} /></button></div>}
     </div>
   </div>
+}
+
+function LessonInlineText({ value }: { value: LessonText }) {
+  if (Array.isArray(value)) {
+    return <>{value.map((run, index) => <span key={index} className={(run.marks ?? []).map((mark) => "lesson-mark-" + mark).join(" ") || undefined}>{run.text}</span>)}</>
+  }
+
+  const tokens = value.split(/(\*\*[^*]+\*\*|==[^=]+==|`[^\`]+`|\*[^*]+\*)/g).filter(Boolean)
+  return <>{tokens.map((token, index) => {
+    if (token.startsWith("**") && token.endsWith("**")) return <strong key={index}>{token.slice(2, -2)}</strong>
+    if (token.startsWith("==") && token.endsWith("==")) return <mark key={index} className="lesson-mark-highlight">{token.slice(2, -2)}</mark>
+    if (token.startsWith("`") && token.endsWith("`")) return <code key={index} className="lesson-mark-code">{token.slice(1, -1)}</code>
+    if (token.startsWith("*") && token.endsWith("*")) return <em key={index}>{token.slice(1, -1)}</em>
+    return <span key={index}>{token}</span>
+  })}</>
+}
+
+function LessonContentBlockView({ block }: { block: LessonContentBlock }) {
+  if (block.type === "paragraph") {
+    return <p className={"lesson-block-paragraph size-" + (block.size ?? "normal") + " align-" + (block.align ?? "left")}><LessonInlineText value={block.text} /></p>
+  }
+  if (block.type === "heading") {
+    const headingText = <LessonInlineText value={block.text} />
+    return block.level === 4 ? <h4 className="lesson-block-heading">{headingText}</h4> : <h3 className="lesson-block-heading">{headingText}</h3>
+  }
+  if (block.type === "example") {
+    return <figure className="lesson-example">
+      <figcaption>{block.label ?? "PÉLDA"}</figcaption>
+      <p><LessonInlineText value={block.sentence} /></p>
+      {block.translation && <small><LessonInlineText value={block.translation} /></small>}
+      {block.note && <div className="lesson-example-note"><LessonInlineText value={block.note} /></div>}
+    </figure>
+  }
+  if (block.type === "table") {
+    return <div className="lesson-table-wrap">
+      {block.caption && <p className="lesson-table-caption">{block.caption}</p>}
+      <table className="lesson-content-table">
+        {block.headers?.length ? <thead><tr>{block.headers.map((header, index) => <th scope="col" key={index}>{header}</th>)}</tr></thead> : null}
+        <tbody>{block.rows.map((row, rowIndex) => <tr key={rowIndex}>{row.map((cell, cellIndex) => <td key={cellIndex}>{cellIndex === 0 && !block.headers?.length ? <span>{cell}</span> : <strong>{cell}</strong>}</td>)}</tr>)}</tbody>
+      </table>
+    </div>
+  }
+  if (block.type === "callout") {
+    const CalloutIcon = block.icon === "check" || block.tone === "success" ? CheckCircle2 : block.icon === "book" ? BookOpen : block.icon === "info" ? Zap : Lightbulb
+    return <aside className={"lesson-content-callout tone-" + (block.tone ?? "neutral")}>
+      <CalloutIcon size={19} aria-hidden="true" />
+      <div>{block.title && <strong>{block.title}</strong>}<p><LessonInlineText value={block.text} /></p></div>
+    </aside>
+  }
+  if (block.type === "list") {
+    const items = block.items.map((item, index) => <li key={index}><LessonInlineText value={item} /></li>)
+    if (block.style === "numbered") return <ol className="lesson-content-list style-numbered">{items}</ol>
+    if (block.style === "check") return <ul className="lesson-content-list style-check">{items}</ul>
+    return <ul className="lesson-content-list style-bullet">{items}</ul>
+  }
+  if (block.type === "image") {
+    const layout = block.layout ?? "full"
+    return <figure className={"lesson-content-media layout-" + layout + " aspect-" + (block.aspect ?? "natural") + " fit-" + (block.fit ?? "cover")}>
+      <img src={block.src} alt={block.alt} loading="lazy" />
+      {block.title && <strong className="lesson-media-title">{block.title}</strong>}
+      {block.text && <div className="lesson-media-text"><LessonInlineText value={block.text} /></div>}
+      {block.caption && <figcaption>{block.caption}</figcaption>}
+    </figure>
+  }
+  if (block.type === "quote") {
+    return <blockquote className="lesson-content-quote"><p><LessonInlineText value={block.text} /></p>{block.attribution && <cite>{block.attribution}</cite>}</blockquote>
+  }
+  if (block.type === "formula") {
+    return <div className="lesson-formula">{block.label && <span>{block.label}</span>}<code>{block.value}</code>{block.explanation && <p><LessonInlineText value={block.explanation} /></p>}</div>
+  }
+  if (block.type === "vocabulary") {
+    return <dl className="lesson-vocabulary">{block.items.map((item) => <div key={item.term}><dt>{item.term}</dt><dd>{item.meaning}{item.example && <small>{item.example}</small>}</dd></div>)}</dl>
+  }
+  if (block.type === "comparison") {
+    return <div className="lesson-comparison">
+      {[block.left, block.right].map((side) => <section key={side.title}><h4>{side.title}</h4><ul>{side.items.map((item) => <li key={item}>{item}</li>)}</ul></section>)}
+    </div>
+  }
+  return <div className="lesson-content-divider" aria-hidden="true">{block.label && <span>{block.label}</span>}</div>
+}
+
+function LessonSectionContent({ section, index }: { section: LessonSection; index: number }) {
+  const blocks: LessonContentBlock[] = section.blocks ?? [
+    ...(section.body ? [{ type: "paragraph" as const, text: section.body }] : []),
+    ...(section.rows?.length ? [{ type: "table" as const, rows: section.rows.map(([left, right]) => [left, right]) }] : []),
+    ...(section.examples ?? []).map((example) => ({ type: "example" as const, sentence: example.sentence, translation: example.translation })),
+    ...(section.tip ? [{ type: "callout" as const, text: section.tip, tone: "tip" as const, icon: "lightbulb" as const }] : []),
+  ]
+  return <section className="lesson-note-block" key={section.title}>
+    <h2>{index + 1}. {section.title}</h2>
+    {blocks.map((block, blockIndex) => <LessonContentBlockView block={block} key={section.title + "-" + block.type + "-" + blockIndex} />)}
+  </section>
 }
 
 function playAnswerSound(correct: boolean) {
@@ -594,7 +698,15 @@ function TaskExercise({ lesson, taskIndex, onExit, onComplete, lives, onWrongAns
       {question.type === "text" && <div className={"answer-input-wrap " + (checked ? (answerCorrect ? "is-correct" : "is-incorrect") : "")}><label htmlFor="typed-answer">Válaszod</label><input id="typed-answer" autoComplete="off" autoCapitalize="none" disabled={lives <= 0 || checked} placeholder="Írd be a választ…" value={typedAnswer} onChange={(event) => setTypedAnswer(event.target.value)} onKeyDown={(event) => { if (event.key === "Enter" && canCheck && !checked) submitAnswer() }} />{checked && answerCorrect && <CheckCircle2 size={20} />}</div>}
       {question.type === "arrange" && <div className="word-arrange-area"><div className={"word-answer-line " + (checked ? (answerCorrect ? "is-correct" : "is-incorrect") : "")} aria-label="Saját mondat">{chosenWords.length ? chosenWords.map((word, index) => <button key={index + "-" + word} onClick={() => !checked && setSelectedWords((previous) => previous.filter((_, itemIndex) => itemIndex !== index))} disabled={checked || lives <= 0} className="chosen-word">{word}</button>) : <span className="word-placeholder">Koppints a szavakra a mondat összeállításához</span>}</div><div className="word-bank">{question.words?.map((word, index) => { const token = index + ":" + word; const used = selectedWords.includes(token); return <button key={token} className="word-chip" disabled={used || checked || lives <= 0} onClick={() => toggleWord(word, index)}>{word}</button> })}</div></div>}
       {checked && answerCorrect && <span className={"star-flight " + (rewardPulse ? "star-flight-active" : "")} aria-label="Egy csillag megszerezve"><Star size={25} fill="currentColor" /></span>}
-      {checked && !answerCorrect && <p className="retry-hint">Nem egészen — próbáld újra.</p>}
+      {checked && <div className={"task-feedback " + (answerCorrect ? "is-correct" : "is-review")} role="status">
+        {answerCorrect ? <CheckCircle2 size={19} /> : <Lightbulb size={19} />}
+        <div className="task-feedback-copy">
+          <strong>{answerCorrect ? "Helyes válasz" : "Tanuljunk belőle"}</strong>
+          <p>{question.explanation}</p>
+          {question.tip && <small>{question.tip}</small>}
+          {!answerCorrect && <span>Válaszd a „Próbáld újra” lehetőséget, ha készen állsz.</span>}
+        </div>
+      </div>}
     </div>
     <footer className="lesson-action-bar task-action-bar"><button className="primary-action" disabled={!checked && !canCheck} onClick={lives <= 0 ? onOutOfLives : submitAnswer}>{buttonLabel}{checked && answerCorrect && <ArrowRight size={19} />}</button></footer>
   </div>
