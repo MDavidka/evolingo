@@ -870,7 +870,7 @@ function Friends({ userName }: { userName: string }) {
       <button type="button" role="tab" aria-selected={tab === "suggested"} className={tab === "suggested" ? "active" : ""} onClick={() => setTab("suggested")}>Ajánlott</button>
     </div>
 
-    <section className="friends-shortcuts" aria-label="Tanulótársak meghívása">
+    {followedFriends.length === 0 && <section className="friends-shortcuts" aria-label="Tanulótársak meghívása">
       <button type="button" className="friends-shortcut" onClick={shareInvite}>
         <span className="friends-shortcut-icon"><Share2 size={21} strokeWidth={1.9} aria-hidden="true" /></span>
         <span className="friends-shortcut-copy"><strong>Meghívó link megosztása</strong><small>Hívd meg barátaidat Evölingo-ra</small></span>
@@ -881,7 +881,7 @@ function Friends({ userName }: { userName: string }) {
         <span className="friends-shortcut-copy"><strong>Névjegyek keresése</strong><small>Találd meg ismerőseidet a telefonodban</small></span>
         <ChevronRight size={20} aria-hidden="true" />
       </button>
-    </section>
+    </section>}
 
     {notice && <div className="friends-notice" role="status"><span>{notice}</span><button type="button" aria-label="Üzenet bezárása" onClick={() => setNotice("")}><X size={16} /></button></div>}
 
@@ -895,10 +895,10 @@ function Friends({ userName }: { userName: string }) {
         </div>
         {profilesReady && profiles.length === 0 && <p className="friends-demo-note">Bemutatóprofilok láthatók, mert még nincs elérhető valódi ajánlás.</p>}
       </section>
-      <section className="friends-empty-banner">
+      {followedFriends.length === 0 && <section className="friends-empty-banner">
         <div className="friends-empty-banner-icon"><Users size={29} aria-hidden="true"/></div>
         <div><strong>Tanulj együtt másokkal</strong><p>Kövess más tanulókat, és motiváljátok egymást minden nap!</p><button type="button" onClick={() => setTab("suggested")}>Tanulótársak felfedezése</button></div>
-      </section>
+      </section>}
       <section className="friends-section friends-following-section" aria-labelledby="friends-following-heading">
         <div className="friends-section-heading"><h2 className="friends-section-title" id="friends-following-heading">BARÁTAIM</h2><span className="friends-count">{followedFriends.length}</span></div>
         <div className="friends-list">
