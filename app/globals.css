@@ -3664,3 +3664,40 @@ html, body { background: #fff; }
   .friends-counters > span { min-width: 47px; gap: 4px; }
   .friends-tabs > button { gap: 4px; font-size: 10px; }
 }
+
+
+/* Friends is a destination page, not a second app shell: start with its title. */
+.friends-page {
+  padding-top: max(24px, calc(env(safe-area-inset-top) + 12px));
+}
+.friends-app-header { display: none !important; }
+.friends-title-block {
+  margin: 0 3px 24px;
+}
+.friends-title-block h1 {
+  font-size: clamp(35px, 9vw, 42px);
+  letter-spacing: -1.55px;
+}
+.friends-title-block p {
+  max-width: 34ch;
+  color: #8b9aa7;
+  font-size: 14px;
+}
+.friends-search-bar {
+  position: sticky;
+  top: max(8px, env(safe-area-inset-top));
+  z-index: 5;
+  padding: 3px 0 8px;
+  background: rgba(255,255,255,.94);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+.friends-tabs {
+  position: sticky;
+  top: max(65px, calc(env(safe-area-inset-top) + 57px));
+  z-index: 4;
+}
+@media (max-width: 420px) {
+  .friends-page { padding-top: max(21px, calc(env(safe-area-inset-top) + 10px)); }
+  .friends-title-block { margin-bottom: 20px; }
+}
