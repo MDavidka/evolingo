@@ -622,6 +622,7 @@ function Profile({ completedCount, readCount, completedTaskCount, xp, stars, use
   const [draftName, setDraftName] = useState(userName)
   const [saved, setSaved] = useState(false)
   const [profileStorageReady, setProfileStorageReady] = useState(false)
+  const [remoteProfileReady, setRemoteProfileReady] = useState(false)
   const [profileTheme, setProfileTheme] = useState<"mist" | "sage">("mist")
   const [avatarImage, setAvatarImage] = useState("")
   const [bannerImage, setBannerImage] = useState("")
@@ -629,6 +630,22 @@ function Profile({ completedCount, readCount, completedTaskCount, xp, stars, use
   const avatarInputRef = useRef<HTMLInputElement>(null)
   const bannerInputRef = useRef<HTMLInputElement>(null)
   useEffect(() => setDraftName(userName), [userName])
+  useEffect(() => {
+    let cancelled = false
+    fetch("/api/state", { credentials: "same-origin", cache: "no-store" })
+      .then(async response => {
+        if (!response.ok) throw new Error("profile unavailable")
+        const result = await response.json() as { state?: Record<string, unknown> }
+        const data = result.state || {}
+        if (cancelled) return
+        if (data.theme === "mist" || data.theme === "sage") setProfileTheme(data.theme)
+        if (typeof data.avatarImage === "string" && data.avatarImage.startsWith("data:image/")) setAvatarImage(data.avatarImage)
+        if (typeof data.bannerImage === "string" && data.bannerImage.startsWith("data:image/")) setBannerImage(data.bannerImage)
+      })
+      .catch(() => { /* The local profile remains available offline. */ })
+      .finally(() => { if (!cancelled) setRemoteProfileReady(true) })
+    return () => { cancelled = true }
+  }, [])
   useEffect(() => {
     try {
       const raw = window.localStorage.getItem("evolingo.profile.v1")
@@ -659,6 +676,17 @@ function Profile({ completedCount, readCount, completedTaskCount, xp, stars, use
       setImageError("A kép túl nagy a helyi mentéshez. Válassz egy kisebb képet.")
     }
   }, [profileStorageReady, userName, avatar, notifications, compactMode, profileTheme, avatarImage, bannerImage])
+  useEffect(() => {
+    if (!profileStorageReady || !remoteProfileReady) return
+    const timer = window.setTimeout(() => {
+      fetch("/api/state", {
+        method: "PATCH", credentials: "same-origin",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userName, avatar, notifications, compactMode, theme: profileTheme, avatarImage, bannerImage }),
+      }).catch(() => { setImageError("A profil felhőmentése nem sikerült; a helyi mentés továbbra is elérhető.") })
+    }, 650)
+    return () => window.clearTimeout(timer)
+  }, [profileStorageReady, remoteProfileReady, userName, avatar, notifications, compactMode, profileTheme, avatarImage, bannerImage])
 
   const openSettings = () => {
     setDraftName(userName)
