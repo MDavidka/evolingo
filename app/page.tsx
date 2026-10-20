@@ -639,7 +639,6 @@ const demoFriendProfiles: FriendProfile[] = [
 function Friends({ userName }: { userName: string }) {
   const [friendQuery, setFriendQuery] = useState("")
   const [message, setMessage] = useState("")
-  const [match, setMatch] = useState<FriendProfile | null>(null)
   const [friends, setFriends] = useState<string[]>([])
   const [requests, setRequests] = useState<string[]>([])
   const [storageReady, setStorageReady] = useState(false)
@@ -753,7 +752,6 @@ function Friends({ userName }: { userName: string }) {
 
   const searchAndRequest = () => {
     const normalized = addQuery.trim().toLocaleLowerCase("hu").replace(/^@/, "")
-    setMatch(null)
     if (!normalized) { setMessage("Írd be egy tanulótárs nevét, felhasználónevét vagy Evo-tagjét."); return }
     if (normalized.replace(/-/g, "") === ownTag.toLocaleLowerCase("hu").replace(/-/g, "")) { setMessage("Ez a saját Evo-tag-ed."); return }
     const found = allProfiles.find(friend =>
