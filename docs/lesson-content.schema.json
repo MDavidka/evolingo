@@ -1,0 +1,732 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/MDavidka/evolingo/blob/main/docs/lesson-content.schema.json",
+  "title": "EvoLingo Lesson",
+  "description": "Validates one EvoLingo lesson, including typed reading-content blocks and existing exercise question types.",
+  "$ref": "#/$defs/lesson",
+  "$defs": {
+    "textRun": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "text"
+      ],
+      "properties": {
+        "text": {
+          "type": "string"
+        },
+        "marks": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "bold",
+              "italic",
+              "underline",
+              "highlight",
+              "code",
+              "muted"
+            ]
+          }
+        }
+      }
+    },
+    "lessonText": {
+      "oneOf": [
+        {
+          "type": "string",
+          "description": "Plain text; lightweight inline marks such as **bold**, *italic*, ==highlight==, and `code` are rendered by the lesson UI."
+        },
+        {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/textRun"
+          },
+          "description": "Structured text with an explicit set of marks."
+        }
+      ]
+    },
+    "example": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "sentence"
+      ],
+      "properties": {
+        "sentence": {
+          "$ref": "#/$defs/lessonText"
+        },
+        "translation": {
+          "$ref": "#/$defs/lessonText"
+        },
+        "label": {
+          "type": "string"
+        },
+        "note": {
+          "$ref": "#/$defs/lessonText"
+        }
+      }
+    },
+    "paragraphBlock": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "text"
+      ],
+      "properties": {
+        "type": {
+          "const": "paragraph"
+        },
+        "text": {
+          "$ref": "#/$defs/lessonText"
+        },
+        "size": {
+          "enum": [
+            "small",
+            "normal",
+            "large"
+          ]
+        },
+        "align": {
+          "enum": [
+            "left",
+            "center",
+            "right"
+          ]
+        }
+      },
+      "description": "Explanatory copy; use short paragraphs and rely on the renderer for typography."
+    },
+    "headingBlock": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "text"
+      ],
+      "properties": {
+        "type": {
+          "const": "heading"
+        },
+        "text": {
+          "$ref": "#/$defs/lessonText"
+        },
+        "level": {
+          "enum": [
+            3,
+            4
+          ]
+        }
+      },
+      "description": "Subheading inside a section."
+    },
+    "exampleBlock": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "sentence"
+      ],
+      "properties": {
+        "type": {
+          "const": "example"
+        },
+        "sentence": {
+          "$ref": "#/$defs/lessonText"
+        },
+        "translation": {
+          "$ref": "#/$defs/lessonText"
+        },
+        "label": {
+          "type": "string"
+        },
+        "note": {
+          "$ref": "#/$defs/lessonText"
+        }
+      },
+      "description": "Prominent target-language example with optional translation and note."
+    },
+    "tableBlock": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "rows"
+      ],
+      "properties": {
+        "type": {
+          "const": "table"
+        },
+        "headers": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1
+        },
+        "rows": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "caption": {
+          "type": "string"
+        }
+      },
+      "description": "Rows and optional column headers for grammar structures and reference material."
+    },
+    "calloutBlock": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "text"
+      ],
+      "properties": {
+        "type": {
+          "const": "callout"
+        },
+        "text": {
+          "$ref": "#/$defs/lessonText"
+        },
+        "title": {
+          "type": "string"
+        },
+        "tone": {
+          "enum": [
+            "neutral",
+            "tip",
+            "warning",
+            "success"
+          ]
+        },
+        "icon": {
+          "enum": [
+            "lightbulb",
+            "info",
+            "check",
+            "book"
+          ]
+        }
+      },
+      "description": "A concise, purposeful note or reminder."
+    },
+    "listBlock": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "items"
+      ],
+      "properties": {
+        "type": {
+          "const": "list"
+        },
+        "items": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/lessonText"
+          }
+        },
+        "style": {
+          "enum": [
+            "bullet",
+            "numbered",
+            "check"
+          ]
+        }
+      },
+      "description": "Bulleted points, steps, or checklist items."
+    },
+    "imageBlock": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "src",
+        "alt"
+      ],
+      "properties": {
+        "type": {
+          "const": "image"
+        },
+        "src": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Verified public asset path or image URL."
+        },
+        "alt": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Meaningful accessible description."
+        },
+        "layout": {
+          "enum": [
+            "hero",
+            "full",
+            "contained",
+            "split-image-left",
+            "split-image-right",
+            "inline-image-left",
+            "inline-image-right"
+          ]
+        },
+        "title": {
+          "type": "string"
+        },
+        "text": {
+          "$ref": "#/$defs/lessonText"
+        },
+        "caption": {
+          "type": "string"
+        },
+        "aspect": {
+          "enum": [
+            "wide",
+            "square",
+            "portrait",
+            "natural"
+          ]
+        },
+        "fit": {
+          "enum": [
+            "cover",
+            "contain"
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "layout": {
+                "enum": [
+                  "split-image-left",
+                  "split-image-right",
+                  "inline-image-left",
+                  "inline-image-right"
+                ]
+              }
+            },
+            "required": [
+              "layout"
+            ]
+          },
+          "then": {
+            "required": [
+              "text"
+            ]
+          }
+        }
+      ],
+      "description": "Image with hero/full/contained/split/inline placement. Split and inline layouts need paired text."
+    },
+    "quoteBlock": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "text"
+      ],
+      "properties": {
+        "type": {
+          "const": "quote"
+        },
+        "text": {
+          "$ref": "#/$defs/lessonText"
+        },
+        "attribution": {
+          "type": "string"
+        }
+      },
+      "description": "Editorial quote for a memorable rule or phrase."
+    },
+    "formulaBlock": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "value"
+      ],
+      "properties": {
+        "type": {
+          "const": "formula"
+        },
+        "value": {
+          "type": "string",
+          "minLength": 1
+        },
+        "label": {
+          "type": "string"
+        },
+        "explanation": {
+          "$ref": "#/$defs/lessonText"
+        }
+      },
+      "description": "Short reusable grammatical construction or rule."
+    },
+    "vocabularyBlock": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "items"
+      ],
+      "properties": {
+        "type": {
+          "const": "vocabulary"
+        },
+        "items": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "term",
+              "meaning"
+            ],
+            "properties": {
+              "term": {
+                "type": "string"
+              },
+              "meaning": {
+                "type": "string"
+              },
+              "example": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
+      "description": "Glossary items with optional sample sentences."
+    },
+    "comparisonBlock": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "left",
+        "right"
+      ],
+      "properties": {
+        "type": {
+          "const": "comparison"
+        },
+        "left": {
+          "$ref": "#/$defs/comparisonSide"
+        },
+        "right": {
+          "$ref": "#/$defs/comparisonSide"
+        }
+      },
+      "description": "Two short related groups shown side-by-side on wide screens and stacked on mobile."
+    },
+    "comparisonSide": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "title",
+        "items"
+      ],
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "items": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "dividerBlock": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type"
+      ],
+      "properties": {
+        "type": {
+          "const": "divider"
+        },
+        "label": {
+          "type": "string"
+        }
+      },
+      "description": "Subtle separator between distinct topics."
+    },
+    "contentBlock": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/paragraphBlock"
+        },
+        {
+          "$ref": "#/$defs/headingBlock"
+        },
+        {
+          "$ref": "#/$defs/exampleBlock"
+        },
+        {
+          "$ref": "#/$defs/tableBlock"
+        },
+        {
+          "$ref": "#/$defs/calloutBlock"
+        },
+        {
+          "$ref": "#/$defs/listBlock"
+        },
+        {
+          "$ref": "#/$defs/imageBlock"
+        },
+        {
+          "$ref": "#/$defs/quoteBlock"
+        },
+        {
+          "$ref": "#/$defs/formulaBlock"
+        },
+        {
+          "$ref": "#/$defs/vocabularyBlock"
+        },
+        {
+          "$ref": "#/$defs/comparisonBlock"
+        },
+        {
+          "$ref": "#/$defs/dividerBlock"
+        }
+      ]
+    },
+    "lessonSection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "title"
+      ],
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "body": {
+          "type": "string",
+          "description": "Legacy paragraph; use blocks for new or revised sections."
+        },
+        "blocks": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/contentBlock"
+          }
+        },
+        "rows": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "minItems": 2,
+            "maxItems": 2,
+            "items": {
+              "type": "string"
+            }
+          },
+          "description": "Legacy two-column table format."
+        },
+        "examples": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/example"
+          }
+        },
+        "tip": {
+          "type": "string",
+          "description": "Legacy callout/tip format."
+        }
+      },
+      "anyOf": [
+        {
+          "required": [
+            "body"
+          ]
+        },
+        {
+          "required": [
+            "blocks"
+          ]
+        }
+      ],
+      "description": "Prefer blocks. If blocks exists, do not duplicate the same information in body/rows/examples/tip."
+    },
+    "questionBase": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "instruction": {
+          "type": "string"
+        },
+        "prompt": {
+          "type": "string"
+        },
+        "answer": {
+          "type": "string"
+        },
+        "accepted": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "explanation": {
+          "type": "string"
+        },
+        "tip": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "instruction",
+        "prompt",
+        "answer",
+        "explanation",
+        "tip"
+      ]
+    },
+    "choiceQuestion": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/questionBase"
+        },
+        {
+          "properties": {
+            "type": {
+              "const": "choice"
+            },
+            "options": {
+              "type": "array",
+              "minItems": 2,
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "required": [
+            "type",
+            "options"
+          ]
+        }
+      ]
+    },
+    "textQuestion": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/questionBase"
+        },
+        {
+          "properties": {
+            "type": {
+              "const": "text"
+            }
+          },
+          "required": [
+            "type"
+          ]
+        }
+      ]
+    },
+    "arrangeQuestion": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/questionBase"
+        },
+        {
+          "properties": {
+            "type": {
+              "const": "arrange"
+            },
+            "words": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "required": [
+            "type",
+            "words"
+          ]
+        }
+      ]
+    },
+    "question": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/choiceQuestion"
+        },
+        {
+          "$ref": "#/$defs/textQuestion"
+        },
+        {
+          "$ref": "#/$defs/arrangeQuestion"
+        }
+      ]
+    },
+    "lesson": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "level": {
+          "type": "string"
+        },
+        "summary": {
+          "type": "string"
+        },
+        "sections": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/lessonSection"
+          }
+        },
+        "questions": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/question"
+          }
+        },
+        "specialType": {
+          "enum": [
+            "hard",
+            "timed",
+            "words"
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "level",
+        "summary",
+        "sections",
+        "questions"
+      ]
+    }
+  }
+}
