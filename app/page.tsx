@@ -524,28 +524,40 @@ function Friends({ userName }: { userName: string }) {
   const ownTag = "EVO-" + userName.normalize("NFKD").replace(/[\u0300-\u036f]/g, "").toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0,8).padEnd(4,"X") + "-0001"
 
   useEffect(() => {
-    try {
-      const raw = localStorage.getItem("evolingo.friends.v1")
-      if (raw) {
-        const saved = JSON.parse(raw) as { version?: unknown; friends?: unknown; requests?: unknown }
-        if (Array.isArray(saved.friends)) {
-          const savedFriends = saved.friends.filter((v): v is string => typeof v === "string").slice(0,100)
-          // Migrate older empty preview data to the current reference-style demo list once.
-          setFriends(savedFriends)
-        } else {
-          setFriends([])
-        }
-        if (Array.isArray(saved.requests)) setRequests(saved.requests.filter((v): v is string => typeof v === "string").slice(0,100))
-      } else {
-        // First-run preview data mirrors the design reference; users can remove any demo contact.
-        setFriends([])
-      }
-    } catch { /* Keep the friends page usable if local storage is unavailable. */ }
-    finally { setStorageReady(true) }
+    let cancelled = false
+    fetch("/api/state", { credentials: "same-origin", cache: "no-store" })
+      .then(async response => {
+        if (!response.ok) throw new Error("friends unavailable")
+        const result = await response.json() as { state?: { friends?: unknown; friendRequests?: unknown } }
+        const state = result.state || {}
+        if (cancelled) return
+        if (Array.isArray(state.friends)) setFriends(state.friends.filter((v): v is string => typeof v === "string").slice(0,100))
+        if (Array.isArray(state.friendRequests)) setRequests(state.friendRequests.filter((v): v is string => typeof v === "string").slice(0,100))
+      })
+      .catch(() => {
+        try {
+          const raw = localStorage.getItem("evolingo.friends.v1")
+          if (!cancelled && raw) {
+            const saved = JSON.parse(raw) as { friends?: unknown; requests?: unknown }
+            if (Array.isArray(saved.friends)) setFriends(saved.friends.filter((v): v is string => typeof v === "string").slice(0,100))
+            if (Array.isArray(saved.requests)) setRequests(saved.requests.filter((v): v is string => typeof v === "string").slice(0,100))
+          }
+        } catch { /* Keep the friends page usable if local storage is unavailable. */ }
+      })
+      .finally(() => { if (!cancelled) setStorageReady(true) })
+    return () => { cancelled = true }
   }, [])
   useEffect(() => {
     if (!storageReady) return
     try { localStorage.setItem("evolingo.friends.v1", JSON.stringify({ version: 2, friends, requests })) } catch { /* Optional local persistence. */ }
+    const timer = window.setTimeout(() => {
+      fetch("/api/state", {
+        method: "PATCH", credentials: "same-origin",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ friends, friendRequests: requests }),
+      }).catch(() => { setMessage("A barátlista felhőmentése nem sikerült.") })
+    }, 500)
+    return () => window.clearTimeout(timer)
   }, [storageReady, friends, requests])
 
   const search = (value: string) => {
