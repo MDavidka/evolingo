@@ -1,7 +1,7 @@
 import { randomUUID } from "node:crypto"
 import { NextRequest, NextResponse } from "next/server"
 import { cookies } from "next/headers"
-import { getDatabase } from "@/lib/mongodb"
+import { getDatabase } from "../../../lib/mongodb"
 
 export const runtime = "nodejs"
 export const dynamic = "force-dynamic"
