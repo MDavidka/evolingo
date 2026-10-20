@@ -4075,3 +4075,30 @@ body:has(.friends-page) .bottom-nav button { min-height:54px; }
 .friends-follow-button { min-height:40px !important; }
 .friends-grouped-list { box-shadow:0 6px 20px rgba(0,0,0,.035); }
 @media (prefers-color-scheme:dark) { .friends-grouped-list { box-shadow:none; } }
+
+/* Reset Friends to a blank screen and restore the shared default navigation. */
+.friends-blank-page {
+  min-height: 100%;
+  width: 100%;
+  background: var(--surface, #fff);
+}
+body:has(.friends-blank-page) .bottom-nav {
+  min-height: unset !important;
+  padding-bottom: unset !important;
+  background: unset !important;
+  border-top: unset !important;
+  border-radius: unset !important;
+  box-shadow: unset !important;
+  -webkit-backdrop-filter: unset !important;
+  backdrop-filter: unset !important;
+}
+body:has(.friends-blank-page) .bottom-nav button,
+body:has(.friends-blank-page) .bottom-nav button span,
+body:has(.friends-blank-page) .bottom-nav button svg,
+body:has(.friends-blank-page) .bottom-nav button.active,
+body:has(.friends-blank-page) .bottom-nav button.active span,
+body:has(.friends-blank-page) .bottom-nav button.active svg {
+  color: unset !important;
+  font-weight: unset !important;
+}
+body:has(.friends-blank-page) .bottom-nav .nav-selection-indicator { display: unset !important; }
