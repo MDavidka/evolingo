@@ -760,7 +760,92 @@ function Friends({ userName }: { userName: string }) {
     {mode === "friend" && <button className="friend-row-action" type="button" onClick={() => setMessage(friend.name + " · " + friend.evoTag)} aria-label={friend.name + " adatainak megjelenítése"}><ChevronRight size={20} /></button>}
   </article>
 
-  return <div className="friends-blank-page" aria-label="Barátok" />
+  const [friendFilter, setFriendFilter] = useState<"friends" | "requests">("friends")
+  const [friendQuery, setFriendQuery] = useState("")
+  const [profileOpen, setProfileOpen] = useState<FriendProfile | null>(null)
+  const [encouraged, setEncouraged] = useState<string[]>([])
+  const [feedback, setFeedback] = useState("")
+  const [showAdd, setShowAdd] = useState(false)
+  const [addQuery, setAddQuery] = useState("")
+  const [prototypeFriends, setPrototypeFriends] = useState<FriendProfile[]>([])
+  const [prototypeRequests, setPrototypeRequests] = useState<FriendProfile[]>([])
+  const sampleProfiles: FriendProfile[] = [
+    { id:"demo-anna", name:"Anna Kovács", handle:"@annakovacs", evoTag:"EVO-ANNA-0001", avatar:"AK", streak:12, xp:840, status:"Ma már tanult", online:false },
+    { id:"demo-mark", name:"Márk Szabó", handle:"@markszabo", evoTag:"EVO-MARK-0001", avatar:"MS", streak:7, xp:620, status:"Épp tanul", online:true },
+    { id:"demo-lili", name:"Lili Nagy", handle:"@lilinagy", evoTag:"EVO-LILI-0001", avatar:"LN", streak:4, xp:390, status:"Ma még nem tanult", online:false },
+  ]
+  const allProfiles = [...profiles, ...sampleProfiles]
+  const displayedFriends = [...myFriends, ...prototypeFriends].filter((friend,index,arr) => arr.findIndex(item => item.id === friend.id) === index)
+  const displayedRequests = [...pendingProfiles, ...prototypeRequests].filter((friend,index,arr) => arr.findIndex(item => item.id === friend.id) === index)
+  const query = friendQuery.trim().toLocaleLowerCase("hu")
+  const visibleFriends = displayedFriends.filter(friend => !query || friend.name.toLocaleLowerCase("hu").includes(query) || friend.handle.toLocaleLowerCase("hu").includes(query))
+  const visibleRequests = displayedRequests.filter(friend => !query || friend.name.toLocaleLowerCase("hu").includes(query) || friend.handle.toLocaleLowerCase("hu").includes(query))
+  const acceptFriend = (friend: FriendProfile) => {
+    setPrototypeRequests(items => items.filter(item => item.id !== friend.id))
+    setPrototypeFriends(items => items.some(item => item.id === friend.id) ? items : [...items, friend])
+    setRequests(items => items.filter(id => id !== friend.id))
+    setFriends(items => items.includes(friend.id) ? items : [...items, friend.id])
+    setFeedback("Felkérés elfogadva — prototípus mód.")
+  }
+  const declineFriend = (friend: FriendProfile) => {
+    setPrototypeRequests(items => items.filter(item => item.id !== friend.id))
+    setRequests(items => items.filter(id => id !== friend.id))
+    setFeedback("Felkérés elutasítva — prototípus mód.")
+  }
+  const addFriendBySearch = () => {
+    const normalized = addQuery.trim().toLocaleLowerCase("hu").replace(/^@/,"")
+    if (!normalized) { setFeedback("Írj be egy nevet vagy felhasználónevet."); return }
+    const found = allProfiles.find(friend => friend.name.toLocaleLowerCase("hu") === normalized || friend.handle.toLocaleLowerCase("hu").replace(/^@/,"") === normalized || friend.evoTag.toLocaleLowerCase("hu") === normalized)
+    if (!found) { setFeedback("Nincs ilyen tanuló a betöltött profilok között."); return }
+    if (displayedFriends.some(friend => friend.id === found.id) || displayedRequests.some(friend => friend.id === found.id) || requests.includes(found.id)) { setFeedback("Már ismerős vagy függőben lévő felkérés."); return }
+    if (found.id.startsWith("demo-")) setPrototypeRequests(items => [...items, found])
+    else sendRequest(found)
+    setFeedback("Felkérés létrehozva — prototípus módban nem küldünk valódi értesítést.")
+    setAddQuery("")
+  }
+  const encourageFriend = (friend: FriendProfile) => {
+    if (encouraged.includes(friend.id)) return
+    setEncouraged(items => [...items, friend.id])
+    setFeedback("Bátorítás elküldve " + friend.name + " számára — csak prototípus-visszajelzés.")
+  }
+
+  return <div className="friends-screen">
+    <header className="friends-screen-header">
+      <h1>Barátok</h1>
+      <button className="friends-icon-button" type="button" aria-label="Barát hozzáadása" onClick={() => { setShowAdd(true); setFeedback("") }}><UserPlus size={21} /></button>
+    </header>
+    <label className="friends-screen-search">
+      <Search size={18} aria-hidden="true" />
+      <input value={friendQuery} onChange={event => setFriendQuery(event.target.value)} placeholder="Keresés név vagy felhasználónév alapján" aria-label="Barátok keresése" />
+      {friendQuery && <button type="button" aria-label="Keresés törlése" onClick={() => setFriendQuery("")}><X size={17}/></button>}
+    </label>
+    <div className="friends-filter" role="tablist" aria-label="Barátlista szűrése">
+      <button role="tab" aria-selected={friendFilter === "friends"} className={friendFilter === "friends" ? "active" : ""} onClick={() => setFriendFilter("friends")}>Barátaim <span>{displayedFriends.length}</span></button>
+      <button role="tab" aria-selected={friendFilter === "requests"} className={friendFilter === "requests" ? "active" : ""} onClick={() => setFriendFilter("requests")}>Kérések <span>{displayedRequests.length}</span></button>
+    </div>
+    <p className="friends-prototype-note">A mintaadatok prototípushoz tartoznak; a valódi fiókok külön jelennek meg.</p>
+    {feedback && <div className="friends-feedback" role="status"><span>{feedback}</span><button type="button" aria-label="Üzenet bezárása" onClick={() => setFeedback("")}><X size={16}/></button></div>}
+    {!storageReady ? <div className="friends-list" aria-label="Betöltés"><div className="friends-skeleton"/><div className="friends-skeleton"/><div className="friends-skeleton"/></div> :
+      friendFilter === "friends" ? <section className="friends-list" aria-label="Barátaim">
+        {visibleFriends.map(friend => <article className="friends-person-row" key={friend.id}>
+          <button className="friends-person-main" type="button" onClick={() => setProfileOpen(friend)} aria-label={friend.name + " profiljának megnyitása"}>
+            <span className="friends-person-avatar">{friend.avatarImage ? <img src={friend.avatarImage} alt="" /> : friend.avatar}</span>
+            <span className="friends-person-copy"><strong>{friend.name}</strong><span>{friend.handle}</span><small><span className={friend.online ? "friends-status-dot is-online" : "friends-status-dot"} />{friend.status}</small></span>
+          </button>
+          <div className="friends-person-stats"><span title="Napos sorozat"><Flame size={16}/>{friend.streak ?? 0}</span><span title="Heti XP"><Zap size={16}/>{friend.xp.toLocaleString("hu-HU")}</span></div>
+          <button className={"friends-encourage-button " + (encouraged.includes(friend.id) ? "sent" : "")} type="button" disabled={encouraged.includes(friend.id)} aria-label={encouraged.includes(friend.id) ? "Bátorítás elküldve" : "Bátorítás küldése " + friend.name} onClick={() => encourageFriend(friend)}>{encouraged.includes(friend.id) ? <Check size={18}/> : <Heart size={18}/>}</button>
+        </article>)}
+        {visibleFriends.length === 0 && <div className="friends-empty-state"><Users size={26}/><strong>{friendQuery ? "Nincs találat" : "Még nincsenek barátaid"}</strong><p>{friendQuery ? "Próbálj másik nevet vagy felhasználónevet." : "Adj hozzá tanulótársakat, és motiváljátok egymást."}</p>{friendQuery ? <button type="button" onClick={() => setFriendQuery("")}>Keresés törlése</button> : <button type="button" onClick={() => setShowAdd(true)}>Barát hozzáadása</button>}</div>}
+      </section> : <section className="friends-list" aria-label="Felkérések">
+        {visibleRequests.map(friend => <article className="friends-person-row" key={friend.id}>
+          <button className="friends-person-main" type="button" onClick={() => setProfileOpen(friend)}><span className="friends-person-avatar">{friend.avatar}</span><span className="friends-person-copy"><strong>{friend.name}</strong><span>{friend.handle}</span><small>Felkérés érkezett</small></span></button>
+          <div className="friends-request-actions"><button type="button" aria-label="Elfogadás" onClick={() => acceptFriend(friend)}><Check size={18}/></button><button type="button" aria-label="Elutasítás" onClick={() => declineFriend(friend)}><X size={18}/></button></div>
+        </article>)}
+        {visibleRequests.length === 0 && <div className="friends-empty-state"><Users size={26}/><strong>{friendQuery ? "Nincs találat" : "Nincs új kérés"}</strong><p>{friendQuery ? "Próbálj másik nevet." : "Az új felkérések itt jelennek meg."}</p>{friendQuery && <button type="button" onClick={() => setFriendQuery("")}>Keresés törlése</button>}</div>}
+      </section>}
+    {showAdd && <div className="friends-sheet-backdrop" role="presentation" onClick={() => setShowAdd(false)}><section className="friends-sheet" role="dialog" aria-modal="true" aria-labelledby="friends-add-title" onClick={event => event.stopPropagation()}><header><h2 id="friends-add-title">Barát hozzáadása</h2><button type="button" className="friends-icon-button" aria-label="Bezárás" onClick={() => setShowAdd(false)}><X size={20}/></button></header><p>Keresés név vagy felhasználónév alapján.</p><form onSubmit={event => { event.preventDefault(); addFriendBySearch() }}><input autoFocus value={addQuery} onChange={event => setAddQuery(event.target.value)} placeholder="Név, @felhasználónév vagy Evo-tag" aria-label="Keresendő tanuló" /><button type="submit">Keresés</button></form><p className="friends-demo-caption">A mintaprofilok csak helyi prototípusadatok.</p></section></div>}
+    {profileOpen && <div className="friends-sheet-backdrop" role="presentation" onClick={() => setProfileOpen(null)}><section className="friends-sheet friends-profile-sheet" role="dialog" aria-modal="true" aria-labelledby="friends-profile-title" onClick={event => event.stopPropagation()}><header><h2 id="friends-profile-title">Tanulói profil</h2><button type="button" className="friends-icon-button" aria-label="Bezárás" onClick={() => setProfileOpen(null)}><X size={20}/></button></header><div className="friends-profile-summary"><span className="friends-person-avatar">{profileOpen.avatar}</span><div><strong>{profileOpen.name}</strong><span>{profileOpen.handle}</span></div></div><p>{profileOpen.status}</p><div className="friends-profile-stats"><div><Flame size={19}/><strong>{profileOpen.streak ?? 0} nap</strong><span>Sorozat</span></div><div><Zap size={19}/><strong>{profileOpen.xp.toLocaleString("hu-HU")} XP</strong><span>Heti XP*</span></div></div><p className="friends-demo-caption">* A prototípusban a megjelenített XP mintaérték lehet.</p></section></div>}
+  </div>
 }
 
 function Profile({ completedCount, readCount, completedTaskCount, xp, stars, userName, setUserName, avatar, setAvatar, notifications, setNotifications, compactMode, setCompactMode, showSettings, setShowSettings }: {
