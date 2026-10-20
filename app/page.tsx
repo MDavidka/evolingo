@@ -206,6 +206,47 @@ export default function App() {
   const [compactMode, setCompactMode] = useState(false)
   const [showSettings, setShowSettings] = useState(false)
   const [notice, setNotice] = useState("")
+  const [remoteReady, setRemoteReady] = useState(false)
+  useEffect(() => {
+    let cancelled = false
+    fetch("/api/state", { credentials: "same-origin", cache: "no-store" })
+      .then(async response => {
+        if (!response.ok) throw new Error("state unavailable")
+        const result = await response.json() as { state?: Record<string, unknown> }
+        const data = result.state || {}
+        if (cancelled) return
+        if (typeof data.userName === "string" && data.userName.trim()) setUserName(data.userName.slice(0, 32))
+        if (["fox", "book", "star", "spark"].includes(String(data.avatar))) setAvatar(String(data.avatar))
+        if (typeof data.notifications === "boolean") setNotifications(data.notifications)
+        if (typeof data.compactMode === "boolean") setCompactMode(data.compactMode)
+        if (Array.isArray(data.readLessons)) setReadLessons(data.readLessons.filter((v): v is number => Number.isInteger(v)))
+        if (Array.isArray(data.completedLessons)) setCompletedLessons(data.completedLessons.filter((v): v is number => Number.isInteger(v)))
+        if (Array.isArray(data.answeredTasks)) setAnsweredTasks(data.answeredTasks.filter((v): v is string => typeof v === "string"))
+        if (Array.isArray(data.purchasedItems)) setPurchasedItems(data.purchasedItems.filter((v): v is string => typeof v === "string"))
+        if (typeof data.xp === "number" && Number.isFinite(data.xp)) setXp(Math.max(0, data.xp))
+        if (typeof data.stars === "number" && Number.isFinite(data.stars)) setStars(Math.max(0, data.stars))
+        if (typeof data.lives === "number" && Number.isFinite(data.lives)) setLives(Math.max(0, Math.min(5, data.lives)))
+      })
+      .catch(() => { if (!cancelled) setNotice("A felhőmentés nem érhető el. Ellenőrizd a Vercel MONGO_URI beállítását.") })
+      .finally(() => { if (!cancelled) setRemoteReady(true) })
+    return () => { cancelled = true }
+  }, [])
+  useEffect(() => {
+    if (!remoteReady) return
+    const timer = window.setTimeout(() => {
+      fetch("/api/state", {
+        method: "PATCH", credentials: "same-origin",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userName, avatar, notifications, compactMode, readLessons, completedLessons,
+          answeredTasks, purchasedItems, xp, stars, lives,
+        }),
+      }).then(response => {
+        if (!response.ok) setNotice("A felhőmentés nem sikerült. Ellenőrizd a MongoDB beállítását.")
+      }).catch(() => setNotice("Nem sikerült csatlakozni a felhőmentéshez."))
+    }, 450)
+    return () => window.clearTimeout(timer)
+  }, [remoteReady, userName, avatar, notifications, compactMode, readLessons, completedLessons, answeredTasks, purchasedItems, xp, stars, lives])
   const activeLesson = lessons.find((lesson) => lesson.id === activeLessonId) ?? lessons[0]
   const handleReadComplete = useCallback((lessonId: number) => {
     setReadLessons((previous) => {
