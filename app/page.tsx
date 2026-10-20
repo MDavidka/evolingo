@@ -34,7 +34,7 @@ type Question = {
   explanation: string
   tip: string
 }
-type LessonUnit = { id: number; title: string; summary: string; sections: LessonSection[]; questions: Question[]; level: string }
+type LessonUnit = { id: number; title: string; summary: string; sections: LessonSection[]; questions: Question[]; level: string; specialType?: "hard" | "timed" | "words" }
 const lessons: LessonUnit[] = [
   {
     id: 1, title: "Present Simple", level: "A1", summary: "Szokások, napi rutinok és általános tények leírása.",
@@ -179,8 +179,27 @@ const lessons: LessonUnit[] = [
   },
 ]
 
+const specialTasks: LessonUnit[] = [
+  { id: 101, title: "Hard mód", level: "Kihívás", summary: "Nehezebb, összetettebb kérdések.", specialType: "hard", sections: [], questions: [
+    { type: "choice", instruction: "Hard mód · Nyelvtan", prompt: "If I _____ enough time, I would have helped you.", options: ["had", "have", "would have", "had had"], answer: "had had", explanation: "Harmadik feltételes szerkezet: If + past perfect, would have + past participle.", tip: "If I had had…, I would have helped…" },
+    { type: "text", instruction: "Hard mód · Egészítsd ki", prompt: "Neither of the answers _____ correct.", answer: "is", explanation: "A neither of szerkezethez formális angolban gyakran egyes számú ige tartozik.", tip: "Neither of + többes számú főnév + egyes számú ige." },
+    { type: "choice", instruction: "Hard mód · Válaszd ki", prompt: "By the time we arrived, the film _____.", options: ["already started", "had already started", "has already started", "was already start"], answer: "had already started", explanation: "A korábban befejeződött múltbeli eseményhez Past Perfectet használunk.", tip: "A korábbi esemény: had + ige harmadik alakja." }
+  ] },
+  { id: 102, title: "Időkihívás", level: "Időre", summary: "Válaszolj 30 másodperc alatt!", specialType: "timed", sections: [], questions: [
+    { type: "choice", instruction: "Időkihívás", prompt: "She _____ to school every day.", options: ["go", "goes", "going", "is go"], answer: "goes", explanation: "He / she / it esetén az ige -s végződést kap.", tip: "She goes." },
+    { type: "choice", instruction: "Időkihívás", prompt: "They _____ dinner right now.", options: ["have", "has", "are having", "having"], answer: "are having", explanation: "A right now jelenleg zajló cselekvést jelez.", tip: "Present Continuous: am / is / are + -ing." },
+    { type: "choice", instruction: "Időkihívás", prompt: "Yesterday, he _____ his keys.", options: ["loses", "lose", "lost", "has lose"], answer: "lost", explanation: "A yesterday múlt időt jelez; a lose rendhagyó alakja lost.", tip: "lose → lost." },
+    { type: "choice", instruction: "Időkihívás", prompt: "I _____ call you tomorrow.", options: ["will", "am", "did", "was"], answer: "will", explanation: "A will jövőbeli szándékot vagy előrejelzést fejezhet ki.", tip: "will + alapige." }
+  ] },
+  { id: 103, title: "Szóvilág", level: "Szókincs", summary: "Tanulj angol szavakat és jelentéseket.", specialType: "words", sections: [], questions: [
+    { type: "choice", instruction: "Szóvilág · Szókincs", prompt: "Mit jelent magyarul: "careful"?", options: ["óvatos", "hangos", "éhes", "fáradt"], answer: "óvatos", explanation: "Careful = óvatos, körültekintő.", tip: "Be careful! = Légy óvatos!" },
+    { type: "choice", instruction: "Szóvilág · Szókincs", prompt: "Mi az angol megfelelője: "környezet"?", options: ["appointment", "environment", "achievement", "development"], answer: "environment", explanation: "Environment = környezet.", tip: "environmental = környezeti." },
+    { type: "choice", instruction: "Szóvilág · Szókincs", prompt: "Mit jelent: "improve"?", options: ["elfelejt", "javít / fejlődik", "kölcsönkér", "megérkezik"], answer: "javít / fejlődik", explanation: "Improve = javítani, fejlődni.", tip: "I want to improve my English." },
+    { type: "choice", instruction: "Szóvilág · Szókincs", prompt: "Válaszd ki: "usually"", options: ["ritkán", "általában", "soha", "azonnal"], answer: "általában", explanation: "Usually = általában, rendszerint.", tip: "I usually get up at seven." }
+  ] }
+]
 const placeholders = Array.from({ length: 90 }, (_, index) => ({ id: index + 11, title: "Lecke " + (index + 11), inDevelopment: true }))
-const pathItems = [...lessons, ...placeholders]
+const pathItems = [...lessons, ...specialTasks, ...placeholders]
 const ranks = [
   { name: "Sofia K.", xp: "2,480 XP", place: 1, color: "#b0b7bf" },
   { name: "Márton D.", xp: "2,210 XP", place: 2, color: "#b0b7bf" },
@@ -247,7 +266,7 @@ export default function App() {
     }, 450)
     return () => window.clearTimeout(timer)
   }, [remoteReady, userName, avatar, notifications, compactMode, readLessons, completedLessons, answeredTasks, purchasedItems, xp, stars, lives])
-  const activeLesson = lessons.find((lesson) => lesson.id === activeLessonId) ?? lessons[0]
+  const activeLesson = [...lessons, ...specialTasks].find((lesson) => lesson.id === activeLessonId) ?? lessons[0]
   const handleReadComplete = useCallback((lessonId: number) => {
     setReadLessons((previous) => {
       if (previous.includes(lessonId)) return previous
@@ -263,7 +282,8 @@ export default function App() {
     setActiveLessonId(lessonId)
     setActiveTaskIndex(taskIndex)
     setLives(5)
-    const isUnlocked = lessonId === 1 || completedLessons.includes(lessonId - 1)
+    const special = specialTasks.find((item) => item.id === lessonId)
+    const isUnlocked = special ? (lessonId === 103 ? completedLessons.includes(1) || completedLessons.length > 0 : lessonId === 102 ? completedLessons.length >= 2 : completedLessons.length >= 4) : lessonId === 1 || completedLessons.includes(lessonId - 1)
     if (!isUnlocked) {
       setNotice("Először fejezd be az előző leckét!")
       setScreen("home")
@@ -339,20 +359,6 @@ function Home({ readLessons, completedLessons, answeredTasks, stars, notice, cle
     <header className="app-header home-header"><Brand /><div className="home-currencies"><div className="star-balance" aria-label={stars + " csillag"}><Star size={21} fill="currentColor" /><strong>{stars}</strong></div><div className="health"><Heart fill="currentColor" size={20} /><strong>5</strong></div></div></header>
     <div className="section-heading home-heading"><div><p className="eyebrow">ANGOL</p><h2>Tanulási útvonal</h2></div></div>
     {notice && <button className="inline-notice" onClick={clearNotice}><span>{notice}</span><X size={16} /></button>}
-    <section className="extra-practice-section">
-      <div className="extra-practice-heading"><div><p className="eyebrow">VÁLASSZ KIHÍVÁST</p><h2>Másképp is tanulhatsz</h2></div><span><Sparkles size={17} /> Új</span></div>
-      <div className="extra-practice-grid">
-        <button className="extra-practice-card hard-practice" type="button" onClick={() => onOpenTask(10, 0)}>
-          <span className="extra-practice-icon"><Dumbbell size={25} strokeWidth={2.4} /></span><span className="extra-practice-copy"><strong>Hard mód</strong><small>Komolyabb nyelvtani kihívás</small></span><ChevronRight size={18} className="extra-practice-arrow" />
-        </button>
-        <button className="extra-practice-card timed-practice" type="button" onClick={() => onOpenTask(2, 0)}>
-          <span className="extra-practice-icon"><Timer size={25} strokeWidth={2.3} /></span><span className="extra-practice-copy"><strong>Időkihívás</strong><small>Gyakorolj gyors válaszokkal</small></span><ChevronRight size={18} className="extra-practice-arrow" />
-        </button>
-        <button className="extra-practice-card word-practice" type="button" onClick={() => onOpenTask(7, 0)}>
-          <span className="extra-practice-icon"><Languages size={25} strokeWidth={2.3} /></span><span className="extra-practice-copy"><strong>Szótanulás</strong><small>Szavak és jelentések gyakorlása</small></span><ChevronRight size={18} className="extra-practice-arrow" />
-        </button>
-      </div>
-    </section>
     <div className="learning-path compact-learning-path">
       {pathItems.map((item, index) => {
         const lesson = "questions" in item ? item as LessonUnit : null
@@ -360,6 +366,16 @@ function Home({ readLessons, completedLessons, answeredTasks, stars, notice, cle
         const complete = completedLessons.includes(item.id)
         const side = index % 2 === 0 ? "path-row-left" : "path-row-right"
         if (!lesson) return <div className={"compact-lesson-row " + side + " compact-future-row"} key={item.id}><span className="compact-lesson-icon node-locked"><LockKeyhole size={24} /></span><span className="compact-lesson-name muted">{item.title}</span></div>
+        if (lesson.specialType) {
+          const SpecialIcon = lesson.specialType === "hard" ? Dumbbell : lesson.specialType === "timed" ? Timer : Languages
+          const specialAvailable = isUnlocked
+          return <div className={"compact-lesson-row " + side + " special-path-row " + (specialAvailable ? "special-available special-" + lesson.specialType : "special-locked")} key={lesson.id}>
+            <button className={"compact-lesson-icon-button " + (specialAvailable ? "node-unlocked" : "node-locked")} disabled={!specialAvailable} onClick={() => onOpenTask(lesson.id, 0)} aria-label={lesson.title + (specialAvailable ? "" : ", zárolva")}>
+              <span className="compact-lesson-icon"><SpecialIcon size={27} /></span>
+            </button>
+            <button className="compact-lesson-name" disabled={!specialAvailable} onClick={() => onOpenTask(lesson.id, 0)}><strong>{lesson.title}</strong><span>{lesson.summary}</span></button>
+          </div>
+        }
         return <div className={"compact-lesson-row " + side + (complete ? " lesson-row-complete" : "")} key={lesson.id}>
           <button className={"compact-lesson-icon-button " + (isUnlocked ? "node-unlocked" : "node-locked") + (complete ? " node-complete" : "")} disabled={!isUnlocked} onClick={() => setSelectedLessonId(selectedLessonId === lesson.id ? null : lesson.id)} aria-label={lesson.title + (complete ? ", teljesítve" : "")} aria-expanded={selectedLessonId === lesson.id}>
             <span className="compact-lesson-icon"><BookOpen size={28} />{complete && <span className="compact-lesson-check"><Check size={13} /></span>}</span>
@@ -457,12 +473,12 @@ function TaskExercise({ lesson, taskIndex, onExit, onComplete, lives, onWrongAns
   const [checked, setChecked] = useState(false)
   const [answerCorrect, setAnswerCorrect] = useState(false)
   const [rewardPulse, setRewardPulse] = useState(false)
-  const [heartLost, setHeartLost] = useState(false)
+  const [heartLost, setHeartLost] = useState(false)\n  const [secondsLeft, setSecondsLeft] = useState(30)\n  const isTimedChallenge = lesson.specialType === "timed"
   const currentAnswer = question.type === "choice" ? selectedAnswer : question.type === "text" ? typedAnswer : selectedWords.map((item) => item.split(":").slice(1).join(":")).join(" ")
   const canCheck = currentAnswer.trim().length > 0 && lives > 0
   const acceptedAnswers = [question.answer, ...(question.accepted ?? [])]
   const resetAnswer = () => { setSelectedAnswer(""); setTypedAnswer(""); setSelectedWords([]); setChecked(false); setAnswerCorrect(false); setHeartLost(false) }
-  useEffect(() => { setSelectedAnswer(""); setTypedAnswer(""); setSelectedWords([]); setChecked(false); setAnswerCorrect(false); setHeartLost(false); setRewardPulse(false) }, [taskIndex])
+  useEffect(() => { setSelectedAnswer(""); setTypedAnswer(""); setSelectedWords([]); setChecked(false); setAnswerCorrect(false); setHeartLost(false); setRewardPulse(false); setSecondsLeft(30) }, [taskIndex])\n  useEffect(() => { if (!isTimedChallenge || checked || secondsLeft <= 0) return; const timer = window.setTimeout(() => setSecondsLeft(value => value - 1), 1000); return () => window.clearTimeout(timer) }, [isTimedChallenge, checked, secondsLeft])\n  useEffect(() => { if (isTimedChallenge && secondsLeft === 0 && !checked) { setChecked(true); setAnswerCorrect(false); setHeartLost(true); onWrongAnswer() } }, [isTimedChallenge, secondsLeft, checked, onWrongAnswer])
   const submitAnswer = () => {
     if (lives <= 0) { onOutOfLives(); return }
     if (checked && !answerCorrect) { resetAnswer(); return }
