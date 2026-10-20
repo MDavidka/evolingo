@@ -2758,8 +2758,8 @@ html, body { background: #fff; }
 
 /* Friends tab — aligned to the existing Evölingo learning screen. */
 .friends-screen {
-  width:100%; max-width:430px; min-width:0; min-height:100dvh; margin:0 auto;
-  padding:max(52px,env(safe-area-inset-top,48px)) 24px max(124px,calc(env(safe-area-inset-bottom,0px) + 112px));
+  width:100%; max-width:none; min-width:0; min-height:100dvh; margin:0;
+  padding:max(34px,env(safe-area-inset-top,34px)) clamp(18px,4.5vw,32px) max(124px,calc(env(safe-area-inset-bottom,0px) + 112px));
   color:#111; background:#fff; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
 }
 .friends-header { display:flex; align-items:center; justify-content:space-between; gap:16px; margin:0 0 24px; }
@@ -2788,7 +2788,7 @@ html, body { background: #fff; }
 .friends-shortcut:active { background:#fafafa; }
 .friends-notice { display:flex; align-items:center; justify-content:space-between; gap:8px; margin:-14px 0 22px; padding:10px 12px; border:1px solid #e5e5e5; border-radius:12px; color:#333; background:#fafafa; font-size:12px; line-height:1.45; overflow-wrap:anywhere; }
 .friends-notice button { display:grid; place-items:center; width:32px; height:32px; flex:none; border:0; color:#666; background:transparent; }
-.friends-section { min-width:0; margin:0 0 25px; }
+.friends-section { width:100%; min-width:0; margin:0 0 25px; }
 .friends-section-heading { display:flex; align-items:center; justify-content:space-between; gap:8px; margin:0 0 10px; }
 .friends-section-title { margin:0; color:#777b86; font-size:11px; line-height:1.35; font-weight:700; letter-spacing:.13em; }
 .friends-see-all { display:flex; align-items:center; gap:2px; min-height:32px; padding:0; border:0; color:#777b86; background:transparent; font:inherit; font-size:12px; }
