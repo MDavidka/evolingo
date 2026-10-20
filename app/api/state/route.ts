@@ -7,6 +7,11 @@ export const runtime = "nodejs"
 export const dynamic = "force-dynamic"
 const COOKIE = "evolingo_session"
 const COOKIE_AGE = 60 * 60 * 24 * 365
+type UserDocument = {
+  _id: string
+  [key: string]: unknown
+}
+
 const allowed = new Set([
   "userName", "avatar", "notifications", "compactMode", "theme", "avatarImage", "bannerImage",
   "readLessons", "completedLessons", "answeredTasks", "xp", "stars", "purchasedItems", "lives",
@@ -42,7 +47,7 @@ export async function GET() {
   try {
     const { id, created } = await getSessionId()
     const db = await getDatabase()
-    const users = db.collection("users")
+    const users = db.collection<UserDocument>("users")
     await users.updateOne({ _id: id }, { $setOnInsert: {
       userName: "MDavid", avatar: "fox", notifications: false, compactMode: false, theme: "mist",
       readLessons: [], completedLessons: [], answeredTasks: [], xp: 0, stars: 0, purchasedItems: [],
@@ -80,7 +85,7 @@ export async function PATCH(request: NextRequest) {
     if (!Object.keys(update).length) return NextResponse.json({ error: "Nincs menthető adat." }, { status: 400 })
     update.updatedAt = new Date()
     const db = await getDatabase()
-    await db.collection("users").updateOne(
+    await db.collection<UserDocument>("users").updateOne(
       { _id: id },
       { $set: update, $setOnInsert: { createdAt: new Date() } },
       { upsert: true },
