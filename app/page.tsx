@@ -277,7 +277,7 @@ export default function App() {
       />}
       {screen === "shop" && <Shop stars={stars} purchasedItems={purchasedItems} onPurchase={(id, cost) => { if (stars >= cost && !purchasedItems.includes(id)) { setStars((value) => value - cost); setPurchasedItems((items) => [...items, id]); setNotice("Sikeres vásárlás!"); } }} />}
       {screen === "leaderboard" && <Leaderboard />}
-      {screen === "friends" && <Friends userName={userName} stars={stars} lives={lives} />}
+      {screen === "friends" && <Friends userName={userName} />}
       {screen === "profile" && <Profile completedCount={completedLessons.length} readCount={readLessons.length} completedTaskCount={answeredTasks.length} xp={xp} stars={stars} userName={userName} setUserName={setUserName} avatar={avatar} setAvatar={setAvatar} notifications={notifications} setNotifications={setNotifications} compactMode={compactMode} setCompactMode={setCompactMode} showSettings={showSettings} setShowSettings={setShowSettings} />}
     </section>
     {screen !== "lessonIntro" && screen !== "task" && <Nav screen={screen} setScreen={setScreen} />}
@@ -483,7 +483,7 @@ const suggestedFriendProfiles: FriendProfile[] = [
   { id: "oliver", name: "Oliver P.", handle: "@oliverp", evoTag: "EVO-OLIVER-0330", avatar: "🐶", streak: 1, xp: 330, status: "Ma aktív volt", online: false },
 ]
 
-function Friends({ userName, stars, lives }: { userName: string; stars: number; lives: number }) {
+function Friends({ userName }: { userName: string }) {
   const [tag, setTag] = useState("")
   const [tab, setTab] = useState<FriendTab>("friends")
   const [message, setMessage] = useState("")
@@ -564,13 +564,6 @@ function Friends({ userName, stars, lives }: { userName: string; stars: number; 
   </article>
 
   return <div className="friends-page">
-    <header className="friends-app-header">
-      <div className="friends-brand"><img src={foxIcon} alt="" /><strong>Evölingo</strong></div>
-      <div className="friends-counters">
-        <span><Star size={20} fill="currentColor" /><b>{stars}</b></span>
-        <span><Heart size={20} fill="currentColor" /><b>{lives}</b></span>
-      </div>
-    </header>
     <header className="friends-title-block"><h1>Barátok</h1><p>Kövess barátokat, és tanuljatok együtt!</p></header>
     <form className="friends-search-bar" onSubmit={event => { event.preventDefault(); search(tag) }}>
       <div className="friends-search-input"><Search size={22} /><input aria-label="Evo-tag alapján keresés" value={tag} onChange={event => { setTag(event.target.value); setMessage(""); setMatch(null) }} placeholder="Evo tag alapján keresés..." autoCapitalize="characters" autoComplete="off" /></div>
