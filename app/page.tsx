@@ -760,75 +760,7 @@ function Friends({ userName }: { userName: string }) {
     {mode === "friend" && <button className="friend-row-action" type="button" onClick={() => setMessage(friend.name + " · " + friend.evoTag)} aria-label={friend.name + " adatainak megjelenítése"}><ChevronRight size={20} /></button>}
   </article>
 
-  return <div className="friends-page">
-    <header className="friends-title-block">
-      <div className="friends-title-row">
-        <h1>Barátok</h1>
-        <button className="friends-notifications-button" type="button" aria-label={requests.length > 0 ? "Értesítések, " + requests.length + " függő kérés" : "Értesítések"} onClick={() => { setTab("requests"); setMessage(requests.length > 0 ? "" : "Nincs új értesítés.") }}><Bell size={20} strokeWidth={1.8} />{requests.length > 0 && <span className="friends-notifications-count">{requests.length}</span>}</button>
-      </div>
-    </header>
-    <form className="friends-search-bar" onSubmit={event => { event.preventDefault(); search(tag) }}>
-      <div className="friends-search-input"><Search size={17} strokeWidth={1.8} /><input aria-label="Keresés Evo-tag alapján" value={tag} onChange={event => { setTag(event.target.value); setMessage(""); setMatch(null) }} placeholder="Keresés Evo-tag alapján" autoCapitalize="characters" autoComplete="off" /></div>
-      <button className="friends-search-submit" type="submit" aria-label="Keresés"><Search size={18} /></button>
-    </form>
-    {match && <article className="friend-search-result">
-      <div className={"friend-person-avatar friend-avatar-" + match.id}><span>{match.avatar}</span></div>
-      <div className="friend-person-main"><strong>{match.name}</strong><span className="friend-person-handle">{match.evoTag}</span></div>
-      <button type="button" onClick={() => sendRequest(match)}>Felkérés</button>
-    </article>}
-    {message && <p className="friends-message" role="status">{message}</p>}
-    <div className="friends-tabs" role="tablist" aria-label="Barátok nézetei">
-      {([["friends","Barátaim"],["requests","Kérések"],["suggested","Ajánlott"]] as [FriendTab,string][]).map(([id,label]) =>
-        <button key={id} type="button" role="tab" aria-selected={tab === id} className={tab === id ? "active" : ""} onClick={() => setTab(id)}><span>{label}</span>{id === "requests" && requests.length > 0 && <b className="friends-tab-count">{requests.length}</b>}</button>
-      )}
-    </div>
-    {tab === "friends" && <p className="friends-intro-copy">Oszd meg a meghívódat, vagy keress rá barátaid Evo-tagjére.</p>}
-    {tab === "friends" && <section className="friends-group">
-      <h2 className="friends-section-label">Barátaim</h2>
-      {!storageReady ? <div className="friends-grouped-list friends-loading-list" aria-label="Betöltés"><div className="friends-skeleton-row" /><div className="friends-skeleton-row" /></div> : myFriends.length > 0 ? <div className="friends-grouped-list">
-        {myFriends.map(friend => <article className="friends-native-row" key={friend.id}>
-          <div className={"friends-native-avatar friend-avatar-" + friend.id}>{friend.avatarImage ? <img src={friend.avatarImage} alt="" /> : <span>{friend.avatar}</span>}</div>
-          <div className="friends-native-copy"><strong>{friend.name}</strong><span>{friend.streak === null ? `${friend.xp.toLocaleString("hu-HU")} XP` : `${friend.streak} napos sorozat`}</span></div>
-          <button className="friends-row-chevron" type="button" aria-label={friend.name + " adatainak megjelenítése"} onClick={() => setMessage(friend.name + " · " + friend.evoTag)}><ChevronRight size={19} /></button>
-        </article>)}
-      </div> : <div className="friends-grouped-list">
-        <button className="friends-native-row friends-action-row" type="button" onClick={shareInvite}>
-          <span className="friends-row-icon"><Link2 size={22} strokeWidth={1.7} /></span>
-          <span className="friends-row-title">Meghívó link megosztása</span><ChevronRight className="friends-row-chevron-icon" size={19} />
-        </button>
-        <button className="friends-native-row friends-action-row" type="button" onClick={openContacts}>
-          <span className="friends-row-icon"><Users size={22} strokeWidth={1.7} /></span>
-          <span className="friends-row-title">Névjegyek keresése</span><ChevronRight className="friends-row-chevron-icon" size={19} />
-        </button>
-      </div>}
-      {storageReady && myFriends.length === 0 && <p className="friends-group-footer">Együtt tanulva könnyebb a napi sorozatot tartani. Hívd meg ismerőseidet, és motiváljátok egymást minden nap.</p>}
-    </section>}
-    {tab === "friends" && profiles.filter(friend => !friends.includes(friend.id) && !requests.includes(friend.id)).length > 0 && <section className="friends-group friends-recommendations">
-      <div className="friends-recommendations-heading"><h2 className="friends-section-label">Ajánlott tanulótársak</h2><button type="button" onClick={() => setTab("suggested")}>Mind <ChevronRight size={15} /></button></div>
-      <div className="friends-grouped-list">
-        {profiles.filter(friend => !friends.includes(friend.id) && !requests.includes(friend.id)).slice(0, 2).map(friend => <article className="friends-native-row" key={friend.id}>
-          <div className="friends-native-avatar">{friend.avatarImage ? <img src={friend.avatarImage} alt="" /> : <span>{friend.avatar}</span>}</div>
-          <div className="friends-native-copy"><strong>{friend.name}</strong><span>{friend.streak === null ? String(friend.xp.toLocaleString("hu-HU")) + " XP" : String(friend.streak) + " napos sorozat"}</span></div>
-          <button className="friends-follow-button" type="button" onClick={() => sendRequest(friend)}>Követés</button>
-        </article>)}
-      </div>
-    </section>}
-    {tab === "requests" && <section className="friends-group">
-      <h2 className="friends-section-label">Kérések</h2>
-      {pendingProfiles.length > 0 ? <div className="friends-grouped-list">{pendingProfiles.map(friend => friendRow(friend,"request"))}</div> : <p className="friends-group-footer friends-empty-request">Nincs új kérés</p>}
-    </section>}
-    {tab === "suggested" && <section className="friends-group">
-      {profiles.filter(friend => !friends.includes(friend.id) && !requests.includes(friend.id)).length > 0 ? <>
-        <h2 className="friends-section-label">Ajánlott tanulótársak</h2>
-        <div className="friends-grouped-list">{profiles.filter(friend => !friends.includes(friend.id) && !requests.includes(friend.id)).slice(0,2).map(friend => <article className="friends-native-row" key={friend.id}>
-          <div className={"friends-native-avatar friend-avatar-" + friend.id}>{friend.avatarImage ? <img src={friend.avatarImage} alt="" /> : <span>{friend.avatar}</span>}</div>
-          <div className="friends-native-copy"><strong>{friend.name}</strong><span>{friend.streak === null ? String(friend.xp.toLocaleString("hu-HU")) + " XP" : String(friend.streak) + " napos sorozat"}</span></div>
-          <button className="friends-follow-button" type="button" onClick={() => sendRequest(friend)}>Követés</button>
-        </article>)}</div>
-      </> : <p className="friends-group-footer friends-empty-request">Most nincs ajánlott tanulótárs.</p>}
-    </section>}
-    {/* Friend search and invitations need server-side account integration for real delivery. */}
-  </div>
+  return <div className="friends-blank-page" aria-label="Barátok" />
 }
 
 function Profile({ completedCount, readCount, completedTaskCount, xp, stars, userName, setUserName, avatar, setAvatar, notifications, setNotifications, compactMode, setCompactMode, showSettings, setShowSettings }: {
