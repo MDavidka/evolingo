@@ -3987,3 +3987,23 @@ html, body { background: #fff; }
 @media (prefers-reduced-motion: reduce) {
   .task-exercise-layout .task-feedback { scroll-behavior: auto !important; }
 }
+
+
+/* Ensure the reusable paragraph size variants override legacy section typography. */
+.lesson-reader .lesson-note-block > .lesson-block-paragraph {
+  margin: 0 0 16px !important;
+  color: #404040 !important;
+  font-size: 16px !important;
+  line-height: 1.85 !important;
+  letter-spacing: -.08px;
+}
+.lesson-reader .lesson-note-block > .lesson-block-paragraph.size-small {
+  font-size: 13px !important;
+  line-height: 1.7 !important;
+  color: #656565 !important;
+}
+.lesson-reader .lesson-note-block > .lesson-block-paragraph.size-large {
+  font-size: 19px !important;
+  line-height: 1.7 !important;
+  color: #252525 !important;
+}
