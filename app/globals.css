@@ -3809,3 +3809,102 @@ html, body { background: #fff; }
 .timed-task-track i { display:block; height:100%; border-radius:inherit; background:#555; transition:width 1s linear; }
 .timed-task-countdown.is-urgent { color:#d92f3b; border-color:#f5d5d8; background:#fff8f8; }
 .timed-task-countdown.is-urgent .timed-task-track i { background:#e33f4c; }
+
+
+/* Friends screen design tokens and mobile-first refinements. */
+:root {
+  --friends-accent: #3B6D11;
+  --friends-accent-tint: #EAF3DE;
+  --friends-text: #1A1A1A;
+  --friends-secondary: #5F5E5A;
+  --friends-muted: #888780;
+  --friends-surface: #FFFFFF;
+  --friends-subtle: #F4F4F2;
+  --friends-border: rgba(0,0,0,.08);
+  --friends-border-strong: rgba(0,0,0,.20);
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --friends-accent: #B5D99A;
+    --friends-accent-tint: #26351E;
+    --friends-text: #F4F4F1;
+    --friends-secondary: #C2C1BA;
+    --friends-muted: #9C9B94;
+    --friends-surface: #171816;
+    --friends-subtle: #242522;
+    --friends-border: rgba(255,255,255,.10);
+    --friends-border-strong: rgba(255,255,255,.24);
+  }
+}
+.screen-content:has(.friends-page) { background: var(--friends-surface) !important; }
+.friends-page {
+  max-width: 620px !important;
+  padding: max(20px, env(safe-area-inset-top)) 16px max(120px, calc(env(safe-area-inset-bottom) + 110px)) !important;
+  color: var(--friends-text) !important;
+  background: var(--friends-surface) !important;
+}
+.friends-title-block { margin: 0 0 22px !important; }
+.friends-title-block h1 { color: var(--friends-text) !important; font-size: 26px !important; line-height: 1.2 !important; letter-spacing: -.5px !important; font-weight: 500 !important; }
+.friends-title-block p { margin-top: 5px !important; color: var(--friends-secondary) !important; font-size: 14px !important; font-weight: 400 !important; }
+.friends-search-bar { position: static !important; display: grid !important; grid-template-columns: minmax(0,1fr) 44px !important; gap: 8px !important; margin: 0 0 20px !important; padding: 0 !important; background: transparent !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
+.friends-search-input { height: 44px !important; gap: 10px !important; padding: 0 12px !important; border: 1px solid transparent !important; border-radius: 12px !important; background: var(--friends-subtle) !important; box-shadow: none !important; }
+.friends-search-input > svg { color: var(--friends-secondary) !important; }
+.friends-search-input input { color: var(--friends-text) !important; font-size: 14px !important; }
+.friends-search-input input::placeholder { color: var(--friends-muted) !important; }
+.friends-search-bar > button { width: 44px !important; height: 44px !important; padding: 0 !important; border: 0 !important; border-radius: 12px !important; color: var(--friends-accent) !important; background: var(--friends-accent-tint) !important; box-shadow: none !important; }
+.friends-tabs { position: static !important; display: grid !important; grid-template-columns: repeat(3,minmax(0,1fr)) !important; gap: 4px !important; padding: 4px !important; margin: 0 0 20px !important; border-radius: 12px !important; background: var(--friends-subtle) !important; }
+.friends-tabs > button { display: flex !important; align-items: center !important; justify-content: center !important; gap: 6px !important; min-height: 40px !important; padding: 7px 4px !important; border: 0 !important; border-radius: 9px !important; color: var(--friends-secondary) !important; background: transparent !important; box-shadow: none !important; font-size: 13px !important; font-weight: 400 !important; }
+.friends-tabs > button.active { border: .5px solid var(--friends-border-strong) !important; color: var(--friends-accent) !important; background: var(--friends-surface) !important; font-weight: 500 !important; }
+.friends-tab-count { min-width: 16px !important; height: 16px !important; padding: 0 4px !important; color: var(--friends-accent-tint) !important; background: var(--friends-accent) !important; font-size: 11px !important; font-weight: 500 !important; }
+.friends-people-list { display: grid; gap: 0 !important; }
+.friend-person-card { min-height: 68px !important; gap: 10px !important; padding: 10px 0 !important; border: 0 !important; border-bottom: 1px solid var(--friends-border) !important; border-radius: 0 !important; background: transparent !important; box-shadow: none !important; }
+.friend-person-avatar { width: 36px !important; height: 36px !important; border-radius: 50% !important; background: var(--friends-subtle) !important; }
+.friend-person-avatar > span { font-size: 21px !important; }
+.friend-person-avatar > i { display: none !important; }
+.friend-person-main { gap: 3px !important; }
+.friend-person-main > strong { color: var(--friends-text) !important; font-size: 14px !important; font-weight: 500 !important; letter-spacing: 0 !important; }
+.friend-person-handle { color: var(--friends-secondary) !important; font-size: 12px !important; }
+.friend-person-status { display: none !important; }
+.friend-person-stats { gap: 8px !important; }
+.friend-person-stats > span { color: var(--friends-secondary) !important; }
+.friend-person-stats svg { width: 15px !important; height: 15px !important; }
+.friend-person-stats b { font-size: 12px !important; font-weight: 400 !important; }
+.friend-streak svg, .friend-xp svg { color: var(--friends-secondary) !important; }
+.friend-row-action { width: 44px !important; min-height: 44px !important; border: 1px solid var(--friends-border-strong) !important; border-radius: 999px !important; color: var(--friends-accent) !important; }
+.friend-search-result { margin: 0 0 14px !important; border: 1px solid var(--friends-border) !important; border-radius: 12px !important; color: var(--friends-text) !important; background: var(--friends-subtle) !important; box-shadow: none !important; }
+.friend-search-result > button { min-height: 40px !important; border-radius: 999px !important; color: white !important; background: var(--friends-accent) !important; font-size: 14px !important; font-weight: 500 !important; }
+.friends-message { margin: 0 0 14px !important; border: 1px solid var(--friends-border) !important; border-radius: 12px !important; color: var(--friends-secondary) !important; background: var(--friends-subtle) !important; font-size: 12px !important; }
+.friends-empty { gap: 0 !important; padding: 26px 12px 18px !important; border: 0 !important; border-radius: 0 !important; text-align: center !important; background: transparent !important; box-shadow: none !important; }
+.friends-empty-icon { display: grid; place-items: center; width: 64px; height: 64px; margin-bottom: 16px; border-radius: 50%; color: var(--friends-accent); background: var(--friends-accent-tint); }
+.friends-empty > svg { display: none !important; }
+.friends-empty > strong { color: var(--friends-text) !important; font-size: 17px !important; line-height: 1.3 !important; font-weight: 500 !important; }
+.friends-empty > p { max-width: 280px !important; margin: 7px 0 18px !important; color: var(--friends-secondary) !important; font-size: 14px !important; line-height: 1.45 !important; }
+.friends-empty-actions { display: flex; justify-content: center; flex-wrap: wrap; gap: 8px; }
+.friends-empty-actions button { display: inline-flex; align-items: center; justify-content: center; gap: 7px; min-height: 40px; padding: 0 14px; border: 1px solid var(--friends-border-strong); border-radius: 999px; font-size: 14px; font-weight: 500; }
+.friends-invite-primary { border-color: var(--friends-accent) !important; color: white !important; background: var(--friends-accent) !important; }
+.friends-invite-secondary { color: var(--friends-text); background: transparent; }
+.friends-empty-compact { padding: 22px 8px !important; }
+.friends-empty-compact > p { margin-bottom: 0 !important; }
+.friends-recommendations { margin-top: 25px; }
+.friends-recommendations-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 8px; }
+.friends-recommendations-heading h2 { margin: 0; color: var(--friends-text); font-size: 14px; font-weight: 500; }
+.friends-recommendations-heading button { min-height: 44px; padding: 0 4px; color: var(--friends-accent); font-size: 13px; font-weight: 500; }
+.friends-recommendations-list { border: 1px solid var(--friends-border); border-radius: 12px; padding: 0 12px; }
+.friends-recommendations-list .friend-person-card:last-child { border-bottom: 0 !important; }
+.friends-note { display: none !important; }
+body:has(.friends-page) .bottom-nav { background: var(--friends-surface) !important; border-top: 1px solid var(--friends-border) !important; box-shadow: none !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
+body:has(.friends-page) .bottom-nav button,
+body:has(.friends-page) .bottom-nav button span,
+body:has(.friends-page) .bottom-nav button svg { color: var(--friends-secondary) !important; }
+body:has(.friends-page) .bottom-nav button.active,
+body:has(.friends-page) .bottom-nav button.active span,
+body:has(.friends-page) .bottom-nav button.active svg { color: var(--friends-accent) !important; font-weight: 500 !important; }
+body:has(.friends-page) .bottom-nav .nav-selection-indicator { display: none !important; }
+@media (max-width: 390px) {
+  .friends-page { padding-left: 16px !important; padding-right: 16px !important; }
+  .friends-search-input { padding: 0 10px !important; }
+  .friends-tabs > button { font-size: 12px !important; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .friends-tabs > button, .friend-row-action, .friends-empty-actions button { transition: none !important; }
+}
