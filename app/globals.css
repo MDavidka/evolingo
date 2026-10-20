@@ -3784,3 +3784,28 @@ html, body { background: #fff; }
 .extra-practice-copy small { color:#858d94; font-size:11px; line-height:1.35; }
 .extra-practice-arrow { flex:none; color:#9aa1a7; }
 @media (prefers-reduced-motion: reduce) { .extra-practice-card { transition:none; } }
+
+
+/* Special activities live directly on the learning path and use the same node layout. */
+.special-path-row .compact-lesson-icon-button { background: transparent; }
+.special-path-row .compact-lesson-icon {
+  background:#e1e1e1 !important; color:#8b8b8b !important; box-shadow:none !important;
+  border:0 !important;
+}
+.special-path-row .compact-lesson-name strong,
+.special-path-row .compact-lesson-name span { color:#9a9a9a; }
+.special-path-row.special-available .compact-lesson-icon { background:#f0444f !important; color:#fff !important; }
+.special-path-row.special-available.special-timed .compact-lesson-icon { background:#e8e8e8 !important; color:#555 !important; }
+.special-path-row.special-available.special-words .compact-lesson-icon { background:#69a54a !important; color:#fff !important; }
+.special-path-row.special-available .compact-lesson-name strong { color:#292929; }
+.special-path-row.special-available .compact-lesson-name span { color:#858585; }
+.special-path-row .compact-lesson-icon-button:disabled { cursor:not-allowed; opacity:1; }
+.timed-task-countdown {
+  display:flex; align-items:center; gap:8px; margin:0 0 14px; padding:10px 12px;
+  border:1px solid #ededed; border-radius:14px; color:#353535; background:#fafafa;
+}
+.timed-task-countdown strong { font-size:14px; min-width:42px; font-variant-numeric:tabular-nums; }
+.timed-task-track { height:5px; flex:1; overflow:hidden; border-radius:999px; background:#e6e6e6; }
+.timed-task-track i { display:block; height:100%; border-radius:inherit; background:#555; transition:width 1s linear; }
+.timed-task-countdown.is-urgent { color:#d92f3b; border-color:#f5d5d8; background:#fff8f8; }
+.timed-task-countdown.is-urgent .timed-task-track i { background:#e33f4c; }
