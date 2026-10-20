@@ -771,7 +771,7 @@ function Friends({ userName }: { userName: string }) {
     </div>
     {tab === "friends" && <section className="friends-group">
       <h2 className="friends-section-label">Barátaim</h2>
-      {myFriends.length > 0 ? <div className="friends-grouped-list">
+      {!storageReady ? <div className="friends-grouped-list friends-loading-list" aria-label="Betöltés"><div className="friends-skeleton-row" /><div className="friends-skeleton-row" /></div> : myFriends.length > 0 ? <div className="friends-grouped-list">
         {myFriends.map(friend => <article className="friends-native-row" key={friend.id}>
           <div className={"friends-native-avatar friend-avatar-" + friend.id}><span>{friend.avatar}</span></div>
           <div className="friends-native-copy"><strong>{friend.name}</strong><span>{friend.streak} napos sorozat</span></div>
@@ -787,7 +787,7 @@ function Friends({ userName }: { userName: string }) {
           <span className="friends-row-title">Névjegyek keresése</span><ChevronRight className="friends-row-chevron-icon" size={19} />
         </button>
       </div>}
-      {myFriends.length === 0 && <p className="friends-group-footer">Együtt tanulva könnyebb a napi sorozatot tartani.</p>}
+      {storageReady && myFriends.length === 0 && <p className="friends-group-footer">Együtt tanulva könnyebb a napi sorozatot tartani.</p>}
     </section>}
     {tab === "requests" && <section className="friends-group">
       <h2 className="friends-section-label">Kérések</h2>
