@@ -506,7 +506,7 @@ function LessonIntro({ lesson, onExit, onReadComplete, onPractice, alreadyRead }
         <p>{lesson.summary}</p>
         <div className="intro-meta"><span><BookOpen size={15} /> Tananyag</span><span><Zap size={15} /> +10 XP olvasásért</span></div>
       </div>
-      <figure className="lesson-illustration web-lesson-image"><img src={(lessonIllustrations[lesson.id] ?? lessonIllustrations[1]).src} alt={(lessonIllustrations[lesson.id] ?? lessonIllustrations[1]).alt} loading="lazy" referrerPolicy="no-referrer" /><figcaption>{(lessonIllustrations[lesson.id] ?? lessonIllustrations[1]).alt}</figcaption></figure>
+      <LessonContentBlockView block={{ type: "image", src: (lessonIllustrations[lesson.id] ?? lessonIllustrations[1]).src, alt: (lessonIllustrations[lesson.id] ?? lessonIllustrations[1]).alt, caption: (lessonIllustrations[lesson.id] ?? lessonIllustrations[1]).alt, layout: "hero", aspect: "natural", fit: "contain" }} />
       {lesson.sections.map((section, index) => <LessonSectionContent section={section} index={index} key={section.title} />)}
       <section className="lesson-note-block"><h2>Gyors összefoglaló</h2><ul className="lesson-summary-list">{lesson.sections.slice(0, 3).map((section) => <li key={section.title}>{section.title}: {getLessonSectionSummary(section)}.</li>)}</ul></section>
       
