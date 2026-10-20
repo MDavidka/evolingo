@@ -321,7 +321,7 @@
         "items": "array of objects with term and meaning"
       },
       "optional": {
-        "itemsExample": "example is optional on each item"
+        "itemExample": "example is optional on each vocabulary item"
       },
       "itemFields": {
         "term": "string, required",
