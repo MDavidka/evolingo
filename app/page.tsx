@@ -961,14 +961,6 @@ type FriendProfile = {
 
 type FriendsTab = "friends" | "requests" | "suggested"
 
-const demoFriendProfiles: FriendProfile[] = [
-  { id: "demo-mdavid", name: "MDavid", handle: "@mdavid", evoTag: "EVO-MDAVID-0001", avatar: "MD", streak: 0, xp: 12, status: "Tanulásra kész", online: true },
-  { id: "demo-evouser", name: "EvoUser", handle: "@evouser", evoTag: "EVO-EVOUSER-0001", avatar: "EU", streak: 3, xp: 120, status: "Ma már tanult", online: false },
-  { id: "demo-anna", name: "Anna", handle: "@anna", evoTag: "EVO-ANNA-0001", avatar: "A", streak: 5, xp: 340, status: "Ma már tanult", online: false },
-  { id: "demo-bence", name: "Bence", handle: "@bence", evoTag: "EVO-BENCE-0001", avatar: "B", streak: 2, xp: 80, status: "Tanulásra kész", online: false },
-  { id: "demo-lilla", name: "Lilla", handle: "@lilla", evoTag: "EVO-LILLA-0001", avatar: "L", streak: 7, xp: 560, status: "Ma már tanult", online: false },
-]
-
 function Friends({ userName, avatar, avatarImage, xp, dailyStudy, saveStatus, onRetryCloudSave }: {
   userName: string; avatar: string; avatarImage: string; xp: number; dailyStudy: DailyStudyState
   saveStatus: CloudSaveStatus; onRetryCloudSave: () => void
