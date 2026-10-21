@@ -1087,8 +1087,6 @@ function Profile({ completedCount, readCount, completedTaskCount, xp, stars, use
   const [profileStorageReady, setProfileStorageReady] = useState(false)
   const [remoteProfileReady, setRemoteProfileReady] = useState(false)
   const [profileTheme, setProfileTheme] = useState<"mist" | "sage">("mist")
-  const [avatarImage, setAvatarImage] = useState("")
-  const [bannerImage, setBannerImage] = useState("")
   const [imageError, setImageError] = useState("")
   const avatarInputRef = useRef<HTMLInputElement>(null)
   const bannerInputRef = useRef<HTMLInputElement>(null)
