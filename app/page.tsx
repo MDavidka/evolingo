@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from "react"
 import {
-  ArrowRight, BarChart3, BookOpen, Check, CheckCircle2, Headphones, MessageCircle, CircleHelp, Puzzle,
+  ArrowRight, BarChart3, Book, BookOpen, Check, CheckCircle2, Headphones, MessageCircle, CircleHelp, Puzzle,
   Flame, Heart, Lightbulb, Medal, RotateCcw, Trophy, UserRound, Dumbbell, Timer, Languages, Volume2,
   X, Zap, LockKeyhole, ClipboardCheck, Star, ShoppingBag, Gift, Palette, Pencil, Settings, ChevronRight, CalendarDays, Sparkles, Target, Search, UserPlus, Users, Link2, Bell, Share2, Contact2, Cloud,
 } from "lucide-react"
@@ -547,7 +547,7 @@ export default function App() {
     setNotice("Feladatcsomag teljesítve! " + (answeredTasks.includes(taskKey) ? "" : "Jutalom jóváírva."))
   }
   return <main className={"app-shell " + ((screen === "lessonIntro" || screen === "task") ? "lesson-open" : "")}>
-    <section className={"screen-content " + ((screen === "lessonIntro" || screen === "task") ? "lesson-page" : "")}>
+    <section className={"screen-content " + (screen === "home" ? "learn-home-content " : "") + ((screen === "lessonIntro" || screen === "task") ? "lesson-page" : "")}>
       {screen === "home" && <Home
         completedLessons={completedLessons}
         notice={notice}
@@ -558,6 +558,7 @@ export default function App() {
         userName={userName}
         avatar={avatar}
         avatarImage={avatarImage}
+        dailyStudy={dailyStudy}
       />}
       {screen === "lessonIntro" && <LessonIntro
         lesson={activeLesson}
@@ -607,7 +608,29 @@ function GuestSaveBanner({ userName, status, onRetry }: { userName: string; stat
   </aside>
 }
 
-function Home({ completedLessons, notice, clearNotice, onOpenLesson, onOpenTask, onOpenProfile, userName, avatar, avatarImage }: {
+function UserAvatar({ userName, avatar, avatarImage, variant }: {
+  userName: string
+  avatar: string
+  avatarImage: string
+  variant: "header" | "nav"
+}) {
+  const FallbackIcon = avatar === "book" ? BookOpen : avatar === "star" ? Star : avatar === "spark" ? Sparkles : null
+  if (avatarImage) {
+    return <span className={"learn-user-avatar learn-user-avatar-" + variant}>
+      <img src={avatarImage} alt={"Profilkép: " + userName} />
+    </span>
+  }
+  if (FallbackIcon) {
+    return <span className={"learn-user-avatar learn-user-avatar-" + variant} role="img" aria-label={"Profilkép: " + userName}>
+      <FallbackIcon aria-hidden="true" size={variant === "header" ? 17 : 16} strokeWidth={2.2} />
+    </span>
+  }
+  return <span className={"learn-user-avatar learn-user-avatar-" + variant}>
+    <img src={foxIcon} alt={"Evölingo alapértelmezett profilképe, " + userName} />
+  </span>
+}
+
+function Home({ completedLessons, notice, clearNotice, onOpenLesson, onOpenTask, onOpenProfile, userName, avatar, avatarImage, dailyStudy }: {
   completedLessons: number[]
   notice: string
   clearNotice: () => void
@@ -617,55 +640,127 @@ function Home({ completedLessons, notice, clearNotice, onOpenLesson, onOpenTask,
   userName: string
   avatar: string
   avatarImage: string
+  dailyStudy: DailyStudyState
 }) {
   const unitLessons = lessons.filter(lesson => lesson.id <= 10)
-  const currentLesson = unitLessons.find(lesson => !completedLessons.includes(lesson.id)) ?? unitLessons[0]
-  const avatarEmoji = avatar === "book" ? "📚" : avatar === "star" ? "⭐" : avatar === "spark" ? "✨" : ""
+  const currentLessonId = unitLessons.find(lesson => !completedLessons.includes(lesson.id))?.id ?? null
+  const completedCount = unitLessons.filter(lesson => completedLessons.includes(lesson.id)).length
+  const progress = unitLessons.length ? Math.round(completedCount / unitLessons.length * 100) : 0
+  const pathHeight = Math.max(140, (unitLessons.length - 1) * 112 + 140)
+  const pathRef = useRef<HTMLDivElement | null>(null)
+  const sheetRef = useRef<HTMLElement | null>(null)
+  const nodeRefs = useRef<Map<number, HTMLButtonElement>>(new Map())
+  const [pathSize, setPathSize] = useState({ width: 0, height: 0 })
+  const [connectorPaths, setConnectorPaths] = useState<string[]>([])
+  const statusKey = unitLessons.map(lesson => {
+    if (completedLessons.includes(lesson.id)) return lesson.id + ":completed"
+    if (lesson.id === currentLessonId) return lesson.id + ":current"
+    return lesson.id + ":locked"
+  }).join("|")
 
-  return <div className="home-screen">
-    <header className="app-header home-header">
+  useEffect(() => {
+    const host = pathRef.current
+    if (!host) return
+    let frame = 0
+    const updateConnectors = () => {
+      const bounds = host.getBoundingClientRect()
+      const points = unitLessons.map(lesson => {
+        const node = nodeRefs.current.get(lesson.id)
+        if (!node) return null
+        const rect = node.getBoundingClientRect()
+        return { x: rect.left + rect.width / 2 - bounds.left, y: rect.top + rect.height / 2 - bounds.top }
+      })
+      const paths: string[] = []
+      for (let index = 0; index < points.length - 1; index++) {
+        const from = points[index]
+        const to = points[index + 1]
+        if (!from || !to) continue
+        const controlY = from.y + (to.y - from.y) * 0.5
+        paths.push("M " + from.x + " " + from.y + " C " + from.x + " " + controlY + ", " + to.x + " " + controlY + ", " + to.x + " " + to.y)
+      }
+      setPathSize(previous => previous.width === bounds.width && previous.height === bounds.height ? previous : { width: bounds.width, height: bounds.height })
+      setConnectorPaths(previous => previous.length === paths.length && previous.every((path, index) => path === paths[index]) ? previous : paths)
+    }
+    const scheduleUpdate = () => {
+      window.cancelAnimationFrame(frame)
+      frame = window.requestAnimationFrame(updateConnectors)
+    }
+    scheduleUpdate()
+    const observer = typeof ResizeObserver !== "undefined" ? new ResizeObserver(scheduleUpdate) : null
+    observer?.observe(host)
+    window.addEventListener("resize", scheduleUpdate)
+    return () => {
+      window.cancelAnimationFrame(frame)
+      observer?.disconnect()
+      window.removeEventListener("resize", scheduleUpdate)
+    }
+  }, [statusKey, unitLessons.length, pathHeight])
+
+  useEffect(() => {
+    if (currentLessonId === null) return
+    const currentNode = nodeRefs.current.get(currentLessonId)
+    if (!currentNode) return
+    const frame = window.requestAnimationFrame(() => currentNode.scrollIntoView({ behavior: "auto", block: "center", inline: "nearest" }))
+    return () => window.cancelAnimationFrame(frame)
+  }, [currentLessonId, pathHeight])
+
+  return <div className="learn-home-screen">
+    <div className="learn-home-gradient" aria-hidden="true" />
+    <header className="learn-header">
       <Brand />
-      <button className="home-profile-button" type="button" onClick={onOpenProfile} aria-label={"Profil: " + userName}>
-        {avatarImage
-          ? <img src={avatarImage} alt="" />
-          : avatarEmoji
-            ? <span aria-hidden="true">{avatarEmoji}</span>
-            : <img src={foxIcon} alt="" />}
+      <div className="learn-streak" aria-label={"Napi sorozat: " + dailyStudy.streak + " nap"}>
+        <Flame size={17} strokeWidth={2.4} aria-hidden="true" />
+        <span>{dailyStudy.streak}</span>
+      </div>
+      <button className="learn-header-profile" type="button" onClick={onOpenProfile} aria-label={"Profil: " + userName}>
+        <UserAvatar userName={userName} avatar={avatar} avatarImage={avatarImage} variant="header" />
       </button>
     </header>
+    {notice && <button className="inline-notice learn-inline-notice" type="button" onClick={clearNotice}><span>{notice}</span><X size={16} aria-hidden="true" /></button>}
 
-    {notice && <button className="inline-notice" type="button" onClick={clearNotice}><span>{notice}</span><X size={16} /></button>}
-
-    <section className="learning-sheet" aria-label="Tanulási leckék">
-      <div className="learning-sheet-handle" aria-hidden="true" />
-      <div className="learning-sheet-level" aria-label="Angol, B2"><span aria-hidden="true">🇬🇧</span><span>B2</span></div>
-      <div className="learning-sheet-heading">
-        <h2>{currentLesson ? currentLesson.title.charAt(0).toUpperCase() + currentLesson.title.slice(1).toLowerCase() : "Angol nyelvtan"}</h2>
-        <p>{currentLesson?.id === 1 ? "Ebben a fejezetben a jelen időt tanulod" : "Ebben a fejezetben angol nyelvtant tanulsz"}</p>
+    <section className="learn-sheet" ref={sheetRef} aria-label="Tanulási útvonal">
+      <div className="learn-sheet-handle" aria-hidden="true" />
+      <div className="learn-sheet-heading">
+        <h1>Present simple</h1>
+        <p>Ebben a fejezetben a jelen időt tanulod</p>
+        <div className="learn-progress-row">
+          <div className="learn-progress-track" role="progressbar" aria-label="Leckék teljesítése" aria-valuemin={0} aria-valuemax={unitLessons.length} aria-valuenow={completedCount}>
+            <span style={{ width: progress + "%" }} />
+          </div>
+          <span className="learn-progress-value">{completedCount} / {unitLessons.length}</span>
+        </div>
       </div>
 
-      <div className="lesson-horizontal-scroll" aria-label="Választható leckék">
+      <div className="learn-path-track" ref={pathRef} style={{ height: pathHeight + "px" }}>
+        <svg className="learn-path-connectors" width="100%" height="100%" viewBox={"0 0 " + Math.max(1, pathSize.width) + " " + Math.max(1, pathSize.height)} preserveAspectRatio="none" aria-hidden="true">
+          {connectorPaths.map((path, index) => <path key={index} d={path} />)}
+        </svg>
         {unitLessons.map((lesson, index) => {
-          const isUnlocked = lesson.id === 1 || completedLessons.includes(lesson.id - 1)
-          const complete = completedLessons.includes(lesson.id)
-          const openLesson = () => {
-            if (lesson.specialType) onOpenTask(lesson.id, 0)
-            else onOpenLesson(lesson.id)
-          }
-          return <div className="lesson-carousel-item" key={lesson.id}>
+          const isComplete = completedLessons.includes(lesson.id)
+          const status = isComplete ? "completed" : lesson.id === currentLessonId ? "current" : "locked"
+          const label = "Lesson " + (index + 1)
+          const stateLabel = status === "completed" ? "kész" : status === "current" ? "indítás" : "zárolva"
+          return <div className={"learn-path-node learn-path-node-" + status} key={lesson.id} style={{ left: (index % 2 === 0 ? 35 : 65) + "%", top: index * 112 + "px" }}>
             <button
+              ref={element => {
+                if (element) nodeRefs.current.set(lesson.id, element)
+                else nodeRefs.current.delete(lesson.id)
+              }}
               type="button"
-              className={"lesson-carousel-dot " + (isUnlocked ? "is-unlocked" : "is-locked") + (complete ? " is-complete" : "")}
-              disabled={!isUnlocked}
-              onClick={openLesson}
-              aria-label={lesson.title + (complete ? ", teljesítve" : "")}
+              className="learn-path-node-button"
+              disabled={status === "locked"}
+              aria-disabled={status === "locked"}
+              aria-label={label + ", " + stateLabel}
+              onClick={() => { if (status !== "locked") onOpenLesson(lesson.id) }}
             >
-              <BookOpen size={30} strokeWidth={2.5} />
-              {complete && <span className="lesson-carousel-check"><Check size={12} /></span>}
+              {status === "completed"
+                ? <Check size={34} strokeWidth={3} aria-hidden="true" />
+                : status === "current"
+                  ? <Book size={30} strokeWidth={2.2} aria-hidden="true" />
+                  : <LockKeyhole size={30} strokeWidth={2.1} aria-hidden="true" />}
             </button>
-            <button className="lesson-carousel-label" type="button" disabled={!isUnlocked} onClick={openLesson}>
-              Lesson {index + 1}
-            </button>
+            <span className="learn-path-node-label">{label}</span>
+            {status === "current" && <span className="learn-start-pill">INDÍTÁS</span>}
           </div>
         })}
       </div>
@@ -1577,6 +1672,6 @@ function Nav({ screen, setScreen, userName, avatar, avatarImage }: { screen: Scr
         setScreen(items[nextIndex][0])
       }}
     />
-    {items.map(([id, label, Icon], index) => <button key={id} data-tab-index={index} className={screen === id ? "active" : ""} onClick={() => setScreen(id)} aria-current={screen === id ? "page" : undefined} aria-label={id === "profile" ? "Profil: " + userName : label} title={id === "profile" ? userName : undefined}>{id === "profile" ? <span className="nav-profile-avatar" aria-hidden="true">{avatarImage ? <img src={avatarImage} alt="" /> : avatar === "fox" ? <img src={foxIcon} alt="" /> : <span>{avatar === "book" ? "📚" : avatar === "star" ? "⭐" : "✨"}</span>}</span> : <Icon size={23} />}<span>{label}</span></button>)}
+    {items.map(([id, label, Icon], index) => <button key={id} data-tab-index={index} className={screen === id ? "active" : ""} onClick={() => setScreen(id)} aria-current={screen === id ? "page" : undefined} aria-label={id === "profile" ? "Profil: " + userName : label} title={id === "profile" ? userName : undefined}>{id === "profile" ? <UserAvatar userName={userName} avatar={avatar} avatarImage={avatarImage} variant="nav" /> : <Icon size={24} strokeWidth={2} aria-hidden="true" />}<span>{label}</span></button>)}
   </nav>
 }
