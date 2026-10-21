@@ -5580,3 +5580,387 @@ html, body { background: #fff; }
 @media (max-width: 390px) {
   .compact-lesson-name { top: 86px !important; }
 }
+
+
+/* Evölingo learning-path design tokens — single source of truth. */
+:root {
+  --canvas: #FFFFFF;
+  --path-surface: #FAFAFA;
+  --card: #FFFFFF;
+  --text-primary: #171717;
+  --text-secondary: #85858B;
+  --text-muted: #A3A3A8;
+  --green: #58CC02;
+  --green-highlight: #79D943;
+  --green-deep: #46A302;
+  --green-base: #3E9700;
+  --path-dot: #91D96B;
+  --path-dot-muted: #D2D2D2;
+  --ring-segment: #E5E5E5;
+  --locked-face: #E5E5E5;
+  --locked-base: #C7C7C7;
+  --locked-icon: #AFAFAF;
+  --star: #FFB900;
+  --heart: #FF4F6D;
+  --white: #FFFFFF;
+  --shadow-card: 0 6px 20px rgba(0, 0, 0, 0.045);
+  --shadow-node: 0 8px 16px rgba(36, 91, 24, 0.14);
+  --shadow-active: 0 8px 22px rgba(51, 176, 30, 0.20);
+  --shadow-none: none;
+}
+
+/* Keep the existing information architecture while matching the clean reference surface. */
+html,
+body,
+.app-shell,
+.screen-content:has(.home-header),
+.app-shell:has(.home-header) {
+  background: var(--canvas) !important;
+}
+.screen-content:has(.home-header) {
+  padding: 20px 24px 32px !important;
+}
+.home-header {
+  align-items: center !important;
+  padding: 0 0 30px !important;
+}
+.home-header .brand { gap: 10px !important; }
+.home-header .brand img {
+  width: 42px !important;
+  height: 42px !important;
+  border-radius: 12px !important;
+}
+.home-header .brand h1 {
+  color: var(--text-primary) !important;
+  font-size: 31px !important;
+  font-weight: 790 !important;
+  letter-spacing: -1.35px !important;
+}
+.home-currencies {
+  min-height: 52px !important;
+  gap: 0 !important;
+  padding: 0 16px !important;
+  border: 0 !important;
+  border-radius: 999px !important;
+  background: var(--card) !important;
+  box-shadow: var(--shadow-card) !important;
+}
+.home-currencies .star-balance {
+  gap: 6px !important;
+  padding-right: 12px !important;
+  color: var(--star) !important;
+}
+.home-currencies .star-balance svg { color: var(--star) !important; }
+.home-currencies .star-balance strong,
+.home-currencies .health strong {
+  color: var(--text-primary) !important;
+  font-size: 18px !important;
+  font-weight: 780 !important;
+}
+.home-currencies .health {
+  gap: 6px !important;
+  padding-left: 12px !important;
+  border-left: 1px solid #E6E6E6 !important;
+  color: var(--heart) !important;
+}
+.home-currencies .health svg { color: var(--heart) !important; }
+.home-heading {
+  margin: 0 0 21px !important;
+  align-items: flex-start !important;
+}
+.home-heading .eyebrow {
+  margin: 0 0 5px !important;
+  color: var(--text-secondary) !important;
+  font-size: 12px !important;
+  font-weight: 750 !important;
+  letter-spacing: 1.6px !important;
+}
+.home-heading h2 {
+  margin: 0 !important;
+  color: var(--text-primary) !important;
+  font-size: clamp(26px, 7vw, 30px) !important;
+  font-weight: 790 !important;
+  line-height: 1.12 !important;
+  letter-spacing: -.9px !important;
+}
+
+/* Shadow-only unit card; no visible border. */
+.unit-progress-card {
+  grid-template-columns: 58px minmax(82px, .95fr) minmax(55px, 1fr) 18px !important;
+  min-height: 88px !important;
+  gap: 13px !important;
+  margin: 0 0 20px !important;
+  padding: 14px 16px !important;
+  border: 0 !important;
+  border-radius: 24px !important;
+  background: var(--card) !important;
+  box-shadow: var(--shadow-card) !important;
+}
+.unit-progress-icon {
+  width: 58px !important;
+  height: 58px !important;
+  border-radius: 18px !important;
+  color: #20B84B !important;
+  background: #E5F7E8 !important;
+}
+.unit-progress-copy { gap: 4px !important; }
+.unit-progress-copy strong {
+  color: var(--text-primary) !important;
+  font-size: 16px !important;
+  font-weight: 780 !important;
+  letter-spacing: -.25px !important;
+}
+.unit-progress-copy small {
+  color: var(--text-secondary) !important;
+  font-size: 12px !important;
+}
+.unit-progress-track {
+  height: 9px !important;
+  border-radius: 999px !important;
+  background: #E7E7E7 !important;
+}
+.unit-progress-track > span {
+  background: var(--green) !important;
+  border-radius: inherit !important;
+}
+.unit-progress-chevron { color: #85858B !important; }
+
+/* Preserve the existing zigzag row positions; nodes remain separate independent buttons. */
+.compact-learning-path {
+  align-items: stretch !important;
+  gap: 0 !important;
+  padding: 15px 0 126px !important;
+  background: transparent !important;
+}
+.compact-lesson-row {
+  --node-button-size: 94px;
+  --node-face-size: 82px;
+  position: relative !important;
+  height: 164px !important;
+  min-height: 164px !important;
+  overflow: visible !important;
+}
+.compact-lesson-row::after { display: none !important; content: none !important; }
+.compact-lesson-icon-button,
+.compact-future-row > .compact-lesson-icon {
+  left: 30% !important;
+  width: var(--node-button-size) !important;
+  height: var(--node-button-size) !important;
+  border: 0 !important;
+  outline: 0 !important;
+  border-radius: 50% !important;
+  background: transparent !important;
+  box-shadow: var(--shadow-none) !important;
+}
+.compact-lesson-row.path-row-right .compact-lesson-icon-button,
+.compact-lesson-row.path-row-right.compact-future-row > .compact-lesson-icon {
+  right: 36% !important;
+  left: auto !important;
+}
+.compact-lesson-icon-button {
+  isolation: isolate;
+  overflow: visible !important;
+}
+/* The pseudo-element is the shallow solid lower layer; the face sits above it. */
+.compact-lesson-icon-button::before {
+  content: "" !important;
+  position: absolute !important;
+  z-index: 0 !important;
+  left: calc((var(--node-button-size) - var(--node-face-size)) / 2) !important;
+  right: auto !important;
+  bottom: 6px !important;
+  width: var(--node-face-size) !important;
+  height: var(--node-face-size) !important;
+  border: 0 !important;
+  border-radius: 50% !important;
+  background: var(--green-deep) !important;
+  box-shadow: inset 0 -2px 0 var(--green-base) !important;
+  transform: translateY(5px) !important;
+}
+.compact-lesson-icon-button.node-locked::before {
+  background: var(--locked-base) !important;
+  box-shadow: inset 0 -2px 0 #B8B8B8 !important;
+}
+.compact-lesson-row .compact-lesson-icon {
+  position: relative !important;
+  z-index: 1 !important;
+  display: grid !important;
+  place-items: center !important;
+  width: var(--node-face-size) !important;
+  height: var(--node-face-size) !important;
+  min-width: var(--node-face-size) !important;
+  min-height: var(--node-face-size) !important;
+  overflow: visible !important;
+  border: 0 !important;
+  outline: 0 !important;
+  border-radius: 50% !important;
+  color: var(--white) !important;
+  background: linear-gradient(180deg, var(--green-highlight) 0%, var(--green) 64%, #51BB00 100%) !important;
+  box-shadow: var(--shadow-node) !important;
+}
+.compact-lesson-row .compact-lesson-icon svg {
+  position: relative;
+  z-index: 2;
+  width: 32px !important;
+  height: 32px !important;
+  color: var(--white) !important;
+  stroke-width: 2.7 !important;
+}
+.compact-lesson-row.lesson-row-complete .compact-lesson-icon,
+.compact-lesson-row.lesson-row-current .compact-lesson-icon {
+  background: linear-gradient(180deg, var(--green-highlight) 0%, var(--green) 64%, #51BB00 100%) !important;
+}
+.compact-lesson-row.lesson-row-current .compact-lesson-icon {
+  box-shadow: var(--shadow-active) !important;
+}
+.compact-lesson-row .compact-lesson-extrusion { display: none !important; }
+
+/* Only the current lesson gets 12 individual gray capsule segments — never a border. */
+.compact-lesson-row .active-ring {
+  position: absolute !important;
+  z-index: 1 !important;
+  top: calc(var(--node-button-size) / 2) !important;
+  left: 30% !important;
+  display: block !important;
+  width: 116px !important;
+  height: 116px !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: var(--shadow-none) !important;
+  transform: translate(-50%, -50%) !important;
+  pointer-events: none !important;
+}
+.compact-lesson-row.path-row-right .active-ring { right: 36% !important; left: auto !important; transform: translate(50%, -50%) !important; }
+.active-ring__segment {
+  position: absolute !important;
+  top: 0 !important;
+  left: calc(50% - 5px) !important;
+  display: block !important;
+  width: 10px !important;
+  height: 20px !important;
+  border: 0 !important;
+  border-radius: 999px !important;
+  background: var(--ring-segment) !important;
+  box-shadow: var(--shadow-none) !important;
+  transform-origin: 50% 58px !important;
+}
+.compact-lesson-row .compact-lesson-check {
+  position: absolute !important;
+  z-index: 5 !important;
+  top: -3px !important;
+  right: -2px !important;
+  bottom: auto !important;
+  display: grid !important;
+  place-items: center !important;
+  width: 24px !important;
+  height: 24px !important;
+  border: 3px solid var(--white) !important;
+  border-radius: 50% !important;
+  color: var(--white) !important;
+  background: #16B84E !important;
+  box-shadow: var(--shadow-none) !important;
+}
+.compact-lesson-row .compact-lesson-check svg,
+.compact-lesson-row .compact-lesson-check svg path {
+  width: 13px !important;
+  height: 13px !important;
+  color: var(--white) !important;
+  stroke: var(--white) !important;
+  stroke-width: 3 !important;
+}
+
+/* Two small, detached dots per step. They do not touch each other or the lesson nodes. */
+.path-separator-dots {
+  position: absolute !important;
+  z-index: 1 !important;
+  inset: 0 !important;
+  display: block !important;
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: var(--shadow-none) !important;
+  pointer-events: none !important;
+}
+.path-separator-dots i {
+  position: absolute !important;
+  display: block !important;
+  width: 10px !important;
+  height: 10px !important;
+  border: 0 !important;
+  border-radius: 50% !important;
+  background: var(--path-dot) !important;
+  box-shadow: var(--shadow-none) !important;
+}
+.path-separator-dots.dots-to-right i:first-child { left: 43% !important; top: 126px !important; }
+.path-separator-dots.dots-to-right i:last-child { left: 55% !important; top: 150px !important; }
+.path-separator-dots.dots-to-left i:first-child { left: 55% !important; top: 126px !important; }
+.path-separator-dots.dots-to-left i:last-child { left: 43% !important; top: 150px !important; }
+
+/* Flat locked face + solid lower extrusion, with no glow, rim, or decorative rings. */
+.compact-lesson-icon-button.node-locked .compact-lesson-icon,
+.compact-lesson-row .compact-lesson-icon.node-locked {
+  color: var(--locked-icon) !important;
+  background: linear-gradient(180deg, #EEEEEE 0%, var(--locked-face) 100%) !important;
+  box-shadow: none !important;
+}
+.compact-lesson-row .compact-lesson-icon.node-locked svg { color: var(--locked-icon) !important; }
+.compact-future-row > .compact-lesson-icon.node-locked {
+  filter: drop-shadow(0 6px 0 var(--locked-base)) !important;
+}
+.compact-lesson-name,
+.compact-lesson-name strong,
+.compact-lesson-row.path-row-right .compact-lesson-name,
+.compact-future-row .compact-lesson-name {
+  color: var(--text-primary) !important;
+}
+.compact-lesson-name {
+  top: 94px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  gap: 4px !important;
+  text-align: center !important;
+}
+.compact-lesson-name strong {
+  color: var(--text-primary) !important;
+  font-size: 14px !important;
+  font-weight: 760 !important;
+  line-height: 1.28 !important;
+}
+.compact-lesson-name > span {
+  color: var(--text-secondary) !important;
+  font-size: 11px !important;
+  font-weight: 450 !important;
+  line-height: 1.4 !important;
+}
+.compact-lesson-name:disabled strong { color: var(--text-muted) !important; }
+.compact-lesson-name:disabled > span { color: var(--text-secondary) !important; }
+
+@media (max-width: 390px) {
+  .screen-content:has(.home-header) { padding-left: 22px !important; padding-right: 22px !important; }
+  .home-header .brand img { width: 40px !important; height: 40px !important; }
+  .home-header .brand h1 { font-size: 28px !important; }
+  .home-currencies { min-height: 48px !important; padding: 0 11px !important; }
+  .home-currencies .star-balance { padding-right: 9px !important; }
+  .home-currencies .health { padding-left: 9px !important; }
+  .unit-progress-card {
+    grid-template-columns: 52px minmax(76px, .9fr) minmax(46px, 1fr) 14px !important;
+    gap: 9px !important;
+    padding: 12px !important;
+  }
+  .unit-progress-icon { width: 52px !important; height: 52px !important; }
+  .compact-lesson-row { --node-button-size: 88px; --node-face-size: 76px; height: 160px !important; min-height: 160px !important; }
+  .compact-lesson-row .active-ring { width: 112px !important; height: 112px !important; }
+  .active-ring__segment { height: 19px !important; transform-origin: 50% 56px !important; }
+  .compact-lesson-name { top: 86px !important; }
+  .path-separator-dots i { width: 8px !important; height: 8px !important; }
+  .path-separator-dots.dots-to-right i:first-child { left: 43% !important; top: 125px !important; }
+  .path-separator-dots.dots-to-right i:last-child { left: 55% !important; top: 148px !important; }
+  .path-separator-dots.dots-to-left i:first-child { left: 55% !important; top: 125px !important; }
+  .path-separator-dots.dots-to-left i:last-child { left: 43% !important; top: 148px !important; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .unit-progress-track > span,
+  .compact-lesson-row .compact-lesson-icon { transition: none !important; }
+}
