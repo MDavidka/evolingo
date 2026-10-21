@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useEffect, useRef, useState, type FormEvent } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from "react"
 import {
   ArrowRight, BarChart3, BookOpen, Check, CheckCircle2, Headphones, MessageCircle, CircleHelp, Puzzle,
   Flame, Heart, Lightbulb, Medal, RotateCcw, Trophy, UserRound, Dumbbell, Timer, Languages, Volume2,
@@ -322,7 +322,7 @@ export default function App() {
   const [stars, setStars] = useState(0)
   const [purchasedItems, setPurchasedItems] = useState<string[]>([])
   const [lives, setLives] = useState(5)
-  const [userName, setUserName] = useState(() => makeLocalGuestName())
+  const [userName, setUserName] = useState("Kíváncsi Vidra 4821")
   const [avatar, setAvatar] = useState("fox")
   const [avatarImage, setAvatarImage] = useState("")
   const [bannerImage, setBannerImage] = useState("")
@@ -416,12 +416,12 @@ export default function App() {
     return () => { cancelled = true }
   }, [])
 
-  const statePayload = {
+  const statePayload = useMemo(() => ({
     userName, avatar, avatarImage, bannerImage, notifications, compactMode, readLessons, completedLessons,
     answeredTasks, purchasedItems, xp, stars, lives,
     dailyStreak: dailyStudy.streak, lastStudyDate: dailyStudy.lastStudyDate,
     todayActivityCount: dailyStudy.todayActivityCount, activityDate: dailyStudy.activityDate, dailyGoal: dailyStudy.dailyGoal,
-  }
+  }), [userName, avatar, avatarImage, bannerImage, notifications, compactMode, readLessons, completedLessons, answeredTasks, purchasedItems, xp, stars, lives, dailyStudy])
 
   useEffect(() => {
     if (!remoteReady && !localFallbackReady) return
@@ -451,7 +451,7 @@ export default function App() {
       }).catch(() => setSaveStatus("error"))
     }, 450)
     return () => window.clearTimeout(timer)
-  }, [remoteReady, localFallbackReady, sessionKey, userName, avatar, avatarImage, bannerImage, notifications, compactMode, readLessons, completedLessons, answeredTasks, purchasedItems, xp, stars, lives, dailyStudy])
+  }, [remoteReady, localFallbackReady, sessionKey, statePayload])
 
   const retryCloudSave = useCallback(async () => {
     setSaveStatus("saving")
