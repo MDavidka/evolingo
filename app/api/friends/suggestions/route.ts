@@ -19,8 +19,8 @@ export async function GET() {
       return NextResponse.json({ profiles: [] })
     }
     const db = await getDatabase()
-    const users = await db.collection<{ _id: string; userName?: unknown; avatar?: unknown; avatarImage?: unknown; xp?: unknown; streak?: unknown; dailyStreak?: unknown; lastSeenAt?: unknown; completedLessons?: unknown; isGuest?: unknown }>("users")
-      .find({ _id: { $ne: sessionId }, userName: { $type: "string", $ne: "" } })
+    const users = await db.collection<{ _id: string; userName?: unknown; avatar?: unknown; avatarImage?: unknown; xp?: unknown; streak?: unknown; dailyStreak?: unknown; lastSeenAt?: unknown; completedLessons?: unknown; isGuest?: unknown; isSynced?: unknown }>("users")
+      .find({ _id: { $ne: sessionId }, userName: { $type: "string", $ne: "" }, isSynced: true })
       .project({ userName: 1, avatar: 1, avatarImage: 1, xp: 1, streak: 1, dailyStreak: 1, lastSeenAt: 1, completedLessons: 1, isGuest: 1 })
       .sort({ lastSeenAt: -1 })
       .toArray()
@@ -37,7 +37,6 @@ export async function GET() {
       }
       return {
         id: String(user._id),
-        isGuest: user.isGuest !== false,
         name,
         handle: "@" + name.normalize("NFKD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-zA-Z0-9]/g, "").slice(0, 24).toLowerCase(),
         evoTag: makeTag(name),
