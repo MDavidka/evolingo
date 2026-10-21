@@ -393,7 +393,7 @@ export default function App() {
         const remoteHasProgress = hasLearningProgress(remoteState)
         const localIsNewer = Boolean(localSnapshot && (
           (sameSession && localSnapshot.savedAt > remoteUpdatedAt) ||
-          (!remoteHasProgress && localHasProgress && !sameSession)
+          (!remoteHasProgress && localHasProgress && !sameSession && !localSnapshot.sessionKey)
         ))
         const data = localIsNewer && localSnapshot ? { ...remoteState, ...localSnapshot.state } : remoteState
         if (result.sessionKey) setSessionKey(result.sessionKey)
@@ -407,6 +407,8 @@ export default function App() {
         if (localSnapshot) {
           applyState(localSnapshot.state)
           setSessionKey(localSnapshot.sessionKey)
+        } else {
+          setUserName(makeLocalGuestName())
         }
         setRemoteReady(false)
         setLocalFallbackReady(true)
