@@ -5977,3 +5977,86 @@ body,
   background-image: none !important;
   box-shadow: none !important;
 }
+
+
+/* Guest profile and persistence status: persistent, warm yellow notice with visible retry when offline. */
+.guest-save-banner {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  width: 100%;
+  min-width: 0;
+  margin: 0 0 20px;
+  padding: 12px 13px;
+  border: 0;
+  border-radius: 16px;
+  color: #5C4800;
+  background: #FFF4C2;
+  box-shadow: 0 3px 12px rgba(125, 98, 0, .045);
+}
+.guest-save-banner-icon {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  flex: 0 0 auto;
+  border-radius: 11px;
+  color: #876600;
+  background: rgba(255,255,255,.65);
+}
+.guest-save-banner-copy {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+.guest-save-banner-copy strong {
+  color: #3F3200;
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+.guest-save-banner-copy small {
+  color: #6C5B1E;
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1.45;
+}
+.guest-save-banner > button {
+  flex: 0 0 auto;
+  min-height: 32px;
+  padding: 0 10px;
+  border-radius: 10px;
+  color: #4C3B00;
+  background: #FFE48A;
+  font-size: 11px;
+  font-weight: 750;
+}
+.guest-save-banner.save-saving .guest-save-banner-icon { color: #7A6200; }
+.guest-save-banner.save-saved .guest-save-banner-icon { color: #4F770B; }
+.guest-save-banner.save-error,
+.guest-save-banner.save-local { background: #FFF0A8; }
+.guest-save-banner.save-error .guest-save-banner-icon,
+.guest-save-banner.save-local .guest-save-banner-icon { color: #7A4E00; }
+.friends-guest-label {
+  display: block !important;
+  width: fit-content;
+  margin-top: 3px;
+  padding: 3px 7px;
+  border-radius: 6px;
+  color: #725600 !important;
+  background: #FFF4C2;
+  font-size: 9px !important;
+  font-weight: 700 !important;
+  line-height: 1.2;
+}
+.friends-person-copy { min-width: 0; }
+@media (max-width: 390px) {
+  .guest-save-banner { gap: 8px; padding: 10px; border-radius: 14px; }
+  .guest-save-banner-icon { width: 30px; height: 30px; }
+  .guest-save-banner-copy strong { font-size: 11px; }
+  .guest-save-banner-copy small { font-size: 10px; }
+  .guest-save-banner > button { padding: 0 8px; font-size: 10px; }
+}
