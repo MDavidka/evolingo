@@ -453,8 +453,13 @@ export default function App() {
         body: JSON.stringify(snapshotState),
       }).then(async response => {
         if (!response.ok) throw new Error("cloud save failed")
-        const result = await response.json() as { sessionKey?: string; userName?: string }
+        const result = await response.json() as { sessionKey?: string; userName?: string; ignored?: boolean; clientUpdatedAt?: number }
         if (result.sessionKey) setSessionKey(result.sessionKey)
+        if (typeof result.clientUpdatedAt === "number") saveVersionRef.current = Math.max(saveVersionRef.current, result.clientUpdatedAt)
+        if (result.ignored) {
+          setSaveStatus("error")
+          return
+        }
         setSaveStatus("saved")
       }).catch(() => setSaveStatus("error"))
     }, 450)
@@ -472,8 +477,13 @@ export default function App() {
         body: JSON.stringify({ ...statePayload, clientUpdatedAt }),
       })
       if (!response.ok) throw new Error("cloud save failed")
-      const result = await response.json() as { sessionKey?: string; userName?: string }
+      const result = await response.json() as { sessionKey?: string; userName?: string; ignored?: boolean; clientUpdatedAt?: number }
       if (result.sessionKey) setSessionKey(result.sessionKey)
+      if (typeof result.clientUpdatedAt === "number") saveVersionRef.current = Math.max(saveVersionRef.current, result.clientUpdatedAt)
+      if (result.ignored) {
+        setSaveStatus("error")
+        return
+      }
       setLocalFallbackReady(false)
       setRemoteReady(true)
       setSaveStatus("saved")
