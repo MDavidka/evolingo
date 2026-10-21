@@ -392,8 +392,10 @@ export default function App() {
         const sameSession = Boolean(localSnapshot?.sessionKey && result.sessionKey && localSnapshot.sessionKey === result.sessionKey)
         const localHasProgress = Boolean(localSnapshot && hasLearningProgress(localSnapshot.state))
         const remoteHasProgress = hasLearningProgress(remoteState)
+        const localVersion = typeof localSnapshot?.state.clientUpdatedAt === "number" ? localSnapshot.state.clientUpdatedAt : null
+        const remoteVersion = typeof remoteState.clientUpdatedAt === "number" ? remoteState.clientUpdatedAt : null
         const localIsNewer = Boolean(localSnapshot && (
-          (sameSession && localSnapshot.savedAt > remoteUpdatedAt) ||
+          (sameSession && (localVersion !== null && remoteVersion !== null ? localVersion > remoteVersion : localSnapshot.savedAt > remoteUpdatedAt)) ||
           (!remoteHasProgress && localHasProgress && !sameSession && !localSnapshot.sessionKey)
         ))
         const data = localIsNewer && localSnapshot ? { ...remoteState, ...localSnapshot.state } : remoteState
