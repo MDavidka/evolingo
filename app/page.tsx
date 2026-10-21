@@ -335,6 +335,7 @@ export default function App() {
   const [localFallbackReady, setLocalFallbackReady] = useState(false)
   const [sessionKey, setSessionKey] = useState("")
   const [saveStatus, setSaveStatus] = useState<CloudSaveStatus>("loading")
+  const saveVersionRef = useRef(0)
 
   useEffect(() => {
     let cancelled = false
@@ -396,6 +397,7 @@ export default function App() {
           (!remoteHasProgress && localHasProgress && !sameSession && !localSnapshot.sessionKey)
         ))
         const data = localIsNewer && localSnapshot ? { ...remoteState, ...localSnapshot.state } : remoteState
+        if (typeof data.clientUpdatedAt === "number") saveVersionRef.current = Math.max(saveVersionRef.current, data.clientUpdatedAt)
         if (result.sessionKey) setSessionKey(result.sessionKey)
         applyState(data)
         setRemoteReady(true)
@@ -407,6 +409,7 @@ export default function App() {
         if (localSnapshot) {
           applyState(localSnapshot.state)
           setSessionKey(localSnapshot.sessionKey)
+          if (typeof localSnapshot.state.clientUpdatedAt === "number") saveVersionRef.current = Math.max(saveVersionRef.current, localSnapshot.state.clientUpdatedAt)
         } else {
           setUserName(makeLocalGuestName())
         }
@@ -428,9 +431,12 @@ export default function App() {
   useEffect(() => {
     if (!remoteReady && !localFallbackReady) return
     const savedAt = Date.now()
+    const clientUpdatedAt = Math.max(savedAt * 1000, saveVersionRef.current + 1)
+    saveVersionRef.current = clientUpdatedAt
+    const snapshotState = { ...statePayload, clientUpdatedAt }
     try {
       localStorage.setItem(LOCAL_PROGRESS_KEY, JSON.stringify({
-        version: 1, sessionKey, savedAt, state: statePayload,
+        version: 1, sessionKey, savedAt, state: snapshotState,
       } satisfies LocalProgressSnapshot))
     } catch {
       // The cloud remains authoritative; local recovery storage is best-effort.
@@ -444,7 +450,7 @@ export default function App() {
       fetch("/api/state", {
         method: "PATCH", credentials: "same-origin",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(statePayload),
+        body: JSON.stringify(snapshotState),
       }).then(async response => {
         if (!response.ok) throw new Error("cloud save failed")
         const result = await response.json() as { sessionKey?: string; userName?: string }
@@ -457,11 +463,13 @@ export default function App() {
 
   const retryCloudSave = useCallback(async () => {
     setSaveStatus("saving")
+    const clientUpdatedAt = Math.max(Date.now() * 1000, saveVersionRef.current + 1)
+    saveVersionRef.current = clientUpdatedAt
     try {
       const response = await fetch("/api/state", {
         method: "PATCH", credentials: "same-origin",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(statePayload),
+        body: JSON.stringify({ ...statePayload, clientUpdatedAt }),
       })
       if (!response.ok) throw new Error("cloud save failed")
       const result = await response.json() as { sessionKey?: string; userName?: string }
