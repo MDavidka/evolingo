@@ -36,7 +36,7 @@ export default function HomePage() {
               onClick={() => setSelectedLesson(lesson)}
               aria-label={`${lesson} megnyitása`}
             >
-              <span className="lesson-icon"><BookOpen size={42} strokeWidth={2.2} /></span>
+              <span className="lesson-icon"><BookOpen size={32} strokeWidth={2.2} /></span>
               <strong>{lesson}</strong>
             </button>
           ))}

@@ -16,54 +16,54 @@ button { font: inherit; }
   position: relative;
   overflow: hidden;
   background: #fff;
-  padding: 42px 0 calc(112px + env(safe-area-inset-bottom));
+  padding: 22px 0 calc(88px + env(safe-area-inset-bottom));
 }
 .home-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 24px;
-  min-height: 78px;
+  padding: 0 20px;
+  min-height: 62px;
 }
-.brand { display: flex; align-items: center; gap: 12px; }
-.brand img { width: 60px; height: 60px; object-fit: contain; }
-.brand h1 { margin: 0; font-size: 35px; line-height: 1; letter-spacing: -1.8px; font-weight: 850; }
+.brand { display: flex; align-items: center; gap: 9px; }
+.brand img { width: 48px; height: 48px; object-fit: contain; }
+.brand h1 { margin: 0; font-size: 28px; line-height: 1; letter-spacing: -1.4px; font-weight: 850; }
 .profile-avatar {
-  width: 62px; height: 62px; display: grid; place-items: center;
+  width: 48px; height: 48px; display: grid; place-items: center;
   color: #171717; background: #fff; border-radius: 50%;
   box-shadow: 0 8px 24px rgba(0,0,0,.06); border: 0;
 }
 .learning-sheet {
   position: relative;
-  min-height: 610px;
-  margin-top: 42px;
-  padding: 31px 0 140px;
+  min-height: 560px;
+  margin-top: 28px;
+  padding: 24px 0 112px;
   background: #fff;
-  border-radius: 58px 58px 0 0;
+  border-radius: 42px 42px 0 0;
   box-shadow: 0 -14px 36px rgba(0,0,0,.07);
 }
-.sheet-handle { width: 101px; height: 13px; margin: 0 auto; border-radius: 20px; background: #c8d0d9; }
-.lesson-heading { margin: 73px 38px 0; }
-.lesson-heading h2 { margin: 0; font-size: 38px; line-height: 1.1; letter-spacing: -1.4px; font-weight: 800; }
-.lesson-heading p { margin: 10px 0 0; color: #a4a4a4; font-size: 24px; line-height: 1.4; }
+.sheet-handle { width: 78px; height: 9px; margin: 0 auto; border-radius: 20px; background: #c8d0d9; }
+.lesson-heading { margin: 58px 30px 0; }
+.lesson-heading h2 { margin: 0; font-size: 30px; line-height: 1.1; letter-spacing: -1.1px; font-weight: 800; }
+.lesson-heading p { margin: 8px 0 0; color: #a4a4a4; font-size: 19px; line-height: 1.35; }
 .lesson-carousel {
-  display: flex; gap: 72px; overflow: hidden; margin-top: 119px; padding: 0 0 12px 96px;
+  display: flex; gap: 42px; overflow: hidden; margin-top: 82px; padding: 0 0 10px 52px;
 }
-.lesson-card { flex: 0 0 156px; display: flex; flex-direction: column; align-items: center; gap: 21px; padding: 0; border: 0; background: transparent; }
+.lesson-card { flex: 0 0 116px; display: flex; flex-direction: column; align-items: center; gap: 14px; padding: 0; border: 0; background: transparent; }
 .lesson-icon {
-  width: 156px; height: 156px; display: grid; place-items: center; color: white; border-radius: 50%;
+  width: 116px; height: 116px; display: grid; place-items: center; color: white; border-radius: 50%;
   background: #f58b43; box-shadow: 0 10px 0 #bd681f, 0 13px 19px rgba(180,92,27,.17);
 }
 .lesson-card strong { font-size: 24px; line-height: 1; font-weight: 800; white-space: nowrap; }
 .lesson-card.is-selected .lesson-icon { transform: translateY(4px); box-shadow: 0 5px 0 #bd681f; }
 .bottom-nav {
   position: fixed; z-index: 5; left: 50%; bottom: calc(18px + env(safe-area-inset-bottom)); transform: translateX(-50%);
-  width: min(calc(100% - 42px), 438px); height: 112px; display: grid; grid-template-columns: repeat(4, 1fr); align-items: center;
-  padding: 0 9px; border-radius: 38px; background: rgba(255,255,255,.96); box-shadow: 0 5px 28px rgba(0,0,0,.11);
+  width: min(calc(100% - 28px), 370px); height: 78px; display: grid; grid-template-columns: repeat(4, 1fr); align-items: center;
+  padding: 0 6px; border-radius: 28px; background: rgba(255,255,255,.96); box-shadow: 0 5px 28px rgba(0,0,0,.11);
   backdrop-filter: blur(10px);
 }
-.nav-item { min-height: 86px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; border: 0; border-radius: 29px; background: transparent; color: #171717; }
-.nav-item span { font-size: 18px; font-weight: 700; white-space: nowrap; }
+.nav-item { min-height: 64px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; border: 0; border-radius: 21px; background: transparent; color: #171717; }
+.nav-item span { font-size: 14px; font-weight: 700; white-space: nowrap; }
 .nav-item.active { background: #e2e6eb; box-shadow: inset 0 2px 4px rgba(0,0,0,.04); }
 @media (max-width: 380px) {
   .brand h1 { font-size: 31px; }
