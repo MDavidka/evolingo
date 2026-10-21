@@ -72,9 +72,12 @@ export async function GET() {
       lives: 5, friends: [], friendRequests: [], dailyStreak: 0, lastStudyDate: "",
       todayActivityCount: 0, activityDate: "", dailyGoal: 1, createdAt: new Date(),
     }, $set: { lastSeenAt: new Date(), isGuest: true } }, { upsert: true })
-    // Older sessions used "MDavid" as a placeholder name. Rename only that placeholder;
-    // all lesson history, XP, purchases, settings and streaks remain untouched.
-    await users.updateOne({ _id: id, userName: "MDavid" }, { $set: { userName: makeGuestName(id), isGuest: true, updatedAt: new Date() } })
+    // Older sessions used "MDavid" or an empty name as a placeholder. Repair only
+    // those names; all lesson history, XP, purchases, settings and streaks stay untouched.
+    await users.updateOne({
+      _id: id,
+      $or: [{ userName: "MDavid" }, { userName: "" }, { userName: { $exists: false } }],
+    }, { $set: { userName: makeGuestName(id), isGuest: true, updatedAt: new Date() } })
     const doc = await users.findOne({ _id: id })
     return sessionCookie(NextResponse.json({ state: safeState((doc || {}) as Record<string, unknown>), sessionKey: publicSessionKey(id) }), id, created)
   } catch (error) {
@@ -110,7 +113,7 @@ export async function PATCH(request: NextRequest) {
     if (!Object.keys(update).length) return NextResponse.json({ error: "Nincs menthető adat." }, { status: 400 })
     // The anonymous browser session itself is the guest profile. If the first GET
     // failed, let a retry create the MongoDB document from the locally preserved state.
-    if (!update.userName || (created && update.userName === "MDavid")) update.userName = makeGuestName(id)
+    if (!update.userName || update.userName === "MDavid") update.userName = makeGuestName(id)
     update.isGuest = true
     update.updatedAt = new Date()
     const db = await getDatabase()
