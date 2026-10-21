@@ -20,7 +20,7 @@ const allowed = new Set([
 ])
 const isStringArray = (v: unknown) => Array.isArray(v) && v.length <= 1000 && v.every(x => typeof x === "string" && x.length <= 160)
 const isNumberArray = (v: unknown) => Array.isArray(v) && v.length <= 500 && v.every(x => typeof x === "number" && Number.isInteger(x) && x >= 0 && x <= 10000)
-const isDateKey = (v: unknown) => typeof v === "string" && (v === "" || /^\\d{4}-\\d{2}-\\d{2}$/.test(v))
+const isDateKey = (v: unknown) => typeof v === "string" && (v === "" || /^\d{4}-\d{2}-\d{2}$/.test(v))
 
 function safeState(doc: Record<string, unknown>) {
   const { _id, ...state } = doc
@@ -83,7 +83,7 @@ export async function PATCH(request: NextRequest) {
       if (["xp","stars"].includes(key) && (typeof value !== "number" || !Number.isInteger(value) || value < 0 || value > 100000000)) continue
       if (["dailyStreak", "todayActivityCount"].includes(key) && (typeof value !== "number" || !Number.isInteger(value) || value < 0 || value > 100000)) continue
       if (["lastStudyDate", "activityDate"].includes(key) && !isDateKey(value)) continue
-      if (key === "dailyGoal" && ![1, 3, 5].includes(Number(value))) continue
+      if (key === "dailyGoal" && (typeof value !== "number" || ![1, 3, 5].includes(value))) continue
       if (key === "lives" && (typeof value !== "number" || !Number.isInteger(value) || value < 0 || value > 5)) continue
       if (["avatarImage","bannerImage"].includes(key) && (typeof value !== "string" || value.length > 5_000_000 || (value !== "" && !value.startsWith("data:image/")))) continue
       update[key] = value
