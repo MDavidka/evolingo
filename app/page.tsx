@@ -1107,13 +1107,15 @@ function Friends({ userName }: { userName: string }) {
   </div>
 }
 
-function Profile({ completedCount, readCount, completedTaskCount, xp, stars, userName, setUserName, avatar, setAvatar, avatarImage, setAvatarImage, bannerImage, setBannerImage, notifications, setNotifications, compactMode, setCompactMode, showSettings, setShowSettings }: {
+function Profile({ completedCount, readCount, completedTaskCount, xp, stars, userName, setUserName, avatar, setAvatar, avatarImage, setAvatarImage, bannerImage, setBannerImage, dailyStudy, onDailyGoalChange, notifications, setNotifications, compactMode, setCompactMode, showSettings, setShowSettings }: {
   completedCount: number; readCount: number; completedTaskCount: number; xp: number; stars: number; userName: string; setUserName: (value: string) => void;
-  avatar: string; setAvatar: (value: string) => void; avatarImage: string; setAvatarImage: (value: string) => void; bannerImage: string; setBannerImage: (value: string) => void; notifications: boolean; setNotifications: (value: boolean) => void;
+  avatar: string; setAvatar: (value: string) => void; avatarImage: string; setAvatarImage: (value: string) => void; bannerImage: string; setBannerImage: (value: string) => void;
+  dailyStudy: DailyStudyState; onDailyGoalChange: (goal: number) => void; notifications: boolean; setNotifications: (value: boolean) => void;
   compactMode: boolean; setCompactMode: (value: boolean) => void; showSettings: boolean; setShowSettings: (value: boolean) => void
 }) {
   const [draftName, setDraftName] = useState(userName)
   const [saved, setSaved] = useState(false)
+  const [showStreakSettings, setShowStreakSettings] = useState(false)
   const [profileStorageReady, setProfileStorageReady] = useState(false)
   const [remoteProfileReady, setRemoteProfileReady] = useState(false)
   const [profileTheme, setProfileTheme] = useState<"mist" | "sage">("mist")
@@ -1221,12 +1223,22 @@ function Profile({ completedCount, readCount, completedTaskCount, xp, stars, use
     }
   }
   const progressPercent = Math.max(0, Math.min(100, Math.round((completedCount / lessons.length) * 100)))
+  const todayDate = getLocalDateKey()
+  const yesterdayDate = getPreviousLocalDateKey(todayDate)
+  const visibleStreak = dailyStudy.lastStudyDate && dailyStudy.lastStudyDate !== todayDate && dailyStudy.lastStudyDate !== yesterdayDate ? 0 : dailyStudy.streak
+  const todayActivityCount = dailyStudy.activityDate === todayDate ? dailyStudy.todayActivityCount : 0
+  const dailyGoalProgress = Math.min(100, Math.round((todayActivityCount / Math.max(1, dailyStudy.dailyGoal)) * 100))
   const avatarOptions = ["fox", "book", "star", "spark"]
   const defaultAvatar = avatar === "fox" ? "🦊" : avatar === "book" ? "📚" : avatar === "star" ? "⭐" : "✨"
 
   return <div className={"profile-page profile-theme-" + profileTheme}>
     <section className="profile-hero">
       <div className={"profile-cover" + (bannerImage ? " has-custom-banner" : "")} aria-hidden="true">{bannerImage && <img className="profile-cover-image" src={bannerImage} alt="" />}</div>
+      <button className="profile-streak-badge" type="button" onClick={() => setShowStreakSettings(true)} aria-label={visibleStreak + " napos tanulási sorozat, napi cél beállítása"} aria-haspopup="dialog">
+        <span className="profile-streak-icon"><Flame size={17} fill="currentColor" /></span>
+        <span className="profile-streak-copy"><strong>{visibleStreak} nap</strong><small>NAPI SOROZAT</small></span>
+        <Settings size={14} className="profile-streak-settings-icon" aria-hidden="true" />
+      </button>
       <button className="profile-banner-settings" type="button" aria-label="Profil és borítókép szerkesztése" title="Profil szerkesztése" onClick={openSettings}>
         <Pencil size={20} strokeWidth={2.2} />
       </button>
@@ -1244,6 +1256,29 @@ function Profile({ completedCount, readCount, completedTaskCount, xp, stars, use
     </section>
 
     <input ref={bannerInputRef} className="profile-file-input" type="file" accept="image/*" aria-label="Borítókép kiválasztása" onChange={event => { void handleGalleryImage(event.target.files?.[0], "banner"); event.currentTarget.value = "" }} />
+
+    {showStreakSettings && <div className="profile-streak-backdrop" role="presentation" onMouseDown={event => { if (event.target === event.currentTarget) setShowStreakSettings(false) }}>
+      <section className="profile-streak-sheet" role="dialog" aria-modal="true" aria-labelledby="profile-streak-title">
+        <header className="profile-streak-sheet-heading">
+          <span className="profile-streak-sheet-symbol"><Flame size={22} fill="currentColor" /></span>
+          <div><h2 id="profile-streak-title">Napi tanulási sorozat</h2><p>Alakíts ki egy könnyen tartható napi rutint.</p></div>
+          <button type="button" aria-label="Bezárás" onClick={() => setShowStreakSettings(false)}><X size={20} /></button>
+        </header>
+        <div className="profile-streak-current">
+          <div><strong>{visibleStreak} nap</strong><span>egymást követő tanulási nap</span></div>
+          <span className="profile-streak-current-icon"><Flame size={25} fill="currentColor" /></span>
+        </div>
+        <div className="profile-streak-goal-heading"><strong>Napi cél</strong><span>{todayActivityCount} / {dailyStudy.dailyGoal} aktivitás</span></div>
+        <div className="profile-streak-progress"><span style={{ width: dailyGoalProgress + "%" }} /></div>
+        <p className="profile-streak-explainer">Egy aktivitásnak számít egy új lecke elolvasása vagy egy kérdés megoldása.</p>
+        <div className="profile-streak-goal-options" role="group" aria-label="Napi tanulási cél">
+          {[1, 3, 5].map(goal => <button key={goal} type="button" className={dailyStudy.dailyGoal === goal ? "selected" : ""} onClick={() => onDailyGoalChange(goal)} aria-pressed={dailyStudy.dailyGoal === goal}>
+            <strong>{goal}</strong><span>{goal === 1 ? "Könnyű" : goal === 3 ? "Kiegyensúlyozott" : "Kihívás"}</span><small>{goal} aktivitás / nap</small>
+          </button>)}
+        </div>
+        <button className="profile-streak-done" type="button" onClick={() => setShowStreakSettings(false)}>Kész</button>
+      </section>
+    </div>}
 
     <section className="profile-social-stats" aria-label="Profilstatisztikák">
       <div className="profile-social-stat"><span className="profile-stat-icon"><BookOpen size={22} /></span><strong>{readCount}</strong><span>Elolvasott lecke</span></div>
