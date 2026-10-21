@@ -76,7 +76,7 @@ type Question = {
 type LessonUnit = { id: number; title: string; summary: string; sections: LessonSection[]; questions: Question[]; level: string; specialType?: "hard" | "timed" | "words" }
 
 type LearningPathKind = "lesson" | "task" | "words" | "hard" | "test"
-type LearningPathNode = { key: string; kind: LearningPathKind; lessonId: number; specialId?: number }
+type LearningPathNode = { key: string; kind: LearningPathKind; lessonId: number; specialId?: number; templateId?: number }
 
 function seededPathValue(seed: number) {
   const value = Math.sin(seed * 12.9898 + 78.233) * 43758.5453
@@ -110,7 +110,7 @@ function createLearningPathNodes(lessonUnits: LessonUnit[]): LearningPathNode[] 
         key: kind + "-" + lesson.id,
         kind,
         lessonId: lesson.id,
-        ...(specialIds[kind] ? { specialId: specialIds[kind] } : {}),
+        ...(specialIds[kind] ? { specialId: 1000 + lesson.id * 10 + activityKinds.indexOf(kind), templateId: specialIds[kind] } : {}),
       })
     })
   })
@@ -344,6 +344,36 @@ const generatedLessons: LessonUnit[] = curriculumTopics.map((topic, index) => {
   return { id, title: topic.title, level: index < 11 ? "A2" : "B1", summary: topic.summary, sections: [{ title: "Mikor használjuk?", body: topic.summary, tip: topic.tip }, { title: "Példa és szabály", body: topic.explanation, examples: [{ sentence: topic.prompt, translation: topic.answer }] }], questions: [question, second], }
 })
 const fullLessons = [...lessons, ...generatedLessons]
+
+const learningPathNodes = createLearningPathNodes(fullLessons)
+const pathActivityLessons: LessonUnit[] = learningPathNodes.flatMap((node) => {
+  if (node.kind === "lesson" || node.kind === "task" || !node.specialId || !node.templateId) return []
+  const sourceLesson = fullLessons.find((lesson) => lesson.id === node.lessonId)
+  const template = specialTasks.find((lesson) => lesson.id === node.templateId)
+  if (!sourceLesson || !template) return []
+
+  if (node.kind === "test") {
+    return [{
+      ...sourceLesson,
+      id: node.specialId,
+      title: "Test · " + sourceLesson.title,
+      summary: "Timed test for " + sourceLesson.title + ". You have three mistakes allowed.",
+      sections: [],
+      specialType: "timed" as const,
+      questions: sourceLesson.questions,
+    }]
+  }
+
+  return [{
+    ...template,
+    id: node.specialId,
+    title: (node.kind === "hard" ? "Hard Task · " : "New Words · ") + sourceLesson.title,
+    summary: node.kind === "hard"
+      ? "A harder challenge linked to " + sourceLesson.title + "."
+      : "Vocabulary practice alongside " + sourceLesson.title + ".",
+    sections: [],
+  }]
+})
 const placeholders = Array.from({ length: 90 }, (_, index) => ({ id: index + 11 + curriculumTopics.length, title: "Lecke " + (index + 11 + curriculumTopics.length), inDevelopment: true }))
 const pathItems = [...fullLessons, ...specialTasks, ...placeholders]
 const ranks = [
@@ -549,7 +579,7 @@ export default function App() {
       return { ...previous, streak, lastStudyDate: today, activityDate: today, todayActivityCount }
     })
   }, [])
-  const activeLesson = [...fullLessons, ...specialTasks].find((lesson) => lesson.id === activeLessonId) ?? lessons[0]
+  const activeLesson = [...fullLessons, ...pathActivityLessons, ...specialTasks].find((lesson) => lesson.id === activeLessonId) ?? lessons[0]
   const handleReadComplete = useCallback((lessonId: number) => {
     if (readLessons.includes(lessonId)) return
     setReadLessons((previous) => previous.includes(lessonId) ? previous : [...previous, lessonId])
@@ -561,7 +591,7 @@ export default function App() {
     setScreen("lessonIntro")
   }
   const openTask = (lessonId: number, taskIndex: number, sourceLessonId?: number) => {
-    const special = specialTasks.find((item) => item.id === lessonId)
+    const special = [...pathActivityLessons, ...specialTasks].find((item) => item.id === lessonId)
     const prerequisiteLessonId = sourceLessonId ?? lessonId
     const isUnlocked = sourceLessonId !== undefined
       ? prerequisiteLessonId === fullLessons[0]?.id || completedLessons.includes(prerequisiteLessonId - 1)
@@ -702,7 +732,7 @@ function Home({ completedLessons, readLessons, answeredTasks, stars, xp, dailySt
   avatarImage: string
 }) {
   const unitLessons = fullLessons
-  const pathNodes = useMemo(() => createLearningPathNodes(fullLessons), [])
+  const pathNodes = learningPathNodes
   const currentLessonId = unitLessons.find(lesson => !completedLessons.includes(lesson.id))?.id ?? null
   const completedCount = unitLessons.filter(lesson => completedLessons.includes(lesson.id)).length
   const progress = unitLessons.length ? Math.round(completedCount / unitLessons.length * 100) : 0
@@ -740,7 +770,7 @@ function Home({ completedLessons, readLessons, answeredTasks, stars, xp, dailySt
 
     const activityId = node.specialId ?? node.lessonId
     const activityLesson = node.specialId
-      ? specialTasks.find(lesson => lesson.id === node.specialId)
+      ? pathActivityLessons.find(lesson => lesson.id === node.specialId)
       : sourceLesson
     const activityComplete = !!activityLesson?.questions.every((_, questionIndex) =>
       answeredTasks.includes(activityId + "-" + questionIndex)
