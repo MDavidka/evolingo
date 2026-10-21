@@ -625,7 +625,6 @@ function Home({ readLessons, completedLessons, answeredTasks, stars, notice, cle
   const pathIcons = [BookOpen, Headphones, MessageCircle, CircleHelp, Puzzle, Trophy]
   return <>
     <header className="app-header home-header"><Brand /><div className="home-currencies"><div className="star-balance" aria-label={stars + " csillag"}><Star size={21} fill="currentColor" /><strong>{stars}</strong></div><div className="health"><Heart fill="currentColor" size={20} /><strong>5</strong></div></div></header>
-    <GuestSaveBanner userName={userName} status={saveStatus} onRetry={onRetryCloudSave} />
     <div className="section-heading home-heading"><div><p className="eyebrow">ANGOL</p><h2>Tanulási útvonal</h2></div></div>
     {notice && <button className="inline-notice" onClick={clearNotice}><span>{notice}</span><X size={16} /></button>}
     <section className="unit-progress-card" aria-label={"1. egység, " + unitProgress + "% kész"}>
@@ -1171,8 +1170,7 @@ function Friends({ userName, avatar, avatarImage, xp, dailyStudy, saveStatus, on
         <span className={"friends-avatar " + (friend.avatarImage ? "has-image" : "")}>{friend.avatarImage ? <img src={friend.avatarImage} alt="" /> : friend.avatar}</span>
         <span className="friends-person-copy">
           <strong>{displayName(friend)}</strong>
-          {friend.isGuest && <small className="friends-guest-label">Vendégprofil</small>}
-          <span>{(friend.streak ?? 0) + " napos sorozat"} <i aria-hidden="true">·</i> {friend.xp} XP</span>
+                    <span>{(friend.streak ?? 0) + " napos sorozat"} <i aria-hidden="true">·</i> {friend.xp} XP</span>
         </span>
       </button>
       {mode === "suggested" && <button className="friends-follow-button" type="button" onClick={() => sendRequest(friend)}>{requests.includes(friend.id) ? "Kérés elküldve" : "Követés"}</button>}
@@ -1186,8 +1184,6 @@ function Friends({ userName, avatar, avatarImage, xp, dailyStudy, saveStatus, on
     <header className="friends-header">
       <div className="friends-title-group"><span>KÖZÖSSÉG</span><h1>Barátok</h1></div>
     </header>
-    <GuestSaveBanner userName={userName} status={saveStatus} onRetry={onRetryCloudSave} />
-
     <label className="friends-search">
       <Search size={19} aria-hidden="true" />
       <input value={query} onChange={event => setQuery(event.target.value)} placeholder="Keresés név vagy felhasználónév alapján" aria-label="Barátok keresése" />
@@ -1216,10 +1212,10 @@ function Friends({ userName, avatar, avatarImage, xp, dailyStudy, saveStatus, on
     {notice && <div className="friends-notice" role="status"><span>{notice}</span><button type="button" aria-label="Üzenet bezárása" onClick={() => setNotice("")}><X size={16} /></button></div>}
 
     {tab === "friends" && <>
-      <section className="friends-section friends-own-profile-section" aria-labelledby="friends-own-profile-heading">
+      {saveStatus === "saved" && <section className="friends-section friends-own-profile-section" aria-labelledby="friends-own-profile-heading">
         <div className="friends-section-heading">
           <h2 className="friends-section-title" id="friends-own-profile-heading">SAJÁT PROFILOD</h2>
-          <span className="friends-count">Vendég</span>
+          <span className="friends-count">Tanuló</span>
         </div>
         <div className="friends-list">
           <article className="friends-person friends-own-profile-row">
@@ -1229,14 +1225,13 @@ function Friends({ userName, avatar, avatarImage, xp, dailyStudy, saveStatus, on
               </span>
               <span className="friends-person-copy">
                 <strong>{userName}</strong>
-                <small className="friends-guest-label">Saját vendégprofilod</small>
                 <span>{dailyStudy.streak} napos sorozat <i aria-hidden="true">·</i> {xp.toLocaleString("hu-HU")} XP</span>
               </span>
             </div>
             <span className={"friends-own-profile-save save-" + saveStatus}>{saveStatus === "saved" ? "Mentve" : saveStatus === "saving" || saveStatus === "loading" ? "Mentés…" : "Újrapróbálás"}</span>
           </article>
         </div>
-      </section>
+      </section>}
       <section className="friends-section friends-all-users-section" aria-labelledby="friends-all-users-heading">
         <div className="friends-section-heading">
           <h2 className="friends-section-title" id="friends-all-users-heading">EVÖLINGO TANULÓI</h2>
