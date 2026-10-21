@@ -1,52 +1,38 @@
-/* Evölingo redesign — modern layered mobile UI. Loaded after globals.css. */
-:root{--ev-green-1:#7cb65a;--ev-green-2:#4e9a3a;--ev-green-edge:#3f8a2e;--ev-ink:#1c1c1e;--ev-muted:#8e8e93;--ev-surface:#ffffff;--ev-canvas:#f2f3f5;--ev-shadow:0 10px 30px rgba(17,24,39,.08);}
-body{background:linear-gradient(180deg,#ffffff 0%,var(--ev-canvas) 38%,var(--ev-canvas) 100%);color:var(--ev-ink);-webkit-font-smoothing:antialiased}
-
-/* Header */
-body .home-header{background:transparent;box-shadow:none;padding:calc(env(safe-area-inset-top) + 18px) 22px 8px;display:flex;align-items:center;justify-content:space-between}
-body .home-header .brand img{width:64px;height:64px;object-fit:contain;border-radius:0;background:transparent}
-body .home-header .brand h1{font-size:30px;font-weight:800;letter-spacing:-.03em;color:var(--ev-ink)}
-body .home-currencies{display:flex;align-items:center;gap:14px;background:var(--ev-surface);padding:10px 18px;border-radius:999px;box-shadow:var(--ev-shadow);border:1px solid rgba(0,0,0,.03)}
-body .home-currencies .star-balance,body .home-currencies .health{display:flex;align-items:center;gap:6px;background:none;border:0;box-shadow:none;padding:0}
-body .home-currencies .star-balance{color:#f2b51c}
-body .home-currencies .health{color:#e2475a}
-body .home-currencies strong{color:var(--ev-ink);font-size:19px;font-weight:800}
-
-/* Section heading */
-body .home-heading{padding:22px 24px 0}
-body .home-heading .eyebrow{font-size:12px;font-weight:700;letter-spacing:.14em;color:var(--ev-muted);margin:0 0 6px}
-body .home-heading h2{font-size:28px;font-weight:800;letter-spacing:-.02em;color:var(--ev-ink);margin:0}
-
-/* Unit card sits inside the layered stack */
-body .unit-progress-card{margin:18px 18px 0;border-radius:24px;background:rgba(255,255,255,.75);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);box-shadow:var(--ev-shadow);border:1px solid rgba(0,0,0,.04)}
-
-/* Layered white sheet for the learning path */
-body .learning-path.compact-learning-path{position:relative;background:var(--ev-surface);border-radius:40px 40px 0 0;margin:22px 0 0;padding:92px 18px calc(150px + env(safe-area-inset-bottom));box-shadow:0 -18px 40px rgba(17,24,39,.07);min-height:60vh;z-index:1}
-body .learning-path.compact-learning-path::before{content:"🇬🇧  B2";position:absolute;top:26px;right:22px;padding:9px 20px;border-radius:999px;border:2px solid #ececf0;background:#fff;font-weight:800;font-size:19px;color:#a1a1aa;letter-spacing:.02em;line-height:1}
-
-/* Lesson nodes: glossy 3D green buttons */
-body .compact-lesson-icon-button{background:none;border:0;padding:0}
-body .compact-lesson-icon{position:relative;width:108px;height:108px;border-radius:50%;display:grid;place-items:center;color:#fff;background:radial-gradient(circle at 35% 25%,var(--ev-green-1),var(--ev-green-2) 75%);box-shadow:0 7px 0 var(--ev-green-edge),0 14px 24px rgba(63,138,46,.28),inset 0 2px 0 rgba(255,255,255,.25);transition:transform .15s ease,box-shadow .15s ease}
-body .compact-lesson-icon-button:active .compact-lesson-icon{transform:translateY(5px);box-shadow:0 2px 0 var(--ev-green-edge),0 6px 12px rgba(63,138,46,.25)}
-body .compact-lesson-extrusion{display:none}
-body .node-locked .compact-lesson-icon{background:linear-gradient(180deg,#e9e9ee,#d9d9e0);color:#a1a1aa;box-shadow:0 7px 0 #c7c7cf,0 12px 20px rgba(0,0,0,.06)}
-body .compact-lesson-check{position:absolute;top:2px;right:2px;width:28px;height:28px;border-radius:50%;background:#3f8a46;color:#fff;display:grid;place-items:center;border:3px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.15)}
-
-/* Labels */
-body .compact-lesson-name{background:none;border:0;text-align:center}
-body .compact-lesson-name strong{display:block;font-size:16px;font-weight:700;color:var(--ev-ink);margin-top:14px}
-body .compact-lesson-name span{display:none}
-body .compact-lesson-row{display:flex;flex-direction:column;align-items:center;width:max-content;margin-bottom:20px}
-body .compact-lesson-row.path-row-left{margin-left:8%}
-body .compact-lesson-row.path-row-right{margin-left:auto;margin-right:8%}
-body .compact-lesson-row:nth-child(4n+2){margin-left:38%}
-body .path-separator-dots{display:none}
-
-/* Floating glass bottom nav */
-body .bottom-nav{left:16px;right:16px;bottom:calc(14px + env(safe-area-inset-bottom));width:auto;max-width:520px;margin:0 auto;border-radius:34px;padding:8px;background:rgba(255,255,255,.82);backdrop-filter:blur(20px) saturate(160%);-webkit-backdrop-filter:blur(20px) saturate(160%);border:1px solid rgba(0,0,0,.05);box-shadow:0 18px 40px rgba(17,24,39,.14)}
-body .bottom-nav button{color:#3a3a3c;font-weight:600;font-size:15px;gap:4px;background:none}
-body .bottom-nav button.active{color:var(--ev-ink);font-weight:800}
-body .nav-selection-indicator{border-radius:26px;background:#dfe3ea;box-shadow:inset 0 1px 0 rgba(255,255,255,.6)}
-body .nav-profile-avatar{width:34px;height:34px;border-radius:50%;overflow:hidden}
-
-@media (min-width:640px){body .learning-path.compact-learning-path{max-width:560px;margin-left:auto;margin-right:auto}}
+/* Evölingo redesign — loaded after globals.css. Every rule uses !important because globals.css relies on !important throughout. */
+:root{--ev-green-1:#7cb65a;--ev-green-2:#4e9a3a;--ev-green-edge:#3f8a2e;--ev-ink:#1c1c1e;--ev-muted:#8e8e93;--ev-canvas:#f2f3f5;--ev-shadow:0 10px 30px rgba(17,24,39,.08)}
+html body{background:var(--ev-canvas) !important;color:var(--ev-ink) !important}
+body .app-shell{background:linear-gradient(180deg,#fff 0%,#f4f5f7 30%,var(--ev-canvas) 100%) !important}
+body .home-header{background:transparent !important;box-shadow:none !important;padding:6px 0 10px !important;display:flex !important;align-items:center !important;justify-content:space-between !important}
+body .home-header .brand img{width:62px !important;height:62px !important;object-fit:contain !important;border-radius:0 !important;background:transparent !important}
+body .home-header .brand h1{font-size:32px !important;font-weight:850 !important;letter-spacing:-.04em !important;color:var(--ev-ink) !important}
+body .home-currencies{display:flex !important;align-items:center !important;gap:14px !important;background:#fff !important;padding:10px 18px !important;border-radius:999px !important;box-shadow:var(--ev-shadow) !important;border:1px solid rgba(0,0,0,.04) !important}
+body .home-currencies .star-balance{color:#f2b51c !important;background:none !important;box-shadow:none !important;border:0 !important;padding:0 !important}
+body .home-currencies .health{color:#e2475a !important;background:none !important;box-shadow:none !important;border:0 !important;padding:0 !important}
+body .home-currencies strong{color:var(--ev-ink) !important;font-size:19px !important;font-weight:800 !important}
+body .home-heading{margin:18px 0 0 !important;padding:0 2px !important}
+body .home-heading .eyebrow{font-size:12px !important;font-weight:700 !important;letter-spacing:.14em !important;color:var(--ev-muted) !important;margin:0 0 6px !important}
+body .home-heading h2{font-size:28px !important;font-weight:800 !important;letter-spacing:-.02em !important;color:var(--ev-ink) !important;margin:0 !important}
+body .unit-progress-card{display:none !important}
+body .compact-learning-path{position:relative !important;display:flex !important;flex-direction:column !important;align-items:stretch !important;gap:6px !important;background:#fff !important;border-radius:40px 40px 0 0 !important;margin:26px -22px 0 !important;padding:96px 22px 150px !important;box-shadow:0 -18px 40px rgba(17,24,39,.08) !important;min-height:70vh !important}
+body .compact-learning-path::before{content:"🇬🇧  B2" !important;position:absolute !important;top:28px !important;right:24px !important;padding:10px 20px !important;border-radius:999px !important;border:2px solid #ececf0 !important;background:#fff !important;font-weight:800 !important;font-size:19px !important;color:#a1a1aa !important;line-height:1 !important}
+body .compact-lesson-row,body .compact-lesson-row.path-row-left,body .compact-lesson-row.path-row-right{display:flex !important;flex-direction:column !important;align-items:center !important;gap:0 !important;width:max-content !important;min-height:0 !important;text-align:center !important;margin:0 0 18px 0 !important}
+body .compact-lesson-row:nth-child(3n+1){align-self:flex-start !important;margin-left:6% !important}
+body .compact-lesson-row:nth-child(3n+2){align-self:center !important}
+body .compact-lesson-row:nth-child(3n){align-self:flex-end !important;margin-right:6% !important}
+body .path-separator-dots,body .active-ring,body .compact-lesson-extrusion,body .compact-lesson-icon-button::before,body .compact-lesson-icon-button::after{display:none !important}
+body .compact-lesson-icon-button{background:none !important;border:0 !important;padding:0 !important;box-shadow:none !important;width:auto !important;height:auto !important}
+body .compact-lesson-icon,body .compact-lesson-icon-button.node-complete .compact-lesson-icon,body .compact-lesson-icon-button.node-unlocked .compact-lesson-icon{position:relative !important;width:104px !important;height:104px !important;border-radius:50% !important;display:grid !important;place-items:center !important;color:#fff !important;background:radial-gradient(circle at 35% 25%,var(--ev-green-1),var(--ev-green-2) 78%) !important;box-shadow:0 7px 0 var(--ev-green-edge),0 14px 24px rgba(63,138,46,.28),inset 0 2px 0 rgba(255,255,255,.25) !important;border:0 !important;transform:none !important;transition:transform .15s ease,box-shadow .15s ease !important}
+body .compact-lesson-icon-button:active .compact-lesson-icon{transform:translateY(5px) !important;box-shadow:0 2px 0 var(--ev-green-edge),0 6px 12px rgba(63,138,46,.25) !important}
+body .compact-lesson-icon svg{width:34px !important;height:34px !important;color:#fff !important}
+body .compact-lesson-icon-button.node-locked .compact-lesson-icon,body .compact-lesson-icon.node-locked,body .compact-lesson-row .node-locked .compact-lesson-icon{width:104px !important;height:104px !important;background:linear-gradient(180deg,#ececf1,#dcdce3) !important;color:#a1a1aa !important;box-shadow:0 7px 0 #c7c7cf,0 12px 20px rgba(0,0,0,.06) !important}
+body .compact-lesson-row .node-locked .compact-lesson-icon svg,body .compact-lesson-icon.node-locked svg{color:#a1a1aa !important}
+body .compact-lesson-check{position:absolute !important;top:0 !important;right:0 !important;width:28px !important;height:28px !important;border-radius:50% !important;background:#3f8a46 !important;color:#fff !important;display:grid !important;place-items:center !important;border:3px solid #fff !important;box-shadow:0 2px 6px rgba(0,0,0,.15) !important}
+body .compact-lesson-check svg{width:13px !important;height:13px !important}
+body .compact-lesson-name{background:none !important;border:0 !important;text-align:center !important;padding:0 !important;margin-top:16px !important;max-width:150px !important}
+body .compact-lesson-name strong{display:block !important;font-size:16px !important;font-weight:700 !important;color:var(--ev-ink) !important}
+body .compact-lesson-name span{display:none !important}
+body .bottom-nav{bottom:calc(14px + env(safe-area-inset-bottom)) !important;border-radius:34px !important;padding:8px !important;background:rgba(255,255,255,.85) !important;backdrop-filter:blur(20px) saturate(160%) !important;-webkit-backdrop-filter:blur(20px) saturate(160%) !important;border:1px solid rgba(0,0,0,.05) !important;box-shadow:0 18px 40px rgba(17,24,39,.14) !important}
+body .bottom-nav button{color:#3a3a3c !important;font-weight:600 !important;font-size:14px !important;background:none !important}
+body .bottom-nav button.active{color:var(--ev-ink) !important;font-weight:800 !important}
+body .nav-selection-indicator{border-radius:26px !important;background:#dfe3ea !important;box-shadow:inset 0 1px 0 rgba(255,255,255,.6) !important}
+body .nav-profile-avatar{width:32px !important;height:32px !important;border-radius:50% !important;overflow:hidden !important}
