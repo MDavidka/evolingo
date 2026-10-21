@@ -1,89 +1,66 @@
-/* Evölingo — Learning Path screen. Loaded after globals.css; !important is required because globals.css declares ~1900 !important rules. Scope: home screen only (header, headings, white surface, level badge, path nodes, labels). */
+/* Evölingo home screen. Loaded after globals.css; !important is needed because globals.css declares ~1900 !important rules. */
 
-/* ---------- Screen ---------- */
-html body{background:#ffffff !important;color:#171717 !important;overflow-x:hidden !important}
-body .app-shell{width:100% !important;max-width:none !important;min-height:100dvh !important;margin:0 !important;background:#ffffff !important;padding:0 0 calc(96px + env(safe-area-inset-bottom)) !important}
-body .screen-content{padding:calc(env(safe-area-inset-top) + 16px) clamp(18px,5.6vw,24px) 0 !important;min-height:0 !important;background:#ffffff !important}
+/* ---------- Layout ---------- */
+html body{background:#fff !important;color:#171717 !important;overflow-x:hidden !important}
+body .app-shell{width:100% !important;max-width:480px !important;min-height:100dvh !important;margin:0 auto !important;background:#fff !important;padding:0 0 calc(118px + env(safe-area-inset-bottom)) !important}
+body .screen-content{padding:calc(env(safe-area-inset-top) + 14px) 22px 0 !important;min-height:0 !important;background:#fff !important}
 
-/* ---------- Existing header, kept intact ---------- */
-body .home-header{display:flex !important;align-items:center !important;justify-content:space-between !important;gap:12px !important;padding:0 0 4px !important;background:transparent !important;box-shadow:none !important}
+/* ---------- Header ---------- */
+body .home-header{display:flex !important;align-items:center !important;justify-content:space-between !important;gap:12px !important;padding:2px 0 20px !important;background:transparent !important;box-shadow:none !important}
 body .home-header .brand{flex:1 1 auto !important;min-width:0 !important;gap:12px !important}
-body .home-header .brand img{width:clamp(50px,14vw,62px) !important;height:clamp(50px,14vw,62px) !important;object-fit:contain !important;border-radius:0 !important;background:transparent !important}
-body .home-header .brand h1{font-size:clamp(27px,8.2vw,34px) !important;font-weight:850 !important;letter-spacing:-.045em !important;color:#171717 !important;line-height:1 !important}
-body .home-currencies{flex:0 0 auto !important;display:flex !important;align-items:center !important;gap:clamp(10px,3.4vw,16px) !important;background:#ffffff !important;padding:10px clamp(14px,4.6vw,20px) !important;border-radius:999px !important;border:1px solid rgba(0,0,0,.045) !important;box-shadow:0 8px 22px rgba(17,24,39,.07) !important}
-body .home-currencies .star-balance,body .home-currencies .health{display:flex !important;align-items:center !important;gap:6px !important;background:none !important;border:0 !important;box-shadow:none !important;padding:0 !important}
-body .home-currencies .star-balance{color:#f5b418 !important}
-body .home-currencies .health{color:#ef4358 !important}
-body .home-currencies strong{color:#171717 !important;font-size:clamp(16px,4.6vw,19px) !important;font-weight:800 !important;font-variant-numeric:tabular-nums !important}
-body .home-currencies svg{width:clamp(17px,4.8vw,21px) !important;height:clamp(17px,4.8vw,21px) !important}
+body .home-header .brand img{width:clamp(48px,13vw,58px) !important;height:clamp(48px,13vw,58px) !important;object-fit:contain !important;border-radius:0 !important;background:transparent !important}
+body .home-header .brand h1{margin:0 !important;font-size:clamp(28px,8.4vw,34px) !important;font-weight:850 !important;line-height:1 !important;letter-spacing:-.045em !important;color:#171717 !important}
+body .home-profile-button{display:grid !important;place-items:center !important;flex:0 0 auto !important;width:56px !important;height:48px !important;padding:3px !important;overflow:hidden !important;border:1px solid rgba(0,0,0,.035) !important;border-radius:999px !important;background:#fff !important;box-shadow:0 8px 22px rgba(17,24,39,.09) !important}
+body .home-profile-button img{width:100% !important;height:100% !important;max-width:40px !important;max-height:40px !important;border-radius:50% !important;object-fit:cover !important}
+body .home-profile-button span{font-size:22px !important}
 
-/* ---------- ANGOL / Tanulási útvonal ---------- */
-body .home-heading{display:block !important;margin:clamp(16px,4.6vw,24px) 0 0 !important}
-body .home-heading .eyebrow{font-size:clamp(12px,3.2vw,14px) !important;font-weight:700 !important;letter-spacing:2px !important;color:#8a8a8a !important;text-transform:uppercase !important;margin:0 0 8px !important}
-body .home-heading h2{font-size:clamp(26px,8.4vw,32px) !important;font-weight:800 !important;letter-spacing:-.025em !important;line-height:1.1 !important;color:#171717 !important;margin:0 !important;text-align:left !important}
+/* ---------- Notice ---------- */
+body .inline-notice{display:flex !important;align-items:center !important;justify-content:space-between !important;gap:10px !important;width:100% !important;padding:12px 14px !important;border:1px solid #ededed !important;border-radius:16px !important;background:#fafafa !important;font-size:13px !important;text-align:left !important;position:relative !important;z-index:3 !important}
+body .home-screen > .inline-notice{margin:0 0 -40px !important}
 
-/* ---------- Notice (only shows when there is one) ---------- */
-body .inline-notice{display:flex !important;align-items:center !important;justify-content:space-between !important;gap:10px !important;width:100% !important;margin:14px 0 0 !important;padding:12px 14px !important;border-radius:16px !important;background:#fafafa !important;border:1px solid #ededed !important;font-size:13px !important;text-align:left !important}
-body .unit-progress-card{display:none !important}
+/* ---------- Chapter sheet ---------- */
+body .learning-sheet{position:relative !important;display:flex !important;flex-direction:column !important;width:calc(100% + 44px) !important;min-height:calc(100dvh - 240px) !important;margin:clamp(52px,8.5vh,76px) -22px 0 !important;padding:12px 0 calc(132px + env(safe-area-inset-bottom)) !important;border:0 !important;border-radius:44px 44px 0 0 !important;background:#fff !important;box-shadow:0 -18px 44px rgba(17,24,39,.08) !important}
+body .learning-sheet-handle{width:54px !important;height:6px !important;margin:10px auto 0 !important;border-radius:999px !important;background:#d7dde4 !important}
+body .learning-sheet-level{display:none !important}
+body .learning-sheet-heading{padding:clamp(34px,6vh,48px) 28px 0 !important}
+body .learning-sheet-heading h2{margin:0 !important;font-size:clamp(26px,7.6vw,31px) !important;font-weight:850 !important;line-height:1.15 !important;letter-spacing:-.025em !important;color:#171717 !important}
+body .learning-sheet-heading p{max-width:236px !important;margin:10px 0 0 !important;color:#a9a9a9 !important;font-size:clamp(15px,4.4vw,17px) !important;font-weight:500 !important;line-height:1.45 !important}
 
-/* ---------- White learning surface ---------- */
-body .compact-learning-path{position:relative !important;display:flex !important;flex-direction:column !important;align-items:center !important;gap:0 !important;margin:clamp(18px,5vw,26px) 0 0 !important;padding:0 0 24px !important;background:#ffffff !important;border:0 !important;border-radius:56px 56px 0 0 !important;box-shadow:none !important;min-height:0 !important}
-body .compact-learning-path::before{content:"" !important;position:absolute !important;z-index:-1 !important;top:0 !important;bottom:calc(-1 * (96px + env(safe-area-inset-bottom))) !important;left:calc(-1 * clamp(18px,5.6vw,24px) - 1px) !important;right:calc(-1 * clamp(18px,5.6vw,24px) - 1px) !important;background:#ffffff !important;border-radius:56px 56px 0 0 !important;box-shadow:0 -10px 30px rgba(17,24,39,.05) !important}
-body .path-level-row{display:flex !important;justify-content:flex-end !important;width:100% !important;padding:14px 0 clamp(44px,12vw,72px) !important}
+/* ---------- Lesson carousel ---------- */
+body .lesson-horizontal-scroll{display:flex !important;align-items:flex-start !important;gap:26px !important;width:100% !important;margin:auto 0 !important;padding:6px 18px 32px 28px !important;overflow-x:auto !important;overflow-y:hidden !important;overscroll-behavior-x:contain !important;scrollbar-width:none !important;-webkit-overflow-scrolling:touch !important}
+body .lesson-horizontal-scroll::-webkit-scrollbar{display:none !important}
+body .lesson-carousel-item{display:flex !important;flex:0 0 106px !important;flex-direction:column !important;align-items:center !important;min-width:0 !important;text-align:center !important}
+body .lesson-carousel-dot{position:relative !important;display:grid !important;place-items:center !important;flex:none !important;width:clamp(76px,21.5vw,86px) !important;height:clamp(76px,21.5vw,86px) !important;padding:0 !important;border:0 !important;border-radius:50% !important;color:#fff !important;background:radial-gradient(circle at 50% 28%,#fd9a45,#f4812a 62%,#ee7a15) !important;box-shadow:0 9px 0 #c15d12,0 14px 22px rgba(193,93,18,.26),inset 0 2px 0 rgba(255,255,255,.28) !important;transition:transform .12s ease,box-shadow .12s ease !important}
+body .lesson-carousel-dot::before{content:none !important}
+body .lesson-carousel-dot:active:not(:disabled){transform:translateY(5px) !important;box-shadow:0 3px 0 #c15d12,0 6px 12px rgba(193,93,18,.22),inset 0 2px 0 rgba(255,255,255,.28) !important}
+body .lesson-carousel-dot:disabled{cursor:default !important}
+body .lesson-carousel-dot svg{width:clamp(34px,9.8vw,40px) !important;height:clamp(34px,9.8vw,40px) !important;display:block !important;stroke-width:2.2 !important}
+body .lesson-carousel-check{position:absolute !important;top:-3px !important;right:-2px !important;z-index:2 !important;display:grid !important;place-items:center !important;width:21px !important;height:21px !important;border:2px solid #fff !important;border-radius:50% !important;color:#fff !important;background:#237c43 !important;box-shadow:0 2px 5px rgba(0,0,0,.16) !important}
+body .lesson-carousel-label{margin-top:15px !important;padding:0 !important;border:0 !important;background:transparent !important;color:#101010 !important;font-size:clamp(15px,4.5vw,17.5px) !important;font-weight:800 !important;line-height:1.25 !important;letter-spacing:-.015em !important}
+body .lesson-carousel-label:disabled{color:#101010 !important;cursor:default !important}
 
-/* ---------- United Kingdom B2 badge ---------- */
-body .level-badge{display:inline-flex !important;align-items:center !important;justify-content:center !important;gap:clamp(10px,3vw,14px) !important;height:clamp(50px,13.6vw,62px) !important;min-width:clamp(118px,34vw,142px) !important;padding:0 clamp(14px,4vw,18px) !important;background:#ffffff !important;border:2.5px solid #e5e5e5 !important;border-radius:999px !important;box-shadow:none !important;white-space:nowrap !important}
-body .level-flag{font-size:clamp(26px,7.6vw,34px) !important;line-height:1 !important}
-body .level-text{font-size:clamp(18px,5.4vw,23px) !important;font-weight:600 !important;color:#a3a3a3 !important;letter-spacing:.01em !important}
+/* ---------- Bottom navigation ---------- */
+body .bottom-nav{position:fixed !important;z-index:10 !important;bottom:calc(10px + env(safe-area-inset-bottom)) !important;left:50% !important;transform:translateX(-50%) !important;display:grid !important;grid-template-columns:repeat(4,1fr) !important;gap:4px !important;width:min(calc(100% - 24px),452px) !important;padding:8px !important;overflow:hidden !important;border:1px solid #f0f0f2 !important;border-radius:30px !important;background:rgba(253,253,254,.9) !important;box-shadow:0 16px 38px rgba(17,24,39,.11) !important;backdrop-filter:blur(22px) saturate(180%) !important;-webkit-backdrop-filter:blur(22px) saturate(180%) !important}
+body .bottom-nav::before,body .bottom-nav::after,body .nav-drag-handle{display:none !important}
+body .bottom-nav button{position:relative !important;z-index:1 !important;display:flex !important;flex-direction:column !important;align-items:center !important;justify-content:center !important;gap:5px !important;min-height:58px !important;padding:8px 4px !important;border:0 !important;border-radius:22px !important;background:transparent !important;box-shadow:none !important;color:#2b2e32 !important;font-size:12.5px !important;font-weight:700 !important;letter-spacing:-.01em !important}
+body .bottom-nav button svg{width:26px !important;height:26px !important;stroke-width:2.05 !important;color:inherit !important}
+body .bottom-nav button.active{color:#111214 !important}
+body .nav-selection-indicator{position:absolute !important;z-index:0 !important;top:8px !important;bottom:8px !important;left:8px !important;width:calc((100% - 16px) / 4) !important;border-radius:22px !important;background:#ececee !important;box-shadow:none !important;backdrop-filter:none !important;-webkit-backdrop-filter:none !important;pointer-events:none !important;transform:translateX(calc(var(--active-tab-index,0) * 100%)) !important;transition:transform .36s cubic-bezier(.22,.8,.25,1) !important;touch-action:pan-y !important}
+body .bottom-nav .nav-profile-avatar{display:block !important;width:27px !important;height:27px !important;overflow:hidden !important;border-radius:50% !important}
+body .bottom-nav .nav-profile-avatar img{width:100% !important;height:100% !important;object-fit:cover !important}
+body .bottom-nav .nav-profile-avatar span{font-size:17px !important;line-height:27px !important}
 
-/* ---------- Path rows: staggered route ---------- */
-body .compact-lesson-row{position:relative !important;display:flex !important;flex-direction:column !important;align-items:center !important;gap:0 !important;width:min(76%,300px) !important;min-height:0 !important;margin:0 0 clamp(26px,7.6vw,44px) 0 !important;padding:0 !important;text-align:center !important;transform:none !important}
-body .compact-lesson-row.path-side-left{align-self:flex-start !important}
-body .compact-lesson-row.path-side-center{align-self:center !important}
-body .compact-lesson-row.path-side-right{align-self:flex-end !important}
-body .compact-lesson-row.lesson-row-current .compact-lesson-name strong{color:#171717 !important}
-body .active-ring,body .compact-lesson-extrusion,body .compact-lesson-icon-button::before,body .compact-lesson-icon-button::after{display:none !important}
-
-/* ---------- Green lesson nodes ---------- */
-body .compact-lesson-icon-button{width:auto !important;height:auto !important;min-width:0 !important;padding:0 !important;background:none !important;border:0 !important;border-radius:50% !important;box-shadow:none !important;overflow:visible !important;touch-action:manipulation !important;outline-offset:6px !important}
-body .compact-lesson-icon{position:relative !important;width:clamp(94px,28vw,112px) !important;height:clamp(94px,28vw,112px) !important;min-width:0 !important;border:0 !important;border-radius:50% !important;display:grid !important;place-items:center !important;color:#ffffff !important;background:radial-gradient(circle at 50% 34%,#6cbd46 0%,#63b43f 55%,#57a834 100%) !important;box-shadow:0 8px 0 #459c27,0 10px 20px rgba(56,137,31,.26),inset 0 -4px 0 #38891f,inset 0 2px 0 rgba(255,255,255,.22) !important;transform:none !important;transition:transform .12s ease,box-shadow .12s ease !important}
-body .compact-lesson-icon-button:active .compact-lesson-icon{transform:translateY(4px) !important;box-shadow:0 3px 0 #459c27,0 5px 12px rgba(56,137,31,.22),inset 0 -4px 0 #38891f !important}
-body .compact-lesson-icon svg{width:clamp(38px,11.4vw,46px) !important;height:clamp(38px,11.4vw,46px) !important;color:#ffffff !important;stroke-width:2.75 !important}
-body .compact-lesson-icon-button.node-locked .compact-lesson-icon,body .compact-lesson-icon.node-locked,body .compact-lesson-row .node-locked .compact-lesson-icon{background:#ebebeb !important;color:#b4b4b4 !important;box-shadow:0 8px 0 #dcdcdc,0 8px 16px rgba(0,0,0,.05) !important}
-body .compact-lesson-icon-button.node-locked .compact-lesson-icon svg,body .compact-lesson-icon.node-locked svg,body .compact-lesson-row .node-locked .compact-lesson-icon svg{color:#b4b4b4 !important;width:clamp(30px,9vw,38px) !important;height:clamp(30px,9vw,38px) !important}
-
-/* ---------- Completed badge ---------- */
-body .compact-lesson-check{position:absolute !important;top:-1px !important;right:-1px !important;width:clamp(25px,7.2vw,28px) !important;height:clamp(25px,7.2vw,28px) !important;border-radius:50% !important;background:#218d49 !important;color:#ffffff !important;display:grid !important;place-items:center !important;border:2px solid #ffffff !important;box-shadow:0 2px 5px rgba(0,0,0,.16) !important;z-index:2 !important}
-body .compact-lesson-check svg{width:clamp(13px,3.8vw,15px) !important;height:clamp(13px,3.8vw,15px) !important;stroke-width:3.5 !important;color:#ffffff !important}
-
-/* ---------- Labels ---------- */
-body .compact-lesson-name{display:block !important;width:100% !important;max-width:100% !important;margin:clamp(14px,4vw,20px) 0 0 !important;padding:0 !important;background:none !important;border:0 !important;text-align:center !important;white-space:normal !important;overflow-wrap:anywhere !important;line-height:1.25 !important;opacity:1 !important}
-body .compact-lesson-name strong{display:block !important;font-size:clamp(15px,4.3vw,16px) !important;font-weight:700 !important;color:#111111 !important;letter-spacing:-.01em !important}
-body .compact-lesson-name span{display:none !important}
-body .compact-lesson-name.muted strong,body .compact-future-row .compact-lesson-name{color:#a3a3a3 !important}
-
-/* ---------- Lesson / task popover ---------- */
-body .lesson-choice-popover{max-width:calc(100vw - 40px) !important;z-index:4 !important}
-
-/* ---------- Narrow phones ---------- */
+/* ---------- Small phones ---------- */
 @media (max-width:360px){
-  body .compact-lesson-row{width:80% !important}
-  body .level-badge{min-width:112px !important}
+  body .screen-content{padding-left:18px !important;padding-right:18px !important}
+  body .learning-sheet{width:calc(100% + 36px) !important;margin-left:-18px !important;margin-right:-18px !important;border-radius:36px 36px 0 0 !important}
+  body .learning-sheet-heading{padding-left:22px !important;padding-right:22px !important}
+  body .lesson-horizontal-scroll{gap:18px !important;padding-left:22px !important}
+  body .lesson-carousel-item{flex-basis:96px !important}
 }
 
-/* ---------- Short screens: tighter rhythm ---------- */
+/* ---------- Short screens ---------- */
 @media (max-height:700px){
-  body .screen-content{padding-top:calc(env(safe-area-inset-top) + 10px) !important}
-  body .path-level-row{padding-bottom:40px !important}
-  body .compact-lesson-row{margin-bottom:26px !important}
-}
-
-/* ---------- Taller phones: reference proportions ---------- */
-@media (min-height:840px){
-  body .compact-lesson-row{margin-bottom:clamp(34px,9vw,52px) !important}
-}
-
-/* ---------- Wider screens: centred mobile column, never stretched ---------- */
-@media (min-width:560px){
-  body .app-shell{max-width:480px !important;margin:0 auto !important}
+  body .learning-sheet{margin-top:44px !important;min-height:calc(100dvh - 220px) !important}
+  body .learning-sheet-heading{padding-top:28px !important}
 }

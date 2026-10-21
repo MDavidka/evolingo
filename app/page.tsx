@@ -1,8 +1,8 @@
 "use client"
 
-import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent, type SyntheticEvent } from "react"
 import {
-  ArrowRight, BarChart3, BookOpen, Check, CheckCircle2, Headphones, MessageCircle, CircleHelp, Puzzle,
+  ArrowRight, BarChart3, BookMarked, BookOpen, Check, CheckCircle2, Headphones, MessageCircle, CircleHelp, Puzzle,
   Flame, Heart, Lightbulb, Medal, RotateCcw, Trophy, UserRound, Dumbbell, Timer, Languages, Volume2,
   X, Zap, LockKeyhole, ClipboardCheck, Star, ShoppingBag, Gift, Palette, Pencil, Settings, ChevronRight, CalendarDays, Sparkles, Target, Search, UserPlus, Users, Link2, Bell, Share2, Contact2, Cloud,
 } from "lucide-react"
@@ -585,7 +585,19 @@ export default function App() {
   </main>
 }
 
-function Brand() { return <div className="brand"><img src={foxIcon} alt="Evölingo fox mascot" /><div><h1>Evölingo</h1></div></div> }
+function fallbackToLocalIcon(event: SyntheticEvent<HTMLImageElement>) {
+  const image = event.currentTarget
+  image.onerror = null
+  image.src = "/icon.svg"
+}
+
+function Avatar({ src, emoji, alt = "", className }: { src?: string; emoji?: string; alt?: string; className?: string }) {
+  if (src) return <img className={className} src={src} alt={alt} onError={fallbackToLocalIcon} />
+  if (emoji) return <span className={className} aria-hidden="true">{emoji}</span>
+  return <img className={className} src={foxIcon} alt={alt} onError={fallbackToLocalIcon} />
+}
+
+function Brand() { return <div className="brand"><Avatar src="/icon.svg" alt="Evölingo fox mascot" /><div><h1>Evölingo</h1></div></div> }
 
 function GuestSaveBanner({ userName, status, onRetry }: { userName: string; status: CloudSaveStatus; onRetry: () => void }) {
   const message = status === "saved"
@@ -626,11 +638,7 @@ function Home({ completedLessons, notice, clearNotice, onOpenLesson, onOpenTask,
     <header className="app-header home-header">
       <Brand />
       <button className="home-profile-button" type="button" onClick={onOpenProfile} aria-label={"Profil: " + userName}>
-        {avatarImage
-          ? <img src={avatarImage} alt="" />
-          : avatarEmoji
-            ? <span aria-hidden="true">{avatarEmoji}</span>
-            : <img src={foxIcon} alt="" />}
+        <Avatar src={avatarImage || undefined} emoji={avatarEmoji || undefined} />
       </button>
     </header>
 
@@ -638,38 +646,41 @@ function Home({ completedLessons, notice, clearNotice, onOpenLesson, onOpenTask,
 
     <section className="learning-sheet" aria-label="Tanulási leckék">
       <div className="learning-sheet-handle" aria-hidden="true" />
-      <div className="learning-sheet-level" aria-label="Angol, B2"><span aria-hidden="true">🇬🇧</span><span>B2</span></div>
       <div className="learning-sheet-heading">
         <h2>{currentLesson ? currentLesson.title.charAt(0).toUpperCase() + currentLesson.title.slice(1).toLowerCase() : "Angol nyelvtan"}</h2>
         <p>{currentLesson?.id === 1 ? "Ebben a fejezetben a jelen időt tanulod" : "Ebben a fejezetben angol nyelvtant tanulsz"}</p>
       </div>
 
       <div className="lesson-horizontal-scroll" aria-label="Választható leckék">
-        {unitLessons.map((lesson, index) => {
-          const isUnlocked = lesson.id === 1 || completedLessons.includes(lesson.id - 1)
-          const complete = completedLessons.includes(lesson.id)
-          const openLesson = () => {
-            if (lesson.specialType) onOpenTask(lesson.id, 0)
-            else onOpenLesson(lesson.id)
-          }
-          return <div className="lesson-carousel-item" key={lesson.id}>
-            <button
-              type="button"
-              className={"lesson-carousel-dot " + (isUnlocked ? "is-unlocked" : "is-locked") + (complete ? " is-complete" : "")}
-              disabled={!isUnlocked}
-              onClick={openLesson}
-              aria-label={lesson.title + (complete ? ", teljesítve" : "")}
-            >
-              <BookOpen size={30} strokeWidth={2.5} />
-              {complete && <span className="lesson-carousel-check"><Check size={12} /></span>}
-            </button>
-            <button className="lesson-carousel-label" type="button" disabled={!isUnlocked} onClick={openLesson}>
-              Lesson {index + 1}
-            </button>
-          </div>
-        })}
+        {unitLessons.map((lesson, index) => <LessonOrb
+          key={lesson.id}
+          lesson={lesson}
+          number={index + 1}
+          unlocked={lesson.id === 1 || completedLessons.includes(lesson.id - 1)}
+          complete={completedLessons.includes(lesson.id)}
+          onOpen={() => lesson.specialType ? onOpenTask(lesson.id, 0) : onOpenLesson(lesson.id)}
+        />)}
       </div>
     </section>
+  </div>
+}
+
+function LessonOrb({ lesson, number, unlocked, complete, onOpen }: {
+  lesson: LessonUnit
+  number: number
+  unlocked: boolean
+  complete: boolean
+  onOpen: () => void
+}) {
+  const status = (unlocked ? "is-unlocked" : "is-locked") + (complete ? " is-complete" : "")
+  return <div className="lesson-carousel-item">
+    <button type="button" className={"lesson-carousel-dot " + status} disabled={!unlocked} onClick={onOpen} aria-label={lesson.title + (complete ? ", teljesítve" : "")}>
+      <BookMarked size={34} aria-hidden="true" />
+      {complete && <span className="lesson-carousel-check"><Check size={12} /></span>}
+    </button>
+    <button className="lesson-carousel-label" type="button" disabled={!unlocked} onClick={onOpen}>
+      Lesson {number}
+    </button>
   </div>
 }
 
@@ -1577,6 +1588,32 @@ function Nav({ screen, setScreen, userName, avatar, avatarImage }: { screen: Scr
         setScreen(items[nextIndex][0])
       }}
     />
-    {items.map(([id, label, Icon], index) => <button key={id} data-tab-index={index} className={screen === id ? "active" : ""} onClick={() => setScreen(id)} aria-current={screen === id ? "page" : undefined} aria-label={id === "profile" ? "Profil: " + userName : label} title={id === "profile" ? userName : undefined}>{id === "profile" ? <span className="nav-profile-avatar" aria-hidden="true">{avatarImage ? <img src={avatarImage} alt="" /> : avatar === "fox" ? <img src={foxIcon} alt="" /> : <span>{avatar === "book" ? "📚" : avatar === "star" ? "⭐" : "✨"}</span>}</span> : <Icon size={23} />}<span>{label}</span></button>)}
+    {items.map(([id, label, Icon], index) => <NavItem
+      key={id}
+      index={index}
+      active={screen === id}
+      label={label}
+      icon={Icon}
+      onSelect={() => setScreen(id)}
+      avatar={id === "profile" ? <Avatar src={avatarImage || undefined} emoji={avatar === "book" ? "📚" : avatar === "star" ? "⭐" : "✨"} /> : undefined}
+      ariaLabel={id === "profile" ? "Profil: " + userName : label}
+      title={id === "profile" ? userName : undefined}
+    />)}
   </nav>
+}
+
+function NavItem({ index, active, label, icon: Icon, onSelect, avatar, ariaLabel, title }: {
+  index: number
+  active: boolean
+  label: string
+  icon: React.ElementType
+  onSelect: () => void
+  avatar?: React.ReactNode
+  ariaLabel: string
+  title?: string
+}) {
+  return <button data-tab-index={index} className={active ? "active" : ""} onClick={onSelect} aria-current={active ? "page" : undefined} aria-label={ariaLabel} title={title}>
+    {avatar ? <span className="nav-profile-avatar" aria-hidden="true">{avatar}</span> : <Icon size={23} />}
+    <span>{label}</span>
+  </button>
 }
