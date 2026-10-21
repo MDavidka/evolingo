@@ -1,0 +1,52 @@
+/* Evölingo redesign — modern layered mobile UI. Loaded after globals.css. */
+:root{--ev-green-1:#7cb65a;--ev-green-2:#4e9a3a;--ev-green-edge:#3f8a2e;--ev-ink:#1c1c1e;--ev-muted:#8e8e93;--ev-surface:#ffffff;--ev-canvas:#f2f3f5;--ev-shadow:0 10px 30px rgba(17,24,39,.08);}
+body{background:linear-gradient(180deg,#ffffff 0%,var(--ev-canvas) 38%,var(--ev-canvas) 100%);color:var(--ev-ink);-webkit-font-smoothing:antialiased}
+
+/* Header */
+body .home-header{background:transparent;box-shadow:none;padding:calc(env(safe-area-inset-top) + 18px) 22px 8px;display:flex;align-items:center;justify-content:space-between}
+body .home-header .brand img{width:64px;height:64px;object-fit:contain;border-radius:0;background:transparent}
+body .home-header .brand h1{font-size:30px;font-weight:800;letter-spacing:-.03em;color:var(--ev-ink)}
+body .home-currencies{display:flex;align-items:center;gap:14px;background:var(--ev-surface);padding:10px 18px;border-radius:999px;box-shadow:var(--ev-shadow);border:1px solid rgba(0,0,0,.03)}
+body .home-currencies .star-balance,body .home-currencies .health{display:flex;align-items:center;gap:6px;background:none;border:0;box-shadow:none;padding:0}
+body .home-currencies .star-balance{color:#f2b51c}
+body .home-currencies .health{color:#e2475a}
+body .home-currencies strong{color:var(--ev-ink);font-size:19px;font-weight:800}
+
+/* Section heading */
+body .home-heading{padding:22px 24px 0}
+body .home-heading .eyebrow{font-size:12px;font-weight:700;letter-spacing:.14em;color:var(--ev-muted);margin:0 0 6px}
+body .home-heading h2{font-size:28px;font-weight:800;letter-spacing:-.02em;color:var(--ev-ink);margin:0}
+
+/* Unit card sits inside the layered stack */
+body .unit-progress-card{margin:18px 18px 0;border-radius:24px;background:rgba(255,255,255,.75);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);box-shadow:var(--ev-shadow);border:1px solid rgba(0,0,0,.04)}
+
+/* Layered white sheet for the learning path */
+body .learning-path.compact-learning-path{position:relative;background:var(--ev-surface);border-radius:40px 40px 0 0;margin:22px 0 0;padding:92px 18px calc(150px + env(safe-area-inset-bottom));box-shadow:0 -18px 40px rgba(17,24,39,.07);min-height:60vh;z-index:1}
+body .learning-path.compact-learning-path::before{content:"🇬🇧  B2";position:absolute;top:26px;right:22px;padding:9px 20px;border-radius:999px;border:2px solid #ececf0;background:#fff;font-weight:800;font-size:19px;color:#a1a1aa;letter-spacing:.02em;line-height:1}
+
+/* Lesson nodes: glossy 3D green buttons */
+body .compact-lesson-icon-button{background:none;border:0;padding:0}
+body .compact-lesson-icon{position:relative;width:108px;height:108px;border-radius:50%;display:grid;place-items:center;color:#fff;background:radial-gradient(circle at 35% 25%,var(--ev-green-1),var(--ev-green-2) 75%);box-shadow:0 7px 0 var(--ev-green-edge),0 14px 24px rgba(63,138,46,.28),inset 0 2px 0 rgba(255,255,255,.25);transition:transform .15s ease,box-shadow .15s ease}
+body .compact-lesson-icon-button:active .compact-lesson-icon{transform:translateY(5px);box-shadow:0 2px 0 var(--ev-green-edge),0 6px 12px rgba(63,138,46,.25)}
+body .compact-lesson-extrusion{display:none}
+body .node-locked .compact-lesson-icon{background:linear-gradient(180deg,#e9e9ee,#d9d9e0);color:#a1a1aa;box-shadow:0 7px 0 #c7c7cf,0 12px 20px rgba(0,0,0,.06)}
+body .compact-lesson-check{position:absolute;top:2px;right:2px;width:28px;height:28px;border-radius:50%;background:#3f8a46;color:#fff;display:grid;place-items:center;border:3px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.15)}
+
+/* Labels */
+body .compact-lesson-name{background:none;border:0;text-align:center}
+body .compact-lesson-name strong{display:block;font-size:16px;font-weight:700;color:var(--ev-ink);margin-top:14px}
+body .compact-lesson-name span{display:none}
+body .compact-lesson-row{display:flex;flex-direction:column;align-items:center;width:max-content;margin-bottom:20px}
+body .compact-lesson-row.path-row-left{margin-left:8%}
+body .compact-lesson-row.path-row-right{margin-left:auto;margin-right:8%}
+body .compact-lesson-row:nth-child(4n+2){margin-left:38%}
+body .path-separator-dots{display:none}
+
+/* Floating glass bottom nav */
+body .bottom-nav{left:16px;right:16px;bottom:calc(14px + env(safe-area-inset-bottom));width:auto;max-width:520px;margin:0 auto;border-radius:34px;padding:8px;background:rgba(255,255,255,.82);backdrop-filter:blur(20px) saturate(160%);-webkit-backdrop-filter:blur(20px) saturate(160%);border:1px solid rgba(0,0,0,.05);box-shadow:0 18px 40px rgba(17,24,39,.14)}
+body .bottom-nav button{color:#3a3a3c;font-weight:600;font-size:15px;gap:4px;background:none}
+body .bottom-nav button.active{color:var(--ev-ink);font-weight:800}
+body .nav-selection-indicator{border-radius:26px;background:#dfe3ea;box-shadow:inset 0 1px 0 rgba(255,255,255,.6)}
+body .nav-profile-avatar{width:34px;height:34px;border-radius:50%;overflow:hidden}
+
+@media (min-width:640px){body .learning-path.compact-learning-path{max-width:560px;margin-left:auto;margin-right:auto}}
