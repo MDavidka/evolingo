@@ -23,7 +23,6 @@ export async function GET() {
       .find({ _id: { $ne: sessionId }, userName: { $type: "string", $ne: "" } })
       .project({ userName: 1, avatar: 1, avatarImage: 1, xp: 1, streak: 1, lastSeenAt: 1, completedLessons: 1 })
       .sort({ lastSeenAt: -1 })
-      .limit(20)
       .toArray()
     const profiles = users.map(user => {
       const name = typeof user.userName === "string" && user.userName.trim() ? user.userName.trim() : "Tanuló"
