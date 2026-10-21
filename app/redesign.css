@@ -87,3 +87,73 @@ body .lesson-choice-popover{max-width:calc(100vw - 40px) !important;z-index:4 !i
 @media (min-width:560px){
   body .app-shell{max-width:480px !important;margin:0 auto !important}
 }
+
+
+/* Learn screen: remove the large background wash and match the compact reference stat cards */
+body .learn-home-gradient {
+  display: none !important;
+}
+
+body .learn-stats-row {
+  width: 100% !important;
+  max-width: none !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 10px !important;
+  margin: 18px 0 0 !important;
+}
+
+body .learn-stat-chip {
+  min-width: 0 !important;
+  height: 52px !important;
+  min-height: 52px !important;
+  padding: 8px 10px !important;
+  border: 1px solid #d6d8dc !important;
+  border-radius: 16px !important;
+  background: linear-gradient(180deg, #fafafa 0%, #eeeeef 100%) !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.95), 0 1px 3px rgba(15,23,42,.035) !important;
+}
+
+body .learn-stat-chip::before {
+  background: none !important;
+}
+
+body .learn-stat-label {
+  color: #353b45 !important;
+  font-size: 12px !important;
+  line-height: 1 !important;
+  font-weight: 700 !important;
+}
+
+body .learn-stat-value {
+  color: #090909 !important;
+  font-size: 21px !important;
+  line-height: 1 !important;
+  font-weight: 750 !important;
+}
+
+body .learn-sheet {
+  margin-top: 16px !important;
+}
+
+/* Keep the learning-path heading clean: no Hungarian summary or lesson-count status bar */
+body .learn-sheet-heading > p,
+body .learn-sheet-heading .learn-progress-row {
+  display: none !important;
+}
+
+@media (max-width: 360px) {
+  body .learn-stats-row {
+    gap: 7px !important;
+    margin-top: 14px !important;
+  }
+  body .learn-stat-chip {
+    height: 50px !important;
+    min-height: 50px !important;
+    padding: 8px 9px !important;
+    border-radius: 15px !important;
+  }
+  body .learn-stat-label { font-size: 11px !important; }
+  body .learn-stat-value { font-size: 19px !important; }
+}
