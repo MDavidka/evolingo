@@ -19,15 +19,16 @@ export async function GET() {
       return NextResponse.json({ profiles: [] })
     }
     const db = await getDatabase()
-    const users = await db.collection<{ _id: string; userName?: unknown; avatar?: unknown; avatarImage?: unknown; xp?: unknown; streak?: unknown; lastSeenAt?: unknown; completedLessons?: unknown; isGuest?: unknown }>("users")
+    const users = await db.collection<{ _id: string; userName?: unknown; avatar?: unknown; avatarImage?: unknown; xp?: unknown; streak?: unknown; dailyStreak?: unknown; lastSeenAt?: unknown; completedLessons?: unknown; isGuest?: unknown }>("users")
       .find({ _id: { $ne: sessionId }, userName: { $type: "string", $ne: "" } })
-      .project({ userName: 1, avatar: 1, avatarImage: 1, xp: 1, streak: 1, lastSeenAt: 1, completedLessons: 1, isGuest: 1 })
+      .project({ userName: 1, avatar: 1, avatarImage: 1, xp: 1, streak: 1, dailyStreak: 1, lastSeenAt: 1, completedLessons: 1, isGuest: 1 })
       .sort({ lastSeenAt: -1 })
       .toArray()
     const profiles = users.map(user => {
       const name = typeof user.userName === "string" && user.userName.trim() ? user.userName.trim() : "Tanuló"
       const lastSeen = user.lastSeenAt instanceof Date ? user.lastSeenAt.getTime() : 0
-      const streak = typeof user.streak === "number" && Number.isFinite(user.streak) ? Math.max(0, Math.floor(user.streak)) : null
+      const rawStreak = typeof user.dailyStreak === "number" ? user.dailyStreak : user.streak
+      const streak = typeof rawStreak === "number" && Number.isFinite(rawStreak) ? Math.max(0, Math.floor(rawStreak)) : 0
       return {
         id: String(user._id),
         isGuest: user.isGuest !== false,
