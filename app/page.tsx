@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState, type FormEvent } from "react"
 import {
-  ArrowRight, BarChart3, BookOpen, Check, CheckCircle2,
+  ArrowRight, BarChart3, BookOpen, Check, CheckCircle2, Headphones, MessageCircle, CircleHelp, Puzzle,
   Flame, Heart, Lightbulb, Medal, RotateCcw, Trophy, UserRound, Dumbbell, Timer, Languages, Volume2,
   X, Zap, LockKeyhole, ClipboardCheck, Star, ShoppingBag, Gift, Palette, Pencil, Settings, ChevronRight, CalendarDays, Sparkles, Target, Search, UserPlus, Users, Link2, Bell, Share2, Contact2,
 } from "lucide-react"
@@ -471,10 +471,20 @@ function Home({ readLessons, completedLessons, answeredTasks, stars, notice, cle
   const selectedLesson = lessons.find((lesson) => lesson.id === selectedLessonId)
   const nextTaskIndex = selectedLesson ? selectedLesson.questions.findIndex((_, index) => !answeredTasks.includes(selectedLesson.id + "-" + index)) : -1
   const continueIndex = nextTaskIndex === -1 ? 0 : nextTaskIndex
+  const unitLessons = lessons.filter((lesson) => lesson.id <= 10)
+  const completedUnitLessons = unitLessons.filter((lesson) => completedLessons.includes(lesson.id)).length
+  const unitProgress = Math.round((completedUnitLessons / Math.max(1, unitLessons.length)) * 100)
+  const pathIcons = [BookOpen, Headphones, MessageCircle, CircleHelp, Puzzle, Trophy]
   return <>
     <header className="app-header home-header"><Brand /><div className="home-currencies"><div className="star-balance" aria-label={stars + " csillag"}><Star size={21} fill="currentColor" /><strong>{stars}</strong></div><div className="health"><Heart fill="currentColor" size={20} /><strong>5</strong></div></div></header>
     <div className="section-heading home-heading"><div><p className="eyebrow">ANGOL</p><h2>Tanulási útvonal</h2></div></div>
     {notice && <button className="inline-notice" onClick={clearNotice}><span>{notice}</span><X size={16} /></button>}
+    <section className="unit-progress-card" aria-label={"1. egység, " + unitProgress + "% kész"}>
+      <span className="unit-progress-icon"><BookOpen size={23} strokeWidth={2.2} /></span>
+      <span className="unit-progress-copy"><strong>1. egység</strong><small>{unitProgress}% kész</small></span>
+      <span className="unit-progress-track" aria-hidden="true"><span style={{ width: unitProgress + "%" }} /></span>
+      <ChevronRight className="unit-progress-chevron" size={21} aria-hidden="true" />
+    </section>
     <div className="learning-path compact-learning-path">
       {pathItems.map((item, index) => {
         const lesson = "questions" in item ? item as LessonUnit : null
@@ -494,7 +504,7 @@ function Home({ readLessons, completedLessons, answeredTasks, stars, notice, cle
         }
         return <div className={"compact-lesson-row " + side + (complete ? " lesson-row-complete" : "")} key={lesson.id}>
           <button className={"compact-lesson-icon-button " + (isUnlocked ? "node-unlocked" : "node-locked") + (complete ? " node-complete" : "")} disabled={!isUnlocked} onClick={() => setSelectedLessonId(selectedLessonId === lesson.id ? null : lesson.id)} aria-label={lesson.title + (complete ? ", teljesítve" : "")} aria-expanded={selectedLessonId === lesson.id}>
-            <span className="compact-lesson-icon"><BookOpen size={28} />{complete && <span className="compact-lesson-check"><Check size={13} /></span>}</span>
+            <span className="compact-lesson-icon">{(() => { const LessonIcon = pathIcons[(lesson.id - 1) % pathIcons.length]; return <LessonIcon size={29} strokeWidth={2.6} /> })()}{complete && <span className="compact-lesson-check"><Check size={13} /></span>}</span>
           </button>
           <button className="compact-lesson-name" disabled={!isUnlocked} onClick={() => setSelectedLessonId(selectedLessonId === lesson.id ? null : lesson.id)}><strong>{lesson.title}</strong><span>{lesson.summary}</span></button>
           {selectedLessonId === lesson.id && <div className={"lesson-choice-popover " + side} role="group" aria-label="Lecke vagy feladat">
