@@ -6159,3 +6159,76 @@ body,
   .compact-lesson-name strong { font-size: 13px; }
   .compact-lesson-name > span { font-size: 10px; }
 }
+
+
+/* Two-layer lesson buttons sized to match the reference path */
+.compact-lesson-icon-button {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  place-items: start center;
+  flex: 0 0 108px;
+  width: 108px;
+  height: 108px;
+  padding: 4px 0 0;
+  overflow: visible;
+  border-radius: 50%;
+  background: transparent;
+}
+.compact-lesson-icon-button::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  top: 9px;
+  left: 4px;
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: #438b2b;
+}
+.compact-lesson-icon,
+.compact-lesson-icon-button.node-locked .compact-lesson-icon,
+.compact-lesson-icon.node-locked,
+.compact-lesson-row .node-locked .compact-lesson-icon {
+  position: relative;
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  color: #fff;
+  background: linear-gradient(145deg, #68b94e 0%, #58a83c 72%, #4a9732 100%);
+  box-shadow: inset 0 -5px 0 rgba(34,110,21,.19);
+}
+.compact-lesson-icon svg { width: 34px; height: 34px; }
+.compact-lesson-icon-button:disabled { cursor: default; opacity: 1; }
+.compact-lesson-icon-button:focus-visible { outline: 3px solid #b7dfa8; outline-offset: 4px; }
+.compact-lesson-icon-button:active:not(:disabled) .compact-lesson-icon { transform: translateY(2px); }
+.compact-lesson-check {
+  right: -3px;
+  bottom: -1px;
+  width: 28px;
+  height: 28px;
+  border: 3px solid #fff;
+  background: #237c43;
+  box-shadow: 0 2px 4px rgba(0,0,0,.12);
+}
+@media (max-width: 390px) {
+  .compact-lesson-icon-button {
+    flex-basis: 96px;
+    width: 96px;
+    height: 96px;
+  }
+  .compact-lesson-icon-button::before {
+    top: 8px;
+    left: 4px;
+    width: 88px;
+    height: 88px;
+  }
+  .compact-lesson-icon,
+  .compact-lesson-icon-button.node-locked .compact-lesson-icon,
+  .compact-lesson-icon.node-locked,
+  .compact-lesson-row .node-locked .compact-lesson-icon {
+    width: 88px;
+    height: 88px;
+  }
+  .compact-lesson-icon svg { width: 31px; height: 31px; }
+}
