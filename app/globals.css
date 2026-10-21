@@ -4374,3 +4374,290 @@ html, body { background: #fff; }
 @media (prefers-reduced-transparency: reduce) {
   .profile-page .profile-banner-settings { background: #f8f8f8 !important; }
 }
+
+
+/* Follow-up profile and friends polish. */
+.profile-page .profile-cover {
+  height: 118px !important;
+  min-height: 118px !important;
+  border-radius: 0 0 20px 20px !important;
+}
+.profile-page .profile-identity { padding-top: 76px !important; }
+.profile-page .profile-avatar-wrap {
+  width: 100px !important;
+  height: 100px !important;
+  min-width: 100px !important;
+  min-height: 100px !important;
+  margin-bottom: 12px !important;
+}
+.profile-page .large-avatar {
+  width: 100% !important;
+  height: 100% !important;
+  aspect-ratio: 1 / 1 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+}
+.profile-page .large-avatar img,
+.profile-page .large-avatar > img {
+  width: 100% !important;
+  height: 100% !important;
+  max-width: 100% !important;
+  max-height: 100% !important;
+  object-fit: cover !important;
+  object-position: center !important;
+}
+.profile-page .profile-social-stats {
+  margin: 20px 18px 0 !important;
+  padding: 16px 0 !important;
+  border: 0 !important;
+  border-radius: 18px !important;
+  background: #f6f6f6 !important;
+}
+.profile-page .profile-social-stat {
+  min-height: 84px !important;
+  border-right: 0 !important;
+  gap: 6px !important;
+}
+.profile-page .profile-social-stat + .profile-social-stat {
+  border-left: 1px solid #e7e7e7 !important;
+}
+.profile-page .profile-social-stat .profile-stat-icon {
+  width: 28px !important;
+  height: 28px !important;
+  color: #454545 !important;
+  background: transparent !important;
+}
+.profile-page .profile-social-stat > strong {
+  font-size: clamp(21px, 5.2vw, 25px) !important;
+  letter-spacing: -.6px !important;
+}
+.profile-page .profile-social-stat > span:not(.profile-stat-icon) {
+  font-size: 11px !important;
+  color: #737373 !important;
+  text-align: center;
+}
+@media (max-width: 390px) {
+  .profile-page .profile-cover { height: 108px !important; min-height: 108px !important; }
+  .profile-page .profile-identity { padding-top: 70px !important; }
+  .profile-page .profile-avatar-wrap { width: 92px !important; height: 92px !important; min-width: 92px !important; min-height: 92px !important; }
+  .profile-page .profile-social-stats { margin-left: 12px !important; margin-right: 12px !important; padding: 12px 0 !important; }
+  .profile-page .profile-social-stat { min-height: 78px !important; }
+}
+
+/* Friends: comfortable rhythm, clearer grouping, and better touch targets. */
+.screen-content:has(> .friends-screen) {
+  padding-left: 16px !important;
+  padding-right: 16px !important;
+}
+.friends-screen {
+  box-sizing: border-box !important;
+  width: 100% !important;
+  max-width: 680px !important;
+  margin: 0 auto !important;
+  padding: 18px 0 28px !important;
+}
+.friends-header {
+  align-items: center !important;
+  gap: 16px !important;
+  margin: 0 0 22px !important;
+}
+.friends-title-group > span {
+  font-size: 11px !important;
+  letter-spacing: .16em !important;
+}
+.friends-header h1 {
+  margin-top: 5px !important;
+  font-size: clamp(32px, 8vw, 39px) !important;
+  line-height: 1.08 !important;
+  letter-spacing: -1.2px !important;
+}
+.friends-add-button {
+  width: 52px !important;
+  height: 52px !important;
+  flex: 0 0 auto !important;
+  border: 0 !important;
+  border-radius: 50% !important;
+  color: #171717 !important;
+  background: #f3f4f4 !important;
+  transition: transform .16s ease, background .16s ease;
+}
+.friends-add-button:active { transform: scale(.96); }
+.friends-search {
+  min-height: 54px !important;
+  gap: 12px !important;
+  margin-bottom: 24px !important;
+  padding: 0 16px !important;
+  border: 0 !important;
+  border-radius: 17px !important;
+  color: #777 !important;
+  background: #f4f5f6 !important;
+}
+.friends-search input {
+  min-width: 0 !important;
+  font-size: 15px !important;
+  color: #171717 !important;
+}
+.friends-search input::placeholder { color: #858995 !important; opacity: 1; }
+.friends-tabs {
+  gap: 4px !important;
+  margin-bottom: 25px !important;
+  border-bottom: 1px solid #ececec !important;
+}
+.friends-tabs button {
+  min-height: 50px !important;
+  padding: 0 4px 12px !important;
+  font-size: 14px !important;
+  font-weight: 550 !important;
+}
+.friends-tabs button.active { font-weight: 700 !important; }
+.friends-tabs button.active::after { height: 3px !important; background: #258b22 !important; }
+.friends-shortcuts {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 4px !important;
+  margin: 0 0 30px !important;
+  padding: 4px 14px !important;
+  border: 1px solid #ededed !important;
+  border-radius: 20px !important;
+  background: #fff !important;
+}
+.friends-shortcut {
+  min-height: 82px !important;
+  gap: 14px !important;
+  padding: 12px 0 !important;
+  border-bottom: 1px solid #eeeeee !important;
+}
+.friends-shortcut:last-child { border-bottom: 0 !important; }
+.friends-shortcut-icon {
+  width: 50px !important;
+  height: 50px !important;
+  border-radius: 16px !important;
+  color: #258b22 !important;
+  background: #f0f7ef !important;
+}
+.friends-shortcut-copy { gap: 5px !important; }
+.friends-shortcut-copy strong { font-size: 15px !important; line-height: 1.3 !important; }
+.friends-shortcut-copy small { font-size: 12px !important; line-height: 1.45 !important; }
+.friends-section { margin-top: 28px !important; }
+.friends-section-heading {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 12px !important;
+  margin: 0 0 12px !important;
+}
+.friends-section-title { font-size: 11px !important; letter-spacing: .13em !important; }
+.friends-list {
+  overflow: visible !important;
+  padding: 0 12px !important;
+  border: 1px solid #ededed !important;
+  border-radius: 20px !important;
+  background: #fff !important;
+}
+.friends-person {
+  min-height: 84px !important;
+  gap: 10px !important;
+  padding: 12px 0 !important;
+  border-bottom: 1px solid #f0f0f0 !important;
+}
+.friends-person:last-child { border-bottom: 0 !important; }
+.friends-person-info { gap: 12px !important; }
+.friends-avatar {
+  width: 48px !important;
+  height: 48px !important;
+  border: 0 !important;
+  border-radius: 50% !important;
+  background: #f1f2f3 !important;
+}
+.friends-avatar img {
+  display: block !important;
+  width: 100% !important;
+  height: 100% !important;
+  max-width: none !important;
+  object-fit: cover !important;
+  object-position: center !important;
+  border-radius: inherit !important;
+}
+.friends-person-copy strong { font-size: 14px !important; line-height: 1.3 !important; }
+.friends-person-copy > span { font-size: 12px !important; line-height: 1.4 !important; }
+.friends-follow-button {
+  min-height: 38px !important;
+  padding: 0 13px !important;
+  border: 0 !important;
+  border-radius: 999px !important;
+  font-size: 12px !important;
+  font-weight: 650 !important;
+}
+.friends-empty {
+  padding: 25px 10px !important;
+  text-align: left !important;
+}
+.friends-empty strong { font-size: 16px !important; line-height: 1.35 !important; }
+.friends-empty p { margin-top: 7px !important; font-size: 13px !important; line-height: 1.55 !important; }
+.friends-empty button {
+  min-height: 42px !important;
+  margin-top: 12px !important;
+  padding: 0 15px !important;
+  border-radius: 999px !important;
+  background: #eff7ed !important;
+  font-size: 13px !important;
+  font-weight: 650 !important;
+}
+.friends-empty-banner {
+  display: flex !important;
+  align-items: flex-start !important;
+  gap: 14px !important;
+  margin: 28px 0 0 !important;
+  padding: 20px !important;
+  border-radius: 22px !important;
+  background: #f7f7f7 !important;
+}
+.friends-empty-banner-icon {
+  display: grid !important;
+  place-items: center !important;
+  width: 44px !important;
+  height: 44px !important;
+  flex: 0 0 auto !important;
+  border-radius: 14px !important;
+  color: #303030 !important;
+  background: #eaeaea !important;
+}
+.friends-empty-banner strong { font-size: 16px !important; line-height: 1.35 !important; }
+.friends-empty-banner p { margin-top: 5px !important; font-size: 13px !important; line-height: 1.55 !important; }
+.friends-empty-banner button { margin-top: 10px !important; font-size: 13px !important; font-weight: 650 !important; }
+
+/* Make the completion check sit cleanly on the lesson node, without a stray dot or clipped edge. */
+.compact-lesson-row.lesson-row-complete .compact-lesson-icon {
+  position: relative !important;
+  overflow: visible !important;
+}
+.compact-lesson-row.lesson-row-complete .compact-lesson-check {
+  display: grid !important;
+  place-items: center !important;
+  right: -2px !important;
+  bottom: -2px !important;
+  width: 23px !important;
+  height: 23px !important;
+  padding: 0 !important;
+  border: 3px solid #fff !important;
+  border-radius: 50% !important;
+  color: #fff !important;
+  background: #218a3c !important;
+  box-shadow: 0 1px 4px rgba(0,0,0,.12) !important;
+}
+.compact-lesson-row.lesson-row-complete .compact-lesson-check svg {
+  display: block !important;
+  width: 12px !important;
+  height: 12px !important;
+  stroke-width: 3 !important;
+}
+.classroom-empty { min-height: 40vh; }
+@media (max-width: 380px) {
+  .screen-content:has(> .friends-screen) { padding-left: 12px !important; padding-right: 12px !important; }
+  .friends-screen { padding-top: 14px !important; }
+  .friends-shortcuts { padding-left: 10px !important; padding-right: 10px !important; }
+  .friends-list { padding-left: 9px !important; padding-right: 9px !important; }
+  .friends-person { gap: 7px !important; }
+  .friends-avatar { width: 43px !important; height: 43px !important; }
+  .friends-follow-button { padding-left: 10px !important; padding-right: 10px !important; }
+}
