@@ -240,6 +240,126 @@ const specialTasks: LessonUnit[] = [
 const placeholders = Array.from({ length: 14 }, (_, index) => ({ id: 11 + index, title: index % 2 === 0 ? "Jövőbeli lecke" : "Ismétlés", summary: "Hamarosan elérhető", isPlaceholder: true as const }))
 const pathItems = [...lessons, ...specialTasks, ...placeholders]
 
+function Home({ readLessons, completedLessons, answeredTasks, stars, notice, clearNotice, onOpenLesson, onOpenTask, userName, saveStatus, onRetryCloudSave }: {
+  readLessons: number[]; completedLessons: number[]; answeredTasks: string[]; stars: number; notice: string; clearNotice: () => void
+  onOpenLesson: (id: number) => void; onOpenTask: (lessonId: number, index: number) => void
+  userName: string; saveStatus: CloudSaveStatus; onRetryCloudSave: () => void
+}) {
+  const [selectedLessonId, setSelectedLessonId] = useState<number | null>(null)
+  const selectedLesson = lessons.find((lesson) => lesson.id === selectedLessonId)
+  const nextTaskIndex = selectedLesson ? selectedLesson.questions.findIndex((_, index) => !answeredTasks.includes(selectedLesson.id + "-" + index)) : -1
+  const continueIndex = nextTaskIndex === -1 ? 0 : nextTaskIndex
+  const unitLessons = lessons.filter((lesson) => lesson.id <= 10)
+  const completedUnitLessons = unitLessons.filter((lesson) => completedLessons.includes(lesson.id)).length
+  const unitProgress = Math.round((completedUnitLessons / Math.max(1, unitLessons.length)) * 100)
+  const currentLessonId = unitLessons.find((lesson) => !completedLessons.includes(lesson.id))?.id ?? null
+  const pathIcons = [BookOpen, Headphones, MessageCircle, CircleHelp, Puzzle, Trophy]
+  return <>
+    <header className="app-header home-header"><Brand /><div className="home-currencies"><div className="star-balance" aria-label={stars + " csillag"}><Star size={21} fill="currentColor" /><strong>{stars}</strong></div><div className="health"><Heart fill="currentColor" size={20} /><strong>5</strong></div></div></header>
+    <div className="section-heading home-heading"><div><p className="eyebrow">ANGOL</p><h2>Tanulási útvonal</h2></div></div>
+    {notice && <button className="inline-notice" onClick={clearNotice}><span>{notice}</span><X size={16} /></button>}
+    <section className="unit-progress-card" aria-label={"1. egység, " + unitProgress + "% kész"}>
+      <span className="unit-progress-icon"><BookOpen size={23} strokeWidth={2.2} /></span>
+      <span className="unit-progress-copy"><strong>1. egység</strong><small>{unitProgress}% kész</small></span>
+      <span className="unit-progress-track" aria-hidden="true"><span style={{ width: unitProgress + "%" }} /></span>
+      <ChevronRight className="unit-progress-chevron" size={21} aria-hidden="true" />
+    </section>
+    <div className="learning-path compact-learning-path">
+      {pathItems.map((item, index) => {
+        const lesson = "questions" in item ? item as LessonUnit : null
+        const isUnlocked = item.id === 1 || completedLessons.includes(item.id - 1)
+        const complete = completedLessons.includes(item.id)
+        const side = index % 2 === 0 ? "path-row-left" : "path-row-right"
+        const separators = index < pathItems.length - 1 ? <span className={"path-separator-dots " + (index % 2 === 0 ? "dots-to-right" : "dots-to-left")} aria-hidden="true"><i /><i /></span> : null
+        if (!lesson) return <div className={"compact-lesson-row " + side + " compact-future-row"} key={item.id}>{separators}<span className="compact-lesson-icon node-locked"><LockKeyhole size={24} /></span><span className="compact-lesson-name muted">{item.title}</span></div>
+        if (lesson.specialType) {
+          const SpecialIcon = lesson.specialType === "hard" ? Dumbbell : lesson.specialType === "timed" ? Timer : Languages
+          const specialAvailable = isUnlocked
+          return <div className={"compact-lesson-row " + side + " special-path-row " + (specialAvailable ? "special-available special-" + lesson.specialType : "special-locked")} key={lesson.id}>
+            {separators}
+            <button className={"compact-lesson-icon-button " + (specialAvailable ? "node-unlocked" : "node-locked")} disabled={!specialAvailable} onClick={() => onOpenTask(lesson.id, 0)} aria-label={lesson.title + (specialAvailable ? "" : ", zárolva")}>
+              <span className="compact-lesson-icon"><SpecialIcon size={27} /></span>
+            </button>
+            <button className="compact-lesson-name" disabled={!specialAvailable} onClick={() => onOpenTask(lesson.id, 0)}><strong>{lesson.title}</strong><span>{lesson.summary}</span></button>
+          </div>
+        }
+        const isCurrent = lesson.id === currentLessonId
+        return <div className={"compact-lesson-row " + side + (complete ? " lesson-row-complete" : "") + (isCurrent ? " lesson-row-current" : "")} key={lesson.id}>
+          {separators}
+          {isCurrent && <span className="active-ring" aria-hidden="true">{Array.from({ length: 12 }, (_, segmentIndex) => <span key={segmentIndex} className="active-ring__segment" style={{ transform: "rotate(" + (segmentIndex * 30) + "deg)" }} />)}</span>}
+          <button className={"compact-lesson-icon-button " + (isUnlocked ? "node-unlocked" : "node-locked") + (complete ? " node-complete" : "")} disabled={!isUnlocked} onClick={() => setSelectedLessonId(selectedLessonId === lesson.id ? null : lesson.id)} aria-label={lesson.title + (complete ? ", teljesítve" : "")} aria-expanded={selectedLessonId === lesson.id}>
+            <span className="compact-lesson-icon"><span className="compact-lesson-extrusion" aria-hidden="true" />{(() => { const LessonIcon = pathIcons[(lesson.id - 1) % pathIcons.length]; return <LessonIcon size={29} strokeWidth={2.6} /> })()}{complete && <span className="compact-lesson-check"><Check size={13} /></span>}</span>
+          </button>
+          <button className="compact-lesson-name" disabled={!isUnlocked} onClick={() => setSelectedLessonId(selectedLessonId === lesson.id ? null : lesson.id)}><strong>{lesson.title}</strong><span>{lesson.summary}</span></button>
+          {selectedLessonId === lesson.id && <div className={"lesson-choice-popover " + side} role="group" aria-label="Lecke vagy feladat">
+            <button onClick={() => { setSelectedLessonId(null); onOpenLesson(lesson.id) }}>Lecke</button>
+            <button disabled={!readLessons.includes(lesson.id)} onClick={() => { setSelectedLessonId(null); onOpenTask(lesson.id, continueIndex) }}><span>Feladat</span>{!readLessons.includes(lesson.id) && <LockKeyhole size={13} />}</button>
+          </div>}
+        </div>
+      })}
+    </div>
+  </>
+}
+
+function Nav({ screen, setScreen, userName, avatar, avatarImage }: { screen: Screen; setScreen: (screen: Screen) => void; userName: string; avatar: string; avatarImage: string }) {
+  const items: [Screen, string, React.ElementType][] = [["home", "Tanulás", BookOpen], ["friends", "Barátok", Users], ["leaderboard", "Tanterem", BarChart3], ["profile", "Profil", UserRound]]
+  const activeIndex = Math.max(0, items.findIndex(([id]) => id === screen))
+  const [dragIndex, setDragIndex] = useState<number | null>(null)
+  const dragStart = useRef<{ x: number; index: number; width: number } | null>(null)
+  const startIndicatorDrag = (event: React.PointerEvent<HTMLDivElement>) => {
+    const nav = event.currentTarget.parentElement
+    if (!nav) return
+    event.preventDefault()
+    dragStart.current = { x: event.clientX, index: activeIndex, width: nav.clientWidth / items.length }
+    setDragIndex(activeIndex)
+    event.currentTarget.setPointerCapture(event.pointerId)
+  }
+  const moveIndicatorDrag = (event: React.PointerEvent<HTMLDivElement>) => {
+    if (!dragStart.current) return
+    const delta = (event.clientX - dragStart.current.x) / dragStart.current.width
+    setDragIndex(Math.max(0, Math.min(items.length - 1, dragStart.current.index + delta)))
+  }
+  const finishIndicatorDrag = (event: React.PointerEvent<HTMLDivElement>) => {
+    const start = dragStart.current
+    if (start && event.type === "pointerup") {
+      // Derive the final tab from pointer-up coordinates, not a potentially stale React state snapshot.
+      const delta = (event.clientX - start.x) / start.width
+      const index = Math.max(0, Math.min(items.length - 1, Math.round(start.index + delta)))
+      setScreen(items[index][0])
+    }
+    dragStart.current = null
+    setDragIndex(null)
+  }
+  return <nav className="bottom-nav">
+    <div
+      className={"nav-selection-indicator " + (dragIndex !== null ? "is-dragging" : "")}
+      aria-label="Húzd jobbra vagy balra a kiválasztott fület"
+      role="slider"
+      aria-valuemin={0}
+      aria-valuemax={items.length - 1}
+      aria-valuenow={Math.round(dragIndex ?? activeIndex)}
+      aria-valuetext={items[Math.round(dragIndex ?? activeIndex)]?.[1]}
+      tabIndex={0}
+      style={{ transform: `translateX(calc(${(dragIndex ?? activeIndex) * 100}%))` }}
+      onPointerDown={startIndicatorDrag}
+      onPointerMove={moveIndicatorDrag}
+      onPointerUp={finishIndicatorDrag}
+      onPointerCancel={finishIndicatorDrag}
+      onKeyDown={(event) => {
+        let nextIndex = activeIndex
+        if (event.key === "ArrowRight") nextIndex = Math.min(items.length - 1, activeIndex + 1)
+        else if (event.key === "ArrowLeft") nextIndex = Math.max(0, activeIndex - 1)
+        else if (event.key === "Home") nextIndex = 0
+        else if (event.key === "End") nextIndex = items.length - 1
+        else return
+        event.preventDefault()
+        setScreen(items[nextIndex][0])
+      }}
+    />
+    {items.map(([id, label, Icon], index) => <button key={id} data-tab-index={index} className={screen === id ? "active" : ""} onClick={() => setScreen(id)} aria-current={screen === id ? "page" : undefined} aria-label={id === "profile" ? "Profil: " + userName : label} title={id === "profile" ? userName : undefined}>{id === "profile" ? <span className="nav-profile-avatar" aria-hidden="true">{avatarImage ? <img src={avatarImage} alt="" /> : avatar === "fox" ? <img src={foxIcon} alt="" /> : <span>{avatar === "book" ? "📚" : avatar === "star" ? "⭐" : "✨"}</span>}</span> : <Icon size={23} />}<span>{label}</span></button>)}
+  </nav>
+}
+
 export default function App() {
   const [screen, setScreen] = useState<Screen>("home")
   const [xp, setXp] = useState(0)
