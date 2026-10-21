@@ -1,89 +1,76 @@
-/* Evölingo — Learning Path screen. Loaded after globals.css; !important is required because globals.css declares ~1900 !important rules. Scope: home screen only (header, headings, white surface, level badge, path nodes, labels). */
-
-/* ---------- Screen ---------- */
-html body{background:#ffffff !important;color:#171717 !important;overflow-x:hidden !important}
-body .app-shell{width:100% !important;max-width:none !important;min-height:100dvh !important;margin:0 !important;background:#ffffff !important;padding:0 0 calc(96px + env(safe-area-inset-bottom)) !important}
-body .screen-content{padding:calc(env(safe-area-inset-top) + 16px) clamp(18px,5.6vw,24px) 0 !important;min-height:0 !important;background:#ffffff !important}
-
-/* ---------- Existing header, kept intact ---------- */
-body .home-header{display:flex !important;align-items:center !important;justify-content:space-between !important;gap:12px !important;padding:0 0 4px !important;background:transparent !important;box-shadow:none !important}
-body .home-header .brand{flex:1 1 auto !important;min-width:0 !important;gap:12px !important}
-body .home-header .brand img{width:clamp(50px,14vw,62px) !important;height:clamp(50px,14vw,62px) !important;object-fit:contain !important;border-radius:0 !important;background:transparent !important}
-body .home-header .brand h1{font-size:clamp(27px,8.2vw,34px) !important;font-weight:850 !important;letter-spacing:-.045em !important;color:#171717 !important;line-height:1 !important}
-body .home-currencies{flex:0 0 auto !important;display:flex !important;align-items:center !important;gap:clamp(10px,3.4vw,16px) !important;background:#ffffff !important;padding:10px clamp(14px,4.6vw,20px) !important;border-radius:999px !important;border:1px solid rgba(0,0,0,.045) !important;box-shadow:0 8px 22px rgba(17,24,39,.07) !important}
-body .home-currencies .star-balance,body .home-currencies .health{display:flex !important;align-items:center !important;gap:6px !important;background:none !important;border:0 !important;box-shadow:none !important;padding:0 !important}
-body .home-currencies .star-balance{color:#f5b418 !important}
-body .home-currencies .health{color:#ef4358 !important}
-body .home-currencies strong{color:#171717 !important;font-size:clamp(16px,4.6vw,19px) !important;font-weight:800 !important;font-variant-numeric:tabular-nums !important}
-body .home-currencies svg{width:clamp(17px,4.8vw,21px) !important;height:clamp(17px,4.8vw,21px) !important}
-
-/* ---------- ANGOL / Tanulási útvonal ---------- */
-body .home-heading{display:block !important;margin:clamp(16px,4.6vw,24px) 0 0 !important}
-body .home-heading .eyebrow{font-size:clamp(12px,3.2vw,14px) !important;font-weight:700 !important;letter-spacing:2px !important;color:#8a8a8a !important;text-transform:uppercase !important;margin:0 0 8px !important}
-body .home-heading h2{font-size:clamp(26px,8.4vw,32px) !important;font-weight:800 !important;letter-spacing:-.025em !important;line-height:1.1 !important;color:#171717 !important;margin:0 !important;text-align:left !important}
-
-/* ---------- Notice (only shows when there is one) ---------- */
-body .inline-notice{display:flex !important;align-items:center !important;justify-content:space-between !important;gap:10px !important;width:100% !important;margin:14px 0 0 !important;padding:12px 14px !important;border-radius:16px !important;background:#fafafa !important;border:1px solid #ededed !important;font-size:13px !important;text-align:left !important}
-body .unit-progress-card{display:none !important}
-
-/* ---------- White learning surface ---------- */
-body .compact-learning-path{position:relative !important;display:flex !important;flex-direction:column !important;align-items:center !important;gap:0 !important;margin:clamp(18px,5vw,26px) 0 0 !important;padding:0 0 24px !important;background:#ffffff !important;border:0 !important;border-radius:56px 56px 0 0 !important;box-shadow:none !important;min-height:0 !important}
-body .compact-learning-path::before{content:"" !important;position:absolute !important;z-index:-1 !important;top:0 !important;bottom:calc(-1 * (96px + env(safe-area-inset-bottom))) !important;left:calc(-1 * clamp(18px,5.6vw,24px) - 1px) !important;right:calc(-1 * clamp(18px,5.6vw,24px) - 1px) !important;background:#ffffff !important;border-radius:56px 56px 0 0 !important;box-shadow:0 -10px 30px rgba(17,24,39,.05) !important}
-body .path-level-row{display:flex !important;justify-content:flex-end !important;width:100% !important;padding:14px 0 clamp(44px,12vw,72px) !important}
-
-/* ---------- United Kingdom B2 badge ---------- */
-body .level-badge{display:inline-flex !important;align-items:center !important;justify-content:center !important;gap:clamp(10px,3vw,14px) !important;height:clamp(50px,13.6vw,62px) !important;min-width:clamp(118px,34vw,142px) !important;padding:0 clamp(14px,4vw,18px) !important;background:#ffffff !important;border:2.5px solid #e5e5e5 !important;border-radius:999px !important;box-shadow:none !important;white-space:nowrap !important}
-body .level-flag{font-size:clamp(26px,7.6vw,34px) !important;line-height:1 !important}
-body .level-text{font-size:clamp(18px,5.4vw,23px) !important;font-weight:600 !important;color:#a3a3a3 !important;letter-spacing:.01em !important}
-
-/* ---------- Path rows: staggered route ---------- */
-body .compact-lesson-row{position:relative !important;display:flex !important;flex-direction:column !important;align-items:center !important;gap:0 !important;width:min(76%,300px) !important;min-height:0 !important;margin:0 0 clamp(26px,7.6vw,44px) 0 !important;padding:0 !important;text-align:center !important;transform:none !important}
-body .compact-lesson-row.path-side-left{align-self:flex-start !important}
-body .compact-lesson-row.path-side-center{align-self:center !important}
-body .compact-lesson-row.path-side-right{align-self:flex-end !important}
-body .compact-lesson-row.lesson-row-current .compact-lesson-name strong{color:#171717 !important}
-body .active-ring,body .compact-lesson-extrusion,body .compact-lesson-icon-button::before,body .compact-lesson-icon-button::after{display:none !important}
-
-/* ---------- Green lesson nodes ---------- */
-body .compact-lesson-icon-button{width:auto !important;height:auto !important;min-width:0 !important;padding:0 !important;background:none !important;border:0 !important;border-radius:50% !important;box-shadow:none !important;overflow:visible !important;touch-action:manipulation !important;outline-offset:6px !important}
-body .compact-lesson-icon{position:relative !important;width:clamp(94px,28vw,112px) !important;height:clamp(94px,28vw,112px) !important;min-width:0 !important;border:0 !important;border-radius:50% !important;display:grid !important;place-items:center !important;color:#ffffff !important;background:radial-gradient(circle at 50% 34%,#6cbd46 0%,#63b43f 55%,#57a834 100%) !important;box-shadow:0 8px 0 #459c27,0 10px 20px rgba(56,137,31,.26),inset 0 -4px 0 #38891f,inset 0 2px 0 rgba(255,255,255,.22) !important;transform:none !important;transition:transform .12s ease,box-shadow .12s ease !important}
-body .compact-lesson-icon-button:active .compact-lesson-icon{transform:translateY(4px) !important;box-shadow:0 3px 0 #459c27,0 5px 12px rgba(56,137,31,.22),inset 0 -4px 0 #38891f !important}
-body .compact-lesson-icon svg{width:clamp(38px,11.4vw,46px) !important;height:clamp(38px,11.4vw,46px) !important;color:#ffffff !important;stroke-width:2.75 !important}
-body .compact-lesson-icon-button.node-locked .compact-lesson-icon,body .compact-lesson-icon.node-locked,body .compact-lesson-row .node-locked .compact-lesson-icon{background:#ebebeb !important;color:#b4b4b4 !important;box-shadow:0 8px 0 #dcdcdc,0 8px 16px rgba(0,0,0,.05) !important}
-body .compact-lesson-icon-button.node-locked .compact-lesson-icon svg,body .compact-lesson-icon.node-locked svg,body .compact-lesson-row .node-locked .compact-lesson-icon svg{color:#b4b4b4 !important;width:clamp(30px,9vw,38px) !important;height:clamp(30px,9vw,38px) !important}
-
-/* ---------- Completed badge ---------- */
-body .compact-lesson-check{position:absolute !important;top:-1px !important;right:-1px !important;width:clamp(25px,7.2vw,28px) !important;height:clamp(25px,7.2vw,28px) !important;border-radius:50% !important;background:#218d49 !important;color:#ffffff !important;display:grid !important;place-items:center !important;border:2px solid #ffffff !important;box-shadow:0 2px 5px rgba(0,0,0,.16) !important;z-index:2 !important}
-body .compact-lesson-check svg{width:clamp(13px,3.8vw,15px) !important;height:clamp(13px,3.8vw,15px) !important;stroke-width:3.5 !important;color:#ffffff !important}
-
-/* ---------- Labels ---------- */
-body .compact-lesson-name{display:block !important;width:100% !important;max-width:100% !important;margin:clamp(14px,4vw,20px) 0 0 !important;padding:0 !important;background:none !important;border:0 !important;text-align:center !important;white-space:normal !important;overflow-wrap:anywhere !important;line-height:1.25 !important;opacity:1 !important}
-body .compact-lesson-name strong{display:block !important;font-size:clamp(15px,4.3vw,16px) !important;font-weight:700 !important;color:#111111 !important;letter-spacing:-.01em !important}
-body .compact-lesson-name span{display:none !important}
-body .compact-lesson-name.muted strong,body .compact-future-row .compact-lesson-name{color:#a3a3a3 !important}
-
-/* ---------- Lesson / task popover ---------- */
-body .lesson-choice-popover{max-width:calc(100vw - 40px) !important;z-index:4 !important}
-
-/* ---------- Narrow phones ---------- */
-@media (max-width:360px){
-  body .compact-lesson-row{width:80% !important}
-  body .level-badge{min-width:112px !important}
+html, body {
+  margin: 0;
+  min-height: 100%;
+  background: #fff !important;
+  color: #090909 !important;
+  overflow-x: hidden;
 }
 
-/* ---------- Short screens: tighter rhythm ---------- */
-@media (max-height:700px){
-  body .screen-content{padding-top:calc(env(safe-area-inset-top) + 10px) !important}
-  body .path-level-row{padding-bottom:40px !important}
-  body .compact-lesson-row{margin-bottom:26px !important}
+body { font-family: Inter, Arial, sans-serif; }
+button { font: inherit; }
+.app-shell {
+  width: 100%;
+  max-width: 480px;
+  min-height: 100dvh;
+  margin: 0 auto;
+  position: relative;
+  overflow: hidden;
+  background: #fff;
+  padding: 42px 0 calc(112px + env(safe-area-inset-bottom));
 }
-
-/* ---------- Taller phones: reference proportions ---------- */
-@media (min-height:840px){
-  body .compact-lesson-row{margin-bottom:clamp(34px,9vw,52px) !important}
+.home-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  min-height: 78px;
 }
-
-/* ---------- Wider screens: centred mobile column, never stretched ---------- */
-@media (min-width:560px){
-  body .app-shell{max-width:480px !important;margin:0 auto !important}
+.brand { display: flex; align-items: center; gap: 12px; }
+.brand img { width: 60px; height: 60px; object-fit: contain; }
+.brand h1 { margin: 0; font-size: 35px; line-height: 1; letter-spacing: -1.8px; font-weight: 850; }
+.profile-avatar {
+  width: 62px; height: 62px; display: grid; place-items: center;
+  color: #171717; background: #fff; border-radius: 50%;
+  box-shadow: 0 8px 24px rgba(0,0,0,.06); border: 0;
+}
+.learning-sheet {
+  position: relative;
+  min-height: 610px;
+  margin-top: 42px;
+  padding: 31px 0 140px;
+  background: #fff;
+  border-radius: 58px 58px 0 0;
+  box-shadow: 0 -14px 36px rgba(0,0,0,.07);
+}
+.sheet-handle { width: 101px; height: 13px; margin: 0 auto; border-radius: 20px; background: #c8d0d9; }
+.lesson-heading { margin: 73px 38px 0; }
+.lesson-heading h2 { margin: 0; font-size: 38px; line-height: 1.1; letter-spacing: -1.4px; font-weight: 800; }
+.lesson-heading p { margin: 10px 0 0; color: #a4a4a4; font-size: 24px; line-height: 1.4; }
+.lesson-carousel {
+  display: flex; gap: 72px; overflow: hidden; margin-top: 119px; padding: 0 0 12px 96px;
+}
+.lesson-card { flex: 0 0 156px; display: flex; flex-direction: column; align-items: center; gap: 21px; padding: 0; border: 0; background: transparent; }
+.lesson-icon {
+  width: 156px; height: 156px; display: grid; place-items: center; color: white; border-radius: 50%;
+  background: #f58b43; box-shadow: 0 10px 0 #bd681f, 0 13px 19px rgba(180,92,27,.17);
+}
+.lesson-card strong { font-size: 24px; line-height: 1; font-weight: 800; white-space: nowrap; }
+.lesson-card.is-selected .lesson-icon { transform: translateY(4px); box-shadow: 0 5px 0 #bd681f; }
+.bottom-nav {
+  position: fixed; z-index: 5; left: 50%; bottom: calc(18px + env(safe-area-inset-bottom)); transform: translateX(-50%);
+  width: min(calc(100% - 42px), 438px); height: 112px; display: grid; grid-template-columns: repeat(4, 1fr); align-items: center;
+  padding: 0 9px; border-radius: 38px; background: rgba(255,255,255,.96); box-shadow: 0 5px 28px rgba(0,0,0,.11);
+  backdrop-filter: blur(10px);
+}
+.nav-item { min-height: 86px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; border: 0; border-radius: 29px; background: transparent; color: #171717; }
+.nav-item span { font-size: 18px; font-weight: 700; white-space: nowrap; }
+.nav-item.active { background: #e2e6eb; box-shadow: inset 0 2px 4px rgba(0,0,0,.04); }
+@media (max-width: 380px) {
+  .brand h1 { font-size: 31px; }
+  .lesson-heading h2 { font-size: 33px; }
+  .lesson-heading p { font-size: 21px; }
+  .lesson-carousel { gap: 48px; padding-left: 58px; }
+  .lesson-icon { width: 132px; height: 132px; }
+  .lesson-card { flex-basis: 132px; }
+  .nav-item span { font-size: 15px; }
 }
