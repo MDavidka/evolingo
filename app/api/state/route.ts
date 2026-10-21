@@ -1,4 +1,4 @@
-import { randomUUID } from "node:crypto"
+import { createHash, randomUUID } from "node:crypto"
 import { NextRequest, NextResponse } from "next/server"
 import { cookies } from "next/headers"
 import { getDatabase } from "../../../lib/mongodb"
@@ -7,6 +7,22 @@ export const runtime = "nodejs"
 export const dynamic = "force-dynamic"
 const COOKIE = "evolingo_session"
 const COOKIE_AGE = 60 * 60 * 24 * 365
+
+const guestAdjectives = ["Vidám", "Bátor", "Kíváncsi", "Csendes", "Ügyes", "Fürge", "Derűs", "Bölcs", "Kitartó", "Kreatív", "Barátságos", "Gyors"]
+const guestAnimals = ["Róka", "Vidra", "Bagoly", "Mókus", "Panda", "Farkas", "Süni", "Delfin", "Nyuszi", "Koala", "Tigris", "Hód", "Macska", "Sas", "Medve"]
+
+function makeGuestName(sessionId: string) {
+  let hash = 2166136261
+  for (const char of sessionId) hash = Math.imul(hash ^ char.charCodeAt(0), 16777619)
+  const seed = hash >>> 0
+  const adjective = guestAdjectives[seed % guestAdjectives.length]
+  const animal = guestAnimals[(seed >>> 8) % guestAnimals.length]
+  const suffix = 1000 + ((seed >>> 16) % 9000)
+  return adjective + " " + animal + " " + suffix
+}
+function publicSessionKey(sessionId: string) {
+  return createHash("sha256").update(sessionId).digest("hex").slice(0, 24)
+}
 type UserDocument = {
   _id: string
   [key: string]: unknown
@@ -51,13 +67,16 @@ export async function GET() {
     const db = await getDatabase()
     const users = db.collection<UserDocument>("users")
     await users.updateOne({ _id: id }, { $setOnInsert: {
-      userName: "MDavid", avatar: "fox", notifications: false, compactMode: false, theme: "mist",
+      userName: makeGuestName(id), isGuest: true, avatar: "fox", notifications: false, compactMode: false, theme: "mist",
       readLessons: [], completedLessons: [], answeredTasks: [], xp: 0, stars: 0, purchasedItems: [],
       lives: 5, friends: [], friendRequests: [], dailyStreak: 0, lastStudyDate: "",
       todayActivityCount: 0, activityDate: "", dailyGoal: 1, createdAt: new Date(),
-    }, $set: { lastSeenAt: new Date() } }, { upsert: true })
+    }, $set: { lastSeenAt: new Date(), isGuest: true } }, { upsert: true })
+    // Older sessions used "MDavid" as a placeholder name. Rename only that placeholder;
+    // all lesson history, XP, purchases, settings and streaks remain untouched.
+    await users.updateOne({ _id: id, userName: "MDavid" }, { $set: { userName: makeGuestName(id), isGuest: true, updatedAt: new Date() } })
     const doc = await users.findOne({ _id: id })
-    return sessionCookie(NextResponse.json({ state: safeState((doc || {}) as Record<string, unknown>) }), id, created)
+    return sessionCookie(NextResponse.json({ state: safeState((doc || {}) as Record<string, unknown>), sessionKey: publicSessionKey(id) }), id, created)
   } catch (error) {
     console.error("GET /api/state failed", error)
     return NextResponse.json({ error: "Az adatok most nem érhetők el. Ellenőrizd a MongoDB kapcsolatot." }, { status: 503 })
@@ -89,14 +108,23 @@ export async function PATCH(request: NextRequest) {
       update[key] = value
     }
     if (!Object.keys(update).length) return NextResponse.json({ error: "Nincs menthető adat." }, { status: 400 })
+    // The anonymous browser session itself is the guest profile. If the first GET
+    // failed, let a retry create the MongoDB document from the locally preserved state.
+    if (!update.userName || (created && update.userName === "MDavid")) update.userName = makeGuestName(id)
+    update.isGuest = true
     update.updatedAt = new Date()
     const db = await getDatabase()
     await db.collection<UserDocument>("users").updateOne(
       { _id: id },
-      { $set: update, $setOnInsert: { createdAt: new Date() } },
+      { $set: update, $setOnInsert: {
+        createdAt: new Date(), avatar: "fox", notifications: false, compactMode: false, theme: "mist",
+        readLessons: [], completedLessons: [], answeredTasks: [], xp: 0, stars: 0, purchasedItems: [],
+        lives: 5, friends: [], friendRequests: [], dailyStreak: 0, lastStudyDate: "",
+        todayActivityCount: 0, activityDate: "", dailyGoal: 1,
+      } },
       { upsert: true },
     )
-    const response = NextResponse.json({ ok: true })
+    const response = NextResponse.json({ ok: true, sessionKey: publicSessionKey(id), userName: update.userName })
     return sessionCookie(response, id, created)
   } catch (error) {
     console.error("PATCH /api/state failed", error)
