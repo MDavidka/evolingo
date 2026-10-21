@@ -5473,3 +5473,65 @@ html, body { background: #fff; }
   }
   .compact-lesson-name { top: 86px !important; }
 }
+
+
+/* Layered lesson nodes: white status marker, depth from shadows, no decorative connector halo. */
+.compact-lesson-row::after {
+  background-image: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  opacity: 0 !important;
+}
+.compact-lesson-row .compact-lesson-icon {
+  border: 0 !important;
+  outline: 0 !important;
+  background: linear-gradient(150deg, #27ce6b 0%, #10b65a 52%, #07994a 100%) !important;
+  box-shadow:
+    0 8px 14px rgba(13, 126, 62, .20),
+    0 3px 5px rgba(9, 90, 43, .12),
+    inset 0 2px 1px rgba(255,255,255,.27),
+    inset 0 -4px 0 rgba(0,75,35,.12) !important;
+}
+.compact-lesson-row.lesson-row-complete .compact-lesson-icon {
+  border: 0 !important;
+  background: linear-gradient(150deg, #27ce6b 0%, #10b65a 52%, #07994a 100%) !important;
+  box-shadow:
+    0 8px 14px rgba(13, 126, 62, .20),
+    0 3px 5px rgba(9, 90, 43, .12),
+    inset 0 2px 1px rgba(255,255,255,.27),
+    inset 0 -4px 0 rgba(0,75,35,.12) !important;
+}
+.compact-lesson-icon-button,
+.compact-future-row > .compact-lesson-icon {
+  background: transparent !important;
+  box-shadow: none !important;
+}
+.compact-lesson-row .compact-lesson-check {
+  display: grid !important;
+  place-items: center !important;
+  width: 25px !important;
+  height: 25px !important;
+  right: -2px !important;
+  bottom: -2px !important;
+  border: 0 !important;
+  border-radius: 50% !important;
+  color: #fff !important;
+  background: #fff !important;
+  box-shadow: 0 3px 9px rgba(0,0,0,.20), 0 1px 2px rgba(0,0,0,.12) !important;
+}
+.compact-lesson-row .compact-lesson-check svg {
+  width: 15px !important;
+  height: 15px !important;
+  color: #fff !important;
+  stroke: #18a957 !important;
+  stroke-width: 3.2 !important;
+}
+.compact-lesson-row .compact-lesson-check svg path {
+  stroke: #18a957 !important;
+}
+.compact-lesson-icon-button.node-locked .compact-lesson-icon,
+.compact-lesson-row .compact-lesson-icon.node-locked {
+  border: 0 !important;
+  background: linear-gradient(150deg, #dce4dd 0%, #c6d0c7 100%) !important;
+  box-shadow: 0 6px 12px rgba(35,55,38,.10), inset 0 2px 1px rgba(255,255,255,.48) !important;
+}
