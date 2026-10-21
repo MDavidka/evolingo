@@ -116,6 +116,7 @@ export async function PATCH(request: NextRequest) {
     // failed, let a retry create the MongoDB document from the locally preserved state.
     if (!update.userName || update.userName === "MDavid") update.userName = makeGuestName(id)
     update.isGuest = true
+    update.isSynced = true
     update.updatedAt = new Date()
     const db = await getDatabase()
     const users = db.collection<UserDocument>("users")
