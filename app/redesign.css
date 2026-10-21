@@ -175,3 +175,32 @@ body .learn-stat-chip {
 body .learn-stat-chip::before {
   background: none !important;
 }
+
+
+/* Navigation repair: use the active tab itself as the single selection marker. */
+body .bottom-nav .nav-selection-indicator {
+  display: none !important;
+}
+
+body .bottom-nav button {
+  position: relative !important;
+  z-index: 1 !important;
+  background: transparent !important;
+  border-radius: 22px !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+body .bottom-nav button.active {
+  background: rgba(255, 255, 255, 0.92) !important;
+  box-shadow: 0 2px 10px rgba(20, 25, 35, 0.08) !important;
+  color: #111111 !important;
+}
+
+body .bottom-nav button.active svg {
+  color: #111111 !important;
+}
+
+body .bottom-nav button.active span {
+  color: #111111 !important;
+}
