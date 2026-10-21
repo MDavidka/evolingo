@@ -6789,3 +6789,25 @@ body,
 @media (prefers-reduced-motion: reduce) {
   .learn-progress-track span, .learn-path-node-button, .bottom-nav button { transition: none !important; }
 }
+
+
+/* Final refinements from Learn-screen review */
+.learn-header {
+  padding: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+.learn-header .brand { min-width: 0; }
+.learn-path-node-current .learn-path-node-button {
+  outline: none !important;
+  outline-offset: 0 !important;
+}
+.bottom-nav {
+  bottom: max(0px, env(safe-area-inset-bottom, 0px)) !important;
+}
+@media (max-width: 360px) {
+  .bottom-nav {
+    bottom: max(0px, env(safe-area-inset-bottom, 0px)) !important;
+  }
+}
