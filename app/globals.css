@@ -5337,3 +5337,139 @@ html, body { background: #fff; }
   .unit-progress-track > span,
   .compact-lesson-row .compact-lesson-icon { transition: none !important; }
 }
+
+
+/* Reference-match pass: closer green, lighter halo, and correctly joined diagonal dots. */
+.screen-content:has(.home-header),
+.app-shell:has(.home-header) { background: #fafaf9 !important; }
+.unit-progress-card {
+  border-color: #eceeeb !important;
+  background: #f2f3f1 !important;
+  box-shadow: 0 5px 14px rgba(20,30,20,.025) !important;
+}
+.unit-progress-icon {
+  color: #159b4b !important;
+  background: #e0f4e5 !important;
+}
+.unit-progress-track { background: #e4e6e3 !important; }
+.unit-progress-track > span {
+  background: linear-gradient(90deg, #21c765 0%, #0aa34d 100%) !important;
+}
+.home-currencies {
+  border-color: #eeefed !important;
+  background: #f5f6f4 !important;
+  box-shadow: 0 4px 14px rgba(25,30,25,.045) !important;
+}
+.compact-learning-path {
+  padding-top: 12px !important;
+}
+.compact-lesson-row {
+  height: 164px !important;
+  min-height: 164px !important;
+}
+.compact-lesson-row::after {
+  top: 40px !important;
+  width: calc(34vw + 55px) !important;
+  height: 8px !important;
+  background-image: radial-gradient(circle, #39c574 2.7px, transparent 3.15px) !important;
+  background-size: 14px 8px !important;
+  opacity: .92 !important;
+}
+.compact-lesson-row.path-row-left::after {
+  left: 30% !important;
+  transform: rotate(46deg) !important;
+  transform-origin: left center !important;
+}
+.compact-lesson-row.path-row-right::after {
+  right: 36% !important;
+  transform: rotate(134deg) !important;
+  transform-origin: right center !important;
+}
+.compact-lesson-icon-button,
+.compact-future-row > .compact-lesson-icon {
+  left: 30% !important;
+  width: 94px !important;
+  height: 94px !important;
+}
+.compact-lesson-row.path-row-right .compact-lesson-icon-button,
+.compact-lesson-row.path-row-right.compact-future-row > .compact-lesson-icon {
+  right: 36% !important;
+  left: auto !important;
+}
+.compact-lesson-row .compact-lesson-icon {
+  width: 82px !important;
+  height: 82px !important;
+  min-width: 82px !important;
+  min-height: 82px !important;
+  border: 2px solid #b9edc9 !important;
+  color: #fff !important;
+  background: linear-gradient(145deg, #24c965 0%, #08a84e 58%, #079447 100%) !important;
+  box-shadow:
+    0 0 0 5px rgba(221, 247, 228, .94),
+    0 6px 14px rgba(15, 150, 69, .16),
+    inset 0 -4px 0 rgba(0, 91, 42, .13) !important;
+}
+.compact-lesson-row.lesson-row-complete .compact-lesson-icon {
+  border-color: #a9e7ba !important;
+  background: linear-gradient(145deg, #24c965 0%, #08a84e 58%, #079447 100%) !important;
+  box-shadow:
+    0 0 0 5px rgba(215, 245, 223, .98),
+    0 6px 15px rgba(15, 150, 69, .18),
+    inset 0 -4px 0 rgba(0, 91, 42, .13) !important;
+}
+.compact-lesson-icon-button.node-locked .compact-lesson-icon,
+.compact-lesson-row .compact-lesson-icon.node-locked {
+  border-color: #dce4dd !important;
+  background: linear-gradient(145deg, #e0e7e1, #cfd9d0) !important;
+  box-shadow: 0 0 0 4px #eef2ee !important;
+}
+.compact-lesson-row .compact-lesson-check {
+  background: #13b95b !important;
+  border-color: #fafaf9 !important;
+}
+.compact-lesson-name {
+  top: 94px !important;
+  width: 58% !important;
+  left: 1% !important;
+}
+.compact-lesson-row.path-row-right .compact-lesson-name {
+  right: 1% !important;
+  left: auto !important;
+}
+.compact-lesson-name strong {
+  color: #161916 !important;
+  font-size: 14px !important;
+  font-weight: 760 !important;
+}
+.compact-lesson-name > span {
+  color: #7a817b !important;
+  font-size: 11px !important;
+}
+@media (max-width: 390px) {
+  .compact-lesson-row {
+    height: 160px !important;
+    min-height: 160px !important;
+  }
+  .compact-lesson-row::after {
+    top: 38px !important;
+    width: calc(34vw + 48px) !important;
+  }
+  .compact-lesson-icon-button,
+  .compact-future-row > .compact-lesson-icon {
+    left: 30% !important;
+    width: 88px !important;
+    height: 88px !important;
+  }
+  .compact-lesson-row.path-row-right .compact-lesson-icon-button,
+  .compact-lesson-row.path-row-right.compact-future-row > .compact-lesson-icon {
+    right: 36% !important;
+    left: auto !important;
+  }
+  .compact-lesson-row .compact-lesson-icon {
+    width: 76px !important;
+    height: 76px !important;
+    min-width: 76px !important;
+    min-height: 76px !important;
+  }
+  .compact-lesson-name { top: 86px !important; }
+}
