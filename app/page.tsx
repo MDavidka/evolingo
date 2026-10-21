@@ -702,7 +702,7 @@ function Home({ completedLessons, readLessons, answeredTasks, stars, xp, dailySt
   avatarImage: string
 }) {
   const unitLessons = fullLessons
-  const pathNodes = useMemo(() => createLearningPathNodes(unitLessons), [])
+  const pathNodes = useMemo(() => createLearningPathNodes(fullLessons), [])
   const currentLessonId = unitLessons.find(lesson => !completedLessons.includes(lesson.id))?.id ?? null
   const completedCount = unitLessons.filter(lesson => completedLessons.includes(lesson.id)).length
   const progress = unitLessons.length ? Math.round(completedCount / unitLessons.length * 100) : 0
