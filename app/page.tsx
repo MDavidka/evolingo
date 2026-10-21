@@ -980,7 +980,6 @@ function Friends({ userName }: { userName: string }) {
   return <div className="friends-screen">
     <header className="friends-header">
       <div className="friends-title-group"><span>KÖZÖSSÉG</span><h1>Barátok</h1></div>
-      <button className="friends-add-button" type="button" aria-label="Tanulótárs hozzáadása" onClick={openAddDialog}><UserPlus size={21} strokeWidth={1.8} aria-hidden="true" /></button>
     </header>
 
     <label className="friends-search">
