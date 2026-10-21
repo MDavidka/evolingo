@@ -85,32 +85,35 @@ function seededPathValue(seed: number) {
 
 function createLearningPathNodes(lessonUnits: LessonUnit[]): LearningPathNode[] {
   const activityKinds: LearningPathKind[] = ["task", "words", "hard", "test"]
-  const firstKinds: LearningPathKind[] = ["task", "words", "hard", "test"]
-  const specialIds: Partial<Record<LearningPathKind, number>> = { hard: 101, test: 102, words: 103 }
+  const requiredFirstActivity: LearningPathKind[] = ["task", "words", "hard", "test"]
+  const templateIds: Partial<Record<LearningPathKind, number>> = { hard: 101, test: 102, words: 103 }
   const nodes: LearningPathNode[] = []
 
   lessonUnits.forEach((lesson, lessonIndex) => {
     nodes.push({ key: "lesson-" + lesson.id, kind: "lesson", lessonId: lesson.id })
-    const order = activityKinds
-      .map((kind, kindIndex) => ({ kind, score: seededPathValue(lesson.id * 97 + kindIndex * 131 + 19) }))
-      .sort((a, b) => a.score - b.score)
-      .map(item => item.kind)
 
-    // Guarantee that every activity type appears early, while keeping the later path mixed.
-    if (lessonIndex < firstKinds.length) {
-      const requiredKind = firstKinds[lessonIndex]
-      order.splice(order.indexOf(requiredKind), 1)
-      order.unshift(requiredKind)
+    // Each lesson gets one to three separate activity stops. Activity types can repeat,
+    // so a lesson may have several Tasks or a single Hard Task, for example.
+    const activityCount = 1 + Math.floor(seededPathValue(lesson.id * 911 + lessonIndex * 37 + 5) * 3)
+    const activities: LearningPathKind[] = []
+
+    // Make all four activity types appear as actual path nodes near the beginning.
+    if (lessonIndex < requiredFirstActivity.length) {
+      activities.push(requiredFirstActivity[lessonIndex])
     }
 
-    // Each lesson gets a varied one-to-three activity mix (lesson node excluded).
-    const activityCount = 1 + Math.floor(seededPathValue(lesson.id * 911 + lessonIndex * 37 + 5) * 3)
-    order.slice(0, activityCount).forEach(kind => {
+    while (activities.length < activityCount) {
+      const pick = Math.floor(seededPathValue(lesson.id * 97 + activities.length * 131 + lessonIndex * 17 + 19) * activityKinds.length)
+      activities.push(activityKinds[pick])
+    }
+
+    activities.forEach((kind, activityIndex) => {
+      const uniqueId = 1000 + lesson.id * 100 + activityIndex
       nodes.push({
-        key: kind + "-" + lesson.id,
+        key: kind + "-" + lesson.id + "-" + activityIndex,
         kind,
         lessonId: lesson.id,
-        ...(specialIds[kind] ? { specialId: 1000 + lesson.id * 10 + activityKinds.indexOf(kind), templateId: specialIds[kind] } : {}),
+        ...(templateIds[kind] ? { specialId: uniqueId, templateId: templateIds[kind] } : {}),
       })
     })
   })
