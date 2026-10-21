@@ -654,6 +654,22 @@ function Home({ completedLessons, stars, dailyStudy, notice, clearNotice, onOpen
   const nodeRefs = useRef<Map<number, HTMLButtonElement>>(new Map())
   const [pathSize, setPathSize] = useState({ width: 0, height: 0 })
   const [connectorPaths, setConnectorPaths] = useState<string[]>([])
+  const [sheetHeight, setSheetHeight] = useState(74)
+  const dragStart = useRef<{ y: number; height: number } | null>(null)
+  const handlePointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
+    dragStart.current = { y: event.clientY, height: sheetHeight }
+    event.currentTarget.setPointerCapture(event.pointerId)
+    event.preventDefault()
+  }
+  const handlePointerMove = (event: React.PointerEvent<HTMLDivElement>) => {
+    if (!dragStart.current) return
+    const delta = dragStart.current.y - event.clientY
+    const nextHeight = Math.max(44, Math.min(90, dragStart.current.height + delta / Math.max(1, window.innerHeight) * 100))
+    setSheetHeight(nextHeight)
+  }
+  const handlePointerUp = () => {
+    dragStart.current = null
+  }
   const statusKey = unitLessons.map(lesson => {
     if (completedLessons.includes(lesson.id)) return lesson.id + ":completed"
     if (lesson.id === currentLessonId) return lesson.id + ":current"
@@ -726,8 +742,25 @@ function Home({ completedLessons, stars, dailyStudy, notice, clearNotice, onOpen
     </div>
     {notice && <button className="inline-notice learn-inline-notice" type="button" onClick={clearNotice}><span>{notice}</span><X size={16} aria-hidden="true" /></button>}
 
-    <section className="learn-sheet" ref={sheetRef} aria-label="Tanulási útvonal">
-      <div className="learn-sheet-handle" aria-hidden="true" />
+    <section className="learn-sheet" ref={sheetRef} style={{ height: sheetHeight + "dvh" }} aria-label="Tanulási útvonal">
+      <div
+        className="learn-sheet-handle"
+        role="slider"
+        aria-label="Tanulási panel magassága"
+        aria-orientation="vertical"
+        aria-valuemin={44}
+        aria-valuemax={90}
+        aria-valuenow={Math.round(sheetHeight)}
+        tabIndex={0}
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
+        onPointerUp={handlePointerUp}
+        onPointerCancel={handlePointerUp}
+        onKeyDown={event => {
+          if (event.key === "ArrowUp") setSheetHeight(height => Math.min(90, height + 4))
+          if (event.key === "ArrowDown") setSheetHeight(height => Math.max(44, height - 4))
+        }}
+      />
       <div className="learn-sheet-heading">
         <h1>Present simple</h1>
         <p>Ebben a fejezetben a jelen időt tanulod</p>
