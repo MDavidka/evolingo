@@ -4661,3 +4661,377 @@ html, body { background: #fff; }
   .friends-avatar { width: 43px !important; height: 43px !important; }
   .friends-follow-button { padding-left: 10px !important; padding-right: 10px !important; }
 }
+
+
+/* Profile tab refresh — editorial hierarchy, compact cover and a useful daily streak control. */
+.profile-page {
+  max-width: 640px !important;
+  padding-bottom: max(132px, calc(env(safe-area-inset-bottom, 0px) + 116px)) !important;
+  --profile-ink: #171717;
+  --profile-muted: #737373;
+  --profile-line: #ebebeb;
+  --profile-surface: #f7f7f7;
+}
+.profile-page .profile-hero { padding: 0 18px !important; }
+.profile-page .profile-cover {
+  height: 126px !important;
+  min-height: 126px !important;
+  border-radius: 0 0 22px 22px !important;
+  background:
+    radial-gradient(ellipse at 15% 0%, rgba(255,255,255,.95), transparent 36%),
+    radial-gradient(ellipse at 90% 8%, rgba(255,255,255,.52), transparent 34%),
+    linear-gradient(125deg, #e9ece8 0%, #f5f5f2 48%, #dce3dc 100%) !important;
+}
+.profile-page .profile-cover::before {
+  top: -154px !important;
+  right: -50px !important;
+  width: 270px !important;
+  height: 270px !important;
+  border-color: rgba(70,86,72,.10) !important;
+}
+.profile-page .profile-identity {
+  padding-top: 83px !important;
+}
+.profile-page .profile-avatar-wrap {
+  width: 104px !important;
+  height: 104px !important;
+  min-width: 104px !important;
+  min-height: 104px !important;
+  margin-bottom: 12px !important;
+}
+.profile-page .large-avatar {
+  display: grid !important;
+  place-items: center !important;
+  width: 100% !important;
+  height: 100% !important;
+  padding: 0 !important;
+  aspect-ratio: 1 / 1 !important;
+  overflow: hidden !important;
+  border: 4px solid #fff !important;
+  background: #f2f2f2 !important;
+  box-shadow: 0 3px 14px rgba(0,0,0,.08) !important;
+}
+.profile-page .large-avatar img,
+.profile-page .large-avatar > img {
+  display: block !important;
+  width: 100% !important;
+  height: 100% !important;
+  max-width: 100% !important;
+  max-height: 100% !important;
+  object-fit: cover !important;
+  object-position: center !important;
+  border-radius: inherit !important;
+}
+.profile-page .profile-display-name {
+  font-size: clamp(29px, 7vw, 36px) !important;
+  letter-spacing: -1.1px !important;
+  line-height: 1.12 !important;
+}
+.profile-page .profile-handle { margin-top: 5px !important; font-size: 13px !important; }
+
+/* Streak badge is part of the banner, but remains separate from the cover editor control. */
+.profile-page .profile-streak-badge {
+  position: absolute !important;
+  z-index: 5 !important;
+  top: max(14px, env(safe-area-inset-top, 14px)) !important;
+  left: 16px !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  max-width: calc(100% - 78px) !important;
+  min-height: 43px !important;
+  padding: 6px 10px 6px 7px !important;
+  border: 1px solid rgba(255,255,255,.78) !important;
+  border-radius: 15px !important;
+  color: #202020 !important;
+  background: rgba(255,255,255,.76) !important;
+  box-shadow: 0 2px 9px rgba(20,28,20,.045) !important;
+  text-align: left !important;
+  -webkit-backdrop-filter: blur(14px) saturate(130%) !important;
+  backdrop-filter: blur(14px) saturate(130%) !important;
+}
+.profile-page .profile-streak-icon {
+  display: grid !important;
+  place-items: center !important;
+  width: 29px !important;
+  height: 29px !important;
+  flex: 0 0 auto !important;
+  border-radius: 10px !important;
+  color: #a45b24 !important;
+  background: #f7eee6 !important;
+}
+.profile-page .profile-streak-copy {
+  display: flex !important;
+  min-width: 0 !important;
+  flex-direction: column !important;
+  gap: 2px !important;
+}
+.profile-page .profile-streak-copy strong {
+  color: #181818 !important;
+  font-size: 13px !important;
+  font-weight: 760 !important;
+  letter-spacing: -.1px !important;
+  line-height: 1.15 !important;
+  white-space: nowrap;
+}
+.profile-page .profile-streak-copy small {
+  color: #7a7a7a !important;
+  font-size: 8px !important;
+  font-weight: 750 !important;
+  letter-spacing: .09em !important;
+  line-height: 1.2 !important;
+  white-space: nowrap;
+}
+.profile-page .profile-streak-settings-icon { margin-left: 2px; color: #777 !important; flex: 0 0 auto; }
+.profile-page .profile-streak-badge:active { transform: scale(.98); }
+.profile-page .profile-banner-settings {
+  top: max(14px, env(safe-area-inset-top, 14px)) !important;
+  right: 16px !important;
+  width: 43px !important;
+  height: 43px !important;
+  color: #222 !important;
+  background: rgba(255,255,255,.76) !important;
+  box-shadow: 0 2px 9px rgba(20,28,20,.045) !important;
+}
+
+/* Three equally weighted stats: consistent icon size, number baseline and labels. */
+.profile-page .profile-social-stats {
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  align-items: stretch !important;
+  gap: 0 !important;
+  margin: 24px 18px 0 !important;
+  padding: 16px 6px !important;
+  border: 1px solid #ededed !important;
+  border-radius: 18px !important;
+  background: #fafafa !important;
+}
+.profile-page .profile-social-stat {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px !important;
+  min-width: 0 !important;
+  min-height: 86px !important;
+  padding: 0 4px !important;
+  border: 0 !important;
+  border-right: 1px solid #e8e8e8 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  text-align: center !important;
+  box-shadow: none !important;
+}
+.profile-page .profile-social-stat:last-child { border-right: 0 !important; }
+.profile-page .profile-social-stat .profile-stat-icon {
+  display: grid !important;
+  place-items: center !important;
+  width: 28px !important;
+  height: 28px !important;
+  margin: 0 !important;
+  border-radius: 9px !important;
+  color: #555 !important;
+  background: #ededed !important;
+}
+.profile-page .profile-social-stat .profile-stat-icon svg { width: 16px !important; height: 16px !important; }
+.profile-page .profile-social-stat > strong {
+  color: #171717 !important;
+  font-size: clamp(20px, 5.4vw, 24px) !important;
+  font-weight: 780 !important;
+  font-variant-numeric: tabular-nums;
+  line-height: 1 !important;
+  letter-spacing: -.5px !important;
+}
+.profile-page .profile-social-stat > span:not(.profile-stat-icon) {
+  display: block;
+  max-width: 100%;
+  color: #757575 !important;
+  font-size: 10px !important;
+  line-height: 1.35 !important;
+  font-weight: 550 !important;
+  overflow-wrap: anywhere;
+}
+.profile-page .profile-learning-card {
+  margin: 16px 18px 0 !important;
+  padding: 19px 16px 15px !important;
+  border: 1px solid #eaeaea !important;
+  border-radius: 20px !important;
+  background: #fff !important;
+  box-shadow: none !important;
+}
+.profile-page .profile-section-link strong { font-size: 17px !important; font-weight: 730 !important; letter-spacing: -.3px; }
+.profile-page .profile-section-link small { color: #777 !important; font-size: 12px !important; }
+.profile-page .profile-learning-content { margin-top: 21px !important; }
+.profile-page .profile-learning-metrics > div { gap: 9px !important; }
+.profile-page .profile-learning-metrics > div > svg { color: #666 !important; }
+.profile-page .profile-learning-metrics strong { color: #171717 !important; font-size: 14px !important; }
+.profile-page .profile-learning-metrics small { color: #747474 !important; font-size: 11px !important; line-height: 1.35 !important; }
+.profile-page .profile-learning-foot {
+  display: flex !important;
+  justify-content: space-between !important;
+  flex-wrap: wrap !important;
+  gap: 6px 12px !important;
+  margin-top: 17px !important;
+  padding-top: 12px !important;
+  border-top: 1px solid #ededed !important;
+  color: #747474 !important;
+  font-size: 11px !important;
+}
+
+/* The streak sheet is intentionally plain: one choice group, one progress line, one close action. */
+.profile-streak-backdrop {
+  position: fixed;
+  z-index: 180;
+  inset: 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 20px 12px max(16px, env(safe-area-inset-bottom, 0px));
+  background: rgba(15,15,15,.28);
+  -webkit-backdrop-filter: blur(5px);
+  backdrop-filter: blur(5px);
+}
+.profile-streak-sheet {
+  width: min(100%, 460px);
+  max-height: min(84dvh, 640px);
+  overflow: auto;
+  padding: 21px 19px max(18px, env(safe-area-inset-bottom, 0px));
+  border: 1px solid rgba(255,255,255,.9);
+  border-radius: 25px;
+  color: #191919;
+  background: #fff;
+  box-shadow: 0 20px 70px rgba(0,0,0,.18);
+  animation: profileStreakRise .2s ease-out;
+}
+.profile-streak-sheet-heading {
+  display: flex;
+  align-items: flex-start;
+  gap: 11px;
+}
+.profile-streak-sheet-symbol {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  flex: 0 0 auto;
+  border-radius: 14px;
+  color: #a45b24;
+  background: #f7eee6;
+}
+.profile-streak-sheet-heading > div { flex: 1; min-width: 0; }
+.profile-streak-sheet-heading h2 {
+  margin: 0;
+  color: #171717;
+  font-size: 19px;
+  font-weight: 760;
+  line-height: 1.25;
+  letter-spacing: -.45px;
+}
+.profile-streak-sheet-heading p {
+  margin: 5px 0 0;
+  color: #777;
+  font-size: 12px;
+  line-height: 1.55;
+}
+.profile-streak-sheet-heading > button {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  color: #555;
+  background: #f3f3f3;
+}
+.profile-streak-current {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 22px 0 21px;
+  padding: 15px 16px;
+  border-radius: 16px;
+  background: #f7f7f7;
+}
+.profile-streak-current > div { display: flex; flex-direction: column; gap: 4px; }
+.profile-streak-current strong { color: #191919; font-size: 22px; font-weight: 800; letter-spacing: -.65px; }
+.profile-streak-current span:not(.profile-streak-current-icon) { color: #777; font-size: 12px; }
+.profile-streak-current-icon {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  color: #a45b24;
+  background: #f1e3d6;
+}
+.profile-streak-goal-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 9px;
+}
+.profile-streak-goal-heading strong { color: #262626; font-size: 14px; font-weight: 720; }
+.profile-streak-goal-heading span { color: #777; font-size: 12px; font-variant-numeric: tabular-nums; }
+.profile-streak-progress { height: 6px; overflow: hidden; border-radius: 999px; background: #e9e9e9; }
+.profile-streak-progress span { display: block; height: 100%; border-radius: inherit; background: #252525; transition: width .2s ease; }
+.profile-streak-explainer { margin: 9px 0 21px; color: #777; font-size: 12px; line-height: 1.6; }
+.profile-streak-goal-options {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 12px;
+}
+.profile-streak-goal-options button {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+  min-height: 99px;
+  padding: 12px 5px 10px;
+  border: 1px solid #e7e7e7;
+  border-radius: 15px;
+  color: #242424;
+  background: #fff;
+  text-align: center;
+  transition: border-color .14s ease, background .14s ease;
+}
+.profile-streak-goal-options button.selected { border-color: #222; background: #f5f5f5; box-shadow: inset 0 0 0 1px #222; }
+.profile-streak-goal-options button strong { font-size: 23px; line-height: 1; letter-spacing: -.5px; }
+.profile-streak-goal-options button span { color: #444; font-size: 10px; line-height: 1.35; font-weight: 650; }
+.profile-streak-goal-options button small { color: #888; font-size: 9px; line-height: 1.3; }
+.profile-streak-done {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 49px;
+  margin-top: 18px;
+  border-radius: 14px;
+  color: #fff;
+  background: #171717;
+  font-size: 14px;
+  font-weight: 700;
+}
+@keyframes profileStreakRise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+@media (max-width: 390px) {
+  .profile-page .profile-hero { padding-left: 14px !important; padding-right: 14px !important; }
+  .profile-page .profile-cover { height: 118px !important; min-height: 118px !important; }
+  .profile-page .profile-identity { padding-top: 78px !important; }
+  .profile-page .profile-avatar-wrap { width: 96px !important; height: 96px !important; min-width: 96px !important; min-height: 96px !important; }
+  .profile-page .profile-streak-badge { left: 12px !important; }
+  .profile-page .profile-banner-settings { right: 12px !important; }
+  .profile-page .profile-social-stats { margin-left: 12px !important; margin-right: 12px !important; padding: 13px 3px !important; }
+  .profile-page .profile-social-stat { min-height: 82px !important; }
+  .profile-page .profile-social-stat > span:not(.profile-stat-icon) { font-size: 9px !important; }
+  .profile-page .profile-learning-card { margin-left: 12px !important; margin-right: 12px !important; padding: 16px 12px 13px !important; }
+  .profile-streak-sheet { padding-left: 15px; padding-right: 15px; }
+  .profile-streak-goal-options { gap: 6px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .profile-streak-sheet { animation: none !important; }
+  .profile-streak-progress span,
+  .profile-streak-goal-options button { transition: none !important; }
+}
