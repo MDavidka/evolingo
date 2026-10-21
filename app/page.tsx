@@ -21,6 +21,15 @@ const lessonIllustrations: Record<number, { src: string; alt: string }> = {
   10: { src: "https://images.unsplash.com/photo-1649843787933-a4e0d5313391?auto=format&fit=crop&w=1200&q=85", alt: "Sötét esőfelhők a feltételes mondatok példáihoz" },
 }
 type Screen = "home" | "lessonIntro" | "task" | "shop" | "leaderboard" | "profile" | "friends"
+type DailyStudyState = { streak: number; lastStudyDate: string; todayActivityCount: number; activityDate: string; dailyGoal: number }
+
+function getLocalDateKey(date = new Date()) {
+  return date.getFullYear() + "-" + String(date.getMonth() + 1).padStart(2, "0") + "-" + String(date.getDate()).padStart(2, "0")
+}
+function getPreviousLocalDateKey(dateKey: string) {
+  const [year, month, day] = dateKey.split("-").map(Number)
+  return getLocalDateKey(new Date(year, month - 1, day - 1))
+}
 type Example = { sentence: string; translation: string }
 type LessonTextMark = "bold" | "italic" | "underline" | "highlight" | "code" | "muted"
 type LessonTextRun = { text: string; marks?: LessonTextMark[] }
@@ -304,6 +313,7 @@ export default function App() {
   const [avatar, setAvatar] = useState("fox")
   const [avatarImage, setAvatarImage] = useState("")
   const [bannerImage, setBannerImage] = useState("")
+  const [dailyStudy, setDailyStudy] = useState<DailyStudyState>({ streak: 0, lastStudyDate: "", todayActivityCount: 0, activityDate: getLocalDateKey(), dailyGoal: 1 })
   const [notifications, setNotifications] = useState(false)
   const [compactMode, setCompactMode] = useState(false)
   const [showSettings, setShowSettings] = useState(false)
@@ -330,6 +340,15 @@ export default function App() {
         if (typeof data.xp === "number" && Number.isFinite(data.xp)) setXp(Math.max(0, data.xp))
         if (typeof data.stars === "number" && Number.isFinite(data.stars)) setStars(Math.max(0, data.stars))
         if (typeof data.lives === "number" && Number.isFinite(data.lives)) setLives(Math.max(0, Math.min(5, data.lives)))
+        const today = getLocalDateKey()
+        const storedActivityDate = typeof data.activityDate === "string" ? data.activityDate : ""
+        setDailyStudy({
+          streak: typeof data.dailyStreak === "number" && Number.isInteger(data.dailyStreak) ? Math.max(0, data.dailyStreak) : 0,
+          lastStudyDate: typeof data.lastStudyDate === "string" ? data.lastStudyDate : "",
+          todayActivityCount: storedActivityDate === today && typeof data.todayActivityCount === "number" ? Math.max(0, data.todayActivityCount) : 0,
+          activityDate: today,
+          dailyGoal: [1, 3, 5].includes(Number(data.dailyGoal)) ? Number(data.dailyGoal) : 1,
+        })
       })
       .catch(() => { if (!cancelled) setNotice("A felhőmentés nem érhető el. Ellenőrizd a Vercel MONGO_URI beállítását.") })
       .finally(() => { if (!cancelled) setRemoteReady(true) })
@@ -344,21 +363,33 @@ export default function App() {
         body: JSON.stringify({
           userName, avatar, avatarImage, bannerImage, notifications, compactMode, readLessons, completedLessons,
           answeredTasks, purchasedItems, xp, stars, lives,
+          dailyStreak: dailyStudy.streak, lastStudyDate: dailyStudy.lastStudyDate,
+          todayActivityCount: dailyStudy.todayActivityCount, activityDate: dailyStudy.activityDate, dailyGoal: dailyStudy.dailyGoal,
         }),
       }).then(response => {
         if (!response.ok) setNotice("A felhőmentés nem sikerült. Ellenőrizd a MongoDB beállítását.")
       }).catch(() => setNotice("Nem sikerült csatlakozni a felhőmentéshez."))
     }, 450)
     return () => window.clearTimeout(timer)
-  }, [remoteReady, userName, avatar, avatarImage, bannerImage, notifications, compactMode, readLessons, completedLessons, answeredTasks, purchasedItems, xp, stars, lives])
+  }, [remoteReady, userName, avatar, avatarImage, bannerImage, notifications, compactMode, readLessons, completedLessons, answeredTasks, purchasedItems, xp, stars, lives, dailyStudy])
+  const recordDailyActivity = useCallback(() => {
+    const today = getLocalDateKey()
+    const yesterday = getPreviousLocalDateKey(today)
+    setDailyStudy(previous => {
+      const streak = previous.lastStudyDate === today
+        ? previous.streak
+        : previous.lastStudyDate === yesterday ? previous.streak + 1 : 1
+      const todayActivityCount = (previous.activityDate === today ? previous.todayActivityCount : 0) + 1
+      return { ...previous, streak, lastStudyDate: today, activityDate: today, todayActivityCount }
+    })
+  }, [])
   const activeLesson = [...fullLessons, ...specialTasks].find((lesson) => lesson.id === activeLessonId) ?? lessons[0]
   const handleReadComplete = useCallback((lessonId: number) => {
-    setReadLessons((previous) => {
-      if (previous.includes(lessonId)) return previous
-      return [...previous, lessonId]
-    })
-    setXp((current) => current + (readLessons.includes(lessonId) ? 0 : 10))
-  }, [readLessons])
+    if (readLessons.includes(lessonId)) return
+    setReadLessons((previous) => previous.includes(lessonId) ? previous : [...previous, lessonId])
+    setXp((current) => current + 10)
+    recordDailyActivity()
+  }, [readLessons, recordDailyActivity])
   const openLesson = (lessonId: number) => {
     setActiveLessonId(lessonId)
     setScreen("lessonIntro")
@@ -415,16 +446,16 @@ export default function App() {
         lesson={activeLesson}
         taskIndex={activeTaskIndex}
         onExit={() => setScreen("home")}
-        onComplete={() => { setStars((current) => current + (answeredTasks.includes(activeLesson.id + "-" + activeTaskIndex) ? 0 : 1)); setXp((current) => current + (answeredTasks.includes(activeLesson.id + "-" + activeTaskIndex) ? 0 : 5)); completeTask(activeLesson.id, activeTaskIndex); }}
+        onComplete={() => { const key = activeLesson.id + "-" + activeTaskIndex; if (!answeredTasks.includes(key)) recordDailyActivity(); setStars((current) => current + (answeredTasks.includes(key) ? 0 : 1)); setXp((current) => current + (answeredTasks.includes(key) ? 0 : 5)); completeTask(activeLesson.id, activeTaskIndex); }}
         lives={lives}
         onWrongAnswer={() => setLives((current) => Math.max(0, current - 1))}
-        onNextQuestion={(nextIndex) => { const key = activeLesson.id + "-" + activeTaskIndex; if (!answeredTasks.includes(key)) { setAnsweredTasks((items) => items.includes(key) ? items : [...items, key]); setStars((current) => current + 1); setXp((current) => current + 5); } setActiveTaskIndex(nextIndex); }}
+        onNextQuestion={(nextIndex) => { const key = activeLesson.id + "-" + activeTaskIndex; if (!answeredTasks.includes(key)) { recordDailyActivity(); setAnsweredTasks((items) => items.includes(key) ? items : [...items, key]); setStars((current) => current + 1); setXp((current) => current + 5); } setActiveTaskIndex(nextIndex); }}
         onOutOfLives={() => { setNotice("Elfogytak az életeid. Pihenj egy kicsit, és próbáld újra!"); setScreen("home"); }}
       />}
       {screen === "shop" && <Shop stars={stars} purchasedItems={purchasedItems} onPurchase={(id, cost) => { if (stars >= cost && !purchasedItems.includes(id)) { setStars((value) => value - cost); setPurchasedItems((items) => [...items, id]); setNotice("Sikeres vásárlás!"); } }} />}
       {screen === "leaderboard" && <Leaderboard />}
       {screen === "friends" && <Friends userName={userName} />}
-      {screen === "profile" && <Profile completedCount={completedLessons.length} readCount={readLessons.length} completedTaskCount={answeredTasks.length} xp={xp} stars={stars} userName={userName} setUserName={setUserName} avatar={avatar} setAvatar={setAvatar} avatarImage={avatarImage} setAvatarImage={setAvatarImage} bannerImage={bannerImage} setBannerImage={setBannerImage} notifications={notifications} setNotifications={setNotifications} compactMode={compactMode} setCompactMode={setCompactMode} showSettings={showSettings} setShowSettings={setShowSettings} />}
+      {screen === "profile" && <Profile completedCount={completedLessons.length} readCount={readLessons.length} completedTaskCount={answeredTasks.length} xp={xp} stars={stars} userName={userName} setUserName={setUserName} avatar={avatar} setAvatar={setAvatar} avatarImage={avatarImage} setAvatarImage={setAvatarImage} bannerImage={bannerImage} setBannerImage={setBannerImage} dailyStudy={dailyStudy} onDailyGoalChange={(dailyGoal) => setDailyStudy(previous => ({ ...previous, dailyGoal }))} notifications={notifications} setNotifications={setNotifications} compactMode={compactMode} setCompactMode={setCompactMode} showSettings={showSettings} setShowSettings={setShowSettings} />}
     </section>
     {screen !== "lessonIntro" && screen !== "task" && <Nav screen={screen} setScreen={setScreen} userName={userName} avatar={avatar} avatarImage={avatarImage} />}
   </main>
