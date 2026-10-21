@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState, type FormEvent } from "react"
 import {
   ArrowRight, BarChart3, BookOpen, Check, CheckCircle2, Headphones, MessageCircle, CircleHelp, Puzzle,
   Flame, Heart, Lightbulb, Medal, RotateCcw, Trophy, UserRound, Dumbbell, Timer, Languages, Volume2,
-  X, Zap, LockKeyhole, ClipboardCheck, Star, ShoppingBag, Gift, Palette, Pencil, Settings, ChevronRight, CalendarDays, Sparkles, Target, Search, UserPlus, Users, Link2, Bell, Share2, Contact2,
+  X, Zap, LockKeyhole, ClipboardCheck, Star, ShoppingBag, Gift, Palette, Pencil, Settings, ChevronRight, CalendarDays, Sparkles, Target, Search, UserPlus, Users, Link2, Bell, Share2, Contact2, Cloud,
 } from "lucide-react"
 
 const foxIcon = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Image-D15751D4-6Ne8AGNrryN8wlvyBepC8VDGQkHTw4.jpeg"
@@ -535,6 +535,9 @@ export default function App() {
         clearNotice={() => setNotice("")}
         onOpenLesson={(id) => openLesson(id)}
         onOpenTask={(lessonId, index) => openTask(lessonId, index)}
+        userName={userName}
+        saveStatus={saveStatus}
+        onRetryCloudSave={retryCloudSave}
       />}
       {screen === "lessonIntro" && <LessonIntro
         lesson={activeLesson}
@@ -555,8 +558,8 @@ export default function App() {
       />}
       {screen === "shop" && <Shop stars={stars} purchasedItems={purchasedItems} onPurchase={(id, cost) => { if (stars >= cost && !purchasedItems.includes(id)) { setStars((value) => value - cost); setPurchasedItems((items) => [...items, id]); setNotice("Sikeres vásárlás!"); } }} />}
       {screen === "leaderboard" && <Leaderboard />}
-      {screen === "friends" && <Friends userName={userName} />}
-      {screen === "profile" && <Profile completedCount={completedLessons.length} readCount={readLessons.length} completedTaskCount={answeredTasks.length} xp={xp} stars={stars} userName={userName} setUserName={setUserName} avatar={avatar} setAvatar={setAvatar} avatarImage={avatarImage} setAvatarImage={setAvatarImage} bannerImage={bannerImage} setBannerImage={setBannerImage} dailyStudy={dailyStudy} onDailyGoalChange={(dailyGoal) => setDailyStudy(previous => ({ ...previous, dailyGoal }))} notifications={notifications} setNotifications={setNotifications} compactMode={compactMode} setCompactMode={setCompactMode} showSettings={showSettings} setShowSettings={setShowSettings} />}
+      {screen === "friends" && <Friends userName={userName} saveStatus={saveStatus} onRetryCloudSave={retryCloudSave} />}
+      {screen === "profile" && <Profile completedCount={completedLessons.length} readCount={readLessons.length} completedTaskCount={answeredTasks.length} xp={xp} stars={stars} userName={userName} setUserName={setUserName} avatar={avatar} setAvatar={setAvatar} avatarImage={avatarImage} setAvatarImage={setAvatarImage} bannerImage={bannerImage} setBannerImage={setBannerImage} dailyStudy={dailyStudy} onDailyGoalChange={(dailyGoal) => setDailyStudy(previous => ({ ...previous, dailyGoal }))} saveStatus={saveStatus} onRetryCloudSave={retryCloudSave} notifications={notifications} setNotifications={setNotifications} compactMode={compactMode} setCompactMode={setCompactMode} showSettings={showSettings} setShowSettings={setShowSettings} />}
     </section>
     {screen !== "lessonIntro" && screen !== "task" && <Nav screen={screen} setScreen={setScreen} userName={userName} avatar={avatar} avatarImage={avatarImage} />}
   </main>
@@ -564,9 +567,30 @@ export default function App() {
 
 function Brand() { return <div className="brand"><img src={foxIcon} alt="Evölingo fox mascot" /><div><h1>Evölingo</h1></div></div> }
 
-function Home({ readLessons, completedLessons, answeredTasks, stars, notice, clearNotice, onOpenLesson, onOpenTask }: {
+function GuestSaveBanner({ userName, status, onRetry }: { userName: string; status: CloudSaveStatus; onRetry: () => void }) {
+  const message = status === "saved"
+    ? "A haladásod automatikusan mentve van az adatbázisba."
+    : status === "saving"
+      ? "Haladásod mentése folyamatban…"
+      : status === "loading"
+        ? "Profilod és tanulási előzményeid betöltése…"
+        : status === "error"
+          ? "A felhőmentés átmenetileg sikertelen. A helyi másolat megmaradt."
+          : "A haladásod helyben megmarad, amíg újra nem kapcsolódunk."
+  return <aside className={"guest-save-banner save-" + status} role="status" aria-live="polite">
+    <span className="guest-save-banner-icon"><Cloud size={19} aria-hidden="true" /></span>
+    <span className="guest-save-banner-copy">
+      <strong>Vendégprofil · {userName}</strong>
+      <small>{message}</small>
+    </span>
+    {(status === "local" || status === "error") && <button type="button" onClick={onRetry}>Újrapróbál</button>}
+  </aside>
+}
+
+function Home({ readLessons, completedLessons, answeredTasks, stars, notice, clearNotice, onOpenLesson, onOpenTask, userName, saveStatus, onRetryCloudSave }: {
   readLessons: number[]; completedLessons: number[]; answeredTasks: string[]; stars: number; notice: string; clearNotice: () => void
   onOpenLesson: (id: number) => void; onOpenTask: (lessonId: number, index: number) => void
+  userName: string; saveStatus: CloudSaveStatus; onRetryCloudSave: () => void
 }) {
   const [selectedLessonId, setSelectedLessonId] = useState<number | null>(null)
   const selectedLesson = lessons.find((lesson) => lesson.id === selectedLessonId)
@@ -579,6 +603,7 @@ function Home({ readLessons, completedLessons, answeredTasks, stars, notice, cle
   const pathIcons = [BookOpen, Headphones, MessageCircle, CircleHelp, Puzzle, Trophy]
   return <>
     <header className="app-header home-header"><Brand /><div className="home-currencies"><div className="star-balance" aria-label={stars + " csillag"}><Star size={21} fill="currentColor" /><strong>{stars}</strong></div><div className="health"><Heart fill="currentColor" size={20} /><strong>5</strong></div></div></header>
+    <GuestSaveBanner userName={userName} status={saveStatus} onRetry={onRetryCloudSave} />
     <div className="section-heading home-heading"><div><p className="eyebrow">ANGOL</p><h2>Tanulási útvonal</h2></div></div>
     {notice && <button className="inline-notice" onClick={clearNotice}><span>{notice}</span><X size={16} /></button>}
     <section className="unit-progress-card" aria-label={"1. egység, " + unitProgress + "% kész"}>
@@ -910,6 +935,7 @@ type FriendProfile = {
   xp: number
   status: string
   online: boolean
+  isGuest?: boolean
 }
 
 type FriendsTab = "friends" | "requests" | "suggested"
@@ -922,7 +948,7 @@ const demoFriendProfiles: FriendProfile[] = [
   { id: "demo-lilla", name: "Lilla", handle: "@lilla", evoTag: "EVO-LILLA-0001", avatar: "L", streak: 7, xp: 560, status: "Ma már tanult", online: false },
 ]
 
-function Friends({ userName }: { userName: string }) {
+function Friends({ userName, saveStatus, onRetryCloudSave }: { userName: string; saveStatus: CloudSaveStatus; onRetryCloudSave: () => void }) {
   const [tab, setTab] = useState<FriendsTab>("friends")
   const [query, setQuery] = useState("")
   const [notice, setNotice] = useState("")
@@ -1120,6 +1146,7 @@ function Friends({ userName }: { userName: string }) {
         <span className={"friends-avatar " + (friend.avatarImage ? "has-image" : "")}>{friend.avatarImage ? <img src={friend.avatarImage} alt="" /> : friend.avatar}</span>
         <span className="friends-person-copy">
           <strong>{displayName(friend)}</strong>
+          {friend.isGuest && <small className="friends-guest-label">Vendégprofil</small>}
           <span>{(friend.streak ?? 0) + " napos sorozat"} <i aria-hidden="true">·</i> {friend.xp} XP</span>
         </span>
       </button>
@@ -1134,6 +1161,7 @@ function Friends({ userName }: { userName: string }) {
     <header className="friends-header">
       <div className="friends-title-group"><span>KÖZÖSSÉG</span><h1>Barátok</h1></div>
     </header>
+    <GuestSaveBanner userName={userName} status={saveStatus} onRetry={onRetryCloudSave} />
 
     <label className="friends-search">
       <Search size={19} aria-hidden="true" />
@@ -1243,10 +1271,10 @@ function Friends({ userName }: { userName: string }) {
   </div>
 }
 
-function Profile({ completedCount, readCount, completedTaskCount, xp, stars, userName, setUserName, avatar, setAvatar, avatarImage, setAvatarImage, bannerImage, setBannerImage, dailyStudy, onDailyGoalChange, notifications, setNotifications, compactMode, setCompactMode, showSettings, setShowSettings }: {
+function Profile({ completedCount, readCount, completedTaskCount, xp, stars, userName, setUserName, avatar, setAvatar, avatarImage, setAvatarImage, bannerImage, setBannerImage, dailyStudy, onDailyGoalChange, saveStatus, onRetryCloudSave, notifications, setNotifications, compactMode, setCompactMode, showSettings, setShowSettings }: {
   completedCount: number; readCount: number; completedTaskCount: number; xp: number; stars: number; userName: string; setUserName: (value: string) => void;
   avatar: string; setAvatar: (value: string) => void; avatarImage: string; setAvatarImage: (value: string) => void; bannerImage: string; setBannerImage: (value: string) => void;
-  dailyStudy: DailyStudyState; onDailyGoalChange: (goal: number) => void; notifications: boolean; setNotifications: (value: boolean) => void;
+  dailyStudy: DailyStudyState; onDailyGoalChange: (goal: number) => void; saveStatus: CloudSaveStatus; onRetryCloudSave: () => void; notifications: boolean; setNotifications: (value: boolean) => void;
   compactMode: boolean; setCompactMode: (value: boolean) => void; showSettings: boolean; setShowSettings: (value: boolean) => void
 }) {
   const [draftName, setDraftName] = useState(userName)
@@ -1392,6 +1420,8 @@ function Profile({ completedCount, readCount, completedTaskCount, xp, stars, use
     </section>
 
     <input ref={bannerInputRef} className="profile-file-input" type="file" accept="image/*" aria-label="Borítókép kiválasztása" onChange={event => { void handleGalleryImage(event.target.files?.[0], "banner"); event.currentTarget.value = "" }} />
+
+    <GuestSaveBanner userName={userName} status={saveStatus} onRetry={onRetryCloudSave} />
 
     {showStreakSettings && <div className="profile-streak-backdrop" role="presentation" onMouseDown={event => { if (event.target === event.currentTarget) setShowStreakSettings(false) }}>
       <section className="profile-streak-sheet" role="dialog" aria-modal="true" aria-labelledby="profile-streak-title">
