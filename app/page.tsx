@@ -558,7 +558,6 @@ export default function App() {
         userName={userName}
         avatar={avatar}
         avatarImage={avatarImage}
-        dailyStudy={dailyStudy}
       />}
       {screen === "lessonIntro" && <LessonIntro
         lesson={activeLesson}
@@ -630,7 +629,7 @@ function UserAvatar({ userName, avatar, avatarImage, variant }: {
   </span>
 }
 
-function Home({ completedLessons, notice, clearNotice, onOpenLesson, onOpenTask, onOpenProfile, userName, avatar, avatarImage, dailyStudy }: {
+function Home({ completedLessons, notice, clearNotice, onOpenLesson, onOpenTask, onOpenProfile, userName, avatar, avatarImage }: {
   completedLessons: number[]
   notice: string
   clearNotice: () => void
@@ -640,7 +639,6 @@ function Home({ completedLessons, notice, clearNotice, onOpenLesson, onOpenTask,
   userName: string
   avatar: string
   avatarImage: string
-  dailyStudy: DailyStudyState
 }) {
   const unitLessons = lessons.filter(lesson => lesson.id <= 10)
   const currentLessonId = unitLessons.find(lesson => !completedLessons.includes(lesson.id))?.id ?? null
@@ -708,10 +706,6 @@ function Home({ completedLessons, notice, clearNotice, onOpenLesson, onOpenTask,
     <div className="learn-home-gradient" aria-hidden="true" />
     <header className="learn-header">
       <Brand />
-      <div className="learn-streak" aria-label={"Napi sorozat: " + dailyStudy.streak + " nap"}>
-        <Flame size={17} strokeWidth={2.4} aria-hidden="true" />
-        <span>{dailyStudy.streak}</span>
-      </div>
       <button className="learn-header-profile" type="button" onClick={onOpenProfile} aria-label={"Profil: " + userName}>
         <UserAvatar userName={userName} avatar={avatar} avatarImage={avatarImage} variant="header" />
       </button>
