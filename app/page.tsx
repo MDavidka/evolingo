@@ -317,6 +317,8 @@ export default function App() {
         if (cancelled) return
         if (typeof data.userName === "string" && data.userName.trim()) setUserName(data.userName.slice(0, 32))
         if (["fox", "book", "star", "spark"].includes(String(data.avatar))) setAvatar(String(data.avatar))
+        if (typeof data.avatarImage === "string" && data.avatarImage.startsWith("data:image/")) setAvatarImage(data.avatarImage)
+        if (typeof data.bannerImage === "string" && data.bannerImage.startsWith("data:image/")) setBannerImage(data.bannerImage)
         if (typeof data.notifications === "boolean") setNotifications(data.notifications)
         if (typeof data.compactMode === "boolean") setCompactMode(data.compactMode)
         if (Array.isArray(data.readLessons)) setReadLessons(data.readLessons.filter((v): v is number => Number.isInteger(v)))
@@ -338,7 +340,7 @@ export default function App() {
         method: "PATCH", credentials: "same-origin",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          userName, avatar, notifications, compactMode, readLessons, completedLessons,
+          userName, avatar, avatarImage, bannerImage, notifications, compactMode, readLessons, completedLessons,
           answeredTasks, purchasedItems, xp, stars, lives,
         }),
       }).then(response => {
@@ -346,7 +348,7 @@ export default function App() {
       }).catch(() => setNotice("Nem sikerült csatlakozni a felhőmentéshez."))
     }, 450)
     return () => window.clearTimeout(timer)
-  }, [remoteReady, userName, avatar, notifications, compactMode, readLessons, completedLessons, answeredTasks, purchasedItems, xp, stars, lives])
+  }, [remoteReady, userName, avatar, avatarImage, bannerImage, notifications, compactMode, readLessons, completedLessons, answeredTasks, purchasedItems, xp, stars, lives])
   const activeLesson = [...fullLessons, ...specialTasks].find((lesson) => lesson.id === activeLessonId) ?? lessons[0]
   const handleReadComplete = useCallback((lessonId: number) => {
     setReadLessons((previous) => {
@@ -420,9 +422,9 @@ export default function App() {
       {screen === "shop" && <Shop stars={stars} purchasedItems={purchasedItems} onPurchase={(id, cost) => { if (stars >= cost && !purchasedItems.includes(id)) { setStars((value) => value - cost); setPurchasedItems((items) => [...items, id]); setNotice("Sikeres vásárlás!"); } }} />}
       {screen === "leaderboard" && <Leaderboard />}
       {screen === "friends" && <Friends userName={userName} />}
-      {screen === "profile" && <Profile completedCount={completedLessons.length} readCount={readLessons.length} completedTaskCount={answeredTasks.length} xp={xp} stars={stars} userName={userName} setUserName={setUserName} avatar={avatar} setAvatar={setAvatar} notifications={notifications} setNotifications={setNotifications} compactMode={compactMode} setCompactMode={setCompactMode} showSettings={showSettings} setShowSettings={setShowSettings} />}
+      {screen === "profile" && <Profile completedCount={completedLessons.length} readCount={readLessons.length} completedTaskCount={answeredTasks.length} xp={xp} stars={stars} userName={userName} setUserName={setUserName} avatar={avatar} setAvatar={setAvatar} avatarImage={avatarImage} setAvatarImage={setAvatarImage} bannerImage={bannerImage} setBannerImage={setBannerImage} notifications={notifications} setNotifications={setNotifications} compactMode={compactMode} setCompactMode={setCompactMode} showSettings={showSettings} setShowSettings={setShowSettings} />}
     </section>
-    {screen !== "lessonIntro" && screen !== "task" && <Nav screen={screen} setScreen={setScreen} />}
+    {screen !== "lessonIntro" && screen !== "task" && <Nav screen={screen} setScreen={setScreen} userName={userName} avatar={avatar} avatarImage={avatarImage} />}
   </main>
 }
 
@@ -1073,9 +1075,9 @@ function Friends({ userName }: { userName: string }) {
   </div>
 }
 
-function Profile({ completedCount, readCount, completedTaskCount, xp, stars, userName, setUserName, avatar, setAvatar, notifications, setNotifications, compactMode, setCompactMode, showSettings, setShowSettings }: {
+function Profile({ completedCount, readCount, completedTaskCount, xp, stars, userName, setUserName, avatar, setAvatar, avatarImage, setAvatarImage, bannerImage, setBannerImage, notifications, setNotifications, compactMode, setCompactMode, showSettings, setShowSettings }: {
   completedCount: number; readCount: number; completedTaskCount: number; xp: number; stars: number; userName: string; setUserName: (value: string) => void;
-  avatar: string; setAvatar: (value: string) => void; notifications: boolean; setNotifications: (value: boolean) => void;
+  avatar: string; setAvatar: (value: string) => void; avatarImage: string; setAvatarImage: (value: string) => void; bannerImage: string; setBannerImage: (value: string) => void; notifications: boolean; setNotifications: (value: boolean) => void;
   compactMode: boolean; setCompactMode: (value: boolean) => void; showSettings: boolean; setShowSettings: (value: boolean) => void
 }) {
   const [draftName, setDraftName] = useState(userName)
@@ -1214,9 +1216,9 @@ function Profile({ completedCount, readCount, completedTaskCount, xp, stars, use
     <input ref={bannerInputRef} className="profile-file-input" type="file" accept="image/*" aria-label="Borítókép kiválasztása" onChange={event => { void handleGalleryImage(event.target.files?.[0], "banner"); event.currentTarget.value = "" }} />
 
     <section className="profile-social-stats" aria-label="Profilstatisztikák">
-      <div className="profile-social-stat"><span className="profile-stat-icon profile-stat-fire"><Flame size={25} fill="currentColor" /></span><strong>0</strong><span>Széria</span></div>
-      <div className="profile-social-stat"><span className="profile-stat-icon profile-stat-friends"><UserRound size={25} /></span><strong>0</strong><span>Barát</span></div>
-      <div className="profile-social-stat"><span className="profile-stat-icon profile-stat-points"><Star size={25} fill="currentColor" /></span><strong>{xp.toLocaleString("en-US")}</strong><span>Pont</span></div>
+      <div className="profile-social-stat"><span className="profile-stat-icon"><BookOpen size={22} /></span><strong>{readCount}</strong><span>Elolvasott lecke</span></div>
+      <div className="profile-social-stat"><span className="profile-stat-icon"><CheckCircle2 size={22} /></span><strong>{completedCount}</strong><span>Teljesített lecke</span></div>
+      <div className="profile-social-stat"><span className="profile-stat-icon"><Zap size={22} /></span><strong>{xp.toLocaleString("en-US")}</strong><span>Tapasztalati pont</span></div>
     </section>
 
     <section className="profile-learning-card">
@@ -1253,7 +1255,7 @@ function Profile({ completedCount, readCount, completedTaskCount, xp, stars, use
   </div>
 }
 function PageHeader({ title }: { title: string }) { return <header className="page-header"><div className="brand compact"><img src={foxIcon} alt="Evölingo róka" /><div><h1>Evölingo</h1></div></div><h1>{title}</h1></header> }
-function Nav({ screen, setScreen }: { screen: Screen; setScreen: (screen: Screen) => void }) {
+function Nav({ screen, setScreen, userName, avatar, avatarImage }: { screen: Screen; setScreen: (screen: Screen) => void; userName: string; avatar: string; avatarImage: string }) {
   const items: [Screen, string, React.ElementType][] = [["home", "Tanulás", BookOpen], ["friends", "Barátok", Users], ["leaderboard", "Tanterem", BarChart3], ["profile", "Profil", UserRound]]
   const activeIndex = Math.max(0, items.findIndex(([id]) => id === screen))
   const [dragIndex, setDragIndex] = useState<number | null>(null)
@@ -1308,6 +1310,6 @@ function Nav({ screen, setScreen }: { screen: Screen; setScreen: (screen: Screen
         setScreen(items[nextIndex][0])
       }}
     />
-    {items.map(([id, label, Icon], index) => <button key={id} data-tab-index={index} className={screen === id ? "active" : ""} onClick={() => setScreen(id)} aria-current={screen === id ? "page" : undefined}><Icon size={23} /><span>{label}</span></button>)}
+    {items.map(([id, label, Icon], index) => <button key={id} data-tab-index={index} className={screen === id ? "active" : ""} onClick={() => setScreen(id)} aria-current={screen === id ? "page" : undefined} aria-label={id === "profile" ? "Profil: " + userName : label} title={id === "profile" ? userName : undefined}>{id === "profile" ? <span className="nav-profile-avatar" aria-hidden="true">{avatarImage ? <img src={avatarImage} alt="" /> : avatar === "fox" ? <img src={foxIcon} alt="" /> : <span>{avatar === "book" ? "📚" : avatar === "star" ? "⭐" : "✨"}</span>}</span> : <Icon size={23} />}<span>{label}</span></button>)}
   </nav>
 }
