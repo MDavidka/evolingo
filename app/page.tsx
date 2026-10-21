@@ -302,6 +302,8 @@ export default function App() {
   const [lives, setLives] = useState(5)
   const [userName, setUserName] = useState("MDavid")
   const [avatar, setAvatar] = useState("fox")
+  const [avatarImage, setAvatarImage] = useState("")
+  const [bannerImage, setBannerImage] = useState("")
   const [notifications, setNotifications] = useState(false)
   const [compactMode, setCompactMode] = useState(false)
   const [showSettings, setShowSettings] = useState(false)
