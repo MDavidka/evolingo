@@ -1061,7 +1061,7 @@ function Friends({ userName, avatar, avatarImage, xp, dailyStudy, saveStatus, on
     return () => window.removeEventListener("keydown", onKeyDown)
   }, [showAdd, profileOpen])
 
-  const availableProfiles = (profiles.length ? profiles : demoFriendProfiles)
+  const availableProfiles = profiles
     .filter(friend => friend.handle.replace(/^@/, "").toLocaleLowerCase("hu") !== userName.toLocaleLowerCase("hu"))
     .filter((friend, index, list) => list.findIndex(item => item.id === friend.id || item.handle.toLocaleLowerCase("hu") === friend.handle.toLocaleLowerCase("hu")) === index)
   const normalizedQuery = query.trim().toLocaleLowerCase("hu")
