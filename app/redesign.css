@@ -36,25 +36,26 @@ button { font: inherit; }
 .learning-sheet {
   position: relative;
   min-height: 560px;
-  margin-top: 28px;
-  padding: 24px 0 112px;
+  margin-top: 48px;
+  padding: 22px 0 112px;
   background: #fff;
   border-radius: 42px 42px 0 0;
   box-shadow: 0 -14px 36px rgba(0,0,0,.07);
 }
 .sheet-handle { width: 78px; height: 9px; margin: 0 auto; border-radius: 20px; background: #c8d0d9; }
-.lesson-heading { margin: 58px 30px 0; }
-.lesson-heading h2 { margin: 0; font-size: 30px; line-height: 1.1; letter-spacing: -1.1px; font-weight: 800; }
-.lesson-heading p { margin: 8px 0 0; color: #a4a4a4; font-size: 19px; line-height: 1.35; }
+.lesson-heading { margin: 72px 28px 0; }
+.lesson-heading h2 { margin: 0; font-size: 28px; line-height: 1.15; letter-spacing: -0.8px; font-weight: 800; }
+.lesson-heading p { margin: 8px 0 0; color: #8b929b; font-size: 17px; line-height: 1.4; }
 .lesson-carousel {
-  display: flex; gap: 42px; overflow: hidden; margin-top: 82px; padding: 0 0 10px 52px;
+  display: flex; gap: 30px; overflow-x: auto; scrollbar-width: none; margin-top: 66px; padding: 0 28px 10px;
 }
-.lesson-card { flex: 0 0 116px; display: flex; flex-direction: column; align-items: center; gap: 14px; padding: 0; border: 0; background: transparent; }
+.lesson-carousel::-webkit-scrollbar { display: none; }
+.lesson-card { flex: 0 0 96px; min-height: 44px; display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 0; border: 0; background: transparent; }
 .lesson-icon {
-  width: 116px; height: 116px; display: grid; place-items: center; color: white; border-radius: 50%;
+  width: 96px; height: 96px; display: grid; place-items: center; color: white; border-radius: 50%;
   background: #f58b43; box-shadow: 0 10px 0 #bd681f, 0 13px 19px rgba(180,92,27,.17);
 }
-.lesson-card strong { font-size: 24px; line-height: 1; font-weight: 800; white-space: nowrap; }
+.lesson-card strong { font-size: 16px; line-height: 1.2; font-weight: 750; white-space: nowrap; color: #171717; }
 .lesson-card.is-selected .lesson-icon { transform: translateY(4px); box-shadow: 0 5px 0 #bd681f; }
 .bottom-nav {
   position: fixed; z-index: 5; left: 50%; bottom: calc(18px + env(safe-area-inset-bottom)); transform: translateX(-50%);
@@ -66,11 +67,8 @@ button { font: inherit; }
 .nav-item span { font-size: 14px; font-weight: 700; white-space: nowrap; }
 .nav-item.active { background: #e2e6eb; box-shadow: inset 0 2px 4px rgba(0,0,0,.04); }
 @media (max-width: 380px) {
-  .brand h1 { font-size: 31px; }
-  .lesson-heading h2 { font-size: 33px; }
-  .lesson-heading p { font-size: 21px; }
-  .lesson-carousel { gap: 48px; padding-left: 58px; }
-  .lesson-icon { width: 132px; height: 132px; }
-  .lesson-card { flex-basis: 132px; }
-  .nav-item span { font-size: 15px; }
+  .brand h1 { font-size: 26px; }
+  .lesson-heading h2 { font-size: 26px; }
+  .lesson-heading p { font-size: 16px; }
+  .lesson-carousel { gap: 24px; padding-inline: 24px; }
 }

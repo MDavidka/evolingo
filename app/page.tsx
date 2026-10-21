@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { BarChart3, BookOpen, Users, UserRound } from "lucide-react"
 
-const lessons = ["Lesson 1", "Lesson 2", "Lesson 3", "Lesson 4"]
+const lessons = ["I am", "You are", "He is", "Questions"]
 
 export default function HomePage() {
   const [activeTab, setActiveTab] = useState("Tanulás")
