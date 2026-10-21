@@ -240,6 +240,13 @@ const specialTasks: LessonUnit[] = [
 const placeholders = Array.from({ length: 14 }, (_, index) => ({ id: 11 + index, title: index % 2 === 0 ? "Jövőbeli lecke" : "Ismétlés", summary: "Hamarosan elérhető", isPlaceholder: true as const }))
 const pathItems = [...lessons, ...specialTasks, ...placeholders]
 
+function Brand() {
+  return <div className="brand-lockup">
+    <img className="brand-mascot" src={foxIcon} alt="" />
+    <span>Evölingo</span>
+  </div>
+}
+
 function Home({ readLessons, completedLessons, answeredTasks, stars, notice, clearNotice, onOpenLesson, onOpenTask, userName, saveStatus, onRetryCloudSave }: {
   readLessons: number[]; completedLessons: number[]; answeredTasks: string[]; stars: number; notice: string; clearNotice: () => void
   onOpenLesson: (id: number) => void; onOpenTask: (lessonId: number, index: number) => void
