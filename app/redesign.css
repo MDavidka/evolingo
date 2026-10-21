@@ -157,3 +157,21 @@ body .learn-sheet-heading .learn-progress-row {
   body .learn-stat-label { font-size: 11px !important; }
   body .learn-stat-value { font-size: 19px !important; }
 }
+
+
+/* Keep one selected-tab marker: the sliding indicator is the only selection background. */
+body .bottom-nav button.active {
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+/* Stat/status cards stay unfilled; preserve their existing shape and typography. */
+body .learn-stat-chip {
+  background: transparent !important;
+  box-shadow: none !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+body .learn-stat-chip::before {
+  background: none !important;
+}
