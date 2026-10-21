@@ -549,10 +549,7 @@ export default function App() {
   return <main className={"app-shell " + ((screen === "lessonIntro" || screen === "task") ? "lesson-open" : "")}>
     <section className={"screen-content " + ((screen === "lessonIntro" || screen === "task") ? "lesson-page" : "")}>
       {screen === "home" && <Home
-        readLessons={readLessons}
         completedLessons={completedLessons}
-        answeredTasks={answeredTasks}
-        stars={stars}
         notice={notice}
         clearNotice={() => setNotice("")}
         onOpenLesson={openLesson}
@@ -610,11 +607,8 @@ function GuestSaveBanner({ userName, status, onRetry }: { userName: string; stat
   </aside>
 }
 
-function Home({ readLessons, completedLessons, answeredTasks, stars, notice, clearNotice, onOpenLesson, onOpenTask, onOpenProfile, userName, avatar, avatarImage }: {
-  readLessons: number[]
+function Home({ completedLessons, notice, clearNotice, onOpenLesson, onOpenTask, onOpenProfile, userName, avatar, avatarImage }: {
   completedLessons: number[]
-  answeredTasks: string[]
-  stars: number
   notice: string
   clearNotice: () => void
   onOpenLesson: (id: number) => void
@@ -624,14 +618,8 @@ function Home({ readLessons, completedLessons, answeredTasks, stars, notice, cle
   avatar: string
   avatarImage: string
 }) {
-  const [selectedLessonId, setSelectedLessonId] = useState<number | null>(null)
   const unitLessons = lessons.filter(lesson => lesson.id <= 10)
   const currentLesson = unitLessons.find(lesson => !completedLessons.includes(lesson.id)) ?? unitLessons[0]
-  const selectedLesson = unitLessons.find(lesson => lesson.id === selectedLessonId)
-  const nextTaskIndex = selectedLesson
-    ? selectedLesson.questions.findIndex((_, index) => !answeredTasks.includes(selectedLesson.id + "-" + index))
-    : -1
-  const continueIndex = nextTaskIndex === -1 ? 0 : nextTaskIndex
   const avatarEmoji = avatar === "book" ? "📚" : avatar === "star" ? "⭐" : avatar === "spark" ? "✨" : ""
 
   return <div className="home-screen">
@@ -660,27 +648,24 @@ function Home({ readLessons, completedLessons, answeredTasks, stars, notice, cle
         {unitLessons.map((lesson, index) => {
           const isUnlocked = lesson.id === 1 || completedLessons.includes(lesson.id - 1)
           const complete = completedLessons.includes(lesson.id)
-          const isSelected = selectedLessonId === lesson.id
+          const openLesson = () => {
+            if (lesson.specialType) onOpenTask(lesson.id, 0)
+            else onOpenLesson(lesson.id)
+          }
           return <div className="lesson-carousel-item" key={lesson.id}>
             <button
               type="button"
               className={"lesson-carousel-dot " + (isUnlocked ? "is-unlocked" : "is-locked") + (complete ? " is-complete" : "")}
               disabled={!isUnlocked}
-              onClick={() => setSelectedLessonId(isSelected ? null : lesson.id)}
+              onClick={openLesson}
               aria-label={lesson.title + (complete ? ", teljesítve" : "")}
-              aria-expanded={isSelected}
             >
               <BookOpen size={30} strokeWidth={2.5} />
               {complete && <span className="lesson-carousel-check"><Check size={12} /></span>}
             </button>
-            <button className="lesson-carousel-label" type="button" disabled={!isUnlocked} onClick={() => setSelectedLessonId(isSelected ? null : lesson.id)}>
+            <button className="lesson-carousel-label" type="button" disabled={!isUnlocked} onClick={openLesson}>
               Lesson {index + 1}
             </button>
-            {isSelected && <div className="lesson-carousel-popover" role="group" aria-label={lesson.title + " műveletek"}>
-              <strong>{lesson.title}</strong>
-              <button type="button" onClick={() => { setSelectedLessonId(null); onOpenLesson(lesson.id) }}>Lecke megnyitása</button>
-              <button type="button" disabled={!readLessons.includes(lesson.id)} onClick={() => { setSelectedLessonId(null); onOpenTask(lesson.id, continueIndex) }}>Feladatok</button>
-            </div>}
           </div>
         })}
       </div>
