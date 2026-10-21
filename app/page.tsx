@@ -560,7 +560,7 @@ export default function App() {
       />}
       {screen === "shop" && <Shop stars={stars} purchasedItems={purchasedItems} onPurchase={(id, cost) => { if (stars >= cost && !purchasedItems.includes(id)) { setStars((value) => value - cost); setPurchasedItems((items) => [...items, id]); setNotice("Sikeres vásárlás!"); } }} />}
       {screen === "leaderboard" && <Leaderboard />}
-      {screen === "friends" && <Friends userName={userName} saveStatus={saveStatus} onRetryCloudSave={retryCloudSave} />}
+      {screen === "friends" && <Friends userName={userName} avatar={avatar} avatarImage={avatarImage} xp={xp} dailyStudy={dailyStudy} saveStatus={saveStatus} onRetryCloudSave={retryCloudSave} />}
       {screen === "profile" && <Profile completedCount={completedLessons.length} readCount={readLessons.length} completedTaskCount={answeredTasks.length} xp={xp} stars={stars} userName={userName} setUserName={setUserName} avatar={avatar} setAvatar={setAvatar} avatarImage={avatarImage} setAvatarImage={setAvatarImage} bannerImage={bannerImage} setBannerImage={setBannerImage} dailyStudy={dailyStudy} onDailyGoalChange={(dailyGoal) => setDailyStudy(previous => ({ ...previous, dailyGoal }))} saveStatus={saveStatus} onRetryCloudSave={retryCloudSave} notifications={notifications} setNotifications={setNotifications} compactMode={compactMode} setCompactMode={setCompactMode} showSettings={showSettings} setShowSettings={setShowSettings} />}
     </section>
     {screen !== "lessonIntro" && screen !== "task" && <Nav screen={screen} setScreen={setScreen} userName={userName} avatar={avatar} avatarImage={avatarImage} />}
@@ -950,7 +950,10 @@ const demoFriendProfiles: FriendProfile[] = [
   { id: "demo-lilla", name: "Lilla", handle: "@lilla", evoTag: "EVO-LILLA-0001", avatar: "L", streak: 7, xp: 560, status: "Ma már tanult", online: false },
 ]
 
-function Friends({ userName, saveStatus, onRetryCloudSave }: { userName: string; saveStatus: CloudSaveStatus; onRetryCloudSave: () => void }) {
+function Friends({ userName, avatar, avatarImage, xp, dailyStudy, saveStatus, onRetryCloudSave }: {
+  userName: string; avatar: string; avatarImage: string; xp: number; dailyStudy: DailyStudyState
+  saveStatus: CloudSaveStatus; onRetryCloudSave: () => void
+}) {
   const [tab, setTab] = useState<FriendsTab>("friends")
   const [query, setQuery] = useState("")
   const [notice, setNotice] = useState("")
@@ -1193,6 +1196,27 @@ function Friends({ userName, saveStatus, onRetryCloudSave }: { userName: string;
     {notice && <div className="friends-notice" role="status"><span>{notice}</span><button type="button" aria-label="Üzenet bezárása" onClick={() => setNotice("")}><X size={16} /></button></div>}
 
     {tab === "friends" && <>
+      <section className="friends-section friends-own-profile-section" aria-labelledby="friends-own-profile-heading">
+        <div className="friends-section-heading">
+          <h2 className="friends-section-title" id="friends-own-profile-heading">SAJÁT PROFILOD</h2>
+          <span className="friends-count">Vendég</span>
+        </div>
+        <div className="friends-list">
+          <article className="friends-person friends-own-profile-row">
+            <div className="friends-person-info">
+              <span className={"friends-avatar " + (avatarImage ? "has-image" : "")}>
+                {avatarImage ? <img src={avatarImage} alt="" /> : avatar === "fox" ? "🦊" : avatar === "book" ? "📚" : avatar === "star" ? "⭐" : "✨"}
+              </span>
+              <span className="friends-person-copy">
+                <strong>{userName}</strong>
+                <small className="friends-guest-label">Saját vendégprofilod</small>
+                <span>{dailyStudy.streak} napos sorozat <i aria-hidden="true">·</i> {xp.toLocaleString("hu-HU")} XP</span>
+              </span>
+            </div>
+            <span className={"friends-own-profile-save save-" + saveStatus}>{saveStatus === "saved" ? "Mentve" : saveStatus === "saving" || saveStatus === "loading" ? "Mentés…" : "Újrapróbálás"}</span>
+          </article>
+        </div>
+      </section>
       <section className="friends-section friends-all-users-section" aria-labelledby="friends-all-users-heading">
         <div className="friends-section-heading">
           <h2 className="friends-section-title" id="friends-all-users-heading">EVÖLINGO TANULÓI</h2>
