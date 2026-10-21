@@ -67,7 +67,7 @@ export async function GET() {
     const db = await getDatabase()
     const users = db.collection<UserDocument>("users")
     await users.updateOne({ _id: id }, { $setOnInsert: {
-      userName: makeGuestName(id), isGuest: true, avatar: "fox", notifications: false, compactMode: false, theme: "mist",
+      userName: makeGuestName(id), avatar: "fox", notifications: false, compactMode: false, theme: "mist",
       readLessons: [], completedLessons: [], answeredTasks: [], xp: 0, stars: 0, purchasedItems: [],
       lives: 5, friends: [], friendRequests: [], dailyStreak: 0, lastStudyDate: "",
       todayActivityCount: 0, activityDate: "", dailyGoal: 1, createdAt: new Date(),
@@ -114,14 +114,17 @@ export async function PATCH(request: NextRequest) {
     update.isGuest = true
     update.updatedAt = new Date()
     const db = await getDatabase()
+    const defaults: Record<string, unknown> = {
+      avatar: "fox", notifications: false, compactMode: false, theme: "mist",
+      readLessons: [], completedLessons: [], answeredTasks: [], xp: 0, stars: 0, purchasedItems: [],
+      lives: 5, friends: [], friendRequests: [], dailyStreak: 0, lastStudyDate: "",
+      todayActivityCount: 0, activityDate: "", dailyGoal: 1,
+    }
+    // MongoDB rejects updating the same field with both $set and $setOnInsert.
+    for (const key of Object.keys(update)) delete defaults[key]
     await db.collection<UserDocument>("users").updateOne(
       { _id: id },
-      { $set: update, $setOnInsert: {
-        createdAt: new Date(), avatar: "fox", notifications: false, compactMode: false, theme: "mist",
-        readLessons: [], completedLessons: [], answeredTasks: [], xp: 0, stars: 0, purchasedItems: [],
-        lives: 5, friends: [], friendRequests: [], dailyStreak: 0, lastStudyDate: "",
-        todayActivityCount: 0, activityDate: "", dailyGoal: 1,
-      } },
+      { $set: update, $setOnInsert: { createdAt: new Date(), ...defaults } },
       { upsert: true },
     )
     const response = NextResponse.json({ ok: true, sessionKey: publicSessionKey(id), userName: update.userName })
