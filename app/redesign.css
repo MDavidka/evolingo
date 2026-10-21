@@ -204,3 +204,26 @@ body .bottom-nav button.active svg {
 body .bottom-nav button.active span {
   color: #111111 !important;
 }
+
+
+/* Mixed learning path activity styling: Hard Task is intentionally marked red. */
+body .learn-path-node-kind-hard .learn-path-node-button,
+body .learn-path-node-kind-hard.learn-path-node-locked .learn-path-node-button,
+body .learn-path-node-kind-hard.learn-path-node-completed .learn-path-node-button {
+  background: #e53935 !important;
+  color: #ffffff !important;
+  box-shadow: 0 7px 0 #b71c1c !important;
+}
+
+body .learn-path-node-kind-hard .learn-path-node-button svg {
+  color: #ffffff !important;
+}
+
+body .learn-path-node-kind-hard .learn-path-node-label {
+  color: #c62828 !important;
+}
+
+body .learn-path-node-kind-hard .learn-path-node-button:active {
+  background: #d9322f !important;
+  box-shadow: 0 2px 0 #b71c1c !important;
+}
