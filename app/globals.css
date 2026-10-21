@@ -7107,3 +7107,14 @@ body,
   .learn-stat-label { font-size: 11px; }
   .learn-stat-value { font-size: 19px; }
 }
+
+
+/* Lesson page refinements: English-only heading, no timer/status indicator, transparent hero card */
+.lesson-reader .intro-hero {
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+.lesson-reader .intro-hero > p { display: none !important; }
+.lesson-reader .lesson-topbar .reading-clock { display: none !important; }
+.lesson-reader .intro-meta { color: #555; }
