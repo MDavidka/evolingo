@@ -6,6 +6,14 @@ export const runtime = "nodejs"
 export const dynamic = "force-dynamic"
 const COOKIE = "evolingo_session"
 
+const generatedAdjectives = ["Vidám", "Bátor", "Kíváncsi", "Csendes", "Ügyes", "Fürge", "Derűs", "Bölcs", "Kitartó", "Kreatív", "Barátságos", "Gyors"]
+const generatedAnimals = ["Róka", "Vidra", "Bagoly", "Mókus", "Panda", "Farkas", "Süni", "Delfin", "Nyuszi", "Koala", "Tigris", "Hód", "Macska", "Sas", "Medve"]
+
+function isGeneratedGuestName(value: string) {
+  const parts = value.trim().split(/\\s+/)
+  return parts.length === 3 && generatedAdjectives.includes(parts[0]) && generatedAnimals.includes(parts[1]) && /^\\d{4}$/.test(parts[2])
+}
+
 function makeTag(name: string) {
   const safe = name.normalize("NFKD").replace(/[\u0300-\u036f]/g, "").toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 8).padEnd(4, "X")
   return "EVO-" + safe + "-0001"
@@ -24,8 +32,10 @@ export async function GET() {
       .project({ userName: 1, avatar: 1, avatarImage: 1, xp: 1, streak: 1, dailyStreak: 1, lastSeenAt: 1, completedLessons: 1, isGuest: 1 })
       .sort({ lastSeenAt: -1 })
       .toArray()
-    const profiles = users.map(user => {
-      const name = typeof user.userName === "string" && user.userName.trim() ? user.userName.trim() : "Tanuló"
+    const profiles = users
+      .filter(user => typeof user.userName === "string" && Boolean(user.userName.trim()) && !isGeneratedGuestName(user.userName))
+      .map(user => {
+      const name = user.userName.trim()
       const lastSeen = user.lastSeenAt instanceof Date ? user.lastSeenAt.getTime() : 0
       const rawStreak = typeof user.dailyStreak === "number" ? user.dailyStreak : user.streak
       const streak = typeof rawStreak === "number" && Number.isFinite(rawStreak) ? Math.max(0, Math.floor(rawStreak)) : 0
