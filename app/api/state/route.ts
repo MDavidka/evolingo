@@ -15,10 +15,12 @@ type UserDocument = {
 const allowed = new Set([
   "userName", "avatar", "notifications", "compactMode", "theme", "avatarImage", "bannerImage",
   "readLessons", "completedLessons", "answeredTasks", "xp", "stars", "purchasedItems", "lives",
-  "friends", "friendRequests", "createdAt", "updatedAt",
+  "friends", "friendRequests", "dailyStreak", "lastStudyDate", "todayActivityCount", "activityDate", "dailyGoal",
+  "createdAt", "updatedAt",
 ])
 const isStringArray = (v: unknown) => Array.isArray(v) && v.length <= 1000 && v.every(x => typeof x === "string" && x.length <= 160)
 const isNumberArray = (v: unknown) => Array.isArray(v) && v.length <= 500 && v.every(x => typeof x === "number" && Number.isInteger(x) && x >= 0 && x <= 10000)
+const isDateKey = (v: unknown) => typeof v === "string" && (v === "" || /^\\d{4}-\\d{2}-\\d{2}$/.test(v))
 
 function safeState(doc: Record<string, unknown>) {
   const { _id, ...state } = doc
@@ -51,7 +53,8 @@ export async function GET() {
     await users.updateOne({ _id: id }, { $setOnInsert: {
       userName: "MDavid", avatar: "fox", notifications: false, compactMode: false, theme: "mist",
       readLessons: [], completedLessons: [], answeredTasks: [], xp: 0, stars: 0, purchasedItems: [],
-      lives: 5, friends: [], friendRequests: [], createdAt: new Date(),
+      lives: 5, friends: [], friendRequests: [], dailyStreak: 0, lastStudyDate: "",
+      todayActivityCount: 0, activityDate: "", dailyGoal: 1, createdAt: new Date(),
     }, $set: { lastSeenAt: new Date() } }, { upsert: true })
     const doc = await users.findOne({ _id: id })
     return sessionCookie(NextResponse.json({ state: safeState((doc || {}) as Record<string, unknown>) }), id, created)
@@ -78,6 +81,9 @@ export async function PATCH(request: NextRequest) {
       if (["notifications","compactMode"].includes(key) && typeof value !== "boolean") continue
       if (key === "theme" && !["mist","sage"].includes(String(value))) continue
       if (["xp","stars"].includes(key) && (typeof value !== "number" || !Number.isInteger(value) || value < 0 || value > 100000000)) continue
+      if (["dailyStreak", "todayActivityCount"].includes(key) && (typeof value !== "number" || !Number.isInteger(value) || value < 0 || value > 100000)) continue
+      if (["lastStudyDate", "activityDate"].includes(key) && !isDateKey(value)) continue
+      if (key === "dailyGoal" && ![1, 3, 5].includes(Number(value))) continue
       if (key === "lives" && (typeof value !== "number" || !Number.isInteger(value) || value < 0 || value > 5)) continue
       if (["avatarImage","bannerImage"].includes(key) && (typeof value !== "string" || value.length > 5_000_000 || (value !== "" && !value.startsWith("data:image/")))) continue
       update[key] = value
