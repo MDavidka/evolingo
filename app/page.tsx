@@ -474,6 +474,7 @@ function Home({ readLessons, completedLessons, answeredTasks, stars, notice, cle
   const unitLessons = lessons.filter((lesson) => lesson.id <= 10)
   const completedUnitLessons = unitLessons.filter((lesson) => completedLessons.includes(lesson.id)).length
   const unitProgress = Math.round((completedUnitLessons / Math.max(1, unitLessons.length)) * 100)
+  const currentLessonId = unitLessons.find((lesson) => !completedLessons.includes(lesson.id))?.id ?? null
   const pathIcons = [BookOpen, Headphones, MessageCircle, CircleHelp, Puzzle, Trophy]
   return <>
     <header className="app-header home-header"><Brand /><div className="home-currencies"><div className="star-balance" aria-label={stars + " csillag"}><Star size={21} fill="currentColor" /><strong>{stars}</strong></div><div className="health"><Heart fill="currentColor" size={20} /><strong>5</strong></div></div></header>
@@ -491,20 +492,25 @@ function Home({ readLessons, completedLessons, answeredTasks, stars, notice, cle
         const isUnlocked = item.id === 1 || completedLessons.includes(item.id - 1)
         const complete = completedLessons.includes(item.id)
         const side = index % 2 === 0 ? "path-row-left" : "path-row-right"
-        if (!lesson) return <div className={"compact-lesson-row " + side + " compact-future-row"} key={item.id}><span className="compact-lesson-icon node-locked"><LockKeyhole size={24} /></span><span className="compact-lesson-name muted">{item.title}</span></div>
+        const separators = index < pathItems.length - 1 ? <span className={"path-separator-dots " + (index % 2 === 0 ? "dots-to-right" : "dots-to-left")} aria-hidden="true"><i /><i /></span> : null
+        if (!lesson) return <div className={"compact-lesson-row " + side + " compact-future-row"} key={item.id}>{separators}<span className="compact-lesson-icon node-locked"><LockKeyhole size={24} /></span><span className="compact-lesson-name muted">{item.title}</span></div>
         if (lesson.specialType) {
           const SpecialIcon = lesson.specialType === "hard" ? Dumbbell : lesson.specialType === "timed" ? Timer : Languages
           const specialAvailable = isUnlocked
           return <div className={"compact-lesson-row " + side + " special-path-row " + (specialAvailable ? "special-available special-" + lesson.specialType : "special-locked")} key={lesson.id}>
+            {separators}
             <button className={"compact-lesson-icon-button " + (specialAvailable ? "node-unlocked" : "node-locked")} disabled={!specialAvailable} onClick={() => onOpenTask(lesson.id, 0)} aria-label={lesson.title + (specialAvailable ? "" : ", zárolva")}>
               <span className="compact-lesson-icon"><SpecialIcon size={27} /></span>
             </button>
             <button className="compact-lesson-name" disabled={!specialAvailable} onClick={() => onOpenTask(lesson.id, 0)}><strong>{lesson.title}</strong><span>{lesson.summary}</span></button>
           </div>
         }
-        return <div className={"compact-lesson-row " + side + (complete ? " lesson-row-complete" : "")} key={lesson.id}>
+        const isCurrent = lesson.id === currentLessonId
+        return <div className={"compact-lesson-row " + side + (complete ? " lesson-row-complete" : "") + (isCurrent ? " lesson-row-current" : "")} key={lesson.id}>
+          {separators}
+          {isCurrent && <span className="active-ring" aria-hidden="true">{Array.from({ length: 12 }, (_, segmentIndex) => <span key={segmentIndex} className="active-ring__segment" style={{ transform: "rotate(" + (segmentIndex * 30) + "deg)" }} />)}</span>}
           <button className={"compact-lesson-icon-button " + (isUnlocked ? "node-unlocked" : "node-locked") + (complete ? " node-complete" : "")} disabled={!isUnlocked} onClick={() => setSelectedLessonId(selectedLessonId === lesson.id ? null : lesson.id)} aria-label={lesson.title + (complete ? ", teljesítve" : "")} aria-expanded={selectedLessonId === lesson.id}>
-            <span className="compact-lesson-icon">{(() => { const LessonIcon = pathIcons[(lesson.id - 1) % pathIcons.length]; return <LessonIcon size={29} strokeWidth={2.6} /> })()}{complete && <span className="compact-lesson-check"><Check size={13} /></span>}</span>
+            <span className="compact-lesson-icon"><span className="compact-lesson-extrusion" aria-hidden="true" />{(() => { const LessonIcon = pathIcons[(lesson.id - 1) % pathIcons.length]; return <LessonIcon size={29} strokeWidth={2.6} /> })()}{complete && <span className="compact-lesson-check"><Check size={13} /></span>}</span>
           </button>
           <button className="compact-lesson-name" disabled={!isUnlocked} onClick={() => setSelectedLessonId(selectedLessonId === lesson.id ? null : lesson.id)}><strong>{lesson.title}</strong><span>{lesson.summary}</span></button>
           {selectedLessonId === lesson.id && <div className={"lesson-choice-popover " + side} role="group" aria-label="Lecke vagy feladat">
