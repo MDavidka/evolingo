@@ -762,6 +762,7 @@ function Home({ completedLessons, readLessons, answeredTasks, stars, xp, dailySt
         if (!nodeElement) return null
         const rect = nodeElement.getBoundingClientRect()
         return { x: rect.left + rect.width / 2 - bounds.left, y: rect.top + rect.height / 2 - bounds.top }
+      })
       const paths: string[] = []
       for (let index = 0; index < points.length - 1; index++) {
         const from = points[index]
