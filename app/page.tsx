@@ -550,6 +550,8 @@ export default function App() {
     <section className={"screen-content " + (screen === "home" ? "learn-home-content " : "") + ((screen === "lessonIntro" || screen === "task") ? "lesson-page" : "")}>
       {screen === "home" && <Home
         completedLessons={completedLessons}
+        stars={stars}
+        dailyStudy={dailyStudy}
         notice={notice}
         clearNotice={() => setNotice("")}
         onOpenLesson={openLesson}
@@ -629,8 +631,10 @@ function UserAvatar({ userName, avatar, avatarImage, variant }: {
   </span>
 }
 
-function Home({ completedLessons, notice, clearNotice, onOpenLesson, onOpenTask, onOpenProfile, userName, avatar, avatarImage }: {
+function Home({ completedLessons, stars, dailyStudy, notice, clearNotice, onOpenLesson, onOpenTask, onOpenProfile, userName, avatar, avatarImage }: {
   completedLessons: number[]
+  stars: number
+  dailyStudy: DailyStudyState
   notice: string
   clearNotice: () => void
   onOpenLesson: (id: number) => void
@@ -710,6 +714,16 @@ function Home({ completedLessons, notice, clearNotice, onOpenLesson, onOpenTask,
         <UserAvatar userName={userName} avatar={avatar} avatarImage={avatarImage} variant="header" />
       </button>
     </header>
+    <div className="learn-stats-row" aria-label="Tanulási statisztikák">
+      <div className="learn-stat-chip learn-streak-chip" aria-label={"Napi sorozat: " + dailyStudy.streak + " nap"}>
+        <Flame size={21} strokeWidth={2.5} aria-hidden="true" />
+        <span>day {dailyStudy.streak}</span>
+      </div>
+      <div className="learn-stat-chip learn-points-chip" aria-label={stars + " csillagpont"}>
+        <Star size={20} strokeWidth={2.4} fill="currentColor" aria-hidden="true" />
+        <span>{stars}</span>
+      </div>
+    </div>
     {notice && <button className="inline-notice learn-inline-notice" type="button" onClick={clearNotice}><span>{notice}</span><X size={16} aria-hidden="true" /></button>}
 
     <section className="learn-sheet" ref={sheetRef} aria-label="Tanulási útvonal">
