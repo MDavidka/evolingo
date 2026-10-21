@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent, type PointerEvent as ReactPointerEvent } from "react"
 import {
   ArrowRight, BarChart3, Book, BookOpen, Check, CheckCircle2, Headphones, MessageCircle, CircleHelp, Puzzle,
   Flame, Heart, Lightbulb, Medal, RotateCcw, Trophy, UserRound, Dumbbell, Timer, Languages, Volume2,
@@ -656,7 +656,7 @@ function Home({ completedLessons, stars, dailyStudy, notice, clearNotice, onOpen
   const [connectorPaths, setConnectorPaths] = useState<string[]>([])
   const [sheetHeight, setSheetHeight] = useState(74)
   const dragStart = useRef<{ y: number; height: number } | null>(null)
-  const handlePointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
+  const handlePointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
     dragStart.current = { y: event.clientY, height: sheetHeight }
     event.currentTarget.setPointerCapture(event.pointerId)
     event.preventDefault()
