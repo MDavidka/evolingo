@@ -5535,3 +5535,48 @@ html, body { background: #fff; }
   background: linear-gradient(150deg, #dce4dd 0%, #c6d0c7 100%) !important;
   box-shadow: 0 6px 12px rgba(35,55,38,.10), inset 0 2px 1px rgba(255,255,255,.48) !important;
 }
+
+
+/* Consistent lesson path color and label layout. */
+.compact-lesson-row::after {
+  display: none !important;
+  background: none !important;
+  background-image: none !important;
+  box-shadow: none !important;
+}
+.compact-lesson-row .compact-lesson-icon {
+  color: #ffffff !important;
+}
+.compact-lesson-name,
+.compact-lesson-name strong,
+.compact-lesson-row.path-row-right .compact-lesson-name,
+.compact-future-row .compact-lesson-name {
+  color: #171a17 !important;
+}
+.compact-lesson-name strong {
+  font-size: 14px !important;
+  font-weight: 760 !important;
+  line-height: 1.28 !important;
+}
+.compact-lesson-name > span {
+  color: #747d75 !important;
+  font-size: 11px !important;
+  font-weight: 450 !important;
+  line-height: 1.4 !important;
+}
+.compact-lesson-name:disabled strong,
+.compact-lesson-name:disabled > span {
+  color: #747d75 !important;
+}
+.compact-lesson-name {
+  top: 94px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  gap: 4px !important;
+  text-align: center !important;
+}
+@media (max-width: 390px) {
+  .compact-lesson-name { top: 86px !important; }
+}
