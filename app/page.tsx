@@ -551,6 +551,7 @@ export default function App() {
       {screen === "home" && <Home
         completedLessons={completedLessons}
         stars={stars}
+        xp={xp}
         dailyStudy={dailyStudy}
         notice={notice}
         clearNotice={() => setNotice("")}
@@ -631,9 +632,10 @@ function UserAvatar({ userName, avatar, avatarImage, variant }: {
   </span>
 }
 
-function Home({ completedLessons, stars, dailyStudy, notice, clearNotice, onOpenLesson, onOpenTask, onOpenProfile, userName, avatar, avatarImage }: {
+function Home({ completedLessons, stars, xp, dailyStudy, notice, clearNotice, onOpenLesson, onOpenTask, onOpenProfile, userName, avatar, avatarImage }: {
   completedLessons: number[]
   stars: number
+  xp: number
   dailyStudy: DailyStudyState
   notice: string
   clearNotice: () => void
@@ -714,14 +716,6 @@ function Home({ completedLessons, stars, dailyStudy, notice, clearNotice, onOpen
     }
   }, [statusKey, unitLessons.length, pathHeight])
 
-  useEffect(() => {
-    if (currentLessonId === null) return
-    const currentNode = nodeRefs.current.get(currentLessonId)
-    if (!currentNode) return
-    const frame = window.requestAnimationFrame(() => currentNode.scrollIntoView({ behavior: "auto", block: "center", inline: "nearest" }))
-    return () => window.cancelAnimationFrame(frame)
-  }, [currentLessonId, pathHeight])
-
   return <div className="learn-home-screen">
     <div className="learn-home-gradient" aria-hidden="true" />
     <header className="learn-header">
@@ -731,13 +725,17 @@ function Home({ completedLessons, stars, dailyStudy, notice, clearNotice, onOpen
       </button>
     </header>
     <div className="learn-stats-row" aria-label="Tanulási statisztikák">
-      <div className="learn-stat-chip learn-streak-chip" aria-label={"Napi sorozat: " + dailyStudy.streak + " nap"}>
-        <Flame size={21} strokeWidth={2.5} aria-hidden="true" />
-        <span>day {dailyStudy.streak}</span>
+      <div className="learn-stat-chip learn-streak-chip" aria-label={"Sorozat: " + dailyStudy.streak + " nap"}>
+        <span className="learn-stat-label">Streak</span>
+        <strong className="learn-stat-value">{dailyStudy.streak}</strong>
       </div>
-      <div className="learn-stat-chip learn-points-chip" aria-label={stars + " csillagpont"}>
-        <Star size={20} strokeWidth={2.4} fill="currentColor" aria-hidden="true" />
-        <span>{stars}</span>
+      <div className="learn-stat-chip learn-points-chip" aria-label={stars + " csillag"}>
+        <span className="learn-stat-label">Stars</span>
+        <strong className="learn-stat-value">{stars}</strong>
+      </div>
+      <div className="learn-stat-chip learn-xp-chip" aria-label={xp + " XP"}>
+        <span className="learn-stat-label">XP</span>
+        <strong className="learn-stat-value">{xp}</strong>
       </div>
     </div>
     {notice && <button className="inline-notice learn-inline-notice" type="button" onClick={clearNotice}><span>{notice}</span><X size={16} aria-hidden="true" /></button>}
@@ -763,6 +761,10 @@ function Home({ completedLessons, stars, dailyStudy, notice, clearNotice, onOpen
       />
       <div className="learn-sheet-heading">
         <h1>Present simple</h1>
+        <div className="learn-theme-row">
+          <span className="learn-theme-icon" aria-hidden="true"><Timer size={18} strokeWidth={2.3} /></span>
+          <span>Igeidők</span>
+        </div>
         <p>Ebben a fejezetben a jelen időt tanulod</p>
         <div className="learn-progress-row">
           <div className="learn-progress-track" role="progressbar" aria-label="Leckék teljesítése" aria-valuemin={0} aria-valuemax={unitLessons.length} aria-valuenow={completedCount}>
@@ -808,7 +810,6 @@ function Home({ completedLessons, stars, dailyStudy, notice, clearNotice, onOpen
     </section>
   </div>
 }
-
 function LessonIntro({ lesson, onExit, onReadComplete, onPractice, alreadyRead }: {
   lesson: LessonUnit; onExit: () => void; onReadComplete: () => void; onPractice: () => void; alreadyRead: boolean
 }) {
