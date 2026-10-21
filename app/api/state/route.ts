@@ -124,7 +124,7 @@ export async function PATCH(request: NextRequest) {
       const existing = await users.findOne({ _id: id }, { projection: { clientUpdatedAt: 1, userName: 1 } })
       const savedVersion = typeof existing?.clientUpdatedAt === "number" ? existing.clientUpdatedAt : 0
       if (savedVersion > requestedVersion) {
-        const response = NextResponse.json({ ok: true, ignored: true, sessionKey: publicSessionKey(id), userName: existing?.userName })
+        const response = NextResponse.json({ ok: true, ignored: true, sessionKey: publicSessionKey(id), userName: existing?.userName, clientUpdatedAt: savedVersion })
         return sessionCookie(response, id, created)
       }
     }
@@ -141,7 +141,12 @@ export async function PATCH(request: NextRequest) {
       { $set: update, $setOnInsert: { createdAt: new Date(), ...defaults } },
       { upsert: true },
     )
-    const response = NextResponse.json({ ok: true, sessionKey: publicSessionKey(id), userName: update.userName })
+    const response = NextResponse.json({
+      ok: true,
+      sessionKey: publicSessionKey(id),
+      userName: update.userName,
+      ...(requestedVersion !== null ? { clientUpdatedAt: requestedVersion } : {}),
+    })
     return sessionCookie(response, id, created)
   } catch (error) {
     console.error("PATCH /api/state failed", error)
