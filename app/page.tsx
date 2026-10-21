@@ -831,18 +831,14 @@ function LessonIntro({ lesson, onExit, onReadComplete, onPractice, alreadyRead }
   return <div className="lesson-layout lesson-intro-layout lesson-reader" data-lesson-theme={lesson.id}>
     <header className="lesson-topbar">
       <button className="exit-lesson ios-glass-button" onClick={onExit} aria-label="Vissza a tanulási útvonalhoz"><X size={27} /></button>
-      <div className="intro-top-title"><span>LECKE {String(lesson.id).padStart(2, "0")}</span><strong>{lesson.title}</strong></div>
-      <div className={"reading-clock liquid-glass-control " + (readingComplete ? "is-complete" : "")} aria-label={readingComplete ? "Olvasás kész" : "Hátralévő idő: " + secondsLeft + " másodperc"}>
-        {readingComplete ? <CheckCircle2 size={23} /> : <><svg viewBox="0 0 44 44" aria-hidden="true"><circle className="reading-clock-track" cx="22" cy="22" r="18" /><circle className="reading-clock-progress" cx="22" cy="22" r="18" strokeDasharray={circumference} strokeDashoffset={circumference * progress} /></svg><span>{secondsLeft}</span></>}
-      </div>
+      <div className="intro-top-title"><span>LESSON {String(lesson.id).padStart(2, "0")}</span><strong>{lesson.title}</strong></div>
     </header>
     <div className="intro-scroll-content">
       <div className="intro-hero">
-        <div className="intro-hero-mascot"><img src={foxIcon} alt="Evölingo róka" /></div>
+        <div className="intro-hero-mascot"><img src={foxIcon} alt="Evölingo fox" /></div>
         <span className="intro-eyebrow">ANGOL NYELVTAN · {lesson.level}</span>
         <h1>{lesson.title}</h1>
-        <p>{lesson.summary}</p>
-        <div className="intro-meta"><span><BookOpen size={15} /> Tananyag</span><span><Zap size={15} /> +10 XP olvasásért</span></div>
+        <div className="intro-meta"><span><BookOpen size={15} /> Tananyag</span><span><Zap size={15} /> +10 XP for reading</span></div>
       </div>
       <LessonContentBlockView block={{ type: "image", src: (lessonIllustrations[lesson.id] ?? lessonIllustrations[1]).src, alt: (lessonIllustrations[lesson.id] ?? lessonIllustrations[1]).alt, caption: (lessonIllustrations[lesson.id] ?? lessonIllustrations[1]).alt, layout: "hero", aspect: "natural", fit: "contain" }} />
       {lesson.sections.map((section, index) => <LessonSectionContent section={section} index={index} key={section.title} />)}
