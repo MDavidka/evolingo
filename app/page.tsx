@@ -22,6 +22,19 @@ const lessonIllustrations: Record<number, { src: string; alt: string }> = {
 }
 type Screen = "home" | "lessonIntro" | "task" | "shop" | "leaderboard" | "profile" | "friends"
 type DailyStudyState = { streak: number; lastStudyDate: string; todayActivityCount: number; activityDate: string; dailyGoal: number }
+type CloudSaveStatus = "loading" | "saving" | "saved" | "local" | "error"
+type LocalProgressSnapshot = { version: 1; sessionKey: string; savedAt: number; state: Record<string, unknown> }
+const LOCAL_PROGRESS_KEY = "evolingo.user-progress.v1"
+
+function makeLocalGuestName() {
+  const adjectives = ["Vidám", "Bátor", "Kíváncsi", "Csendes", "Ügyes", "Fürge", "Derűs", "Bölcs", "Kitartó", "Kreatív", "Barátságos", "Gyors"]
+  const animals = ["Róka", "Vidra", "Bagoly", "Mókus", "Panda", "Farkas", "Süni", "Delfin", "Nyuszi", "Koala", "Tigris", "Hód", "Macska", "Sas", "Medve"]
+  return adjectives[Math.floor(Math.random() * adjectives.length)] + " " + animals[Math.floor(Math.random() * animals.length)] + " " + (1000 + Math.floor(Math.random() * 9000))
+}
+function hasLearningProgress(data: Record<string, unknown>) {
+  return ["readLessons", "completedLessons", "answeredTasks", "purchasedItems"].some(key => Array.isArray(data[key]) && (data[key] as unknown[]).length > 0) ||
+    ["xp", "stars", "dailyStreak", "todayActivityCount"].some(key => typeof data[key] === "number" && (data[key] as number) > 0)
+}
 
 function getLocalDateKey(date = new Date()) {
   return date.getFullYear() + "-" + String(date.getMonth() + 1).padStart(2, "0") + "-" + String(date.getDate()).padStart(2, "0")
@@ -309,7 +322,7 @@ export default function App() {
   const [stars, setStars] = useState(0)
   const [purchasedItems, setPurchasedItems] = useState<string[]>([])
   const [lives, setLives] = useState(5)
-  const [userName, setUserName] = useState("MDavid")
+  const [userName, setUserName] = useState(() => makeLocalGuestName())
   const [avatar, setAvatar] = useState("fox")
   const [avatarImage, setAvatarImage] = useState("")
   const [bannerImage, setBannerImage] = useState("")
@@ -319,59 +332,147 @@ export default function App() {
   const [showSettings, setShowSettings] = useState(false)
   const [notice, setNotice] = useState("")
   const [remoteReady, setRemoteReady] = useState(false)
+  const [localFallbackReady, setLocalFallbackReady] = useState(false)
+  const [sessionKey, setSessionKey] = useState("")
+  const [saveStatus, setSaveStatus] = useState<CloudSaveStatus>("loading")
+
   useEffect(() => {
     let cancelled = false
+    let localSnapshot: LocalProgressSnapshot | null = null
+    try {
+      const raw = localStorage.getItem(LOCAL_PROGRESS_KEY)
+      if (raw) {
+        const parsed = JSON.parse(raw) as Partial<LocalProgressSnapshot>
+        if (parsed.version === 1 && typeof parsed.savedAt === "number" && parsed.state && typeof parsed.state === "object") {
+          localSnapshot = {
+            version: 1,
+            sessionKey: typeof parsed.sessionKey === "string" ? parsed.sessionKey : "",
+            savedAt: parsed.savedAt,
+            state: parsed.state as Record<string, unknown>,
+          }
+        }
+      }
+    } catch {
+      // The database remains the source of truth if the local recovery snapshot is unreadable.
+    }
+
+    const applyState = (data: Record<string, unknown>) => {
+      if (typeof data.userName === "string" && data.userName.trim()) setUserName(data.userName.slice(0, 32))
+      if (["fox", "book", "star", "spark"].includes(String(data.avatar))) setAvatar(String(data.avatar))
+      if (typeof data.avatarImage === "string" && data.avatarImage.startsWith("data:image/")) setAvatarImage(data.avatarImage)
+      if (typeof data.bannerImage === "string" && data.bannerImage.startsWith("data:image/")) setBannerImage(data.bannerImage)
+      if (typeof data.notifications === "boolean") setNotifications(data.notifications)
+      if (typeof data.compactMode === "boolean") setCompactMode(data.compactMode)
+      if (Array.isArray(data.readLessons)) setReadLessons(data.readLessons.filter((v): v is number => Number.isInteger(v)))
+      if (Array.isArray(data.completedLessons)) setCompletedLessons(data.completedLessons.filter((v): v is number => Number.isInteger(v)))
+      if (Array.isArray(data.answeredTasks)) setAnsweredTasks(data.answeredTasks.filter((v): v is string => typeof v === "string"))
+      if (Array.isArray(data.purchasedItems)) setPurchasedItems(data.purchasedItems.filter((v): v is string => typeof v === "string"))
+      if (typeof data.xp === "number" && Number.isFinite(data.xp)) setXp(Math.max(0, data.xp))
+      if (typeof data.stars === "number" && Number.isFinite(data.stars)) setStars(Math.max(0, data.stars))
+      if (typeof data.lives === "number" && Number.isFinite(data.lives)) setLives(Math.max(0, Math.min(5, data.lives)))
+      const today = getLocalDateKey()
+      const storedActivityDate = typeof data.activityDate === "string" ? data.activityDate : ""
+      setDailyStudy({
+        streak: typeof data.dailyStreak === "number" && Number.isInteger(data.dailyStreak) ? Math.max(0, data.dailyStreak) : 0,
+        lastStudyDate: typeof data.lastStudyDate === "string" ? data.lastStudyDate : "",
+        todayActivityCount: storedActivityDate === today && typeof data.todayActivityCount === "number" ? Math.max(0, data.todayActivityCount) : 0,
+        activityDate: today,
+        dailyGoal: [1, 3, 5].includes(Number(data.dailyGoal)) ? Number(data.dailyGoal) : 1,
+      })
+    }
+
     fetch("/api/state", { credentials: "same-origin", cache: "no-store" })
       .then(async response => {
         if (!response.ok) throw new Error("state unavailable")
-        const result = await response.json() as { state?: Record<string, unknown> }
-        const data = result.state || {}
+        const result = await response.json() as { state?: Record<string, unknown>; sessionKey?: string }
+        const remoteState = result.state || {}
         if (cancelled) return
-        if (typeof data.userName === "string" && data.userName.trim()) setUserName(data.userName.slice(0, 32))
-        if (["fox", "book", "star", "spark"].includes(String(data.avatar))) setAvatar(String(data.avatar))
-        if (typeof data.avatarImage === "string" && data.avatarImage.startsWith("data:image/")) setAvatarImage(data.avatarImage)
-        if (typeof data.bannerImage === "string" && data.bannerImage.startsWith("data:image/")) setBannerImage(data.bannerImage)
-        if (typeof data.notifications === "boolean") setNotifications(data.notifications)
-        if (typeof data.compactMode === "boolean") setCompactMode(data.compactMode)
-        if (Array.isArray(data.readLessons)) setReadLessons(data.readLessons.filter((v): v is number => Number.isInteger(v)))
-        if (Array.isArray(data.completedLessons)) setCompletedLessons(data.completedLessons.filter((v): v is number => Number.isInteger(v)))
-        if (Array.isArray(data.answeredTasks)) setAnsweredTasks(data.answeredTasks.filter((v): v is string => typeof v === "string"))
-        if (Array.isArray(data.purchasedItems)) setPurchasedItems(data.purchasedItems.filter((v): v is string => typeof v === "string"))
-        if (typeof data.xp === "number" && Number.isFinite(data.xp)) setXp(Math.max(0, data.xp))
-        if (typeof data.stars === "number" && Number.isFinite(data.stars)) setStars(Math.max(0, data.stars))
-        if (typeof data.lives === "number" && Number.isFinite(data.lives)) setLives(Math.max(0, Math.min(5, data.lives)))
-        const today = getLocalDateKey()
-        const storedActivityDate = typeof data.activityDate === "string" ? data.activityDate : ""
-        setDailyStudy({
-          streak: typeof data.dailyStreak === "number" && Number.isInteger(data.dailyStreak) ? Math.max(0, data.dailyStreak) : 0,
-          lastStudyDate: typeof data.lastStudyDate === "string" ? data.lastStudyDate : "",
-          todayActivityCount: storedActivityDate === today && typeof data.todayActivityCount === "number" ? Math.max(0, data.todayActivityCount) : 0,
-          activityDate: today,
-          dailyGoal: [1, 3, 5].includes(Number(data.dailyGoal)) ? Number(data.dailyGoal) : 1,
-        })
+        const remoteUpdatedAt = Date.parse(String(remoteState.updatedAt || remoteState.createdAt || "")) || 0
+        const sameSession = Boolean(localSnapshot?.sessionKey && result.sessionKey && localSnapshot.sessionKey === result.sessionKey)
+        const localHasProgress = Boolean(localSnapshot && hasLearningProgress(localSnapshot.state))
+        const remoteHasProgress = hasLearningProgress(remoteState)
+        const localIsNewer = Boolean(localSnapshot && (
+          (sameSession && localSnapshot.savedAt > remoteUpdatedAt) ||
+          (!remoteHasProgress && localHasProgress && !sameSession)
+        ))
+        const data = localIsNewer && localSnapshot ? { ...remoteState, ...localSnapshot.state } : remoteState
+        if (result.sessionKey) setSessionKey(result.sessionKey)
+        applyState(data)
+        setRemoteReady(true)
+        setLocalFallbackReady(false)
+        setSaveStatus(localIsNewer ? "saving" : "saved")
       })
-      .catch(() => { if (!cancelled) setNotice("A felhőmentés nem érhető el. Ellenőrizd a Vercel MONGO_URI beállítását.") })
-      .finally(() => { if (!cancelled) setRemoteReady(true) })
+      .catch(() => {
+        if (cancelled) return
+        if (localSnapshot) {
+          applyState(localSnapshot.state)
+          setSessionKey(localSnapshot.sessionKey)
+        }
+        setRemoteReady(false)
+        setLocalFallbackReady(true)
+        setSaveStatus("local")
+        setNotice("A kapcsolat nem érhető el. A haladásod helyben megmarad, amíg újra nem tudjuk menteni.")
+      })
     return () => { cancelled = true }
   }, [])
+
+  const statePayload = {
+    userName, avatar, avatarImage, bannerImage, notifications, compactMode, readLessons, completedLessons,
+    answeredTasks, purchasedItems, xp, stars, lives,
+    dailyStreak: dailyStudy.streak, lastStudyDate: dailyStudy.lastStudyDate,
+    todayActivityCount: dailyStudy.todayActivityCount, activityDate: dailyStudy.activityDate, dailyGoal: dailyStudy.dailyGoal,
+  }
+
   useEffect(() => {
-    if (!remoteReady) return
+    if (!remoteReady && !localFallbackReady) return
+    const savedAt = Date.now()
+    try {
+      localStorage.setItem(LOCAL_PROGRESS_KEY, JSON.stringify({
+        version: 1, sessionKey, savedAt, state: statePayload,
+      } satisfies LocalProgressSnapshot))
+    } catch {
+      // The cloud remains authoritative; local recovery storage is best-effort.
+    }
+    if (!remoteReady) {
+      setSaveStatus("local")
+      return
+    }
+    setSaveStatus("saving")
     const timer = window.setTimeout(() => {
       fetch("/api/state", {
         method: "PATCH", credentials: "same-origin",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          userName, avatar, avatarImage, bannerImage, notifications, compactMode, readLessons, completedLessons,
-          answeredTasks, purchasedItems, xp, stars, lives,
-          dailyStreak: dailyStudy.streak, lastStudyDate: dailyStudy.lastStudyDate,
-          todayActivityCount: dailyStudy.todayActivityCount, activityDate: dailyStudy.activityDate, dailyGoal: dailyStudy.dailyGoal,
-        }),
-      }).then(response => {
-        if (!response.ok) setNotice("A felhőmentés nem sikerült. Ellenőrizd a MongoDB beállítását.")
-      }).catch(() => setNotice("Nem sikerült csatlakozni a felhőmentéshez."))
+        body: JSON.stringify(statePayload),
+      }).then(async response => {
+        if (!response.ok) throw new Error("cloud save failed")
+        const result = await response.json() as { sessionKey?: string; userName?: string }
+        if (result.sessionKey) setSessionKey(result.sessionKey)
+        setSaveStatus("saved")
+      }).catch(() => setSaveStatus("error"))
     }, 450)
     return () => window.clearTimeout(timer)
-  }, [remoteReady, userName, avatar, avatarImage, bannerImage, notifications, compactMode, readLessons, completedLessons, answeredTasks, purchasedItems, xp, stars, lives, dailyStudy])
+  }, [remoteReady, localFallbackReady, sessionKey, userName, avatar, avatarImage, bannerImage, notifications, compactMode, readLessons, completedLessons, answeredTasks, purchasedItems, xp, stars, lives, dailyStudy])
+
+  const retryCloudSave = useCallback(async () => {
+    setSaveStatus("saving")
+    try {
+      const response = await fetch("/api/state", {
+        method: "PATCH", credentials: "same-origin",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(statePayload),
+      })
+      if (!response.ok) throw new Error("cloud save failed")
+      const result = await response.json() as { sessionKey?: string; userName?: string }
+      if (result.sessionKey) setSessionKey(result.sessionKey)
+      setLocalFallbackReady(false)
+      setRemoteReady(true)
+      setSaveStatus("saved")
+      setNotice("")
+    } catch {
+      setSaveStatus("local")
+    }
+  }, [statePayload])
+
   const recordDailyActivity = useCallback(() => {
     const today = getLocalDateKey()
     const yesterday = getPreviousLocalDateKey(today)
