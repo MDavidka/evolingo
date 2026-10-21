@@ -932,6 +932,11 @@ function Friends({ userName }: { userName: string }) {
   const visibleFriends = followedFriends.filter(friend => matchesQuery(friend, normalizedQuery))
   const visibleOutgoing = outgoingRequests.filter(friend => matchesQuery(friend, normalizedQuery))
   const visibleIncoming = incomingProfiles.filter(friend => matchesQuery(friend, normalizedQuery))
+  // Show real registered accounts on the Friends tab, not just followed friends or demo recommendations.
+  const registeredUsers = profiles
+    .filter(friend => friend.handle.replace(/^@/, "").toLocaleLowerCase("hu") !== userName.toLocaleLowerCase("hu"))
+    .filter((friend, index, list) => list.findIndex(item => item.id === friend.id) === index)
+    .filter(friend => matchesQuery(friend, normalizedQuery))
   const displayName = (friend: FriendProfile) => friend.name
 
   const shareInvite = async () => {
@@ -1057,6 +1062,20 @@ function Friends({ userName }: { userName: string }) {
     {notice && <div className="friends-notice" role="status"><span>{notice}</span><button type="button" aria-label="Üzenet bezárása" onClick={() => setNotice("")}><X size={16} /></button></div>}
 
     {tab === "friends" && <>
+      <section className="friends-section friends-all-users-section" aria-labelledby="friends-all-users-heading">
+        <div className="friends-section-heading">
+          <h2 className="friends-section-title" id="friends-all-users-heading">EVÖLINGO TANULÓI</h2>
+          <span className="friends-count">{profilesReady ? registeredUsers.length : "…"}</span>
+        </div>
+        <div className="friends-list">
+          {!profilesReady ? <><div className="friends-skeleton-row"/><div className="friends-skeleton-row"/></> :
+            registeredUsers.map(friend => renderPerson(friend, friends.includes(friend.id) ? "friend" : requests.includes(friend.id) ? "outgoing" : "suggested"))}
+          {profilesReady && registeredUsers.length === 0 && <div className="friends-empty">
+            <strong>{query ? "Nincs találat" : "Még nincs más regisztrált tanuló"}</strong>
+            <p>{query ? "Próbálj másik nevet vagy felhasználónevet." : "Amikor más felhasználók regisztrálnak az Evölingóba, a profiljuk itt jelenik meg."}</p>
+          </div>}
+        </div>
+      </section>
       {followedFriends.length > 0 && <>
       <section className="friends-section friends-following-section friends-connected-first" aria-labelledby="friends-following-heading">
         <div className="friends-section-heading"><h2 className="friends-section-title" id="friends-following-heading">BARÁTAIM</h2><span className="friends-count">{followedFriends.length}</span></div>
