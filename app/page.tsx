@@ -74,6 +74,49 @@ type Question = {
   tip: string
 }
 type LessonUnit = { id: number; title: string; summary: string; sections: LessonSection[]; questions: Question[]; level: string; specialType?: "hard" | "timed" | "words" }
+
+type LearningPathKind = "lesson" | "task" | "words" | "hard" | "test"
+type LearningPathNode = { key: string; kind: LearningPathKind; lessonId: number; specialId?: number }
+
+function seededPathValue(seed: number) {
+  const value = Math.sin(seed * 12.9898 + 78.233) * 43758.5453
+  return value - Math.floor(value)
+}
+
+function createLearningPathNodes(lessonUnits: LessonUnit[]): LearningPathNode[] {
+  const activityKinds: LearningPathKind[] = ["task", "words", "hard", "test"]
+  const firstKinds: LearningPathKind[] = ["task", "words", "hard", "test"]
+  const specialIds: Partial<Record<LearningPathKind, number>> = { hard: 101, test: 102, words: 103 }
+  const nodes: LearningPathNode[] = []
+
+  lessonUnits.forEach((lesson, lessonIndex) => {
+    nodes.push({ key: "lesson-" + lesson.id, kind: "lesson", lessonId: lesson.id })
+    const order = activityKinds
+      .map((kind, kindIndex) => ({ kind, score: seededPathValue(lesson.id * 97 + kindIndex * 131 + 19) }))
+      .sort((a, b) => a.score - b.score)
+      .map(item => item.kind)
+
+    // Guarantee that every activity type appears early, while keeping the later path mixed.
+    if (lessonIndex < firstKinds.length) {
+      const requiredKind = firstKinds[lessonIndex]
+      order.splice(order.indexOf(requiredKind), 1)
+      order.unshift(requiredKind)
+    }
+
+    // Each lesson gets a varied one-to-three activity mix (lesson node excluded).
+    const activityCount = 1 + Math.floor(seededPathValue(lesson.id * 911 + lessonIndex * 37 + 5) * 3)
+    order.slice(0, activityCount).forEach(kind => {
+      nodes.push({
+        key: kind + "-" + lesson.id,
+        kind,
+        lessonId: lesson.id,
+        ...(specialIds[kind] ? { specialId: specialIds[kind] } : {}),
+      })
+    })
+  })
+
+  return nodes
+}
 const lessons: LessonUnit[] = [
   {
     id: 1, title: "Present Simple", level: "A1", summary: "Szokások, napi rutinok és általános tények leírása.",
@@ -517,29 +560,37 @@ export default function App() {
     setActiveLessonId(lessonId)
     setScreen("lessonIntro")
   }
-  const openTask = (lessonId: number, taskIndex: number) => {
-    setActiveLessonId(lessonId)
-    setActiveTaskIndex(taskIndex)
-    setLives(5)
+  const openTask = (lessonId: number, taskIndex: number, sourceLessonId?: number) => {
     const special = specialTasks.find((item) => item.id === lessonId)
-    const isUnlocked = special ? (lessonId === 103 ? completedLessons.length >= 1 : lessonId === 102 ? completedLessons.length >= 2 : completedLessons.length >= 4) : lessonId === 1 || completedLessons.includes(lessonId - 1)
+    const prerequisiteLessonId = sourceLessonId ?? lessonId
+    const isUnlocked = sourceLessonId !== undefined
+      ? prerequisiteLessonId === fullLessons[0]?.id || completedLessons.includes(prerequisiteLessonId - 1)
+      : special
+        ? (lessonId === 103 ? completedLessons.length >= 1 : lessonId === 102 ? completedLessons.length >= 2 : completedLessons.length >= 4)
+        : lessonId === fullLessons[0]?.id || completedLessons.includes(lessonId - 1)
+
     if (!isUnlocked) {
-      setNotice("Először fejezd be az előző leckét!")
+      setNotice("Finish the previous lesson to unlock this activity.")
       setScreen("home")
       return
     }
-    if (!readLessons.includes(lessonId)) {
+    if (!readLessons.includes(prerequisiteLessonId)) {
+      setActiveLessonId(prerequisiteLessonId)
       setScreen("lessonIntro")
-      setNotice("Előbb olvasd át a leckét; utána megnyílnak a feladatok.")
+      setNotice("Read the linked lesson first, then return to this activity.")
       return
     }
+
+    setActiveLessonId(lessonId)
+    setActiveTaskIndex(taskIndex)
+    setLives(special?.specialType === "timed" ? 3 : 5)
     setScreen("task")
   }
   const completeTask = (lessonId: number, taskIndex: number) => {
     const taskKey = lessonId + "-" + taskIndex
     const nextAnswered = answeredTasks.includes(taskKey) ? answeredTasks : [...answeredTasks, taskKey]
     setAnsweredTasks(nextAnswered)
-    const lesson = lessons.find((item) => item.id === lessonId)
+    const lesson = fullLessons.find((item) => item.id === lessonId)
     if (lesson && lesson.questions.every((_, index) => nextAnswered.includes(lessonId + "-" + index))) {
       setCompletedLessons((previous) => previous.includes(lessonId) ? previous : [...previous, lessonId])
     }
@@ -550,6 +601,8 @@ export default function App() {
     <section className={"screen-content " + (screen === "home" ? "learn-home-content " : "") + ((screen === "lessonIntro" || screen === "task") ? "lesson-page" : "")}>
       {screen === "home" && <Home
         completedLessons={completedLessons}
+        readLessons={readLessons}
+        answeredTasks={answeredTasks}
         stars={stars}
         xp={xp}
         dailyStudy={dailyStudy}
@@ -632,28 +685,31 @@ function UserAvatar({ userName, avatar, avatarImage, variant }: {
   </span>
 }
 
-function Home({ completedLessons, stars, xp, dailyStudy, notice, clearNotice, onOpenLesson, onOpenTask, onOpenProfile, userName, avatar, avatarImage }: {
+function Home({ completedLessons, readLessons, answeredTasks, stars, xp, dailyStudy, notice, clearNotice, onOpenLesson, onOpenTask, onOpenProfile, userName, avatar, avatarImage }: {
   completedLessons: number[]
+  readLessons: number[]
+  answeredTasks: string[]
   stars: number
   xp: number
   dailyStudy: DailyStudyState
   notice: string
   clearNotice: () => void
   onOpenLesson: (id: number) => void
-  onOpenTask: (lessonId: number, index: number) => void
+  onOpenTask: (lessonId: number, index: number, sourceLessonId?: number) => void
   onOpenProfile: () => void
   userName: string
   avatar: string
   avatarImage: string
 }) {
-  const unitLessons = [...fullLessons, ...specialTasks]
+  const unitLessons = fullLessons
+  const pathNodes = useMemo(() => createLearningPathNodes(unitLessons), [])
   const currentLessonId = unitLessons.find(lesson => !completedLessons.includes(lesson.id))?.id ?? null
   const completedCount = unitLessons.filter(lesson => completedLessons.includes(lesson.id)).length
   const progress = unitLessons.length ? Math.round(completedCount / unitLessons.length * 100) : 0
-  const pathHeight = Math.max(140, (unitLessons.length - 1) * 112 + 140)
+  const pathHeight = Math.max(140, (pathNodes.length - 1) * 112 + 140)
   const pathRef = useRef<HTMLDivElement | null>(null)
   const sheetRef = useRef<HTMLElement | null>(null)
-  const nodeRefs = useRef<Map<number, HTMLButtonElement>>(new Map())
+  const nodeRefs = useRef<Map<string, HTMLButtonElement>>(new Map())
   const [pathSize, setPathSize] = useState({ width: 0, height: 0 })
   const [connectorPaths, setConnectorPaths] = useState<string[]>([])
   const [sheetHeight, setSheetHeight] = useState(74)
@@ -672,11 +728,28 @@ function Home({ completedLessons, stars, xp, dailyStudy, notice, clearNotice, on
   const handlePointerUp = () => {
     dragStart.current = null
   }
-  const statusKey = unitLessons.map(lesson => {
-    if (completedLessons.includes(lesson.id)) return lesson.id + ":completed"
-    if (lesson.id === currentLessonId) return lesson.id + ":current"
-    return lesson.id + ":locked"
-  }).join("|")
+  const getNodeStatus = useCallback((node: LearningPathNode): "completed" | "current" | "locked" => {
+    const sourceLesson = unitLessons.find(lesson => lesson.id === node.lessonId)
+    if (!sourceLesson) return "locked"
+    const sourceIsUnlocked = sourceLesson.id === unitLessons[0]?.id || completedLessons.includes(sourceLesson.id - 1)
+
+    if (node.kind === "lesson") {
+      if (completedLessons.includes(node.lessonId)) return "completed"
+      return node.lessonId === currentLessonId ? "current" : "locked"
+    }
+
+    const activityId = node.specialId ?? node.lessonId
+    const activityLesson = node.specialId
+      ? specialTasks.find(lesson => lesson.id === node.specialId)
+      : sourceLesson
+    const activityComplete = !!activityLesson?.questions.every((_, questionIndex) =>
+      answeredTasks.includes(activityId + "-" + questionIndex)
+    )
+    if (activityComplete) return "completed"
+    return sourceIsUnlocked && readLessons.includes(node.lessonId) ? "current" : "locked"
+  }, [unitLessons, completedLessons, currentLessonId, answeredTasks, readLessons])
+
+  const statusKey = pathNodes.map(node => node.key + ":" + getNodeStatus(node)).join("|")
 
   useEffect(() => {
     const host = pathRef.current
@@ -684,12 +757,11 @@ function Home({ completedLessons, stars, xp, dailyStudy, notice, clearNotice, on
     let frame = 0
     const updateConnectors = () => {
       const bounds = host.getBoundingClientRect()
-      const points = unitLessons.map(lesson => {
-        const node = nodeRefs.current.get(lesson.id)
-        if (!node) return null
-        const rect = node.getBoundingClientRect()
+      const points = pathNodes.map(node => {
+        const nodeElement = nodeRefs.current.get(node.key)
+        if (!nodeElement) return null
+        const rect = nodeElement.getBoundingClientRect()
         return { x: rect.left + rect.width / 2 - bounds.left, y: rect.top + rect.height / 2 - bounds.top }
-      })
       const paths: string[] = []
       for (let index = 0; index < points.length - 1; index++) {
         const from = points[index]
@@ -714,7 +786,7 @@ function Home({ completedLessons, stars, xp, dailyStudy, notice, clearNotice, on
       observer?.disconnect()
       window.removeEventListener("resize", scheduleUpdate)
     }
-  }, [statusKey, unitLessons.length, pathHeight])
+  }, [statusKey, pathNodes.length, pathHeight])
 
   return <div className="learn-home-screen">
     <div className="learn-home-gradient" aria-hidden="true" />
@@ -778,32 +850,47 @@ function Home({ completedLessons, stars, xp, dailyStudy, notice, clearNotice, on
         <svg className="learn-path-connectors" width="100%" height="100%" viewBox={"0 0 " + Math.max(1, pathSize.width) + " " + Math.max(1, pathSize.height)} preserveAspectRatio="none" aria-hidden="true">
           {connectorPaths.map((path, index) => <path key={index} d={path} />)}
         </svg>
-        {unitLessons.map((lesson, index) => {
-          const isComplete = completedLessons.includes(lesson.id)
-          const status = isComplete ? "completed" : lesson.id === currentLessonId ? "current" : "locked"
-          const label = "Lesson " + (index + 1)
-          const stateLabel = status === "completed" ? "kész" : status === "current" ? "indítás" : "zárolva"
-          return <div className={"learn-path-node learn-path-node-" + status} key={lesson.id} style={{ left: (index % 2 === 0 ? 35 : 65) + "%", top: index * 112 + "px" }}>
+        {pathNodes.map((node, index) => {
+          const sourceLesson = unitLessons.find(lesson => lesson.id === node.lessonId)
+          if (!sourceLesson) return null
+          const status = getNodeStatus(node)
+          const lessonIndex = unitLessons.findIndex(lesson => lesson.id === node.lessonId)
+          const label = node.kind === "lesson"
+            ? "Lesson " + (lessonIndex + 1)
+            : node.kind === "task" ? "Task"
+              : node.kind === "words" ? "New Words"
+                : node.kind === "hard" ? "Hard Task" : "Test"
+          const stateLabel = status === "completed" ? "completed" : status === "current" ? "available" : "locked"
+          const activityDescription = node.kind === "lesson"
+            ? sourceLesson.title
+            : label + " for " + sourceLesson.title
+          const icon = node.kind === "lesson"
+            ? <BookOpen size={30} strokeWidth={2.2} aria-hidden="true" />
+            : node.kind === "task" ? <ClipboardCheck size={27} strokeWidth={2.2} aria-hidden="true" />
+              : node.kind === "words" ? <Languages size={27} strokeWidth={2.2} aria-hidden="true" />
+                : node.kind === "hard" ? <Zap size={27} strokeWidth={2.3} aria-hidden="true" />
+                  : <Timer size={27} strokeWidth={2.2} aria-hidden="true" />
+          return <div className={"learn-path-node learn-path-node-" + status + " learn-path-node-kind-" + node.kind} key={node.key} style={{ left: (index % 2 === 0 ? 35 : 65) + "%", top: index * 112 + "px" }}>
             <button
               ref={element => {
-                if (element) nodeRefs.current.set(lesson.id, element)
-                else nodeRefs.current.delete(lesson.id)
+                if (element) nodeRefs.current.set(node.key, element)
+                else nodeRefs.current.delete(node.key)
               }}
               type="button"
               className="learn-path-node-button"
               disabled={status === "locked"}
               aria-disabled={status === "locked"}
-              aria-label={label + ", " + stateLabel}
-              onClick={() => { if (status !== "locked") onOpenLesson(lesson.id) }}
+              aria-label={activityDescription + ", " + stateLabel}
+              onClick={() => {
+                if (status === "locked") return
+                if (node.kind === "lesson") onOpenLesson(node.lessonId)
+                else onOpenTask(node.specialId ?? node.lessonId, 0, node.lessonId)
+              }}
             >
-              {status === "completed"
-                ? <Check size={34} strokeWidth={3} aria-hidden="true" />
-                : status === "current"
-                  ? <Book size={30} strokeWidth={2.2} aria-hidden="true" />
-                  : <LockKeyhole size={30} strokeWidth={2.1} aria-hidden="true" />}
+              {icon}
             </button>
             <span className="learn-path-node-label">{label}</span>
-            {status === "current" && <span className="learn-start-pill">INDÍTÁS</span>}
+            {status === "current" && node.kind === "lesson" && <span className="learn-start-pill">START</span>}
           </div>
         })}
       </div>
