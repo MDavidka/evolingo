@@ -10,8 +10,8 @@ const generatedAdjectives = ["Vidám", "Bátor", "Kíváncsi", "Csendes", "Ügye
 const generatedAnimals = ["Róka", "Vidra", "Bagoly", "Mókus", "Panda", "Farkas", "Süni", "Delfin", "Nyuszi", "Koala", "Tigris", "Hód", "Macska", "Sas", "Medve"]
 
 function isGeneratedGuestName(value: string) {
-  const parts = value.trim().split(/\\s+/)
-  return parts.length === 3 && generatedAdjectives.includes(parts[0]) && generatedAnimals.includes(parts[1]) && /^\\d{4}$/.test(parts[2])
+  const parts = value.trim().split(/\s+/)
+  return parts.length === 3 && generatedAdjectives.includes(parts[0]) && generatedAnimals.includes(parts[1]) && /^\d{4}$/.test(parts[2])
 }
 
 function makeTag(name: string) {
