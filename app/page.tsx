@@ -1226,7 +1226,7 @@ function Profile({ completedCount, readCount, completedTaskCount, xp, stars, use
     <section className="profile-learning-card">
       <div className="profile-section-link"><span><strong>Tanulási haladás</strong><small>Folytasd a fejlődést!</small></span><ChevronRight size={21} /></div>
       <div className="profile-learning-content">
-        <div className="profile-progress-ring" role="progressbar" aria-label="Teljesített alaptémák" aria-valuemin={0} aria-valuemax={10} aria-valuenow={Math.min(completedCount, 10)} style={{ background: "conic-gradient(#4f9b36 " + progressPercent + "%, #e6eaf0 " + progressPercent + "% 100%)" }}>
+        <div className="profile-progress-ring" role="progressbar" aria-label="Teljesített alaptémák" aria-valuemin={0} aria-valuemax={10} aria-valuenow={Math.min(completedCount, 10)} style={{ background: "conic-gradient(#252525 " + progressPercent + "%, #e9e9e9 " + progressPercent + "% 100%)" }}>
           <div><strong>{progressPercent}%</strong><span>kész</span></div>
         </div>
         <div className="profile-learning-metrics">
