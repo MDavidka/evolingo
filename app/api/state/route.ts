@@ -32,7 +32,7 @@ const allowed = new Set([
   "userName", "avatar", "notifications", "compactMode", "theme", "avatarImage", "bannerImage",
   "readLessons", "completedLessons", "answeredTasks", "xp", "stars", "purchasedItems", "lives",
   "friends", "friendRequests", "dailyStreak", "lastStudyDate", "todayActivityCount", "activityDate", "dailyGoal",
-  "createdAt", "updatedAt",
+  "createdAt", "updatedAt", "clientUpdatedAt",
 ])
 const isStringArray = (v: unknown) => Array.isArray(v) && v.length <= 1000 && v.every(x => typeof x === "string" && x.length <= 160)
 const isNumberArray = (v: unknown) => Array.isArray(v) && v.length <= 500 && v.every(x => typeof x === "number" && Number.isInteger(x) && x >= 0 && x <= 10000)
@@ -70,7 +70,7 @@ export async function GET() {
       userName: makeGuestName(id), avatar: "fox", notifications: false, compactMode: false, theme: "mist",
       readLessons: [], completedLessons: [], answeredTasks: [], xp: 0, stars: 0, purchasedItems: [],
       lives: 5, friends: [], friendRequests: [], dailyStreak: 0, lastStudyDate: "",
-      todayActivityCount: 0, activityDate: "", dailyGoal: 1, createdAt: new Date(),
+      todayActivityCount: 0, activityDate: "", dailyGoal: 1, clientUpdatedAt: 0, createdAt: new Date(),
     }, $set: { lastSeenAt: new Date(), isGuest: true } }, { upsert: true })
     // Older sessions used "MDavid" or an empty name as a placeholder. Repair only
     // those names; all lesson history, XP, purchases, settings and streaks stay untouched.
@@ -106,6 +106,7 @@ export async function PATCH(request: NextRequest) {
       if (["dailyStreak", "todayActivityCount"].includes(key) && (typeof value !== "number" || !Number.isInteger(value) || value < 0 || value > 100000)) continue
       if (["lastStudyDate", "activityDate"].includes(key) && !isDateKey(value)) continue
       if (key === "dailyGoal" && (typeof value !== "number" || ![1, 3, 5].includes(value))) continue
+      if (key === "clientUpdatedAt" && (typeof value !== "number" || !Number.isSafeInteger(value) || value < 0)) continue
       if (key === "lives" && (typeof value !== "number" || !Number.isInteger(value) || value < 0 || value > 5)) continue
       if (["avatarImage","bannerImage"].includes(key) && (typeof value !== "string" || value.length > 5_000_000 || (value !== "" && !value.startsWith("data:image/")))) continue
       update[key] = value
@@ -117,15 +118,25 @@ export async function PATCH(request: NextRequest) {
     update.isGuest = true
     update.updatedAt = new Date()
     const db = await getDatabase()
+    const users = db.collection<UserDocument>("users")
+    const requestedVersion = typeof update.clientUpdatedAt === "number" ? update.clientUpdatedAt : null
+    if (requestedVersion !== null) {
+      const existing = await users.findOne({ _id: id }, { projection: { clientUpdatedAt: 1, userName: 1 } })
+      const savedVersion = typeof existing?.clientUpdatedAt === "number" ? existing.clientUpdatedAt : 0
+      if (savedVersion > requestedVersion) {
+        const response = NextResponse.json({ ok: true, ignored: true, sessionKey: publicSessionKey(id), userName: existing?.userName })
+        return sessionCookie(response, id, created)
+      }
+    }
     const defaults: Record<string, unknown> = {
       avatar: "fox", notifications: false, compactMode: false, theme: "mist",
       readLessons: [], completedLessons: [], answeredTasks: [], xp: 0, stars: 0, purchasedItems: [],
       lives: 5, friends: [], friendRequests: [], dailyStreak: 0, lastStudyDate: "",
-      todayActivityCount: 0, activityDate: "", dailyGoal: 1,
+      todayActivityCount: 0, activityDate: "", dailyGoal: 1, clientUpdatedAt: 0,
     }
     // MongoDB rejects updating the same field with both $set and $setOnInsert.
     for (const key of Object.keys(update)) delete defaults[key]
-    await db.collection<UserDocument>("users").updateOne(
+    await users.updateOne(
       { _id: id },
       { $set: update, $setOnInsert: { createdAt: new Date(), ...defaults } },
       { upsert: true },
