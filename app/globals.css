@@ -7147,3 +7147,14 @@ body,
   box-shadow: 0 2px 5px rgba(0,0,0,.16);
 }
 .learn-path-node-completed .learn-path-node-button { background: #ff7900; }
+
+/* Keep the default learning path compact on first open. */
+.learn-sheet {
+  min-height: 0;
+}
+.learn-sheet-heading {
+  padding-top: 24px;
+}
+.learn-path-track {
+  margin-top: 28px;
+}
