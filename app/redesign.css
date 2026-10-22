@@ -1934,3 +1934,22 @@ body .learn-sheet-expanded {
     transition: none !important;
   }
 }
+
+
+/* Softer, deeper sheet corners to match the pill-like bottom navigation. */
+body .learn-sheet,
+body .learn-sheet-collapsed,
+body .learn-sheet-expanded {
+  border-radius: 48px 48px 0 0 !important;
+  overflow: hidden !important;
+}
+body .learn-sheet-handle {
+  border-radius: 999px !important;
+  cursor: grab !important;
+  touch-action: none !important;
+  user-select: none !important;
+  -webkit-user-select: none !important;
+}
+body .learn-sheet-handle:active {
+  cursor: grabbing !important;
+}
