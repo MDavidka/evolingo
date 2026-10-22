@@ -1412,14 +1412,14 @@ export default function App() {
     setActiveLessonId(lessonId)
     setScreen("lessonIntro")
   }
-  const openTask = (lessonId: number, taskIndex: number, sourceLessonId?: number) => {
+  const openTask = (lessonId: number, taskIndex: number, sourceLessonId?: number, forceOpen = false) => {
     const special = [...pathActivityLessons, ...specialTasks].find((item) => item.id === lessonId)
     const prerequisiteLessonId = sourceLessonId ?? lessonId
-    const isUnlocked = sourceLessonId !== undefined
+    const isUnlocked = forceOpen || (sourceLessonId !== undefined
       ? prerequisiteLessonId === fullLessons[0]?.id || completedLessons.includes(prerequisiteLessonId - 1)
       : special
         ? (lessonId === 103 ? completedLessons.length >= 1 : lessonId === 102 ? completedLessons.length >= 2 : completedLessons.length >= 4)
-        : lessonId === fullLessons[0]?.id || completedLessons.includes(lessonId - 1)
+        : lessonId === fullLessons[0]?.id || completedLessons.includes(lessonId - 1))
 
     if (!isUnlocked) {
       setNotice("Finish the previous lesson to unlock this activity.")
@@ -1565,6 +1565,8 @@ function Home({ completedLessons, readLessons, answeredTasks, stars, xp, dailySt
   const [pathSize, setPathSize] = useState({ width: 0, height: 0 })
   const [connectorPaths, setConnectorPaths] = useState<string[]>([])
   const [sheetHeight, setSheetHeight] = useState(74)
+  const [forcedOpenNodeKeys, setForcedOpenNodeKeys] = useState<string[]>([])
+  const tripleClickTracker = useRef<{ key: string; count: number; lastAt: number }>({ key: "", count: 0, lastAt: 0 })
   const dragStart = useRef<{ y: number; height: number } | null>(null)
   const handlePointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
     dragStart.current = { y: event.clientY, height: sheetHeight }
@@ -1601,7 +1603,7 @@ function Home({ completedLessons, readLessons, answeredTasks, stars, xp, dailySt
     return sourceIsUnlocked && readLessons.includes(node.lessonId) ? "current" : "locked"
   }, [unitLessons, completedLessons, currentLessonId, answeredTasks, readLessons])
 
-  const statusKey = pathNodes.map(node => node.key + ":" + getNodeStatus(node)).join("|")
+  const statusKey = pathNodes.map(node => node.key + ":" + (forcedOpenNodeKeys.includes(node.key) ? "forced" : getNodeStatus(node))).join("|")
 
   // Keep the newest available stop in view when the path opens or progress changes.
   useEffect(() => {
@@ -1723,7 +1725,9 @@ function Home({ completedLessons, readLessons, answeredTasks, stars, xp, dailySt
         {pathNodes.map((node, index) => {
           const sourceLesson = unitLessons.find(lesson => lesson.id === node.lessonId)
           if (!sourceLesson) return null
-          const status = getNodeStatus(node)
+          const naturalStatus = getNodeStatus(node)
+          const isForcedOpen = forcedOpenNodeKeys.includes(node.key)
+          const status = isForcedOpen && naturalStatus === "locked" ? "current" : naturalStatus
           const lessonIndex = unitLessons.findIndex(lesson => lesson.id === node.lessonId)
           const label = node.kind === "lesson"
             ? "Lesson " + (lessonIndex + 1)
@@ -1748,11 +1752,25 @@ function Home({ completedLessons, readLessons, answeredTasks, stars, xp, dailySt
               }}
               type="button"
               className="learn-path-node-button"
-              disabled={status === "locked"}
               aria-disabled={status === "locked"}
-              aria-label={activityDescription + ", " + stateLabel}
+              aria-label={activityDescription + ", " + (isForcedOpen ? "force-opened" : stateLabel) + ". Triple-click to force open."}
               onClick={() => {
-                if (status === "locked") return
+                const now = Date.now()
+                const previous = tripleClickTracker.current
+                const count = previous.key === node.key && now - previous.lastAt <= 650
+                  ? previous.count + 1
+                  : 1
+                tripleClickTracker.current = { key: node.key, count, lastAt: now }
+
+                if (count >= 3) {
+                  tripleClickTracker.current = { key: "", count: 0, lastAt: 0 }
+                  setForcedOpenNodeKeys(keys => keys.includes(node.key) ? keys : [...keys, node.key])
+                  if (node.kind === "lesson") onOpenLesson(node.lessonId)
+                  else onOpenTask(node.specialId ?? node.lessonId, 0, node.lessonId, true)
+                  return
+                }
+
+                if (naturalStatus === "locked") return
                 if (node.kind === "lesson") onOpenLesson(node.lessonId)
                 else onOpenTask(node.specialId ?? node.lessonId, 0, node.lessonId)
               }}
