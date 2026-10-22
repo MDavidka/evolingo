@@ -2826,3 +2826,65 @@ body .learn-home-screen .learn-project-tile-add {
   max-width: 148px !important;
   border-radius: 18px !important;
 }
+
+
+/* Reference-matched Erasmus+ card: two-tone rounded panel with the notebook overlapping the header. */
+body .learn-home-screen .learn-project-tile-erasmus,
+body .learn-home-screen .learn-project-tile-erasmus.selected {
+  position: relative !important;
+  height: 100px !important;
+  min-height: 100px !important;
+  flex: 0 0 148px !important;
+  width: 148px !important;
+  min-width: 148px !important;
+  max-width: 148px !important;
+  padding: 0 16px 15px !important;
+  justify-content: flex-end !important;
+  overflow: visible !important;
+  border: 1px solid #dce5f5 !important;
+  border-radius: 24px 24px 30px 30px !important;
+  background: #f5f7fc !important;
+  box-shadow: 0 2px 9px rgba(75,105,160,.055) !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+body .learn-home-screen .learn-project-tile-erasmus::before { display: none !important; }
+body .learn-home-screen .learn-project-tile-erasmus::after {
+  content: "" !important;
+  position: absolute !important;
+  z-index: 0 !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  height: 43% !important;
+  border-radius: 23px 23px 9px 9px !important;
+  background: #98c6d3 !important;
+  pointer-events: none !important;
+}
+body .learn-home-screen .learn-project-tile-erasmus .learn-project-tile-symbol {
+  position: absolute !important;
+  z-index: 2 !important;
+  top: -17px !important;
+  left: 16px !important;
+  width: 42px !important;
+  height: 52px !important;
+  overflow: visible !important;
+}
+body .learn-home-screen .learn-project-tile-erasmus .project-notebook-icon {
+  display: block !important;
+  width: 42px !important;
+  height: 52px !important;
+  filter: none !important;
+}
+body .learn-home-screen .learn-project-tile-erasmus .learn-project-tile-title {
+  position: relative !important;
+  z-index: 2 !important;
+  margin: 0 !important;
+  color: #050505 !important;
+  font-size: 17px !important;
+  font-weight: 700 !important;
+  line-height: 1.15 !important;
+  letter-spacing: -.025em !important;
+  overflow: visible !important;
+  text-overflow: clip !important;
+}
