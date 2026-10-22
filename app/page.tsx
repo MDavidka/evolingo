@@ -1779,6 +1779,7 @@ function Home({ completedLessons, readLessons, answeredTasks, stars, xp, dailySt
         }}
       />
       {sheetHeight > 28 && <>
+      {activeProject === "Erasmus" ? <>
       <div className="learn-sheet-heading">
         <h1>Erasmus</h1>
         <div className="learn-theme-row">
@@ -1861,8 +1862,41 @@ function Home({ completedLessons, readLessons, answeredTasks, stars, xp, dailySt
           </div>
         })}
       </div>
+      </> : <div className="learn-project-empty-state">
+        <span className="learn-project-empty-icon"><GraduationCap size={27} /></span>
+        <h2>{activeProject}</h2>
+        <p>This project is ready for your learning materials. Choose Erasmus to continue with the English grammar path.</p>
+        <button type="button" onClick={() => { setActiveProject("Erasmus"); setSheetHeight(78) }}>Open Erasmus lessons <ChevronRight size={17} /></button>
+      </div>}
       </>}
     </section>
+    {createProjectOpen && <div className="learn-project-modal-backdrop" role="presentation" onMouseDown={event => { if (event.target === event.currentTarget) setCreateProjectOpen(false) }}>
+      <section className="learn-project-modal" role="dialog" aria-modal="true" aria-labelledby="learn-project-modal-title">
+        <div className="learn-project-modal-heading">
+          <span className="learn-project-modal-icon"><Plus size={22} /></span>
+          <button type="button" className="learn-project-modal-close" aria-label="Close" onClick={() => setCreateProjectOpen(false)}><X size={20} /></button>
+        </div>
+        <h2 id="learn-project-modal-title">Create a project</h2>
+        <p>Organize a new topic or learning goal in its own space.</p>
+        <form onSubmit={event => {
+          event.preventDefault()
+          const name = newProjectName.trim().slice(0, 40)
+          if (!name) return
+          const existing = projects.find(project => project.toLocaleLowerCase() === name.toLocaleLowerCase())
+          const selected = existing ?? name
+          setProjects(current => existing ? current : [...current, name])
+          setActiveProject(selected)
+          setProjectQuery("")
+          setProjectMenuOpen(false)
+          setSheetHeight(22)
+          setCreateProjectOpen(false)
+        }}>
+          <label htmlFor="learn-project-name">Project name</label>
+          <input id="learn-project-name" autoFocus maxLength={40} value={newProjectName} onChange={event => setNewProjectName(event.target.value)} placeholder="e.g. Biology, History..." required />
+          <button type="submit" disabled={!newProjectName.trim()}>Create project <ArrowRight size={18} /></button>
+        </form>
+      </section>
+    </div>}
   </div>
 }
 function LessonIntro({ lesson, onExit, onReadComplete, onPractice, alreadyRead }: {
