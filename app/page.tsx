@@ -1695,7 +1695,7 @@ function Home({ completedLessons, readLessons, answeredTasks, stars, xp, dailySt
   const handleHomeBackdropClick = (event: React.MouseEvent<HTMLDivElement>) => {
     if (sheetHeight <= 28) return
     const target = event.target as HTMLElement
-    if (target.closest(".learn-sheet, .learn-project-tile, .learn-floating-create, .learn-header, .learn-project-search, .learn-stats-row, .learn-project-modal-backdrop, .bottom-nav")) return
+    if (target.closest(".learn-sheet, .learn-project-tile, .learn-floating-create, .learn-header, .learn-project-search, .learn-project-section-heading, .learn-stats-row, .learn-project-modal-backdrop, .bottom-nav")) return
     setSheetHeight(22)
   }
   const getNodeStatus = useCallback((node: LearningPathNode): "completed" | "current" | "locked" => {
@@ -1785,7 +1785,6 @@ function Home({ completedLessons, readLessons, answeredTasks, stars, xp, dailySt
       </button>
     </header>
     <section className="learn-home-intro" aria-label="Learning projects">
-      <h2 className="learn-greeting">Hello, {userName.trim().split(/\s+/)[0] || "there"}!</h2>
       <label className="learn-project-search">
         <span className="sr-only">Filter projects</span>
         <input
@@ -1799,6 +1798,12 @@ function Home({ completedLessons, readLessons, answeredTasks, stars, xp, dailySt
         <Search size={21} strokeWidth={1.9} aria-hidden="true" />
         {projectQuery && <button type="button" className="learn-search-clear" aria-label="Clear project filter" onClick={() => { setProjectQuery(""); projectSearchRef.current?.blur() }}><X size={16} /></button>}
       </label>
+      <div className="learn-project-section-heading">
+        <h2>Your lesson</h2>
+        <button type="button" className="learn-section-add" onClick={() => { setNewProjectName(projectQuery.trim()); setCreateProjectOpen(true) }} aria-label="Create a new project" title="Create a new project">
+          <Plus size={21} strokeWidth={2} aria-hidden="true" />
+        </button>
+      </div>
       <div className="learn-project-grid" aria-label="Projects">
         {filteredProjects.map(project => <button
           type="button"
@@ -1815,18 +1820,15 @@ function Home({ completedLessons, readLessons, answeredTasks, stars, xp, dailySt
           <span className="learn-project-tile-symbol" aria-hidden="true">
             <ProjectNotebookIcon accent={getProjectAccent(project)} />
           </span>
-          <span className="learn-project-tile-title">{project === "Erasmus" ? "Erasmus+" : project}</span>
+          <span className="learn-project-tile-title">{project === "Erasmus" ? "Erasmus +" : project}</span>
         </button>)}
         <button type="button" className="learn-project-tile learn-project-tile-add" onClick={() => { setNewProjectName(projectQuery.trim()); setCreateProjectOpen(true) }} aria-label="Create a new project">
-          <span className="learn-project-add-ring"><Plus size={26} strokeWidth={2.3} aria-hidden="true" /></span>
+          <span className="learn-project-add-ring"><Plus size={26} strokeWidth={2.1} aria-hidden="true" /></span>
           <span className="learn-project-add-label">New project</span>
         </button>
         {filteredProjects.length === 0 && <p className="learn-project-empty">No matching projects. Create one to get started.</p>}
       </div>
     </section>
-    <button type="button" className="learn-floating-create" onClick={() => { setNewProjectName(""); setCreateProjectOpen(true) }} aria-label="Create a new project" title="Create a new project">
-      <Plus size={25} strokeWidth={2.4} aria-hidden="true" />
-    </button>
     <div className="learn-stats-row" aria-label="Tanulási statisztikák">
       <div className="learn-stat-chip learn-streak-chip" aria-label={"Sorozat: " + dailyStudy.streak + " nap"}>
         <span className="learn-stat-label">Streak</span>
