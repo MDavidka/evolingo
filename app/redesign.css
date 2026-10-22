@@ -2674,3 +2674,28 @@ body .learn-home-screen .learn-project-add-ring svg { width: 16px !important; he
 body .learn-home-screen .learn-project-search input { font-size: 13px !important; }
 body .learn-home-screen .learn-project-section-heading .learn-section-add { width: 40px !important; height: 40px !important; min-width: 40px !important; min-height: 40px !important; }
 body .learn-home-screen .learn-project-section-heading .learn-section-add svg { width: 17px !important; height: 17px !important; }
+
+
+/* Clean, consistent card elevation: remove layered/inset glow that creates uneven shadows. */
+body .learn-home-screen .learn-project-tile,
+body .learn-home-screen .learn-project-tile.selected {
+  box-shadow: 0 2px 8px rgba(15,23,42,.045) !important;
+  border: 1px solid rgba(226,232,240,.85) !important;
+  background: rgba(241,245,249,.76) !important;
+  -webkit-backdrop-filter: blur(16px) saturate(155%) !important;
+  backdrop-filter: blur(16px) saturate(155%) !important;
+}
+body .learn-home-screen .learn-project-tile::before { display: none !important; }
+body .learn-home-screen .learn-project-tile-add,
+body .learn-home-screen .learn-project-tile-add:hover,
+body .learn-home-screen .learn-project-tile-add:active {
+  box-shadow: none !important;
+  border: 1.5px dashed rgba(203,213,225,.95) !important;
+  background: rgba(241,245,249,.38) !important;
+  -webkit-backdrop-filter: blur(12px) saturate(145%) !important;
+  backdrop-filter: blur(12px) saturate(145%) !important;
+}
+body .learn-home-screen .learn-project-add-ring {
+  box-shadow: none !important;
+  border: 1px solid rgba(226,232,240,.9) !important;
+}
