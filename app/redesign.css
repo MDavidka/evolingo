@@ -1398,3 +1398,42 @@ body .learn-project-modal form button[type="submit"]:disabled {
   body .learn-project-search { width: calc(100% - 8px) !important; margin-right: 4px !important; margin-left: 4px !important; }
   body .learn-project-picker-wrap { width: min(100%, 270px) !important; margin-left: 4px !important; }
 }
+
+
+/* Layer contract: idle controls stay above the collapsed sheet; the expanded sheet owns the viewport. */
+body .learn-sheet-collapsed {
+  z-index: 5 !important;
+}
+body .learn-sheet-expanded {
+  z-index: 30 !important;
+}
+body .learn-home-screen .bottom-nav,
+body .bottom-nav {
+  z-index: 50 !important;
+}
+body .learn-home-screen .learn-header {
+  z-index: 40 !important;
+}
+body .learn-home-screen .learn-home-intro {
+  z-index: 20 !important;
+}
+body .learn-project-picker-wrap {
+  isolation: isolate !important;
+}
+body .learn-project-menu {
+  z-index: 3 !important;
+}
+body .learn-sheet-expanded .learn-sheet-handle {
+  cursor: ns-resize !important;
+}
+body .sr-only {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
