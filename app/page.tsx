@@ -1661,20 +1661,15 @@ function Home({ completedLessons, readLessons, answeredTasks, stars, xp, dailySt
     event.preventDefault()
   }
   const handlePointerMove = (event: React.PointerEvent<HTMLDivElement>) => {
-    // Keep the panel at its current state while dragging; it snaps to a full state on release.
     if (!dragStart.current) return
     const delta = dragStart.current.y - event.clientY
-    const threshold = Math.max(36, window.innerHeight * 0.12)
-    if (Math.abs(delta) >= threshold) setSheetHeight(delta > 0 ? 78 : 22)
+    const nextHeight = Math.max(22, Math.min(78, dragStart.current.height + delta / Math.max(1, window.innerHeight) * 100))
+    setSheetHeight(nextHeight)
   }
-  const handlePointerUp = (event: React.PointerEvent<HTMLDivElement>) => {
+  const handlePointerUp = () => {
     if (!dragStart.current) return
-    const delta = dragStart.current.y - event.clientY
-    if (Math.abs(delta) < Math.max(36, window.innerHeight * 0.12)) {
-      setSheetHeight(dragStart.current.height <= 28 ? 78 : 22)
-    } else {
-      setSheetHeight(delta > 0 ? 78 : 22)
-    }
+    // Release always snaps to the nearest resting position; the handle never leaves the sheet halfway open.
+    setSheetHeight(height => Math.abs(height - 22) <= Math.abs(height - 78) ? 22 : 78)
     dragStart.current = null
   }
 
@@ -1856,7 +1851,7 @@ function Home({ completedLessons, readLessons, answeredTasks, stars, xp, dailySt
         aria-orientation="vertical"
         aria-valuemin={22}
         aria-valuemax={78}
-        aria-valuenow={sheetHeight <= 28 ? 22 : 78}
+        aria-valuenow={Math.round(sheetHeight)}
         tabIndex={0}
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
