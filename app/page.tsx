@@ -1703,19 +1703,45 @@ function Home({ completedLessons, readLessons, answeredTasks, stars, xp, dailySt
         <UserAvatar userName={userName} avatar={avatar} avatarImage={avatarImage} variant="header" />
       </button>
     </header>
-    <section className="learn-home-intro" aria-label="Választott tanulási program">
-      <h2 className="learn-greeting">Hello, {userName.trim().split(/\s+/)[0] || "there"}!</h2>
-      <button
-        type="button"
-        className="learn-course-card"
-        onClick={() => setSheetHeight(height => height <= 28 ? 78 : 22)}
-        aria-label={sheetHeight <= 28 ? "Open the Erasmus learning path" : "Collapse the Erasmus learning path"}
-        aria-expanded={sheetHeight > 28}
-      >
-        <span className="learn-course-flag" aria-hidden="true">🇬🇧</span>
-        <span className="learn-course-title">Erasmus</span>
-        <span className="learn-course-action" aria-hidden="true">{sheetHeight > 28 ? "−" : ""}</span>
-      </button>
+    <section className="learn-home-intro" aria-label="Learning projects">
+      <div className="learn-greeting-row">
+        <h2 className="learn-greeting">Hello, {userName.trim().split(/\s+/)[0] || "there"}!</h2>
+        <button type="button" className="learn-create-button" onClick={() => { setNewProjectName(""); setCreateProjectOpen(true) }} aria-label="Create a new project" title="Create a new project">
+          <Plus size={23} strokeWidth={1.8} aria-hidden="true" />
+        </button>
+      </div>
+      <label className="learn-project-search">
+        <span className="sr-only">Filter projects</span>
+        <input
+          ref={projectSearchRef}
+          type="search"
+          value={projectQuery}
+          onChange={event => { setProjectQuery(event.target.value); setProjectMenuOpen(true) }}
+          onFocus={() => { if (projectQuery) setProjectMenuOpen(true) }}
+          placeholder="Filter projects..."
+          autoComplete="off"
+        />
+        <Search size={21} strokeWidth={1.9} aria-hidden="true" />
+        {projectQuery && <button type="button" className="learn-search-clear" aria-label="Clear project filter" onClick={() => { setProjectQuery(""); setProjectMenuOpen(false); projectSearchRef.current?.blur() }}><X size={16} /></button>}
+      </label>
+      <div className="learn-project-picker-wrap">
+        <div className="learn-course-card">
+          <button type="button" className="learn-course-main" onClick={() => setSheetHeight(height => height <= 28 ? 78 : 22)} aria-label={sheetHeight > 28 ? "Collapse the learning path" : "Open the learning path"}>
+            <span className="learn-course-symbol" aria-hidden="true"><GraduationCap size={25} strokeWidth={1.8} /></span>
+            <span className="learn-course-title">{activeProject}</span>
+          </button>
+          <button type="button" className="learn-course-action" aria-label="Choose a project" aria-expanded={projectMenuOpen} onClick={() => setProjectMenuOpen(open => !open)}>
+            <ChevronDown size={20} strokeWidth={1.8} aria-hidden="true" />
+          </button>
+        </div>
+        {projectMenuOpen && <div className="learn-project-menu" role="listbox" aria-label="Projects">
+          {filteredProjects.map(project => <button type="button" key={project} role="option" aria-selected={project === activeProject} className={"learn-project-option" + (project === activeProject ? " selected" : "")} onClick={() => { setActiveProject(project); setProjectMenuOpen(false); setProjectQuery(""); setSheetHeight(22) }}>
+            <GraduationCap size={18} aria-hidden="true" /><span>{project}</span>{project === activeProject && <Check size={17} aria-hidden="true" />}
+          </button>)}
+          {filteredProjects.length === 0 && <p className="learn-project-empty">No matching projects</p>}
+          <button type="button" className="learn-project-new" onClick={() => { setProjectMenuOpen(false); setNewProjectName(projectQuery.trim()); setCreateProjectOpen(true) }}><Plus size={17} /> Create project</button>
+        </div>}
+      </div>
     </section>
     <div className="learn-stats-row" aria-label="Tanulási statisztikák">
       <div className="learn-stat-chip learn-streak-chip" aria-label={"Sorozat: " + dailyStudy.streak + " nap"}>
