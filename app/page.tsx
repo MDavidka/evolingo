@@ -784,6 +784,23 @@ function Home({ completedLessons, readLessons, answeredTasks, stars, xp, dailySt
 
   const statusKey = pathNodes.map(node => node.key + ":" + getNodeStatus(node)).join("|")
 
+  // Keep the newest available stop in view when the path opens or progress changes.
+  useEffect(() => {
+    let frame = 0
+    frame = window.requestAnimationFrame(() => {
+      const latestAvailable = [...pathNodes].reverse().find(node => getNodeStatus(node) === "current")
+      const target = latestAvailable ? nodeRefs.current.get(latestAvailable.key) : null
+      const sheet = sheetRef.current
+      if (!target || !sheet) return
+      const sheetRect = sheet.getBoundingClientRect()
+      const targetRect = target.getBoundingClientRect()
+      const targetTop = targetRect.top - sheetRect.top + sheet.scrollTop
+      const centeredTop = targetTop - sheet.clientHeight * 0.42
+      sheet.scrollTo({ top: Math.max(0, centeredTop), behavior: "smooth" })
+    })
+    return () => window.cancelAnimationFrame(frame)
+  }, [statusKey, sheetHeight, getNodeStatus, pathNodes])
+
   useEffect(() => {
     const host = pathRef.current
     if (!host) return
