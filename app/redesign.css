@@ -365,3 +365,172 @@ body .learn-path-node-locked.learn-path-node-kind-test .learn-path-node-label {
   border-color: #e1e4e8 !important;
 }
 
+
+
+/* ---------- Erasmus-first home / genuinely collapsed learning path ---------- */
+body .learn-home-screen {
+  position: relative !important;
+  display: flex !important;
+  flex-direction: column !important;
+  height: 100dvh !important;
+  min-height: 100dvh !important;
+  padding: max(16px, env(safe-area-inset-top)) 16px 0 !important;
+  overflow: hidden !important;
+  background: #ffffff !important;
+}
+body .learn-stats-row {
+  display: none !important;
+}
+body .learn-home-intro {
+  position: relative !important;
+  z-index: 2 !important;
+  display: flex !important;
+  flex: none !important;
+  flex-direction: column !important;
+  width: 100% !important;
+  min-width: 0 !important;
+}
+body .learn-greeting {
+  margin: clamp(34px, 4.8vh, 48px) 16px 0 !important;
+  color: #090909 !important;
+  font-size: clamp(25px, 6.5vw, 29px) !important;
+  font-weight: 750 !important;
+  letter-spacing: -.45px !important;
+  line-height: 1.2 !important;
+}
+body .learn-course-card {
+  display: flex !important;
+  flex: none !important;
+  align-items: center !important;
+  gap: 14px !important;
+  width: calc(100% - 28px) !important;
+  min-height: 78px !important;
+  margin: clamp(92px, 13vh, 126px) 14px 0 !important;
+  padding: 12px 18px 12px 20px !important;
+  border: 0 !important;
+  border-radius: 24px !important;
+  color: #111111 !important;
+  background: #f6f7f8 !important;
+  box-shadow: none !important;
+  text-align: left !important;
+  -webkit-tap-highlight-color: transparent !important;
+}
+body .learn-course-card:active {
+  transform: scale(.99) !important;
+  background: #f0f1f2 !important;
+}
+body .learn-course-flag {
+  display: block !important;
+  flex: none !important;
+  font-size: 39px !important;
+  line-height: 1 !important;
+}
+body .learn-course-title {
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+  color: #0a0a0a !important;
+  font-size: clamp(21px, 5.6vw, 25px) !important;
+  font-weight: 700 !important;
+  letter-spacing: -.35px !important;
+  line-height: 1.15 !important;
+}
+body .learn-course-action {
+  display: grid !important;
+  flex: none !important;
+  place-items: center !important;
+  width: 80px !important;
+  height: 40px !important;
+  border-radius: 15px !important;
+  color: #555555 !important;
+  background: #e0e1e3 !important;
+  font-size: 24px !important;
+  font-weight: 500 !important;
+  line-height: 1 !important;
+}
+body .learn-sheet {
+  position: absolute !important;
+  z-index: 1 !important;
+  left: -16px !important;
+  right: -16px !important;
+  bottom: 0 !important;
+  display: flex !important;
+  flex: none !important;
+  width: auto !important;
+  min-height: 0 !important;
+  max-height: calc(100dvh - env(safe-area-inset-top) - 24px) !important;
+  margin: 0 !important;
+  padding: 14px 0 calc(104px + env(safe-area-inset-bottom)) !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  border-radius: 40px 40px 0 0 !important;
+  background: #ffffff !important;
+  box-shadow: 0 -14px 34px rgba(0,0,0,.09) !important;
+  transition: height 220ms ease !important;
+  overscroll-behavior: contain !important;
+}
+body .learn-sheet-collapsed {
+  box-shadow: 0 -18px 36px rgba(0,0,0,.08) !important;
+}
+body .learn-sheet-handle {
+  position: sticky !important;
+  top: 8px !important;
+  z-index: 5 !important;
+  flex: none !important;
+  width: 56px !important;
+  height: 6px !important;
+  min-height: 6px !important;
+  margin: 10px auto 0 !important;
+  border-radius: 99px !important;
+  background: #edf0f2 !important;
+  cursor: ns-resize !important;
+  touch-action: none !important;
+}
+body .learn-sheet-expanded .learn-sheet-handle {
+  margin-bottom: 8px !important;
+}
+body .learn-sheet-expanded .learn-sheet-heading {
+  padding-top: 22px !important;
+}
+body .learn-sheet-expanded .learn-path-track {
+  margin-top: 28px !important;
+}
+body .learn-header {
+  flex: none !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  body .learn-sheet { transition: none !important; }
+}
+@media (min-width: 560px) {
+  body .learn-home-screen {
+    max-width: 480px !important;
+    margin: 0 auto !important;
+  }
+}
+
+/* Keep every learning-path node orange; the icon communicates the activity type. */
+body .learn-path-node-kind-lesson .learn-path-node-button,
+body .learn-path-node-kind-task .learn-path-node-button,
+body .learn-path-node-kind-words .learn-path-node-button,
+body .learn-path-node-kind-hard .learn-path-node-button,
+body .learn-path-node-kind-test .learn-path-node-button,
+body .learn-path-node-locked .learn-path-node-button,
+body .learn-path-node-completed .learn-path-node-button {
+  color: #ffffff !important;
+  background: #ff7900 !important;
+  box-shadow: 0 7px 0 #c45d00 !important;
+  opacity: 1 !important;
+}
+body .learn-path-node-kind-lesson .learn-path-node-label,
+body .learn-path-node-kind-task .learn-path-node-label,
+body .learn-path-node-kind-words .learn-path-node-label,
+body .learn-path-node-kind-hard .learn-path-node-label,
+body .learn-path-node-kind-test .learn-path-node-label,
+body .learn-path-node-locked .learn-path-node-label {
+  color: #30343b !important;
+  background: #f7f8fa !important;
+  border-color: #e7e9ec !important;
+}
+body .learn-path-node-button:active:not(:disabled) {
+  background: #f07800 !important;
+  box-shadow: 0 2px 0 #c45d00 !important;
+}
