@@ -1003,3 +1003,398 @@ body .bottom-nav {
     background: #ffffff !important;
   }
 }
+
+
+/* ---------- Reference-matched home controls: hierarchy, placement, glass ---------- */
+body .learn-home-intro {
+  gap: 0 !important;
+}
+body .learn-greeting-row {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 14px !important;
+  width: 100% !important;
+  margin: clamp(34px, 4.5vh, 46px) 0 0 !important;
+  padding: 0 8px 0 16px !important;
+}
+body .learn-greeting {
+  min-width: 0 !important;
+  margin: 0 !important;
+  font-size: clamp(24px, 6.3vw, 29px) !important;
+  font-weight: 760 !important;
+  letter-spacing: -.045em !important;
+  line-height: 1.2 !important;
+  text-wrap: balance !important;
+}
+body .learn-create-button {
+  display: grid !important;
+  flex: 0 0 54px !important;
+  place-items: center !important;
+  width: 54px !important;
+  height: 54px !important;
+  padding: 0 !important;
+  border: 1px solid rgba(255,255,255,.96) !important;
+  border-radius: 18px !important;
+  color: #151515 !important;
+  background: rgba(255,255,255,.66) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(165%) !important;
+  backdrop-filter: blur(24px) saturate(165%) !important;
+  box-shadow: 0 8px 24px rgba(25,31,40,.075), inset 0 1px 0 rgba(255,255,255,.98) !important;
+  transition: transform 140ms ease, background 140ms ease, box-shadow 140ms ease !important;
+}
+body .learn-create-button:active {
+  transform: scale(.96) !important;
+  background: rgba(245,246,248,.92) !important;
+}
+body .learn-project-search {
+  position: relative !important;
+  z-index: 18 !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  width: calc(100% - 16px) !important;
+  height: 54px !important;
+  flex: none !important;
+  margin: 26px 8px 0 !important;
+  padding: 0 15px 0 17px !important;
+  border: 1px solid rgba(213,216,222,.75) !important;
+  border-radius: 17px !important;
+  color: #17191c !important;
+  background: rgba(255,255,255,.60) !important;
+  -webkit-backdrop-filter: blur(22px) saturate(155%) !important;
+  backdrop-filter: blur(22px) saturate(155%) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.96), 0 3px 12px rgba(20,25,35,.025) !important;
+}
+body .learn-project-search:focus-within {
+  border-color: rgba(170,174,183,.95) !important;
+  box-shadow: 0 0 0 3px rgba(255,121,0,.07), inset 0 1px 0 rgba(255,255,255,.96) !important;
+}
+body .learn-project-search input {
+  display: block !important;
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  outline: none !important;
+  color: #24262a !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  font-family: inherit !important;
+  font-size: 15px !important;
+  font-weight: 450 !important;
+  line-height: 1.4 !important;
+  appearance: none !important;
+  -webkit-appearance: none !important;
+}
+body .learn-project-search input::placeholder {
+  color: #a1a4aa !important;
+  opacity: 1 !important;
+}
+body .learn-project-search input::-webkit-search-cancel-button { display: none !important; }
+body .learn-project-search > svg {
+  flex: none !important;
+  color: #18191b !important;
+}
+body .learn-search-clear {
+  display: grid !important;
+  flex: none !important;
+  place-items: center !important;
+  width: 28px !important;
+  height: 28px !important;
+  padding: 0 !important;
+  border-radius: 9px !important;
+  color: #777b83 !important;
+  background: rgba(230,232,236,.75) !important;
+}
+body .learn-project-picker-wrap {
+  position: relative !important;
+  z-index: 17 !important;
+  align-self: flex-start !important;
+  width: min(100%, 280px) !important;
+  margin: 42px 8px 0 !important;
+}
+body .learn-course-card {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 10px !important;
+  width: 100% !important;
+  min-height: 70px !important;
+  margin: 0 !important;
+  padding: 8px 12px 8px 16px !important;
+  border: 1px solid rgba(255,255,255,.95) !important;
+  border-radius: 23px !important;
+  background: rgba(255,255,255,.58) !important;
+  -webkit-backdrop-filter: blur(26px) saturate(165%) !important;
+  backdrop-filter: blur(26px) saturate(165%) !important;
+  box-shadow: 0 10px 26px rgba(25,31,40,.065), inset 0 1px 0 rgba(255,255,255,.98) !important;
+}
+body .learn-course-main {
+  display: flex !important;
+  flex: 1 1 auto !important;
+  align-items: center !important;
+  min-width: 0 !important;
+  gap: 12px !important;
+  height: 50px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 15px !important;
+  color: #111214 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  text-align: left !important;
+}
+body .learn-course-symbol {
+  display: grid !important;
+  flex: 0 0 34px !important;
+  place-items: center !important;
+  width: 34px !important;
+  height: 34px !important;
+  color: #17191c !important;
+}
+body .learn-course-title {
+  display: block !important;
+  overflow: hidden !important;
+  min-width: 0 !important;
+  color: #17191c !important;
+  font-size: 16px !important;
+  font-weight: 650 !important;
+  letter-spacing: -.025em !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+body .learn-course-action {
+  display: grid !important;
+  flex: 0 0 38px !important;
+  place-items: center !important;
+  width: 38px !important;
+  height: 38px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 12px !important;
+  color: #202226 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+body .learn-course-action:active {
+  background: rgba(232,234,238,.75) !important;
+}
+body .learn-project-menu {
+  position: absolute !important;
+  z-index: 35 !important;
+  top: calc(100% + 9px) !important;
+  left: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 4px !important;
+  width: 100% !important;
+  max-height: min(320px, 42dvh) !important;
+  padding: 8px !important;
+  overflow-y: auto !important;
+  border: 1px solid rgba(255,255,255,.94) !important;
+  border-radius: 20px !important;
+  background: rgba(255,255,255,.82) !important;
+  -webkit-backdrop-filter: blur(32px) saturate(175%) !important;
+  backdrop-filter: blur(32px) saturate(175%) !important;
+  box-shadow: 0 18px 44px rgba(23,29,38,.13), inset 0 1px 0 rgba(255,255,255,.98) !important;
+}
+body .learn-project-option,
+body .learn-project-new {
+  display: flex !important;
+  align-items: center !important;
+  gap: 11px !important;
+  width: 100% !important;
+  min-height: 45px !important;
+  padding: 0 12px !important;
+  border: 0 !important;
+  border-radius: 13px !important;
+  color: #292c31 !important;
+  background: transparent !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  text-align: left !important;
+}
+body .learn-project-option span { flex: 1 1 auto !important; }
+body .learn-project-option.selected {
+  background: rgba(239,241,244,.9) !important;
+}
+body .learn-project-option > svg:first-child { color: #737982 !important; }
+body .learn-project-option > svg:last-child { color: #ff7900 !important; }
+body .learn-project-new {
+  margin-top: 4px !important;
+  border-top: 1px solid rgba(220,223,228,.8) !important;
+  border-radius: 0 0 12px 12px !important;
+  color: #b75e05 !important;
+}
+body .learn-project-empty {
+  margin: 8px 10px !important;
+  color: #727780 !important;
+  font-size: 13px !important;
+}
+body .learn-project-empty-state {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  gap: 11px !important;
+  width: calc(100% - 32px) !important;
+  max-width: 420px !important;
+  margin: 28px auto !important;
+  padding: 22px !important;
+  border: 1px solid rgba(255,255,255,.94) !important;
+  border-radius: 25px !important;
+  background: rgba(255,255,255,.78) !important;
+  -webkit-backdrop-filter: blur(22px) saturate(155%) !important;
+  backdrop-filter: blur(22px) saturate(155%) !important;
+  box-shadow: 0 10px 28px rgba(25,31,40,.055), inset 0 1px 0 rgba(255,255,255,.96) !important;
+}
+body .learn-project-empty-icon {
+  display: grid !important;
+  place-items: center !important;
+  width: 48px !important;
+  height: 48px !important;
+  border-radius: 16px !important;
+  color: #d96e0c !important;
+  background: rgba(255,239,222,.85) !important;
+}
+body .learn-project-empty-state h2 {
+  margin: 3px 0 0 !important;
+  color: #17191c !important;
+  font-size: 21px !important;
+  font-weight: 800 !important;
+  letter-spacing: -.04em !important;
+}
+body .learn-project-empty-state p {
+  margin: 0 !important;
+  color: #646a73 !important;
+  font-size: 14px !important;
+  line-height: 1.65 !important;
+}
+body .learn-project-empty-state > button {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  min-height: 44px !important;
+  margin-top: 4px !important;
+  padding: 0 14px !important;
+  border-radius: 13px !important;
+  color: white !important;
+  background: #ff7900 !important;
+  font-size: 13px !important;
+  font-weight: 750 !important;
+}
+body .learn-project-modal-backdrop {
+  position: fixed !important;
+  z-index: 1000 !important;
+  inset: 0 !important;
+  display: grid !important;
+  place-items: center !important;
+  padding: 24px !important;
+  background: rgba(23,27,34,.20) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  backdrop-filter: blur(12px) !important;
+}
+body .learn-project-modal {
+  width: min(100%, 390px) !important;
+  padding: 22px !important;
+  border: 1px solid rgba(255,255,255,.94) !important;
+  border-radius: 28px !important;
+  background: rgba(255,255,255,.9) !important;
+  -webkit-backdrop-filter: blur(30px) saturate(165%) !important;
+  backdrop-filter: blur(30px) saturate(165%) !important;
+  box-shadow: 0 28px 70px rgba(22,27,35,.2), inset 0 1px 0 rgba(255,255,255,.98) !important;
+}
+body .learn-project-modal-heading {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  margin-bottom: 16px !important;
+}
+body .learn-project-modal-icon {
+  display: grid !important;
+  place-items: center !important;
+  width: 48px !important;
+  height: 48px !important;
+  border-radius: 16px !important;
+  color: #17191c !important;
+  background: rgba(241,243,246,.86) !important;
+}
+body .learn-project-modal-close {
+  display: grid !important;
+  place-items: center !important;
+  width: 38px !important;
+  height: 38px !important;
+  border-radius: 13px !important;
+  color: #686e77 !important;
+  background: rgba(238,240,243,.8) !important;
+}
+body .learn-project-modal h2 {
+  margin: 0 0 8px !important;
+  color: #17191c !important;
+  font-size: 25px !important;
+  font-weight: 800 !important;
+  letter-spacing: -.05em !important;
+}
+body .learn-project-modal > p {
+  margin: 0 0 20px !important;
+  color: #646a73 !important;
+  font-size: 14px !important;
+  line-height: 1.6 !important;
+}
+body .learn-project-modal form {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 9px !important;
+}
+body .learn-project-modal form label {
+  margin-top: 2px !important;
+  color: #353941 !important;
+  font-size: 12px !important;
+  font-weight: 750 !important;
+}
+body .learn-project-modal form input {
+  width: 100% !important;
+  height: 48px !important;
+  padding: 0 13px !important;
+  border: 1px solid #e2e4e8 !important;
+  border-radius: 14px !important;
+  outline: none !important;
+  color: #17191c !important;
+  background: rgba(255,255,255,.86) !important;
+  font: inherit !important;
+  font-size: 14px !important;
+}
+body .learn-project-modal form input:focus {
+  border-color: #ffab63 !important;
+  box-shadow: 0 0 0 3px rgba(255,121,0,.09) !important;
+}
+body .learn-project-modal form button[type="submit"] {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
+  width: 100% !important;
+  height: 49px !important;
+  margin-top: 8px !important;
+  border-radius: 15px !important;
+  color: #fff !important;
+  background: #ff7900 !important;
+  box-shadow: 0 4px 0 #c45d00 !important;
+  font-size: 14px !important;
+  font-weight: 780 !important;
+}
+body .learn-project-modal form button[type="submit"]:disabled {
+  opacity: .45 !important;
+  box-shadow: none !important;
+}
+@media (max-width: 380px) {
+  body .learn-greeting-row { padding-right: 4px !important; }
+  body .learn-create-button { flex-basis: 48px !important; width: 48px !important; height: 48px !important; border-radius: 16px !important; }
+  body .learn-project-search { width: calc(100% - 8px) !important; margin-right: 4px !important; margin-left: 4px !important; }
+  body .learn-project-picker-wrap { width: min(100%, 270px) !important; margin-left: 4px !important; }
+}
