@@ -1760,3 +1760,105 @@ body .learn-floating-create {
     height: 44px !important;
   }
 }
+
+/* ---------- Usability refinement: responsive project picker + accessible controls ---------- */
+/* Keep the existing visual language while improving scanability and touch precision. */
+body .learn-home-intro {
+  padding-inline: clamp(12px, 4vw, 20px) !important;
+}
+body .learn-project-search {
+  min-height: 48px !important;
+  height: 48px !important;
+  gap: 10px !important;
+}
+body .learn-project-search input {
+  min-width: 0 !important;
+  min-height: 44px !important;
+  line-height: 1.4 !important;
+}
+body .learn-project-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  width: 100% !important;
+  max-width: 360px !important;
+  gap: 12px !important;
+  margin-top: 24px !important;
+}
+body .learn-project-tile {
+  min-width: 0 !important;
+  min-height: 88px !important;
+  height: auto !important;
+  padding: 10px 12px !important;
+  gap: 6px !important;
+  border: 1px solid #e7e8ea !important;
+  border-radius: 16px !important;
+  background: #f7f7f8 !important;
+  transition: background-color 140ms ease, border-color 140ms ease, transform 140ms ease !important;
+}
+body .learn-project-tile-symbol {
+  flex: 0 0 38px !important;
+  min-height: 38px !important;
+  font-size: 28px !important;
+}
+body .learn-project-tile-title {
+  font-size: 14px !important;
+  line-height: 1.3 !important;
+  overflow-wrap: anywhere !important;
+  white-space: normal !important;
+}
+body .learn-project-tile:focus-visible,
+body .learn-floating-create:focus-visible,
+body .learn-project-search:focus-within {
+  outline: 3px solid #8b8b8b !important;
+  outline-offset: 3px !important;
+}
+body .learn-project-tile:active {
+  transform: scale(.985) !important;
+}
+body .learn-floating-create {
+  width: 48px !important;
+  height: 48px !important;
+  min-width: 48px !important;
+  min-height: 48px !important;
+  color: #45484e !important;
+  border: 1px solid #e0e2e5 !important;
+  background: rgba(255,255,255,.96) !important;
+  box-shadow: 0 4px 14px rgba(24,29,36,.10) !important;
+}
+body .learn-floating-create svg {
+  width: 22px !important;
+  height: 22px !important;
+}
+body .learn-project-tile-add {
+  min-height: 88px !important;
+  border: 1px dashed #d5d7db !important;
+  background: #fafafa !important;
+}
+body .learn-project-add-ring {
+  width: 36px !important;
+  height: 36px !important;
+  border: 1px solid #c6c9ce !important;
+  color: #555a63 !important;
+  background: #fff !important;
+}
+body .learn-project-add-label {
+  opacity: 1 !important;
+  color: #555a63 !important;
+  font-size: 12px !important;
+}
+@media (min-width: 420px) {
+  body .learn-project-grid {
+    max-width: 380px !important;
+    gap: 14px !important;
+  }
+  body .learn-project-tile {
+    min-height: 96px !important;
+    padding: 12px 14px !important;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  body .learn-project-tile,
+  body .learn-floating-create {
+    transition: none !important;
+    animation: none !important;
+  }
+}
