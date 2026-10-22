@@ -1547,7 +1547,7 @@ function Home({ completedLessons, readLessons, answeredTasks, stars, xp, dailySt
   notice: string
   clearNotice: () => void
   onOpenLesson: (id: number) => void
-  onOpenTask: (lessonId: number, index: number, sourceLessonId?: number) => void
+  onOpenTask: (lessonId: number, index: number, sourceLessonId?: number, forceOpen?: boolean) => void
   onOpenProfile: () => void
   userName: string
   avatar: string
