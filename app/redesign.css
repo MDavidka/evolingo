@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;650;700;750;800&display=swap');
 /* Evölingo — Learning Path screen. Loaded after globals.css; !important is required because globals.css declares ~1900 !important rules. Scope: home screen only (header, headings, white surface, level badge, path nodes, labels). */
 
 /* ---------- Screen ---------- */
@@ -2612,7 +2613,6 @@ body .learn-home-screen .learn-project-add-ring svg {
 
 
 /* Compact Inter typography and shared frosted-glass material for lesson cards. */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;650;700;750;800&display=swap');
 body .learn-home-screen,
 body .learn-home-screen button,
 body .learn-home-screen input,
