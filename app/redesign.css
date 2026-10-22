@@ -336,3 +336,31 @@ body .learn-path-node-kind-hard .learn-path-node-button:active {
     font-size: 11px !important;
   }
 }
+
+
+/* Locked road activities stay neutral gray until they become available, regardless of type color. */
+body .learn-path-node-locked.learn-path-node-kind-lesson .learn-path-node-button,
+body .learn-path-node-locked.learn-path-node-kind-task .learn-path-node-button,
+body .learn-path-node-locked.learn-path-node-kind-words .learn-path-node-button,
+body .learn-path-node-locked.learn-path-node-kind-hard .learn-path-node-button,
+body .learn-path-node-locked.learn-path-node-kind-test .learn-path-node-button {
+  background: #e5e7eb !important;
+  color: #8b929e !important;
+  box-shadow: 0 7px 0 #c9cdd3 !important;
+  opacity: 1 !important;
+}
+
+body .learn-path-node-locked .learn-path-node-button svg {
+  color: #8b929e !important;
+}
+
+body .learn-path-node-locked .learn-path-node-label,
+body .learn-path-node-locked.learn-path-node-kind-lesson .learn-path-node-label,
+body .learn-path-node-locked.learn-path-node-kind-task .learn-path-node-label,
+body .learn-path-node-locked.learn-path-node-kind-words .learn-path-node-label,
+body .learn-path-node-locked.learn-path-node-kind-hard .learn-path-node-label,
+body .learn-path-node-locked.learn-path-node-kind-test .learn-path-node-label {
+  color: #858b95 !important;
+  background: #f3f4f6 !important;
+  border-color: #e1e4e8 !important;
+}
