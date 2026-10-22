@@ -1564,7 +1564,7 @@ function Home({ completedLessons, readLessons, answeredTasks, stars, xp, dailySt
   const nodeRefs = useRef<Map<string, HTMLButtonElement>>(new Map())
   const [pathSize, setPathSize] = useState({ width: 0, height: 0 })
   const [connectorPaths, setConnectorPaths] = useState<string[]>([])
-  const [sheetHeight, setSheetHeight] = useState(44)
+  const [sheetHeight, setSheetHeight] = useState(22)
   const [forcedOpenNodeKeys, setForcedOpenNodeKeys] = useState<string[]>([])
   const tripleClickTracker = useRef<{ key: string; count: number; lastAt: number }>({ key: "", count: 0, lastAt: 0 })
   const dragStart = useRef<{ y: number; height: number } | null>(null)
@@ -1576,7 +1576,7 @@ function Home({ completedLessons, readLessons, answeredTasks, stars, xp, dailySt
   const handlePointerMove = (event: React.PointerEvent<HTMLDivElement>) => {
     if (!dragStart.current) return
     const delta = dragStart.current.y - event.clientY
-    const nextHeight = Math.max(44, Math.min(90, dragStart.current.height + delta / Math.max(1, window.innerHeight) * 100))
+    const nextHeight = Math.max(22, Math.min(90, dragStart.current.height + delta / Math.max(1, window.innerHeight) * 100))
     setSheetHeight(nextHeight)
   }
   const handlePointerUp = () => {
@@ -1658,7 +1658,7 @@ function Home({ completedLessons, readLessons, answeredTasks, stars, xp, dailySt
       observer?.disconnect()
       window.removeEventListener("resize", scheduleUpdate)
     }
-  }, [statusKey, pathNodes.length, pathHeight])
+  }, [statusKey, pathNodes.length, pathHeight, sheetHeight])
 
   return <div className="learn-home-screen">
     <div className="learn-home-gradient" aria-hidden="true" />
@@ -1668,6 +1668,20 @@ function Home({ completedLessons, readLessons, answeredTasks, stars, xp, dailySt
         <UserAvatar userName={userName} avatar={avatar} avatarImage={avatarImage} variant="header" />
       </button>
     </header>
+    <section className="learn-home-intro" aria-label="Választott tanulási program">
+      <h2 className="learn-greeting">Hello, {userName.trim().split(/\\s+/)[0] || "there"}!</h2>
+      <button
+        type="button"
+        className="learn-course-card"
+        onClick={() => setSheetHeight(height => height <= 28 ? 78 : 22)}
+        aria-label={sheetHeight <= 28 ? "Open the Erasmus learning path" : "Collapse the Erasmus learning path"}
+        aria-expanded={sheetHeight > 28}
+      >
+        <span className="learn-course-flag" aria-hidden="true">🇬🇧</span>
+        <span className="learn-course-title">Erasmus</span>
+        <span className="learn-course-action" aria-hidden="true">{sheetHeight > 28 ? "−" : ""}</span>
+      </button>
+    </section>
     <div className="learn-stats-row" aria-label="Tanulási statisztikák">
       <div className="learn-stat-chip learn-streak-chip" aria-label={"Sorozat: " + dailyStudy.streak + " nap"}>
         <span className="learn-stat-label">Streak</span>
@@ -1684,13 +1698,13 @@ function Home({ completedLessons, readLessons, answeredTasks, stars, xp, dailySt
     </div>
     {notice && <button className="inline-notice learn-inline-notice" type="button" onClick={clearNotice}><span>{notice}</span><X size={16} aria-hidden="true" /></button>}
 
-    <section className="learn-sheet" ref={sheetRef} style={{ height: sheetHeight + "dvh" }} aria-label="Tanulási útvonal">
+    <section className={"learn-sheet " + (sheetHeight <= 28 ? "learn-sheet-collapsed" : "learn-sheet-expanded")} ref={sheetRef} style={{ height: sheetHeight + "dvh" }} aria-label="Tanulási útvonal">
       <div
         className="learn-sheet-handle"
         role="slider"
         aria-label="Tanulási panel magassága"
         aria-orientation="vertical"
-        aria-valuemin={44}
+        aria-valuemin={22}
         aria-valuemax={90}
         aria-valuenow={Math.round(sheetHeight)}
         tabIndex={0}
@@ -1700,9 +1714,10 @@ function Home({ completedLessons, readLessons, answeredTasks, stars, xp, dailySt
         onPointerCancel={handlePointerUp}
         onKeyDown={event => {
           if (event.key === "ArrowUp") setSheetHeight(height => Math.min(90, height + 4))
-          if (event.key === "ArrowDown") setSheetHeight(height => Math.max(44, height - 4))
+          if (event.key === "ArrowDown") setSheetHeight(height => Math.max(22, height - 4))
         }}
       />
+      {sheetHeight > 28 && <>
       <div className="learn-sheet-heading">
         <h1>Erasmus</h1>
         <div className="learn-theme-row">
@@ -1785,6 +1800,7 @@ function Home({ completedLessons, readLessons, answeredTasks, stars, xp, dailySt
           </div>
         })}
       </div>
+      </>}
     </section>
   </div>
 }
