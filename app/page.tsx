@@ -1564,25 +1564,16 @@ function getProjectAccent(project: string): ProjectAccent {
   return variants[hash % variants.length]
 }
 
-function ProjectNotebookIcon({ accent }: { accent: ProjectAccent }) {
-  const colors = projectAccents[accent]
-  return <svg
+function ProjectNotebookIcon() {
+  return <Image
     className="project-notebook-icon"
-    viewBox="0 0 32 32"
-    width="32"
-    height="32"
-    fill="none"
+    src="/blue-book-svgrepo-com.svg"
+    alt=""
+    width={32}
+    height={42}
     aria-hidden="true"
-    focusable="false"
-  >
-    <path d="M9 5.5h16.7a2.3 2.3 0 0 1 2.3 2.3v17.1a2.1 2.1 0 0 1-2.1 2.1H9z" fill={colors.edge} opacity=".28" />
-    <path d="M9.2 4.2H24a2 2 0 0 1 2 2v19.4a2 2 0 0 1-2 2H9.2z" fill={colors.edge} />
-    <rect x="5.5" y="3.1" width="19" height="25" rx="3" fill={colors.cover} />
-    <path d="M8.2 5.5h13.8v20.1H8.2z" fill="#fff" opacity=".97" />
-    <path d="M10.3 10.2h9.4M10.3 13.7h9.4M10.3 17.2h9.4M10.3 20.7h6.5" stroke={colors.line} strokeWidth="1.15" strokeLinecap="round" />
-    <path d="M6.4 6.2c-2.1 0-2.1 3.4 0 3.4s2.1-3.4 0-3.4Zm0 5.8c-2.1 0-2.1 3.4 0 3.4s2.1-3.4 0-3.4Zm0 5.8c-2.1 0-2.1 3.4 0 3.4s2.1-3.4 0-3.4Zm0 5.8c-2.1 0-2.1 3.4 0 3.4s2.1-3.4 0-3.4Z" fill="#F8FAFC" stroke={colors.edge} strokeWidth=".5" />
-    <path d="M5.5 3.8v23.5" stroke={colors.edge} strokeWidth=".7" opacity=".65" />
-  </svg>
+    priority
+  />
 }
 
 function Home({ completedLessons, readLessons, answeredTasks, stars, xp, dailyStudy, notice, clearNotice, onOpenLesson, onOpenTask, onOpenProfile, userName, avatar, avatarImage }: {
@@ -1818,7 +1809,7 @@ function Home({ completedLessons, readLessons, answeredTasks, stars, xp, dailySt
           }}
         >
           <span className="learn-project-tile-symbol" aria-hidden="true">
-            <ProjectNotebookIcon accent={getProjectAccent(project)} />
+            <ProjectNotebookIcon />
           </span>
           <span className="learn-project-tile-title">{project === "Erasmus" ? "Erasmus +" : project}</span>
         </button>)}
