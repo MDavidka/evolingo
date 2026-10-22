@@ -1929,20 +1929,39 @@ function playAnswerSound(correct: boolean) {
     const AudioContextClass = window.AudioContext || (window as typeof window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext
     if (!AudioContextClass) return
     const context = new AudioContextClass()
-    const oscillator = context.createOscillator()
-    const gain = context.createGain()
-    oscillator.connect(gain)
-    gain.connect(context.destination)
-    oscillator.type = "sine"
     const now = context.currentTime
-    oscillator.frequency.setValueAtTime(correct ? 660 : 220, now)
-    if (correct) oscillator.frequency.setValueAtTime(880, now + 0.09)
-    gain.gain.setValueAtTime(0.0001, now)
-    gain.gain.exponentialRampToValueAtTime(0.12, now + 0.015)
-    gain.gain.exponentialRampToValueAtTime(0.0001, now + (correct ? 0.18 : 0.14))
-    oscillator.start(now)
-    oscillator.stop(now + (correct ? 0.19 : 0.15))
-    oscillator.onended = () => { void context.close() }
+    // Pick a different tiny synthesized UI sound on each submitted answer.
+    const effects = correct
+      ? [
+          { notes: [660, 880], wave: "sine" as OscillatorType, step: 0.075, duration: 0.19 },
+          { notes: [523, 659, 784], wave: "triangle" as OscillatorType, step: 0.055, duration: 0.22 },
+          { notes: [740, 988], wave: "sine" as OscillatorType, step: 0.065, duration: 0.18 },
+          { notes: [587, 784, 1046], wave: "triangle" as OscillatorType, step: 0.045, duration: 0.2 },
+        ]
+      : [
+          { notes: [260, 196], wave: "sine" as OscillatorType, step: 0.07, duration: 0.17 },
+          { notes: [330, 247], wave: "triangle" as OscillatorType, step: 0.055, duration: 0.16 },
+          { notes: [294, 220, 185], wave: "sine" as OscillatorType, step: 0.045, duration: 0.18 },
+          { notes: [370, 277], wave: "triangle" as OscillatorType, step: 0.06, duration: 0.16 },
+        ]
+    const effect = effects[Math.floor(Math.random() * effects.length)]
+    effect.notes.forEach((frequency, index) => {
+      const oscillator = context.createOscillator()
+      const gain = context.createGain()
+      const start = now + index * effect.step
+      const end = Math.max(start + 0.045, now + effect.duration)
+      oscillator.type = effect.wave
+      oscillator.frequency.setValueAtTime(frequency, start)
+      gain.gain.setValueAtTime(0.0001, start)
+      gain.gain.exponentialRampToValueAtTime(0.085, start + 0.012)
+      gain.gain.exponentialRampToValueAtTime(0.0001, end)
+      oscillator.connect(gain)
+      gain.connect(context.destination)
+      oscillator.start(start)
+      oscillator.stop(end + 0.01)
+      if (index === effect.notes.length - 1) oscillator.onended = () => { void context.close() }
+    })
+    if (context.state === "suspended") void context.resume()
   } catch { /* Sound is optional; keep the exercise working if audio is unavailable. */ }
 }
 
@@ -1979,6 +1998,7 @@ function TaskExercise({ lesson, taskIndex, onExit, onComplete, lives, onWrongAns
       return
     }
     const correct = acceptedAnswers.some((answer) => normalizeAnswer(answer) === normalizeAnswer(currentAnswer))
+    playAnswerSound(correct)
     setAnswerCorrect(correct)
     setChecked(true)
     if (correct) {
