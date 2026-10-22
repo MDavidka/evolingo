@@ -2773,3 +2773,56 @@ body .learn-home-screen .learn-project-tile-add {
   max-width: 148px !important;
   border-radius: 30px !important;
 }
+
+
+/* Exact proportion pass for the supplied Erasmus+ card reference. */
+body .learn-home-screen .learn-project-tile-erasmus,
+body .learn-home-screen .learn-project-tile-erasmus.selected {
+  height: 100px !important;
+  min-height: 100px !important;
+  flex-basis: 148px !important;
+  width: 148px !important;
+  min-width: 148px !important;
+  max-width: 148px !important;
+  padding: 0 16px 16px !important;
+  overflow: visible !important;
+  border: 1px solid #dce5f5 !important;
+  border-radius: 18px 18px 22px 22px !important;
+  background: #f5f7fc !important;
+  box-shadow: 0 2px 7px rgba(39,65,112,.035) !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+body .learn-home-screen .learn-project-tile-erasmus::after {
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  height: 43% !important;
+  border-radius: 18px 18px 9px 9px !important;
+  background: #98c6d3 !important;
+}
+body .learn-home-screen .learn-project-tile-erasmus .learn-project-tile-symbol {
+  top: -17px !important;
+  left: 16px !important;
+  width: 42px !important;
+  height: 52px !important;
+}
+body .learn-home-screen .learn-project-tile-erasmus .project-notebook-icon {
+  width: 42px !important;
+  height: 52px !important;
+}
+body .learn-home-screen .learn-project-tile-erasmus .learn-project-tile-title {
+  font-size: 17px !important;
+  font-weight: 700 !important;
+  letter-spacing: -.025em !important;
+  line-height: 1.15 !important;
+}
+body .learn-home-screen .learn-project-tile-add {
+  height: 100px !important;
+  min-height: 100px !important;
+  flex-basis: 148px !important;
+  width: 148px !important;
+  min-width: 148px !important;
+  max-width: 148px !important;
+  border-radius: 18px !important;
+}
