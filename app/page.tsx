@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent, type
 import {
   ArrowRight, BarChart3, Book, BookOpen, Check, CheckCircle2, Headphones, MessageCircle, CircleHelp, Puzzle,
   Flame, Heart, Lightbulb, Medal, RotateCcw, Trophy, UserRound, Dumbbell, Timer, Languages, Volume2,
-  X, Zap, LockKeyhole, ClipboardCheck, Star, ShoppingBag, Gift, Palette, Pencil, Settings, ChevronRight, CalendarDays, Sparkles, Target, Search, UserPlus, Users, Link2, Bell, Share2, Contact2, Cloud,
+  X, Zap, LockKeyhole, ClipboardCheck, Star, ShoppingBag, Gift, Palette, Pencil, Settings, ChevronRight, ChevronDown, Plus, GraduationCap, CalendarDays, Sparkles, Target, Search, UserPlus, Users, Link2, Bell, Share2, Contact2, Cloud,
 } from "lucide-react"
 
 const foxIcon = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Image-D15751D4-6Ne8AGNrryN8wlvyBepC8VDGQkHTw4.jpeg"
@@ -1554,7 +1554,42 @@ function Home({ completedLessons, readLessons, answeredTasks, stars, xp, dailySt
   avatarImage: string
 }) {
   const unitLessons = fullLessons
-  const pathNodes = learningPathNodes
+  const [projects, setProjects] = useState<string[]>(["Erasmus"])
+  const [activeProject, setActiveProject] = useState("Erasmus")
+  const [projectStorageReady, setProjectStorageReady] = useState(false)
+  const [projectQuery, setProjectQuery] = useState("")
+  const [projectMenuOpen, setProjectMenuOpen] = useState(false)
+  const [createProjectOpen, setCreateProjectOpen] = useState(false)
+  const [newProjectName, setNewProjectName] = useState("")
+  const projectSearchRef = useRef<HTMLInputElement | null>(null)
+  const pathNodes = activeProject === "Erasmus" ? learningPathNodes : []
+  const filteredProjects = projects.filter(project => project.toLowerCase().includes(projectQuery.trim().toLowerCase()))
+  useEffect(() => {
+    try {
+      const saved = window.localStorage.getItem("evolingo.projects.v1")
+      if (saved) {
+        const parsed = JSON.parse(saved) as { projects?: unknown; activeProject?: unknown }
+        if (Array.isArray(parsed.projects)) {
+          const safeProjects = [...new Set(parsed.projects.filter((value): value is string => typeof value === "string" && value.trim()).map(value => value.trim()))]
+          if (!safeProjects.includes("Erasmus")) safeProjects.unshift("Erasmus")
+          setProjects(safeProjects)
+          if (typeof parsed.activeProject === "string" && safeProjects.includes(parsed.activeProject)) setActiveProject(parsed.activeProject)
+        }
+      }
+    } catch {
+      // The default Erasmus project remains usable when local preferences are unavailable.
+    } finally {
+      setProjectStorageReady(true)
+    }
+  }, [])
+  useEffect(() => {
+    if (!projectStorageReady) return
+    try {
+      window.localStorage.setItem("evolingo.projects.v1", JSON.stringify({ projects, activeProject }))
+    } catch {
+      // Keep project management working for the current session if storage is full.
+    }
+  }, [projectStorageReady, projects, activeProject])
   const currentLessonId = unitLessons.find(lesson => !completedLessons.includes(lesson.id))?.id ?? null
   const completedCount = unitLessons.filter(lesson => completedLessons.includes(lesson.id)).length
   const progress = unitLessons.length ? Math.round(completedCount / unitLessons.length * 100) : 0
