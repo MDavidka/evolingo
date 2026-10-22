@@ -1669,6 +1669,32 @@ function Home({ completedLessons, readLessons, answeredTasks, stars, xp, dailySt
   const handlePointerUp = () => {
     dragStart.current = null
   }
+
+  // The home screen owns the viewport; only the learning sheet itself may scroll.
+  useEffect(() => {
+    const html = document.documentElement
+    const body = document.body
+    const previous = {
+      htmlOverflow: html.style.overflow,
+      bodyOverflow: body.style.overflow,
+      bodyOverscroll: body.style.overscrollBehavior,
+    }
+    html.style.overflow = "hidden"
+    body.style.overflow = "hidden"
+    body.style.overscrollBehavior = "none"
+    return () => {
+      html.style.overflow = previous.htmlOverflow
+      body.style.overflow = previous.bodyOverflow
+      body.style.overscrollBehavior = previous.bodyOverscroll
+    }
+  }, [])
+
+  const handleHomeBackdropClick = (event: React.MouseEvent<HTMLDivElement>) => {
+    if (sheetHeight <= 28) return
+    const target = event.target as HTMLElement
+    if (target.closest(".learn-sheet, .learn-project-tile, .learn-floating-create, .learn-header, .learn-project-search, .learn-stats-row, .learn-project-modal-backdrop, .bottom-nav")) return
+    setSheetHeight(22)
+  }
   const getNodeStatus = useCallback((node: LearningPathNode): "completed" | "current" | "locked" => {
     const sourceLesson = unitLessons.find(lesson => lesson.id === node.lessonId)
     if (!sourceLesson) return "locked"
@@ -1747,7 +1773,7 @@ function Home({ completedLessons, readLessons, answeredTasks, stars, xp, dailySt
     }
   }, [statusKey, pathNodes.length, pathHeight, sheetHeight])
 
-  return <div className="learn-home-screen">
+  return <div className="learn-home-screen" onClick={handleHomeBackdropClick}>
     <div className="learn-home-gradient" aria-hidden="true" />
     <header className="learn-header">
       <Brand />
@@ -1814,7 +1840,7 @@ function Home({ completedLessons, readLessons, answeredTasks, stars, xp, dailySt
     </div>
     {notice && <button className="inline-notice learn-inline-notice" type="button" onClick={clearNotice}><span>{notice}</span><X size={16} aria-hidden="true" /></button>}
 
-    <section className={"learn-sheet " + (sheetHeight <= 28 ? "learn-sheet-collapsed" : "learn-sheet-expanded")} ref={sheetRef} style={{ height: sheetHeight + "dvh" }} aria-label="Tanulási útvonal">
+    <section className={"learn-sheet " + (sheetHeight <= 28 ? "learn-sheet-collapsed" : "learn-sheet-expanded")} ref={sheetRef} style={{ ["--learn-sheet-height" as string]: sheetHeight + "dvh" } as React.CSSProperties} aria-label="Tanulási útvonal">
       <div
         className="learn-sheet-handle"
         role="slider"
