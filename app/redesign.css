@@ -2609,3 +2609,68 @@ body .learn-home-screen .learn-project-add-ring svg {
   height: 20px !important;
   stroke-width: 1.8 !important;
 }
+
+
+/* Compact Inter typography and shared frosted-glass material for lesson cards. */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;650;700;750;800&display=swap');
+body .learn-home-screen,
+body .learn-home-screen button,
+body .learn-home-screen input,
+body .learn-home-screen h1,
+body .learn-home-screen h2,
+body .learn-home-screen p {
+  font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
+}
+body .learn-home-screen .learn-project-section-heading h2 {
+  font-size: 19px !important;
+  font-weight: 650 !important;
+  letter-spacing: -.035em !important;
+}
+body .learn-home-screen .learn-project-tile,
+body .learn-home-screen .learn-project-tile.selected {
+  height: 78px !important;
+  min-height: 78px !important;
+  flex-basis: 115px !important;
+  width: 115px !important;
+  min-width: 115px !important;
+  max-width: 115px !important;
+  border: 1px solid rgba(255,255,255,.78) !important;
+  border-radius: 24px !important;
+  background: rgba(241,245,249,.78) !important;
+  -webkit-backdrop-filter: blur(18px) saturate(165%) !important;
+  backdrop-filter: blur(18px) saturate(165%) !important;
+  box-shadow: 0 8px 24px -4px rgba(15,23,42,.07), inset 0 1px 0 rgba(255,255,255,.9) !important;
+}
+body .learn-home-screen .learn-project-tile::before {
+  display: block !important;
+  background: linear-gradient(135deg, rgba(255,255,255,.78), rgba(255,255,255,.14)) !important;
+}
+body .learn-home-screen .learn-project-tile-add,
+body .learn-home-screen .learn-project-tile-add:hover,
+body .learn-home-screen .learn-project-tile-add:active {
+  height: 78px !important;
+  min-height: 78px !important;
+  border: 1.5px dashed rgba(203,213,225,.95) !important;
+  background: rgba(241,245,249,.55) !important;
+  -webkit-backdrop-filter: blur(18px) saturate(165%) !important;
+  backdrop-filter: blur(18px) saturate(165%) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.85) !important;
+}
+body .learn-home-screen .learn-project-tile-add::before { display: none !important; }
+body .learn-home-screen .learn-project-tile-title {
+  font-size: 13px !important;
+  font-weight: 650 !important;
+}
+body .learn-home-screen .learn-project-add-ring {
+  width: 34px !important;
+  height: 34px !important;
+  min-width: 34px !important;
+  min-height: 34px !important;
+  background: rgba(255,255,255,.72) !important;
+  border: 1px solid rgba(255,255,255,.9) !important;
+  box-shadow: 0 2px 8px rgba(15,23,42,.045), inset 0 1px 0 rgba(255,255,255,.95) !important;
+}
+body .learn-home-screen .learn-project-add-ring svg { width: 16px !important; height: 16px !important; }
+body .learn-home-screen .learn-project-search input { font-size: 13px !important; }
+body .learn-home-screen .learn-project-section-heading .learn-section-add { width: 40px !important; height: 40px !important; min-width: 40px !important; min-height: 40px !important; }
+body .learn-home-screen .learn-project-section-heading .learn-section-add svg { width: 17px !important; height: 17px !important; }
