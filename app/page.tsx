@@ -1737,7 +1737,6 @@ function Home({ completedLessons, readLessons, answeredTasks, stars, xp, dailySt
         >
           <span className="learn-project-tile-symbol" aria-hidden="true">{project === "Erasmus+" || project === "Erasmus" ? "🇪🇺" : <GraduationCap size={25} strokeWidth={1.7} />}</span>
           <span className="learn-project-tile-title">{project === "Erasmus" ? "Erasmus+" : project}</span>
-          {project === activeProject && <span className="learn-project-tile-active" aria-hidden="true"><Check size={13} strokeWidth={2.8} /></span>}
         </button>)}
         <button type="button" className="learn-project-tile learn-project-tile-add" onClick={() => { setNewProjectName(projectQuery.trim()); setCreateProjectOpen(true) }} aria-label="Create a new project">
           <span className="learn-project-add-ring"><Plus size={26} strokeWidth={2.3} aria-hidden="true" /></span>
@@ -1787,7 +1786,7 @@ function Home({ completedLessons, readLessons, answeredTasks, stars, xp, dailySt
       {sheetHeight > 28 && <>
       {activeProject === "Erasmus+" || activeProject === "Erasmus" ? <>
       <div className="learn-sheet-heading">
-        <h1>Erasmus</h1>
+        <h1>Erasmus+</h1>
         <div className="learn-theme-row">
           <span className="learn-theme-icon" aria-hidden="true"><Languages size={18} strokeWidth={2.3} /></span>
           <span>Angol nyelvtanulás</span>
@@ -1871,7 +1870,7 @@ function Home({ completedLessons, readLessons, answeredTasks, stars, xp, dailySt
       </> : <div className="learn-project-empty-state">
         <span className="learn-project-empty-icon"><GraduationCap size={27} /></span>
         <h2>{activeProject}</h2>
-        <p>This project is ready for your learning materials. Choose Erasmus to continue with the English grammar path.</p>
+        <p>This project is ready for your learning materials. Choose Erasmus+ to continue with the English grammar path.</p>
         <button type="button" onClick={() => { setActiveProject("Erasmus+"); setSheetHeight(78) }}>Open Erasmus lessons <ChevronRight size={17} /></button>
       </div>}
       </>}
