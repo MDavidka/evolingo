@@ -1554,15 +1554,14 @@ function Home({ completedLessons, readLessons, answeredTasks, stars, xp, dailySt
   avatarImage: string
 }) {
   const unitLessons = fullLessons
-  const [projects, setProjects] = useState<string[]>(["Erasmus"])
-  const [activeProject, setActiveProject] = useState("Erasmus")
+  const [projects, setProjects] = useState<string[]>(["Erasmus+"])
+  const [activeProject, setActiveProject] = useState("Erasmus+")
   const [projectStorageReady, setProjectStorageReady] = useState(false)
   const [projectQuery, setProjectQuery] = useState("")
-  const [projectMenuOpen, setProjectMenuOpen] = useState(false)
   const [createProjectOpen, setCreateProjectOpen] = useState(false)
   const [newProjectName, setNewProjectName] = useState("")
   const projectSearchRef = useRef<HTMLInputElement | null>(null)
-  const pathNodes = activeProject === "Erasmus" ? learningPathNodes : []
+  const pathNodes = activeProject === "Erasmus+" || activeProject === "Erasmus" ? learningPathNodes : []
   const filteredProjects = projects.filter(project => project.toLowerCase().includes(projectQuery.trim().toLowerCase()))
   useEffect(() => {
     try {
@@ -1570,10 +1569,15 @@ function Home({ completedLessons, readLessons, answeredTasks, stars, xp, dailySt
       if (saved) {
         const parsed = JSON.parse(saved) as { projects?: unknown; activeProject?: unknown }
         if (Array.isArray(parsed.projects)) {
-          const safeProjects = [...new Set(parsed.projects.filter((value): value is string => typeof value === "string" && value.trim().length > 0).map(value => value.trim()))]
-          if (!safeProjects.includes("Erasmus")) safeProjects.unshift("Erasmus")
+          const safeProjects = [...new Set(parsed.projects
+            .filter((value): value is string => typeof value === "string" && value.trim().length > 0)
+            .map(value => value.trim() === "Erasmus" ? "Erasmus+" : value.trim()))]
+          if (!safeProjects.includes("Erasmus+")) safeProjects.unshift("Erasmus+")
           setProjects(safeProjects)
-          if (typeof parsed.activeProject === "string" && safeProjects.includes(parsed.activeProject)) setActiveProject(parsed.activeProject)
+          if (typeof parsed.activeProject === "string") {
+            const savedActiveProject = parsed.activeProject === "Erasmus" ? "Erasmus+" : parsed.activeProject
+            if (safeProjects.includes(savedActiveProject)) setActiveProject(savedActiveProject)
+          }
         }
       }
     } catch {
@@ -1704,45 +1708,47 @@ function Home({ completedLessons, readLessons, answeredTasks, stars, xp, dailySt
       </button>
     </header>
     <section className="learn-home-intro" aria-label="Learning projects">
-      <div className="learn-greeting-row">
-        <h2 className="learn-greeting">Hello, {userName.trim().split(/\s+/)[0] || "there"}!</h2>
-        <button type="button" className="learn-create-button" onClick={() => { setNewProjectName(""); setCreateProjectOpen(true) }} aria-label="Create a new project" title="Create a new project">
-          <Plus size={23} strokeWidth={1.8} aria-hidden="true" />
-        </button>
-      </div>
+      <h2 className="learn-greeting">Hello, {userName.trim().split(/\s+/)[0] || "there"}!</h2>
       <label className="learn-project-search">
         <span className="sr-only">Filter projects</span>
         <input
           ref={projectSearchRef}
           type="search"
           value={projectQuery}
-          onChange={event => { setProjectQuery(event.target.value); setProjectMenuOpen(true); setSheetHeight(22) }}
-          onFocus={() => { if (projectQuery) setProjectMenuOpen(true) }}
+          onChange={event => { setProjectQuery(event.target.value); setSheetHeight(22) }}
           placeholder="Filter projects..."
           autoComplete="off"
         />
         <Search size={21} strokeWidth={1.9} aria-hidden="true" />
-        {projectQuery && <button type="button" className="learn-search-clear" aria-label="Clear project filter" onClick={() => { setProjectQuery(""); setProjectMenuOpen(false); projectSearchRef.current?.blur() }}><X size={16} /></button>}
+        {projectQuery && <button type="button" className="learn-search-clear" aria-label="Clear project filter" onClick={() => { setProjectQuery(""); projectSearchRef.current?.blur() }}><X size={16} /></button>}
       </label>
-      <div className="learn-project-picker-wrap">
-        <div className="learn-course-card">
-          <button type="button" className="learn-course-main" onClick={() => { setProjectMenuOpen(false); setSheetHeight(height => height <= 28 ? 78 : 22) }} aria-label={sheetHeight > 28 ? "Collapse the learning path" : "Open the learning path"}>
-            <span className="learn-course-symbol" aria-hidden="true"><GraduationCap size={25} strokeWidth={1.8} /></span>
-            <span className="learn-course-title">{activeProject}</span>
-          </button>
-          <button type="button" className="learn-course-action" aria-label="Choose a project" aria-expanded={projectMenuOpen} onClick={() => { if (sheetHeight > 28) setSheetHeight(22); setProjectMenuOpen(open => !open) }}>
-            <ChevronDown size={20} strokeWidth={1.8} aria-hidden="true" />
-          </button>
-        </div>
-        {projectMenuOpen && <div className="learn-project-menu" role="listbox" aria-label="Projects">
-          {filteredProjects.map(project => <button type="button" key={project} role="option" aria-selected={project === activeProject} className={"learn-project-option" + (project === activeProject ? " selected" : "")} onClick={() => { setActiveProject(project); setProjectMenuOpen(false); setProjectQuery(""); setSheetHeight(22) }}>
-            <GraduationCap size={18} aria-hidden="true" /><span>{project}</span>{project === activeProject && <Check size={17} aria-hidden="true" />}
-          </button>)}
-          {filteredProjects.length === 0 && <p className="learn-project-empty">No matching projects</p>}
-          <button type="button" className="learn-project-new" onClick={() => { setProjectMenuOpen(false); setNewProjectName(projectQuery.trim()); setCreateProjectOpen(true) }}><Plus size={17} /> Create project</button>
-        </div>}
+      <div className="learn-project-grid" aria-label="Projects">
+        {filteredProjects.map(project => <button
+          type="button"
+          key={project}
+          className={"learn-project-tile" + (project === activeProject ? " selected" : "") + (project === "Erasmus+" || project === "Erasmus" ? " learn-project-tile-erasmus" : "")}
+          aria-pressed={project === activeProject}
+          onClick={() => {
+            const normalized = project === "Erasmus" ? "Erasmus+" : project
+            setActiveProject(normalized)
+            setProjectQuery("")
+            setSheetHeight(78)
+          }}
+        >
+          <span className="learn-project-tile-symbol" aria-hidden="true">{project === "Erasmus+" || project === "Erasmus" ? "🇪🇺" : <GraduationCap size={25} strokeWidth={1.7} />}</span>
+          <span className="learn-project-tile-title">{project === "Erasmus" ? "Erasmus+" : project}</span>
+          {project === activeProject && <span className="learn-project-tile-active" aria-hidden="true"><Check size={13} strokeWidth={2.8} /></span>}
+        </button>)}
+        <button type="button" className="learn-project-tile learn-project-tile-add" onClick={() => { setNewProjectName(projectQuery.trim()); setCreateProjectOpen(true) }} aria-label="Create a new project">
+          <span className="learn-project-add-ring"><Plus size={26} strokeWidth={2.3} aria-hidden="true" /></span>
+          <span className="learn-project-add-label">New project</span>
+        </button>
+        {filteredProjects.length === 0 && <p className="learn-project-empty">No matching projects. Create one to get started.</p>}
       </div>
     </section>
+    <button type="button" className="learn-floating-create" onClick={() => { setNewProjectName(""); setCreateProjectOpen(true) }} aria-label="Create a new project" title="Create a new project">
+      <Plus size={25} strokeWidth={2.4} aria-hidden="true" />
+    </button>
     <div className="learn-stats-row" aria-label="Tanulási statisztikák">
       <div className="learn-stat-chip learn-streak-chip" aria-label={"Sorozat: " + dailyStudy.streak + " nap"}>
         <span className="learn-stat-label">Streak</span>
@@ -1887,7 +1893,6 @@ function Home({ completedLessons, readLessons, answeredTasks, stars, xp, dailySt
           setProjects(current => existing ? current : [...current, name])
           setActiveProject(selected)
           setProjectQuery("")
-          setProjectMenuOpen(false)
           setSheetHeight(22)
           setCreateProjectOpen(false)
         }}>
