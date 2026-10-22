@@ -2543,3 +2543,69 @@ body .learn-home-screen .bottom-nav::before {
   body .learn-home-screen .learn-home-intro { padding-left: 10px !important; padding-right: 10px !important; }
   body .learn-home-screen .bottom-nav { left: 10px !important; width: calc(100% - 20px) !important; }
 }
+
+
+/* Exact reference pass: clean cards, restrained plus controls, transparent search surface. */
+body .learn-home-screen .learn-project-search {
+  background: transparent !important;
+  border: 1px solid #e2e2e2 !important;
+  border-radius: 12px !important;
+  box-shadow: none !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+body .learn-home-screen .learn-project-search input {
+  background: transparent !important;
+}
+body .learn-home-screen .learn-project-search > svg {
+  color: #111827 !important;
+  stroke-width: 1.7 !important;
+}
+body .learn-home-screen .learn-project-section-heading .learn-section-add {
+  width: 48px !important;
+  height: 48px !important;
+  min-width: 48px !important;
+  min-height: 48px !important;
+  border-radius: 50% !important;
+  border: 1px solid #e5e7eb !important;
+  background: #ffffff !important;
+  box-shadow: none !important;
+  color: #374151 !important;
+}
+body .learn-home-screen .learn-project-section-heading .learn-section-add svg {
+  width: 20px !important;
+  height: 20px !important;
+  stroke-width: 1.8 !important;
+}
+body .learn-home-screen .learn-project-tile,
+body .learn-home-screen .learn-project-tile.selected {
+  background: #e7e7e7 !important;
+  border: 1px solid transparent !important;
+  border-radius: 22px !important;
+  box-shadow: none !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+body .learn-home-screen .learn-project-tile::before { display: none !important; }
+body .learn-home-screen .learn-project-tile-add,
+body .learn-home-screen .learn-project-tile-add:hover,
+body .learn-home-screen .learn-project-tile-add:active {
+  background: #ffffff !important;
+  border: 2px dotted #e0e0e0 !important;
+  border-radius: 22px !important;
+  box-shadow: none !important;
+}
+body .learn-home-screen .learn-project-add-ring {
+  width: 48px !important;
+  height: 48px !important;
+  min-width: 48px !important;
+  min-height: 48px !important;
+  background: #ffffff !important;
+  border: 1px solid #e5e7eb !important;
+  color: #4b5563 !important;
+}
+body .learn-home-screen .learn-project-add-ring svg {
+  width: 20px !important;
+  height: 20px !important;
+  stroke-width: 1.8 !important;
+}
