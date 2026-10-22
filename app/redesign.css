@@ -227,3 +227,112 @@ body .learn-path-node-kind-hard .learn-path-node-button:active {
   background: #d9322f !important;
   box-shadow: 0 2px 0 #b71c1c !important;
 }
+
+
+/* Learning path road: make every activity type unmistakable as its own node. */
+body .learn-path-connectors path {
+  stroke: #d5d9df !important;
+  stroke-width: 5 !important;
+  stroke-dasharray: 2 11 !important;
+}
+
+body .learn-path-node-button {
+  border: 0 !important;
+  color: #ffffff !important;
+  transition: transform 140ms ease, filter 140ms ease, box-shadow 140ms ease !important;
+}
+
+body .learn-path-node-kind-lesson .learn-path-node-button {
+  background: #59b83f !important;
+  box-shadow: 0 7px 0 #388e2b !important;
+}
+
+body .learn-path-node-kind-task .learn-path-node-button {
+  background: #ff8a00 !important;
+  box-shadow: 0 7px 0 #cc6e00 !important;
+}
+
+body .learn-path-node-kind-words .learn-path-node-button {
+  background: #8064e8 !important;
+  box-shadow: 0 7px 0 #5d43b7 !important;
+}
+
+body .learn-path-node-kind-test .learn-path-node-button {
+  background: #2878f0 !important;
+  box-shadow: 0 7px 0 #1754b0 !important;
+}
+
+body .learn-path-node-kind-hard .learn-path-node-button {
+  background: #e53935 !important;
+  box-shadow: 0 7px 0 #b71c1c !important;
+}
+
+body .learn-path-node-button svg {
+  color: #ffffff !important;
+}
+
+body .learn-path-node-locked .learn-path-node-button {
+  opacity: .72 !important;
+}
+
+body .learn-path-node-kind-hard .learn-path-node-button {
+  opacity: 1 !important;
+}
+
+body .learn-path-node-label {
+  width: max-content !important;
+  max-width: 122px !important;
+  margin-top: 12px !important;
+  padding: 5px 10px !important;
+  border: 1px solid #e7e9ec !important;
+  border-radius: 999px !important;
+  background: #f7f8fa !important;
+  color: #30343b !important;
+  font-size: 12px !important;
+  font-weight: 800 !important;
+  line-height: 1.15 !important;
+  white-space: nowrap !important;
+}
+
+body .learn-path-node-kind-lesson .learn-path-node-label {
+  color: #367f27 !important;
+  background: #eff9eb !important;
+  border-color: #d8efce !important;
+}
+
+body .learn-path-node-kind-task .learn-path-node-label {
+  color: #b95f00 !important;
+  background: #fff4e5 !important;
+  border-color: #ffe0b2 !important;
+}
+
+body .learn-path-node-kind-words .learn-path-node-label {
+  color: #6248be !important;
+  background: #f2edff !important;
+  border-color: #ded4ff !important;
+}
+
+body .learn-path-node-kind-test .learn-path-node-label {
+  color: #1d5db9 !important;
+  background: #edf4ff !important;
+  border-color: #cfe0ff !important;
+}
+
+body .learn-path-node-kind-hard .learn-path-node-label {
+  color: #c62828 !important;
+  background: #fff0f0 !important;
+  border-color: #ffc9c9 !important;
+}
+
+body .learn-path-node-kind-hard .learn-path-node-button:active {
+  background: #d9322f !important;
+  box-shadow: 0 2px 0 #b71c1c !important;
+}
+
+@media (max-width: 360px) {
+  body .learn-path-node-label {
+    max-width: 116px !important;
+    padding: 5px 8px !important;
+    font-size: 11px !important;
+  }
+}
