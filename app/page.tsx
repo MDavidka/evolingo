@@ -1426,7 +1426,7 @@ export default function App() {
       setScreen("home")
       return
     }
-    if (!readLessons.includes(prerequisiteLessonId)) {
+    if (!forceOpen && !readLessons.includes(prerequisiteLessonId)) {
       setActiveLessonId(prerequisiteLessonId)
       setScreen("lessonIntro")
       setNotice("Read the linked lesson first, then return to this activity.")
