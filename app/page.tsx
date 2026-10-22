@@ -883,7 +883,7 @@ function Home({ completedLessons, readLessons, answeredTasks, stars, xp, dailySt
         }}
       />
       <div className="learn-sheet-heading">
-        <h1>Present simple</h1>
+        <h1>Present Simple</h1>
         <div className="learn-theme-row">
           <span className="learn-theme-icon" aria-hidden="true"><Timer size={18} strokeWidth={2.3} /></span>
           <span>Igeidők</span>
