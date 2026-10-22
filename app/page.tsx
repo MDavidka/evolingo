@@ -1,5 +1,6 @@
 "use client"
 
+import Image from "next/image"
 import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent, type PointerEvent as ReactPointerEvent } from "react"
 import {
   ArrowRight, BarChart3, Book, BookOpen, Check, CheckCircle2, Headphones, MessageCircle, CircleHelp, Puzzle,
@@ -1493,7 +1494,12 @@ export default function App() {
   </main>
 }
 
-function Brand() { return <div className="brand"><img src={foxIcon} alt="Evölingo fox mascot" /><div><h1>Evölingo</h1></div></div> }
+function Brand() {
+  return <div className="brand">
+    <Image src={foxIcon} alt="Evölingo fox mascot" width={58} height={58} priority unoptimized />
+    <div><h1>Evölingo</h1></div>
+  </div>
+}
 
 function GuestSaveBanner({ userName, status, onRetry }: { userName: string; status: CloudSaveStatus; onRetry: () => void }) {
   const message = status === "saved"
@@ -1524,7 +1530,7 @@ function UserAvatar({ userName, avatar, avatarImage, variant }: {
   const FallbackIcon = avatar === "book" ? BookOpen : avatar === "star" ? Star : avatar === "spark" ? Sparkles : null
   if (avatarImage) {
     return <span className={"learn-user-avatar learn-user-avatar-" + variant}>
-      <img src={avatarImage} alt={"Profilkép: " + userName} />
+      <Image src={avatarImage} alt={"Profilkép: " + userName} width={variant === "header" ? 40 : 24} height={variant === "header" ? 40 : 24} unoptimized />
     </span>
   }
   if (FallbackIcon) {
@@ -1533,8 +1539,50 @@ function UserAvatar({ userName, avatar, avatarImage, variant }: {
     </span>
   }
   return <span className={"learn-user-avatar learn-user-avatar-" + variant}>
-    <img src={foxIcon} alt={"Evölingo alapértelmezett profilképe, " + userName} />
+    <Image src={foxIcon} alt={"Evölingo alapértelmezett profilképe, " + userName} width={variant === "header" ? 40 : 24} height={variant === "header" ? 40 : 24} unoptimized />
   </span>
+}
+
+
+type ProjectAccent = "blue" | "sage" | "amber" | "rose" | "slate"
+
+const projectAccents: Record<ProjectAccent, { cover: string; edge: string; line: string }> = {
+  blue: { cover: "#3979A8", edge: "#275A80", line: "#DCEAF4" },
+  sage: { cover: "#56836B", edge: "#3C624E", line: "#DCEAE0" },
+  amber: { cover: "#C1843F", edge: "#95612A", line: "#F1E2CD" },
+  rose: { cover: "#BD7074", edge: "#8E4E53", line: "#F2DEDF" },
+  slate: { cover: "#687A8E", edge: "#485869", line: "#DFE5EA" },
+}
+
+function getProjectAccent(project: string): ProjectAccent {
+  if (project === "Erasmus+" || project === "Erasmus") return "blue"
+  const variants: ProjectAccent[] = ["sage", "amber", "rose", "slate"]
+  let hash = 0
+  for (let index = 0; index < project.length; index++) {
+    hash = (hash * 31 + project.charCodeAt(index)) >>> 0
+  }
+  return variants[hash % variants.length]
+}
+
+function ProjectNotebookIcon({ accent }: { accent: ProjectAccent }) {
+  const colors = projectAccents[accent]
+  return <svg
+    className="project-notebook-icon"
+    viewBox="0 0 32 32"
+    width="32"
+    height="32"
+    fill="none"
+    aria-hidden="true"
+    focusable="false"
+  >
+    <path d="M9 5.5h16.7a2.3 2.3 0 0 1 2.3 2.3v17.1a2.1 2.1 0 0 1-2.1 2.1H9z" fill={colors.edge} opacity=".28" />
+    <path d="M9.2 4.2H24a2 2 0 0 1 2 2v19.4a2 2 0 0 1-2 2H9.2z" fill={colors.edge} />
+    <rect x="5.5" y="3.1" width="19" height="25" rx="3" fill={colors.cover} />
+    <path d="M8.2 5.5h13.8v20.1H8.2z" fill="#fff" opacity=".97" />
+    <path d="M10.3 10.2h9.4M10.3 13.7h9.4M10.3 17.2h9.4M10.3 20.7h6.5" stroke={colors.line} strokeWidth="1.15" strokeLinecap="round" />
+    <path d="M6.4 6.2c-2.1 0-2.1 3.4 0 3.4s2.1-3.4 0-3.4Zm0 5.8c-2.1 0-2.1 3.4 0 3.4s2.1-3.4 0-3.4Zm0 5.8c-2.1 0-2.1 3.4 0 3.4s2.1-3.4 0-3.4Zm0 5.8c-2.1 0-2.1 3.4 0 3.4s2.1-3.4 0-3.4Z" fill="#F8FAFC" stroke={colors.edge} strokeWidth=".5" />
+    <path d="M5.5 3.8v23.5" stroke={colors.edge} strokeWidth=".7" opacity=".65" />
+  </svg>
 }
 
 function Home({ completedLessons, readLessons, answeredTasks, stars, xp, dailyStudy, notice, clearNotice, onOpenLesson, onOpenTask, onOpenProfile, userName, avatar, avatarImage }: {
@@ -1735,7 +1783,9 @@ function Home({ completedLessons, readLessons, answeredTasks, stars, xp, dailySt
             setSheetHeight(78)
           }}
         >
-          <span className="learn-project-tile-symbol" aria-hidden="true">{project === "Erasmus+" || project === "Erasmus" ? "🇪🇺" : <GraduationCap size={25} strokeWidth={1.7} />}</span>
+          <span className="learn-project-tile-symbol" aria-hidden="true">
+            <ProjectNotebookIcon accent={getProjectAccent(project)} />
+          </span>
           <span className="learn-project-tile-title">{project === "Erasmus" ? "Erasmus+" : project}</span>
         </button>)}
         <button type="button" className="learn-project-tile learn-project-tile-add" onClick={() => { setNewProjectName(projectQuery.trim()); setCreateProjectOpen(true) }} aria-label="Create a new project">
@@ -2767,7 +2817,15 @@ function Profile({ completedCount, readCount, completedTaskCount, xp, stars, use
     </div>}
   </div>
 }
-function PageHeader({ title }: { title: string }) { return <header className="page-header"><div className="brand compact"><img src={foxIcon} alt="Evölingo róka" /><div><h1>Evölingo</h1></div></div><h1>{title}</h1></header> }
+function PageHeader({ title }: { title: string }) {
+  return <header className="page-header">
+    <div className="brand compact">
+      <Image src={foxIcon} alt="Evölingo róka" width={40} height={40} unoptimized />
+      <div><h1>Evölingo</h1></div>
+    </div>
+    <h1>{title}</h1>
+  </header>
+}
 function Nav({ screen, setScreen, userName, avatar, avatarImage }: { screen: Screen; setScreen: (screen: Screen) => void; userName: string; avatar: string; avatarImage: string }) {
   const items: [Screen, string, React.ElementType][] = [["home", "Tanulás", BookOpen], ["friends", "Barátok", Users], ["leaderboard", "Tanterem", BarChart3], ["profile", "Profil", UserRound]]
   const activeIndex = Math.max(0, items.findIndex(([id]) => id === screen))
