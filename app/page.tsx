@@ -340,11 +340,830 @@ const curriculumTopics: CurriculumTopic[] = [
 {title:"Inversion",summary:"Fordított szórend hangsúlyos, formális szerkezetekben.",prompt:"Never _____ I seen such a view.",options:["have","did","am","was"],answer:"have",explanation:"Never mondat elején segédige kerül az alany elé.",tip:"Never have I seen…"},
 {title:"Wishes and Regrets",summary:"Kívánságok és megbánás kifejezése wish szerkezettel.",prompt:"I wish I _____ taller.",options:["am","were","will be","have been"],answer:"were",explanation:"Jelenlegi, nem valós helyzetre gyakran wish + Past Simple áll.",tip:"I wish I were…"}
 ]
+type CurriculumTeaching = { rule: string; form: string; examples: Example[]; mistake: string }
+const curriculumTeaching: Record<string, CurriculumTeaching> = {
+  "Present Perfect Simple": {
+    "rule": "Connect a past event with the present: life experience, a recent result, or a time period that is not finished.",
+    "form": "have/has + past participle (V3). Use have with I/you/we/they and has with he/she/it.",
+    "examples": [
+      {
+        "sentence": "I have already sent the email.",
+        "translation": "Már elküldtem az e-mailt."
+      },
+      {
+        "sentence": "She has never visited Spain.",
+        "translation": "Még soha nem járt Spanyolországban."
+      }
+    ],
+    "mistake": "Do not use a finished past-time expression such as yesterday with the Present Perfect; use Past Simple for a finished time."
+  },
+  "Present Perfect Continuous": {
+    "rule": "Focus on an activity that started in the past and continues now, or has a visible present result. It often answers how long?",
+    "form": "have/has + been + verb-ing; for gives a duration and since gives a starting point.",
+    "examples": [
+      {
+        "sentence": "I have been learning English for three years.",
+        "translation": "Három éve tanulok angolul."
+      },
+      {
+        "sentence": "He has been working since eight o’clock.",
+        "translation": "Nyolc óra óta dolgozik."
+      }
+    ],
+    "mistake": "Use the past participle after have/has for the Simple form; the Continuous form needs been + -ing."
+  },
+  "Past Perfect Simple": {
+    "rule": "Show that one past event happened before another past moment or event.",
+    "form": "subject + had + V3; negative: had not + V3; question: Had + subject + V3?",
+    "examples": [
+      {
+        "sentence": "The train had left before we arrived.",
+        "translation": "A vonat már elment, mire megérkeztünk."
+      },
+      {
+        "sentence": "I had finished dinner when she called.",
+        "translation": "Már befejeztem a vacsorát, amikor telefonált."
+      }
+    ],
+    "mistake": "Do not use Past Perfect for every past event; use it when the earlier-than relationship matters."
+  },
+  "Future Continuous": {
+    "rule": "Describe what will be in progress at a particular future time, or ask politely about someone’s plans.",
+    "form": "will + be + verb-ing for every subject.",
+    "examples": [
+      {
+        "sentence": "At nine tomorrow, I will be taking my exam.",
+        "translation": "Holnap kilenckor éppen vizsgázni fogok."
+      },
+      {
+        "sentence": "This time next week, we will be flying to Italy.",
+        "translation": "Jövő héten ilyenkor éppen Olaszországba repülünk majd."
+      }
+    ],
+    "mistake": "Future Continuous is will be + -ing, not will + base verb alone."
+  },
+  "Future Perfect Simple": {
+    "rule": "Describe an action that will be complete by a future deadline or reference point.",
+    "form": "will + have + past participle (V3); often used with by, before, and by the time.",
+    "examples": [
+      {
+        "sentence": "By Friday, we will have completed the project.",
+        "translation": "Péntekre befejezzük a projektet."
+      },
+      {
+        "sentence": "She will have arrived by noon.",
+        "translation": "Délre meg fog érkezni."
+      }
+    ],
+    "mistake": "After will have, use the past participle, not the base form or a third-person -s form."
+  },
+  "Be going to": {
+    "rule": "Use it for prior intentions/plans and predictions based on evidence you can see now.",
+    "form": "am/is/are + going to + base verb; negative: am not/isn’t/aren’t going to.",
+    "examples": [
+      {
+        "sentence": "I am going to apply for the exchange programme.",
+        "translation": "Jelentkezni fogok a csereprogramra."
+      },
+      {
+        "sentence": "Look at those clouds; it is going to rain.",
+        "translation": "Nézd azokat a felhőket; esni fog."
+      }
+    ],
+    "mistake": "Do not omit be: say She is going to leave, not She going to leave."
+  },
+  "Much / Many": {
+    "rule": "Use many with plural countable nouns and much with uncountable nouns, especially in questions and negatives.",
+    "form": "How many + plural countable noun; how much + uncountable noun.",
+    "examples": [
+      {
+        "sentence": "How many countries have you visited?",
+        "translation": "Hány országban jártál?"
+      },
+      {
+        "sentence": "We do not have much time.",
+        "translation": "Nincs sok időnk."
+      }
+    ],
+    "mistake": "Do not say much books or many information."
+  },
+  "A few / A little": {
+    "rule": "A few means a small number of countable things; a little means a small amount of an uncountable thing. Both suggest that some is available.",
+    "form": "a few + plural countable noun; a little + uncountable noun.",
+    "examples": [
+      {
+        "sentence": "I have a few questions.",
+        "translation": "Van néhány kérdésem."
+      },
+      {
+        "sentence": "There is a little milk in the fridge.",
+        "translation": "Van egy kevés tej a hűtőben."
+      }
+    ],
+    "mistake": "Use a few with countable plural nouns and a little with uncountable nouns."
+  },
+  "Few / Little": {
+    "rule": "Few and little mean not many/not much and usually emphasize that the amount is smaller than desired. The article a makes the meaning more positive.",
+    "form": "few + plural countable noun; little + uncountable noun. Compare a few/a little with few/little.",
+    "examples": [
+      {
+        "sentence": "Few students understood the difficult question.",
+        "translation": "Kevés diák értette meg a nehéz kérdést."
+      },
+      {
+        "sentence": "We have little time left.",
+        "translation": "Kevés időnk maradt."
+      }
+    ],
+    "mistake": "Few/little often sound negative; a few/a little mean that at least some are available."
+  },
+  "A lot of / Lots of": {
+    "rule": "Both expressions mean a large quantity and work with plural countable nouns and uncountable nouns. Lots of is slightly more informal.",
+    "form": "a lot of/lots of + plural countable noun or uncountable noun.",
+    "examples": [
+      {
+        "sentence": "She has a lot of friends.",
+        "translation": "Sok barátja van."
+      },
+      {
+        "sentence": "There is lots of useful information online.",
+        "translation": "Sok hasznos információ van az interneten."
+      }
+    ],
+    "mistake": "Do not add a plural -s to an uncountable noun such as information or advice."
+  },
+  "Enough": {
+    "rule": "Enough means as much or as many as needed. It goes before a noun but after an adjective or adverb.",
+    "form": "enough + noun; adjective/adverb + enough; enough + to-infinitive is also common.",
+    "examples": [
+      {
+        "sentence": "We have enough chairs for everyone.",
+        "translation": "Van elég székünk mindenkinek."
+      },
+      {
+        "sentence": "The room is warm enough to study in.",
+        "translation": "A szoba elég meleg ahhoz, hogy tanuljunk benne."
+      }
+    ],
+    "mistake": "Say enough money but warm enough; the position changes depending on whether a noun or adjective follows."
+  },
+  "Too much / Too many": {
+    "rule": "Use these for more than is needed or wanted. Too much goes with uncountable nouns; too many goes with plural countable nouns.",
+    "form": "too much + uncountable noun; too many + plural countable noun.",
+    "examples": [
+      {
+        "sentence": "There is too much sugar in this tea.",
+        "translation": "Túl sok cukor van ebben a teában."
+      },
+      {
+        "sentence": "There are too many cars on this street.",
+        "translation": "Túl sok autó van ezen az utcán."
+      }
+    ],
+    "mistake": "Too much/too many normally expresses an excessive amount, unlike neutral a lot of."
+  },
+  "Countable and Uncountable Nouns": {
+    "rule": "Countable nouns can be counted as individual items and have singular/plural forms. Uncountable nouns are treated as a mass or concept.",
+    "form": "a/an + singular countable noun; numbers + plural countable noun; some/much/little + uncountable noun.",
+    "examples": [
+      {
+        "sentence": "I bought three apples.",
+        "translation": "Három almát vettem."
+      },
+      {
+        "sentence": "We need some information and two bottles of water.",
+        "translation": "Szükségünk van némi információra és két üveg vízre."
+      }
+    ],
+    "mistake": "Information, advice, furniture, and luggage are normally uncountable in English; use a piece of/a bit of when needed."
+  },
+  "Comparative Adjectives": {
+    "rule": "Compare two people or things with a comparative adjective, usually followed by than.",
+    "form": "Short adjectives: adjective + -er; adjectives ending in consonant-vowel-consonant may double the final consonant; longer adjectives: more + adjective.",
+    "examples": [
+      {
+        "sentence": "This route is shorter than the old one.",
+        "translation": "Ez az útvonal rövidebb a réginél."
+      },
+      {
+        "sentence": "The second task is more difficult than the first.",
+        "translation": "A második feladat nehezebb az elsőnél."
+      }
+    ],
+    "mistake": "Avoid double comparatives: use easier or more difficult, not more easier."
+  },
+  "Superlative Adjectives": {
+    "rule": "Use a superlative to identify the top or bottom member of a group of three or more. The is normally used before it.",
+    "form": "the + adjective-est for many short adjectives; the most + longer adjective; the least + adjective for the lowest degree.",
+    "examples": [
+      {
+        "sentence": "It is the tallest building in the city.",
+        "translation": "Ez a város legmagasabb épülete."
+      },
+      {
+        "sentence": "That was the most interesting lecture of the week.",
+        "translation": "Ez volt a hét legérdekesebb előadása."
+      }
+    ],
+    "mistake": "Use the before the superlative in ordinary adjective phrases; do not add than after a superlative."
+  },
+  "Adjectives and Adverbs": {
+    "rule": "Adjectives describe nouns or pronouns; adverbs often describe verbs, adjectives, or other adverbs and explain how, when, or how much.",
+    "form": "adjective + noun (a careful driver); verb + adverb (drives carefully). Many adverbs use -ly, but not all.",
+    "examples": [
+      {
+        "sentence": "She is a careful driver.",
+        "translation": "Ő óvatos sofőr."
+      },
+      {
+        "sentence": "She drives carefully.",
+        "translation": "Óvatosan vezet."
+      }
+    ],
+    "mistake": "Good is an adjective but well is often the adverb; friendly and fast do not follow the usual -ly pattern."
+  },
+  "Irregular Comparatives and Superlatives": {
+    "rule": "Some common adjectives change form instead of following -er/-est or more/most.",
+    "form": "good → better → the best; bad → worse → the worst; far → farther/further → the farthest/furthest; little → less → the least.",
+    "examples": [
+      {
+        "sentence": "Your second result is better than the first.",
+        "translation": "A második eredményed jobb az elsőnél."
+      },
+      {
+        "sentence": "This is the best option for our team.",
+        "translation": "Ez a legjobb lehetőség a csapatunk számára."
+      }
+    ],
+    "mistake": "Do not say gooder or the most best."
+  },
+  "Zero Conditional": {
+    "rule": "Use it for facts, rules, and results that are generally or always true.",
+    "form": "if/when + Present Simple, Present Simple; either clause may come first.",
+    "examples": [
+      {
+        "sentence": "If you heat ice, it melts.",
+        "translation": "Ha jeget melegítesz, elolvad."
+      },
+      {
+        "sentence": "When people do not water plants, they dry out.",
+        "translation": "Ha az emberek nem öntözik a növényeket, a növények kiszáradnak."
+      }
+    ],
+    "mistake": "The Zero Conditional states a general result; it does not normally use will in the result clause."
+  },
+  "First Conditional": {
+    "rule": "Use it for a real possibility in the future and its likely consequence.",
+    "form": "if + Present Simple, will + base verb; the if-clause can come first or second.",
+    "examples": [
+      {
+        "sentence": "If I finish early, I will call you.",
+        "translation": "Ha korán végzek, felhívlak."
+      },
+      {
+        "sentence": "We will miss the bus if we do not hurry.",
+        "translation": "Lekéssük a buszt, ha nem sietünk."
+      }
+    ],
+    "mistake": "Do not normally use will directly after if in this conditional: If it rains, not If it will rain."
+  },
+  "Second Conditional": {
+    "rule": "Use it for imaginary, unlikely, or unreal situations in the present or future.",
+    "form": "if + Past Simple, would + base verb; were is common in formal hypothetical clauses with I/he/she/it.",
+    "examples": [
+      {
+        "sentence": "If I had more free time, I would learn Italian.",
+        "translation": "Ha több szabadidőm lenne, olaszul tanulnék."
+      },
+      {
+        "sentence": "If she were here, she would know what to do.",
+        "translation": "Ha itt lenne, tudná, mit kell tenni."
+      }
+    ],
+    "mistake": "The past form expresses distance/unreality, not past time; do not put would in the if-clause."
+  },
+  "Third Conditional": {
+    "rule": "Imagine a different past and its unreal consequence; the actual past cannot now be changed.",
+    "form": "if + Past Perfect, would have + past participle.",
+    "examples": [
+      {
+        "sentence": "If we had left earlier, we would have caught the train.",
+        "translation": "Ha korábban indultunk volna, elértük volna a vonatot."
+      },
+      {
+        "sentence": "She would have passed if she had studied more.",
+        "translation": "Átment volna, ha többet tanult volna."
+      }
+    ],
+    "mistake": "Use had + V3 after if and would have + V3 in the result, not would have in both clauses."
+  },
+  "Have / Has": {
+    "rule": "Have and has express possession, relationships, experiences, or features. Has is used with he/she/it; have with I/you/we/they.",
+    "form": "I/you/we/they have; he/she/it has. In Present Simple questions and negatives, use do/does + have.",
+    "examples": [
+      {
+        "sentence": "My brother has a new bike.",
+        "translation": "A bátyámnak/öcsémnek új biciklije van."
+      },
+      {
+        "sentence": "Do you have any questions?",
+        "translation": "Van kérdésed?"
+      }
+    ],
+    "mistake": "After does, use have, not has: Does she have…?"
+  },
+  "Do / Does": {
+    "rule": "Do and does form Present Simple questions and negatives with most main verbs. Does goes with he/she/it and the main verb stays in its base form.",
+    "form": "Do + I/you/we/they + base verb? Does + he/she/it + base verb?; don't/doesn't + base verb.",
+    "examples": [
+      {
+        "sentence": "Does your sister like music?",
+        "translation": "Szereti a zenét a nővéred/húgod?"
+      },
+      {
+        "sentence": "He does not work on Sundays.",
+        "translation": "Vasárnaponként nem dolgozik."
+      }
+    ],
+    "mistake": "Do not add -s to the main verb after does/doesn't: Does she like, not Does she likes."
+  },
+  "Have got / Has got": {
+    "rule": "Have got/has got expresses possession, family relationships, and some features, especially in informal British English.",
+    "form": "I/you/we/they have got; he/she/it has got. Questions: Have/Has + subject + got?",
+    "examples": [
+      {
+        "sentence": "I have got two cousins.",
+        "translation": "Két unokatestvérem van."
+      },
+      {
+        "sentence": "Has she got a driving licence?",
+        "translation": "Van jogosítványa?"
+      }
+    ],
+    "mistake": "Do not combine do/does with got in the same question: say Has he got…? or Does he have…?"
+  },
+  "Possessive Adjectives": {
+    "rule": "Possessive adjectives identify who owns or is connected to a noun and always come directly before that noun.",
+    "form": "my, your, his, her, its, our, their + noun.",
+    "examples": [
+      {
+        "sentence": "Anna has a cat. Her cat is black.",
+        "translation": "Annának van egy macskája. A macskája fekete."
+      },
+      {
+        "sentence": "We are visiting our grandparents.",
+        "translation": "Meglátogatjuk a nagyszüleinket."
+      }
+    ],
+    "mistake": "Use its for possession by a thing/animal; it's means it is or it has."
+  },
+  "Possessive Pronouns": {
+    "rule": "Possessive pronouns replace a possessive adjective plus a noun, so the noun does not need to be repeated.",
+    "form": "mine, yours, his, hers, ours, theirs; these normally stand alone.",
+    "examples": [
+      {
+        "sentence": "This blue bag is mine.",
+        "translation": "Ez a kék táska az enyém."
+      },
+      {
+        "sentence": "Their house is larger than ours.",
+        "translation": "Az ő házuk nagyobb a miénknél."
+      }
+    ],
+    "mistake": "Say my book but the book is mine; do not put a noun directly after mine/yours/hers."
+  },
+  "Can / Could": {
+    "rule": "Can expresses present ability, possibility, or informal permission. Could can express past ability, a less certain possibility, or a polite request.",
+    "form": "can/could + base verb; questions invert can/could and the subject; no to or -s after the modal.",
+    "examples": [
+      {
+        "sentence": "I can speak three languages.",
+        "translation": "Három nyelven tudok beszélni."
+      },
+      {
+        "sentence": "Could you help me with this form?",
+        "translation": "Tudnál segíteni ennek az űrlapnak a kitöltésében?"
+      }
+    ],
+    "mistake": "Use the base verb after can/could: can swim, not can to swim."
+  },
+  "May / Might": {
+    "rule": "May and might express possibility; may is also used for formal permission. Might often sounds more tentative.",
+    "form": "may/might + base verb; negative: may not/might not.",
+    "examples": [
+      {
+        "sentence": "It might snow tonight.",
+        "translation": "Lehet, hogy ma este havazni fog."
+      },
+      {
+        "sentence": "May I ask you a question?",
+        "translation": "Fel tehetek egy kérdést?"
+      }
+    ],
+    "mistake": "Do not add to after the modal: might rain, not might to rain."
+  },
+  "Must": {
+    "rule": "Must expresses strong obligation, rules, or a logical conclusion based on evidence.",
+    "form": "must + base verb; must not/mustn't gives prohibition.",
+    "examples": [
+      {
+        "sentence": "You must wear a seat belt.",
+        "translation": "Be kell kötnöd a biztonsági övet."
+      },
+      {
+        "sentence": "The lights are on, so they must be at home.",
+        "translation": "Égnek a lámpák, tehát biztosan otthon vannak."
+      }
+    ],
+    "mistake": "Mustn't means prohibited, not unnecessary; do not use must to + verb."
+  },
+  "Have to / Has to": {
+    "rule": "Have to/has to expresses obligation, often because of a rule or outside circumstance. The form changes with the subject and tense.",
+    "form": "I/you/we/they have to; he/she/it has to; questions use do/does have to.",
+    "examples": [
+      {
+        "sentence": "She has to get up early for school.",
+        "translation": "Korán kell kelnie az iskola miatt."
+      },
+      {
+        "sentence": "Do we have to book a table?",
+        "translation": "Le kell foglalnunk egy asztalt?"
+      }
+    ],
+    "mistake": "Use has to with he/she/it in statements, but does she have to in questions."
+  },
+  "Should / Ought to": {
+    "rule": "Should and ought to give advice, recommendations, or expectations. Should is more common in everyday speech.",
+    "form": "should + base verb; ought to + base verb; negative: should not/shouldn't.",
+    "examples": [
+      {
+        "sentence": "You should check the deadline today.",
+        "translation": "Ma ellenőrizned kellene a határidőt."
+      },
+      {
+        "sentence": "We ought to leave soon.",
+        "translation": "Hamarosan indulnunk kellene."
+      }
+    ],
+    "mistake": "Should is followed by the base verb without to; ought to includes to."
+  },
+  "Mustn't / Don't have to": {
+    "rule": "Mustn't means an action is forbidden; don't have to means there is no obligation, so the action is optional.",
+    "form": "mustn't + base verb = forbidden; don't/doesn't have to + base verb = not necessary.",
+    "examples": [
+      {
+        "sentence": "You mustn't use your phone during the exam.",
+        "translation": "A vizsga alatt tilos a telefonodat használnod."
+      },
+      {
+        "sentence": "You don't have to bring food; lunch is provided.",
+        "translation": "Nem kell ételt hoznod; biztosítanak ebédet."
+      }
+    ],
+    "mistake": "These meanings are very different: prohibition is not the same as lack of necessity."
+  },
+  "Would": {
+    "rule": "Would is used for hypothetical results, polite offers/requests, and repeated past actions in some contexts.",
+    "form": "would + base verb; would you like + noun/to-infinitive for polite offers; if + past, would + base verb for a Second Conditional result.",
+    "examples": [
+      {
+        "sentence": "I would travel more if I had enough money.",
+        "translation": "Többet utaznék, ha lenne elég pénzem."
+      },
+      {
+        "sentence": "Would you like to join us?",
+        "translation": "Szeretnél csatlakozni hozzánk?"
+      }
+    ],
+    "mistake": "Do not use would in a normal if-clause for the Second Conditional: If I had…, I would…"
+  },
+  "Used to": {
+    "rule": "Used to describes past habits or situations that were true before but are no longer true now.",
+    "form": "used to + base verb; questions/negatives commonly use did/didn't + use to.",
+    "examples": [
+      {
+        "sentence": "I used to play outside every afternoon.",
+        "translation": "Régebben minden délután kint játszottam."
+      },
+      {
+        "sentence": "We didn't use to have a car.",
+        "translation": "Régebben nem volt autónk."
+      }
+    ],
+    "mistake": "After did/didn't, use use to, not used to: Did you use to…?"
+  },
+  "Passive Voice": {
+    "rule": "The passive emphasizes the action or recipient rather than the person doing it. Use it when the agent is unknown, obvious, or unimportant.",
+    "form": "a form of be + past participle (V3); keep the tense by changing be; add by + agent only when useful.",
+    "examples": [
+      {
+        "sentence": "The bridge was built in 1998.",
+        "translation": "A hidat 1998-ban építették."
+      },
+      {
+        "sentence": "The results will be announced tomorrow.",
+        "translation": "Az eredményeket holnap jelentik be."
+      }
+    ],
+    "mistake": "Use the correct tense of be plus V3; do not confuse was built with was build."
+  },
+  "Reported Speech": {
+    "rule": "Reported speech tells what someone said without repeating their exact words. After a past reporting verb, tenses often move back one step.",
+    "form": "Present Simple → Past Simple; am/is → was; will → would; can → could. Pronouns and time/place words may also change.",
+    "examples": [
+      {
+        "sentence": "Direct: “I am tired.” Reported: He said that he was tired.",
+        "translation": "Egyenes: „Fáradt vagyok.” Függő: Azt mondta, hogy fáradt."
+      },
+      {
+        "sentence": "“We will return tomorrow.” → They said they would return the next day.",
+        "translation": "„Holnap visszatérünk.” → Azt mondták, másnap visszatérnek."
+      }
+    ],
+    "mistake": "Backshift is common after said/told in the past, but not every statement must change if it is still true or the context permits it."
+  },
+  "Relative Clauses": {
+    "rule": "Relative clauses add information about a person, thing, place, or time. The relative word links the information to its noun.",
+    "form": "who/that for people; which/that for things; where for places; whose for possession; when for time.",
+    "examples": [
+      {
+        "sentence": "The student who won the prize is my friend.",
+        "translation": "A díjat nyerő diák a barátom."
+      },
+      {
+        "sentence": "This is the café where we first met.",
+        "translation": "Ez az a kávézó, ahol először találkoztunk."
+      }
+    ],
+    "mistake": "Use where for a place clause, not who; use whose to show possession."
+  },
+  "Gerunds and Infinitives": {
+    "rule": "Some verbs are followed by an -ing form, some by to + base verb, and some can take either with a meaning change.",
+    "form": "enjoy/avoid/finish + -ing; want/decide/hope + to-infinitive; make/let + object + base verb.",
+    "examples": [
+      {
+        "sentence": "I enjoy learning new words.",
+        "translation": "Szeretek új szavakat tanulni."
+      },
+      {
+        "sentence": "They decided to leave early.",
+        "translation": "Úgy döntöttek, hogy korán indulnak."
+      }
+    ],
+    "mistake": "Learn the pattern after each verb: enjoy to learn is incorrect; decide leaving is usually incorrect."
+  },
+  "Articles": {
+    "rule": "A/an introduces a singular countable noun when it is not specific; the points to something identifiable or already known; zero article is common for general plural and uncountable nouns.",
+    "form": "a before a consonant sound; an before a vowel sound; the for specific/known things; no article for many general plural and uncountable uses.",
+    "examples": [
+      {
+        "sentence": "I saw an owl in the tree.",
+        "translation": "Láttam egy baglyot a fán."
+      },
+      {
+        "sentence": "The owl was looking at us.",
+        "translation": "A bagoly minket figyelt."
+      }
+    ],
+    "mistake": "Choose a/an by sound, not spelling: an hour but a university; do not normally use a/an with plural nouns."
+  },
+  "Prepositions": {
+    "rule": "Prepositions express time, place, direction, and relationships. Common time patterns are at for clock times, on for days/dates, and in for months/years/long periods.",
+    "form": "at 9 o'clock; on Monday/on 12 May; in October/in 2026; in a room; on a surface; at a point/place.",
+    "examples": [
+      {
+        "sentence": "The meeting starts at nine on Monday.",
+        "translation": "A találkozó hétfőn kilenckor kezdődik."
+      },
+      {
+        "sentence": "My birthday is in December.",
+        "translation": "Decemberben van a születésnapom."
+      }
+    ],
+    "mistake": "Memorize common combinations and set phrases; translating every preposition directly from Hungarian often causes errors."
+  },
+  "Question Tags": {
+    "rule": "Question tags are short endings used to check information or invite agreement. Positive statements usually take negative tags, and negative statements take positive tags.",
+    "form": "statement + auxiliary + pronoun; match the tense and subject: You are ready, aren't you?",
+    "examples": [
+      {
+        "sentence": "You are a student, aren't you?",
+        "translation": "Diák vagy, ugye?"
+      },
+      {
+        "sentence": "They haven't finished, have they?",
+        "translation": "Még nem fejezték be, ugye?"
+      }
+    ],
+    "mistake": "Use the matching auxiliary and subject pronoun; don't repeat the noun as the tag subject."
+  },
+  "Word Formation": {
+    "rule": "Word formation changes a base word with prefixes and suffixes to create a noun, verb, adjective, or adverb. The sentence tells you which word class is needed.",
+    "form": "happy → happiness; happy → unhappy; quick → quickly; develop → development.",
+    "examples": [
+      {
+        "sentence": "Her kindness impressed everyone.",
+        "translation": "A kedvessége mindenkit lenyűgözött."
+      },
+      {
+        "sentence": "He answered the question carefully.",
+        "translation": "Óvatosan válaszolt a kérdésre."
+      }
+    ],
+    "mistake": "Check the grammar slot before choosing a form: after an article you may need a noun, while after a verb you may need an adverb."
+  },
+  "Phrasal Verbs": {
+    "rule": "A phrasal verb combines a verb with a particle such as up, off, out, or on; the full meaning may differ from the verb alone.",
+    "form": "learn the whole unit: give up = stop trying; find out = discover; put off = postpone; look after = take care of.",
+    "examples": [
+      {
+        "sentence": "I will never give up learning English.",
+        "translation": "Soha nem adom fel az angoltanulást."
+      },
+      {
+        "sentence": "Can you look after my bag for a minute?",
+        "translation": "Vigyáznál egy percre a táskámra?"
+      }
+    ],
+    "mistake": "Some phrasal verbs are separable and others are not; with separable verbs, a pronoun usually goes between verb and particle (pick it up)."
+  },
+  "Conjunctions and Linking Words": {
+    "rule": "Linking words show contrast, reason, result, addition, or condition. Choose them by the logical relationship between the clauses.",
+    "form": "because + clause; because of + noun; although + clause; despite + noun/-ing; so + result; however often links contrasting sentences.",
+    "examples": [
+      {
+        "sentence": "I was tired, so I went to bed early.",
+        "translation": "Fáradt voltam, ezért korán lefeküdtem."
+      },
+      {
+        "sentence": "Although it was raining, they continued the match.",
+        "translation": "Bár esett az eső, folytatták a mérkőzést."
+      }
+    ],
+    "mistake": "Because is followed by a clause; because of is followed by a noun or -ing form."
+  },
+  "Too / Enough": {
+    "rule": "Too means more than is acceptable; enough means the required amount/degree. The word order depends on whether a noun or adjective follows.",
+    "form": "too + adjective/adverb; adjective/adverb + enough; enough + noun; too + adjective + to-infinitive.",
+    "examples": [
+      {
+        "sentence": "The box is too heavy to lift.",
+        "translation": "A doboz túl nehéz ahhoz, hogy felemeljük."
+      },
+      {
+        "sentence": "She is old enough to travel alone.",
+        "translation": "Elég idős ahhoz, hogy egyedül utazzon."
+      }
+    ],
+    "mistake": "Say too heavy but strong enough; enough comes before nouns and after adjectives."
+  },
+  "So / Such": {
+    "rule": "So intensifies an adjective or adverb; such intensifies a noun phrase. They can introduce a result with that.",
+    "form": "so + adjective/adverb; such + (a/an) + adjective + singular noun; so many/much/few/little + noun.",
+    "examples": [
+      {
+        "sentence": "The exam was so difficult that many students needed more time.",
+        "translation": "A vizsga olyan nehéz volt, hogy sok diáknak több időre volt szüksége."
+      },
+      {
+        "sentence": "It was such a useful lesson that I took notes.",
+        "translation": "Olyan hasznos lecke volt, hogy jegyzeteltem."
+      }
+    ],
+    "mistake": "Use so difficult but such a difficult exam; do not say so a difficult exam."
+  },
+  "Both / Either / Neither": {
+    "rule": "Both refers to two together; either means one or the other; neither means not one and not the other.",
+    "form": "both + plural noun/verb; either/neither + singular noun in many standard uses; both…and, either…or, neither…nor.",
+    "examples": [
+      {
+        "sentence": "Both answers are correct.",
+        "translation": "Mindkét válasz helyes."
+      },
+      {
+        "sentence": "Neither of the options is suitable.",
+        "translation": "Egyik lehetőség sem megfelelő."
+      }
+    ],
+    "mistake": "Neither is negative already, so do not add another not in the same clause."
+  },
+  "Reflexive Pronouns": {
+    "rule": "Use reflexive pronouns when the subject and object refer to the same person/thing, or to emphasize that someone did something personally.",
+    "form": "myself, yourself, himself, herself, itself, ourselves, yourselves, themselves; by + reflexive = alone/without help.",
+    "examples": [
+      {
+        "sentence": "She taught herself to play the guitar.",
+        "translation": "Önállóan tanult meg gitározni."
+      },
+      {
+        "sentence": "We prepared the presentation ourselves.",
+        "translation": "Mi magunk készítettük el a bemutatót."
+      }
+    ],
+    "mistake": "Choose the reflexive form that matches the subject; do not use her-self or hisself."
+  },
+  "Question Forms": {
+    "rule": "English questions often use an auxiliary before the subject. In Present Simple with most verbs, use do/does; with be, place am/is/are first.",
+    "form": "Do/does + subject + base verb?; be + subject?; wh-word + auxiliary + subject + verb?",
+    "examples": [
+      {
+        "sentence": "Where do you study?",
+        "translation": "Hol tanulsz?"
+      },
+      {
+        "sentence": "Is your brother at home?",
+        "translation": "Otthon van a testvéred?"
+      }
+    ],
+    "mistake": "Do not add do/does to questions that already use be: Is she ready, not Does she be ready."
+  },
+  "Direct and Indirect Questions": {
+    "rule": "Direct questions use normal question inversion. Indirect questions are more polite and use statement word order after the opening phrase.",
+    "form": "Direct: Where is the station? Indirect: Could you tell me where the station is?; yes/no indirect questions use if/whether.",
+    "examples": [
+      {
+        "sentence": "Could you tell me where the station is?",
+        "translation": "Meg tudnád mondani, hol van az állomás?"
+      },
+      {
+        "sentence": "Do you know whether the office is open?",
+        "translation": "Tudod, hogy nyitva van-e az iroda?"
+      }
+    ],
+    "mistake": "Inside an indirect question, do not invert again: where the station is, not where is the station."
+  },
+  "Present and Past Habits": {
+    "rule": "Present Simple plus frequency adverbs describes current habits. Used to and would can describe repeated past actions; used to can also describe past states.",
+    "form": "usually/often/never + Present Simple; used to + base verb for past habits/states; would + base verb for repeated past actions.",
+    "examples": [
+      {
+        "sentence": "I usually read before bed.",
+        "translation": "Általában olvasok lefekvés előtt."
+      },
+      {
+        "sentence": "When we were children, we used to visit our grandparents every Sunday.",
+        "translation": "Gyerekkorunkban minden vasárnap meglátogattuk a nagyszüleinket."
+      }
+    ],
+    "mistake": "Would does not usually describe a past state such as having a house; used to is better for past states."
+  },
+  "Inversion": {
+    "rule": "Inversion places an auxiliary before the subject after certain negative or restrictive expressions at the start of a formal sentence.",
+    "form": "Never/Rarely/Seldom + auxiliary + subject + main verb; Not only… but also; Hardly had… when…",
+    "examples": [
+      {
+        "sentence": "Never have I seen such a beautiful view.",
+        "translation": "Soha nem láttam még ilyen gyönyörű kilátást."
+      },
+      {
+        "sentence": "Not only did she pass, but she also achieved the highest score.",
+        "translation": "Nemcsak átment, hanem a legmagasabb pontszámot is elérte."
+      }
+    ],
+    "mistake": "When a negative expression begins the sentence, use inversion; do not keep ordinary statement word order."
+  },
+  "Wishes and Regrets": {
+    "rule": "Wish expresses a desire for reality to be different. Use Past Simple for a present situation, Past Perfect for a past regret, and would for a desired change or complaint.",
+    "form": "wish + Past Simple (present unreal); wish + Past Perfect (past regret); wish + would + base verb (wanted change).",
+    "examples": [
+      {
+        "sentence": "I wish I were more confident.",
+        "translation": "Bárcsak magabiztosabb lennék."
+      },
+      {
+        "sentence": "She wishes she had studied harder for the exam.",
+        "translation": "Bárcsak többet tanult volna a vizsgára."
+      }
+    ],
+    "mistake": "Match the tense to the time: present unreal → Past Simple; regret about the past → Past Perfect."
+  }
+}
+
 const generatedLessons: LessonUnit[] = curriculumTopics.map((topic, index) => {
   const id = 11 + index
+  const teaching = curriculumTeaching[topic.title]
   const question: Question = { type: "choice", instruction: topic.title + " · Válaszd ki a helyes választ", prompt: topic.prompt, options: topic.options, answer: topic.answer, explanation: topic.explanation, tip: topic.tip }
-  const second: Question = { type: "text", instruction: topic.title + " · Emlékezz a szabályra", prompt: "Írd be a helyes választ: " + topic.prompt, answer: topic.answer, explanation: topic.explanation, tip: topic.tip }
-  return { id, title: topic.title, level: index < 11 ? "A2" : "B1", summary: topic.summary, sections: [{ title: "Mikor használjuk?", body: topic.summary, tip: topic.tip }, { title: "Példa és szabály", body: topic.explanation, examples: [{ sentence: topic.prompt, translation: topic.answer }] }], questions: [question, second], }
+  const translationQuestion: Question = {
+    type: "text",
+    instruction: topic.title + " · Fordítsd le angolra",
+    prompt: teaching.examples[1].translation,
+    answer: teaching.examples[1].sentence,
+    explanation: "A mondat a következő szerkezetet gyakorolja: " + teaching.form + " " + teaching.mistake,
+    tip: topic.tip,
+  }
+  return {
+    id,
+    title: topic.title,
+    level: index < 11 ? "A2" : "B1",
+    summary: topic.summary,
+    sections: [
+      { title: "Meaning and use", body: topic.summary + " " + teaching.rule, examples: [teaching.examples[0]] },
+      { title: "How to form it", body: teaching.form, examples: [teaching.examples[1]], tip: topic.tip },
+      { title: "In context", body: teaching.rule, examples: teaching.examples },
+      { title: "Common mistake to avoid", body: teaching.mistake, tip: topic.explanation },
+    ],
+    questions: [question, translationQuestion],
+  }
 })
 const fullLessons = [...lessons, ...generatedLessons]
 
