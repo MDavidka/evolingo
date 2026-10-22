@@ -1564,7 +1564,7 @@ function Home({ completedLessons, readLessons, answeredTasks, stars, xp, dailySt
   const nodeRefs = useRef<Map<string, HTMLButtonElement>>(new Map())
   const [pathSize, setPathSize] = useState({ width: 0, height: 0 })
   const [connectorPaths, setConnectorPaths] = useState<string[]>([])
-  const [sheetHeight, setSheetHeight] = useState(74)
+  const [sheetHeight, setSheetHeight] = useState(44)
   const [forcedOpenNodeKeys, setForcedOpenNodeKeys] = useState<string[]>([])
   const tripleClickTracker = useRef<{ key: string; count: number; lastAt: number }>({ key: "", count: 0, lastAt: 0 })
   const dragStart = useRef<{ y: number; height: number } | null>(null)
@@ -1704,12 +1704,12 @@ function Home({ completedLessons, readLessons, answeredTasks, stars, xp, dailySt
         }}
       />
       <div className="learn-sheet-heading">
-        <h1>Present simple</h1>
+        <h1>Erasmus</h1>
         <div className="learn-theme-row">
-          <span className="learn-theme-icon" aria-hidden="true"><Timer size={18} strokeWidth={2.3} /></span>
-          <span>Igeidők</span>
+          <span className="learn-theme-icon" aria-hidden="true"><Languages size={18} strokeWidth={2.3} /></span>
+          <span>Angol nyelvtanulás</span>
         </div>
-        <p>Ebben a fejezetben a jelen időt tanulod</p>
+        <p>Válassz egy leckét az útvonalon a tanulás megkezdéséhez.</p>
         <div className="learn-progress-row">
           <div className="learn-progress-track" role="progressbar" aria-label="Leckék teljesítése" aria-valuemin={0} aria-valuemax={unitLessons.length} aria-valuenow={completedCount}>
             <span style={{ width: progress + "%" }} />
