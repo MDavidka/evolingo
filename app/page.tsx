@@ -1785,7 +1785,7 @@ function Home({ completedLessons, readLessons, answeredTasks, stars, xp, dailySt
         }}
       />
       {sheetHeight > 28 && <>
-      {activeProject === "Erasmus" ? <>
+      {activeProject === "Erasmus+" || activeProject === "Erasmus" ? <>
       <div className="learn-sheet-heading">
         <h1>Erasmus</h1>
         <div className="learn-theme-row">
@@ -1872,7 +1872,7 @@ function Home({ completedLessons, readLessons, answeredTasks, stars, xp, dailySt
         <span className="learn-project-empty-icon"><GraduationCap size={27} /></span>
         <h2>{activeProject}</h2>
         <p>This project is ready for your learning materials. Choose Erasmus to continue with the English grammar path.</p>
-        <button type="button" onClick={() => { setActiveProject("Erasmus"); setSheetHeight(78) }}>Open Erasmus lessons <ChevronRight size={17} /></button>
+        <button type="button" onClick={() => { setActiveProject("Erasmus+"); setSheetHeight(78) }}>Open Erasmus lessons <ChevronRight size={17} /></button>
       </div>}
       </>}
     </section>
