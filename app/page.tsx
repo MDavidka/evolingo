@@ -1661,12 +1661,20 @@ function Home({ completedLessons, readLessons, answeredTasks, stars, xp, dailySt
     event.preventDefault()
   }
   const handlePointerMove = (event: React.PointerEvent<HTMLDivElement>) => {
+    // Keep the panel at its current state while dragging; it snaps to a full state on release.
     if (!dragStart.current) return
     const delta = dragStart.current.y - event.clientY
-    const nextHeight = Math.max(22, Math.min(90, dragStart.current.height + delta / Math.max(1, window.innerHeight) * 100))
-    setSheetHeight(nextHeight)
+    const threshold = Math.max(36, window.innerHeight * 0.12)
+    if (Math.abs(delta) >= threshold) setSheetHeight(delta > 0 ? 78 : 22)
   }
-  const handlePointerUp = () => {
+  const handlePointerUp = (event: React.PointerEvent<HTMLDivElement>) => {
+    if (!dragStart.current) return
+    const delta = dragStart.current.y - event.clientY
+    if (Math.abs(delta) < Math.max(36, window.innerHeight * 0.12)) {
+      setSheetHeight(dragStart.current.height <= 28 ? 78 : 22)
+    } else {
+      setSheetHeight(delta > 0 ? 78 : 22)
+    }
     dragStart.current = null
   }
 
@@ -1847,16 +1855,16 @@ function Home({ completedLessons, readLessons, answeredTasks, stars, xp, dailySt
         aria-label="Tanulási panel magassága"
         aria-orientation="vertical"
         aria-valuemin={22}
-        aria-valuemax={90}
-        aria-valuenow={Math.round(sheetHeight)}
+        aria-valuemax={78}
+        aria-valuenow={sheetHeight <= 28 ? 22 : 78}
         tabIndex={0}
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
         onPointerCancel={handlePointerUp}
         onKeyDown={event => {
-          if (event.key === "ArrowUp") setSheetHeight(height => Math.min(90, height + 4))
-          if (event.key === "ArrowDown") setSheetHeight(height => Math.max(22, height - 4))
+          if (event.key === "ArrowUp" || event.key === "Enter" || event.key === " ") { event.preventDefault(); setSheetHeight(78) }
+          if (event.key === "ArrowDown" || event.key === "Escape") { event.preventDefault(); setSheetHeight(22) }
         }}
       />
       {sheetHeight > 28 && <>
