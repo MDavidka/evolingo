@@ -739,7 +739,7 @@ function Home({ completedLessons, readLessons, answeredTasks, stars, xp, dailySt
   const currentLessonId = unitLessons.find(lesson => !completedLessons.includes(lesson.id))?.id ?? null
   const completedCount = unitLessons.filter(lesson => completedLessons.includes(lesson.id)).length
   const progress = unitLessons.length ? Math.round(completedCount / unitLessons.length * 100) : 0
-  const pathHeight = Math.max(140, (pathNodes.length - 1) * 112 + 140)
+  const pathHeight = Math.max(150, (pathNodes.length - 1) * 132 + 150)
   const pathRef = useRef<HTMLDivElement | null>(null)
   const sheetRef = useRef<HTMLElement | null>(null)
   const nodeRefs = useRef<Map<string, HTMLButtonElement>>(new Map())
@@ -904,7 +904,7 @@ function Home({ completedLessons, readLessons, answeredTasks, stars, xp, dailySt
               : node.kind === "words" ? <Languages size={27} strokeWidth={2.2} aria-hidden="true" />
                 : node.kind === "hard" ? <Zap size={27} strokeWidth={2.3} aria-hidden="true" />
                   : <Timer size={27} strokeWidth={2.2} aria-hidden="true" />
-          return <div className={"learn-path-node learn-path-node-" + status + " learn-path-node-kind-" + node.kind} key={node.key} style={{ left: (index % 2 === 0 ? 35 : 65) + "%", top: index * 112 + "px" }}>
+          return <div className={"learn-path-node learn-path-node-" + status + " learn-path-node-kind-" + node.kind} key={node.key} style={{ left: (index % 2 === 0 ? 35 : 65) + "%", top: index * 132 + "px" }}>
             <button
               ref={element => {
                 if (element) nodeRefs.current.set(node.key, element)
