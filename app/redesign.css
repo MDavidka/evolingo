@@ -1685,3 +1685,78 @@ body .learn-project-modal-backdrop { z-index: 1000 !important; }
     background: #ffffff !important;
   }
 }
+
+
+/* Reference scale calibration: compact project cards rather than oversized dashboard tiles. */
+body .learn-home-intro > .learn-greeting {
+  font-size: clamp(20px, 5.4vw, 23px) !important;
+  font-weight: 720 !important;
+  line-height: 1.22 !important;
+}
+body .learn-project-search {
+  height: 44px !important;
+  margin-top: 18px !important;
+  border-radius: 14px !important;
+  padding-left: 14px !important;
+  padding-right: 13px !important;
+}
+body .learn-project-search input {
+  font-size: 14px !important;
+}
+body .learn-project-search > svg {
+  width: 19px !important;
+  height: 19px !important;
+}
+body .learn-project-grid {
+  grid-template-columns: repeat(2, minmax(0, 112px)) !important;
+  gap: 16px !important;
+  margin-top: 32px !important;
+}
+body .learn-project-tile {
+  height: 76px !important;
+  min-height: 76px !important;
+  gap: 1px !important;
+  padding: 5px 10px 8px !important;
+  border-radius: 16px !important;
+}
+body .learn-project-tile-symbol {
+  flex-basis: 36px !important;
+  min-height: 36px !important;
+  font-size: 29px !important;
+}
+body .learn-project-tile-title {
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  line-height: 1.15 !important;
+}
+body .learn-project-add-ring {
+  width: 34px !important;
+  height: 34px !important;
+  border-width: 2px !important;
+}
+body .learn-project-add-ring svg {
+  width: 21px !important;
+  height: 21px !important;
+}
+body .learn-floating-create {
+  right: 36px !important;
+  width: 46px !important;
+  height: 46px !important;
+}
+@media (max-width: 380px) {
+  body .learn-project-grid {
+    grid-template-columns: repeat(2, minmax(0, 104px)) !important;
+    gap: 14px !important;
+    margin-top: 28px !important;
+  }
+  body .learn-project-tile {
+    height: 72px !important;
+    min-height: 72px !important;
+    border-radius: 15px !important;
+  }
+  body .learn-floating-create {
+    right: 28px !important;
+    width: 44px !important;
+    height: 44px !important;
+  }
+}
