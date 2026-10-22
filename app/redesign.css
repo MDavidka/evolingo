@@ -1909,3 +1909,28 @@ body .learn-home-screen .learn-sheet {
     transition: none !important;
   }
 }
+
+
+/* Final sheet polish: match the navbar's soft rounded geometry and use only two snap states. */
+body .learn-sheet,
+body .learn-sheet-collapsed,
+body .learn-sheet-expanded {
+  border-radius: 28px 28px 0 0 !important;
+  transition: height 220ms cubic-bezier(.22,.8,.24,1), border-radius 220ms ease !important;
+}
+body .learn-sheet-handle {
+  border-radius: 999px !important;
+}
+body .learn-sheet-collapsed {
+  height: 22dvh !important;
+}
+body .learn-sheet-expanded {
+  height: 78dvh !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  body .learn-sheet,
+  body .learn-sheet-collapsed,
+  body .learn-sheet-expanded {
+    transition: none !important;
+  }
+}
