@@ -1646,6 +1646,7 @@ function Home({ completedLessons, readLessons, answeredTasks, stars, xp, dailySt
   const [forcedOpenNodeKeys, setForcedOpenNodeKeys] = useState<string[]>([])
   const tripleClickTracker = useRef<{ key: string; count: number; lastAt: number }>({ key: "", count: 0, lastAt: 0 })
   const dragStart = useRef<{ y: number; height: number } | null>(null)
+  const sheetTouchStart = useRef<{ x: number; y: number } | null>(null)
   const handlePointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
     dragStart.current = { y: event.clientY, height: sheetHeight }
     event.currentTarget.setPointerCapture(event.pointerId)
@@ -1836,7 +1837,9 @@ function Home({ completedLessons, readLessons, answeredTasks, stars, xp, dailySt
     </div>
     {notice && <button className="inline-notice learn-inline-notice" type="button" onClick={clearNotice}><span>{notice}</span><X size={16} aria-hidden="true" /></button>}
 
-    <section className={"learn-sheet " + (sheetHeight <= 28 ? "learn-sheet-collapsed" : "learn-sheet-expanded")} ref={sheetRef} style={{ ["--learn-sheet-height" as string]: sheetHeight + "dvh" } as React.CSSProperties} aria-label="Tanulási útvonal">
+    <section className={"learn-sheet " + (sheetHeight <= 28 ? "learn-sheet-collapsed" : "learn-sheet-expanded")} ref={sheetRef} style={{ ["--learn-sheet-height" as string]: sheetHeight + "dvh" } as React.CSSProperties} aria-label="Tanulási útvonal"
+      onTouchStart={event => { const touch = event.touches[0]; sheetTouchStart.current = { x: touch.clientX, y: touch.clientY } }}
+      onTouchEnd={event => { const start = sheetTouchStart.current; const touch = event.changedTouches[0]; sheetTouchStart.current = null; if (start && sheetHeight > 28 && touch.clientY - start.y > 70 && Math.abs(touch.clientY - start.y) > Math.abs(touch.clientX - start.x) * 1.25) setSheetHeight(22) }}>
       <div
         className="learn-sheet-handle"
         role="slider"
@@ -2877,7 +2880,10 @@ function Nav({ screen, setScreen, userName, avatar, avatarImage }: { screen: Scr
     dragStart.current = null
     setDragIndex(null)
   }
-  return <nav className="bottom-nav">
+  const tabSwipeStart = useRef<{ x: number; y: number } | null>(null)
+  return <nav className="bottom-nav"
+    onTouchStart={event => { const touch = event.touches[0]; tabSwipeStart.current = { x: touch.clientX, y: touch.clientY } }}
+    onTouchEnd={event => { const start = tabSwipeStart.current; const touch = event.changedTouches[0]; tabSwipeStart.current = null; if (!start) return; const dx = touch.clientX - start.x; const dy = touch.clientY - start.y; if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy) * 1.25) setScreen(items[Math.max(0, Math.min(items.length - 1, activeIndex + (dx < 0 ? 1 : -1)))][0]) }}>
     <div
       className={"nav-selection-indicator " + (dragIndex !== null ? "is-dragging" : "")}
       aria-label="Húzd jobbra vagy balra a kiválasztott fület"
