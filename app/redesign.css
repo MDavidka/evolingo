@@ -2305,3 +2305,162 @@ body .learn-home-screen .bottom-nav .nav-selection-indicator { display: none !im
   body .learn-home-screen .learn-home-intro { padding-right: 20px !important; padding-left: 20px !important; }
   body .learn-home-screen .bottom-nav { width: calc(100% - 32px) !important; }
 }
+
+
+/* ---------- Step 2: strict 24pt grid, slimmer search, frosted lesson cards ---------- */
+body .learn-home-screen .learn-header {
+  margin-left: 24px !important;
+  margin-right: 24px !important;
+  width: calc(100% - 48px) !important;
+}
+body .learn-home-screen .learn-home-intro {
+  margin-top: 24px !important;
+  padding-left: 24px !important;
+  padding-right: 24px !important;
+}
+body .learn-home-screen .learn-project-search {
+  height: 40px !important;
+  min-height: 40px !important;
+  padding-left: 14px !important;
+  padding-right: 14px !important;
+  border: .75px solid rgba(0,0,0,.08) !important;
+  border-radius: 12px !important;
+  background: #fafafa !important;
+  box-shadow: none !important;
+}
+body .learn-home-screen .learn-project-search input {
+  font-size: 14px !important;
+  line-height: 20px !important;
+}
+body .learn-home-screen .learn-project-search > svg {
+  width: 16px !important;
+  height: 16px !important;
+  stroke-width: 1.2 !important;
+  color: #64748b !important;
+}
+body .learn-home-screen .learn-project-section-heading {
+  margin-top: 28px !important;
+}
+body .learn-home-screen .learn-section-add {
+  position: relative !important;
+  width: 36px !important;
+  height: 36px !important;
+  min-width: 36px !important;
+  min-height: 36px !important;
+  border: 1px solid rgba(0,0,0,.05) !important;
+  border-radius: 50% !important;
+  background: #f8fafc !important;
+  box-shadow: 0 4px 12px rgba(0,0,0,.06) !important;
+  color: #0f172a !important;
+}
+body .learn-home-screen .learn-section-add svg {
+  width: 14px !important;
+  height: 14px !important;
+  stroke-width: 1.75 !important;
+}
+body .learn-home-screen .learn-project-grid {
+  margin-top: 20px !important;
+  padding-top: 16px !important;
+  padding-bottom: 6px !important;
+  gap: 16px !important;
+}
+body .learn-home-screen .learn-project-tile,
+body .learn-home-screen .learn-project-tile.selected {
+  flex-basis: 115px !important;
+  width: 115px !important;
+  min-width: 115px !important;
+  max-width: 115px !important;
+  height: 90px !important;
+  min-height: 90px !important;
+  border-radius: 18px !important;
+  background: rgba(241,245,249,.65) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+  backdrop-filter: blur(20px) saturate(180%) !important;
+  border: 1px solid transparent !important;
+  box-shadow: 0 8px 24px -4px rgba(0,0,0,.06), 0 2px 6px -1px rgba(0,0,0,.04), inset 0 1px 0 rgba(255,255,255,.8) !important;
+  isolation: isolate !important;
+}
+body .learn-home-screen .learn-project-tile::before {
+  content: "" !important;
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: -1 !important;
+  pointer-events: none !important;
+  border-radius: inherit !important;
+  padding: 1px !important;
+  background: linear-gradient(135deg, rgba(255,255,255,.8), rgba(255,255,255,.2)) !important;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0) !important;
+  -webkit-mask-composite: xor !important;
+  mask-composite: exclude !important;
+}
+body .learn-home-screen .learn-project-tile-erasmus .learn-project-tile-symbol {
+  z-index: 2 !important;
+  top: -16px !important;
+  left: 16px !important;
+  width: 32px !important;
+  height: 42px !important;
+  overflow: visible !important;
+}
+body .learn-home-screen .learn-project-tile-erasmus .project-notebook-icon {
+  width: 32px !important;
+  height: 42px !important;
+}
+body .learn-home-screen .learn-project-tile-title {
+  position: relative !important;
+  z-index: 2 !important;
+  font-size: 14px !important;
+  font-weight: 700 !important;
+}
+body .learn-home-screen .learn-project-tile-add,
+body .learn-home-screen .learn-project-tile-add:hover,
+body .learn-home-screen .learn-project-tile-add:active {
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 0 !important;
+  border: 1.5px dashed #cbd5e1 !important;
+  border-radius: 18px !important;
+  background: rgba(255,255,255,.88) !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+  box-shadow: none !important;
+}
+body .learn-home-screen .learn-project-tile-add::before { display: none !important; }
+body .learn-home-screen .learn-project-add-ring {
+  width: 32px !important;
+  height: 32px !important;
+  min-width: 32px !important;
+  min-height: 32px !important;
+  border: 0 !important;
+  border-radius: 50% !important;
+  background: #f1f5f9 !important;
+  color: #64748b !important;
+}
+body .learn-home-screen .learn-project-add-ring svg {
+  width: 14px !important;
+  height: 14px !important;
+  stroke-width: 1.5 !important;
+}
+body .learn-home-screen .bottom-nav {
+  left: 24px !important;
+  right: auto !important;
+  width: calc(100% - 48px) !important;
+  max-width: 345px !important;
+  height: 68px !important;
+  min-height: 68px !important;
+  bottom: calc(28px + env(safe-area-inset-bottom)) !important;
+  padding: 8px !important;
+  border-radius: 34px !important;
+  background: rgba(241,245,249,.85) !important;
+  -webkit-backdrop-filter: blur(16px) saturate(160%) !important;
+  backdrop-filter: blur(16px) saturate(160%) !important;
+  box-shadow: 0 8px 26px rgba(15,23,42,.06), inset 0 1px 0 rgba(255,255,255,.9) !important;
+  transform: none !important;
+}
+body .learn-home-screen .bottom-nav button.active {
+  box-shadow: 0 4px 12px rgba(0,0,0,.05) !important;
+}
+@media (max-width: 360px) {
+  body .learn-home-screen .learn-header { margin-left: 20px !important; margin-right: 20px !important; width: calc(100% - 40px) !important; }
+  body .learn-home-screen .learn-home-intro { padding-left: 20px !important; padding-right: 20px !important; }
+  body .learn-home-screen .bottom-nav { left: 20px !important; width: calc(100% - 40px) !important; }
+}
