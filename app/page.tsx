@@ -1669,7 +1669,7 @@ function Home({ completedLessons, readLessons, answeredTasks, stars, xp, dailySt
       </button>
     </header>
     <section className="learn-home-intro" aria-label="Választott tanulási program">
-      <h2 className="learn-greeting">Hello, {userName.trim().split(/\\s+/)[0] || "there"}!</h2>
+      <h2 className="learn-greeting">Hello, {userName.trim().split(/\s+/)[0] || "there"}!</h2>
       <button
         type="button"
         className="learn-course-card"
