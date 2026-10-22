@@ -1570,7 +1570,7 @@ function Home({ completedLessons, readLessons, answeredTasks, stars, xp, dailySt
       if (saved) {
         const parsed = JSON.parse(saved) as { projects?: unknown; activeProject?: unknown }
         if (Array.isArray(parsed.projects)) {
-          const safeProjects = [...new Set(parsed.projects.filter((value): value is string => typeof value === "string" && value.trim()).map(value => value.trim()))]
+          const safeProjects = [...new Set(parsed.projects.filter((value): value is string => typeof value === "string" && value.trim().length > 0).map(value => value.trim()))]
           if (!safeProjects.includes("Erasmus")) safeProjects.unshift("Erasmus")
           setProjects(safeProjects)
           if (typeof parsed.activeProject === "string" && safeProjects.includes(parsed.activeProject)) setActiveProject(parsed.activeProject)
