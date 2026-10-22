@@ -2933,3 +2933,57 @@ body .learn-home-screen .learn-project-tile-erasmus .learn-project-tile-title {
   letter-spacing: -.02em !important;
   line-height: 1.15 !important;
 }
+
+
+/* Normalize every project card to the compact reference size; Erasmus+ must not dominate the row. */
+body .learn-home-screen .learn-project-grid {
+  gap: 12px !important;
+  padding-top: 16px !important;
+}
+body .learn-home-screen .learn-project-tile,
+body .learn-home-screen .learn-project-tile.selected,
+body .learn-home-screen .learn-project-tile-erasmus,
+body .learn-home-screen .learn-project-tile-erasmus.selected {
+  box-sizing: border-box !important;
+  flex: 0 0 122px !important;
+  width: 122px !important;
+  min-width: 122px !important;
+  max-width: 122px !important;
+  height: 82px !important;
+  min-height: 82px !important;
+  max-height: 82px !important;
+  border-radius: 22px !important;
+}
+body .learn-home-screen .learn-project-tile-erasmus {
+  padding: 0 12px 12px !important;
+  border: 1px solid #dce5f5 !important;
+  background: #f5f7fc !important;
+  box-shadow: 0 2px 7px rgba(47,75,130,.04) !important;
+}
+body .learn-home-screen .learn-project-tile-erasmus::after {
+  height: 43% !important;
+  border-radius: 21px 21px 8px 8px !important;
+}
+body .learn-home-screen .learn-project-tile-erasmus .learn-project-tile-symbol {
+  top: -13px !important;
+  left: 12px !important;
+  width: 32px !important;
+  height: 40px !important;
+}
+body .learn-home-screen .learn-project-tile-erasmus .project-notebook-icon {
+  width: 32px !important;
+  height: 40px !important;
+}
+body .learn-home-screen .learn-project-tile-title {
+  font-size: 13px !important;
+  font-weight: 650 !important;
+}
+body .learn-home-screen .learn-project-tile-add {
+  height: 82px !important;
+  min-height: 82px !important;
+  max-height: 82px !important;
+  flex-basis: 122px !important;
+  width: 122px !important;
+  min-width: 122px !important;
+  max-width: 122px !important;
+}
