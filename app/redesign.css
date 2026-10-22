@@ -2475,3 +2475,71 @@ body .learn-home-screen .bottom-nav { left: 16px !important; width: calc(100% - 
  body .learn-home-screen .learn-home-intro { padding-left: 14px !important; padding-right: 14px !important; }
  body .learn-home-screen .bottom-nav { left: 14px !important; width: calc(100% - 28px) !important; }
 }
+
+
+/* Final reference alignment: tighter gutters, exact slim search/action controls, and swipe hint. */
+body .learn-home-screen .learn-header {
+  margin-left: 12px !important;
+  margin-right: 12px !important;
+  width: calc(100% - 24px) !important;
+}
+body .learn-home-screen .learn-home-intro {
+  padding-left: 12px !important;
+  padding-right: 12px !important;
+}
+body .learn-home-screen .learn-project-search {
+  height: 40px !important;
+  min-height: 40px !important;
+  border-radius: 12px !important;
+  padding: 0 14px !important;
+  background: #fafafa !important;
+  border: .75px solid rgba(0,0,0,.08) !important;
+}
+body .learn-home-screen .learn-project-search input {
+  font-size: 14px !important;
+}
+body .learn-home-screen .learn-project-search > svg {
+  width: 16px !important;
+  height: 16px !important;
+  stroke-width: 1.2 !important;
+  color: #64748b !important;
+}
+body .learn-home-screen .learn-section-add {
+  width: 36px !important;
+  height: 36px !important;
+  min-width: 36px !important;
+  min-height: 36px !important;
+  padding: 0 !important;
+  border-radius: 50% !important;
+  background: #f8fafc !important;
+  border: 1px solid rgba(0,0,0,.05) !important;
+  box-shadow: 0 4px 12px rgba(0,0,0,.06) !important;
+}
+body .learn-home-screen .learn-section-add svg {
+  width: 14px !important;
+  height: 14px !important;
+  stroke-width: 1.75 !important;
+}
+body .learn-home-screen .bottom-nav {
+  left: 12px !important;
+  width: calc(100% - 24px) !important;
+  max-width: none !important;
+  overflow: visible !important;
+}
+body .learn-home-screen .bottom-nav::before {
+  content: "" !important;
+  position: absolute !important;
+  left: 50% !important;
+  top: -22px !important;
+  width: 36px !important;
+  height: 4px !important;
+  border-radius: 999px !important;
+  background: #e2e8f0 !important;
+  transform: translateX(-50%) !important;
+  pointer-events: none !important;
+}
+@media (max-width: 360px) {
+  body .learn-home-screen .learn-header { margin-left: 10px !important; margin-right: 10px !important; width: calc(100% - 20px) !important; }
+  body .learn-home-screen .learn-home-intro { padding-left: 10px !important; padding-right: 10px !important; }
+  body .learn-home-screen .bottom-nav { left: 10px !important; width: calc(100% - 20px) !important; }
+}
