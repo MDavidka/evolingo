@@ -1716,7 +1716,7 @@ function Home({ completedLessons, readLessons, answeredTasks, stars, xp, dailySt
           ref={projectSearchRef}
           type="search"
           value={projectQuery}
-          onChange={event => { setProjectQuery(event.target.value); setProjectMenuOpen(true) }}
+          onChange={event => { setProjectQuery(event.target.value); setProjectMenuOpen(true); setSheetHeight(22) }}
           onFocus={() => { if (projectQuery) setProjectMenuOpen(true) }}
           placeholder="Filter projects..."
           autoComplete="off"
@@ -1726,11 +1726,11 @@ function Home({ completedLessons, readLessons, answeredTasks, stars, xp, dailySt
       </label>
       <div className="learn-project-picker-wrap">
         <div className="learn-course-card">
-          <button type="button" className="learn-course-main" onClick={() => setSheetHeight(height => height <= 28 ? 78 : 22)} aria-label={sheetHeight > 28 ? "Collapse the learning path" : "Open the learning path"}>
+          <button type="button" className="learn-course-main" onClick={() => { setProjectMenuOpen(false); setSheetHeight(height => height <= 28 ? 78 : 22) }} aria-label={sheetHeight > 28 ? "Collapse the learning path" : "Open the learning path"}>
             <span className="learn-course-symbol" aria-hidden="true"><GraduationCap size={25} strokeWidth={1.8} /></span>
             <span className="learn-course-title">{activeProject}</span>
           </button>
-          <button type="button" className="learn-course-action" aria-label="Choose a project" aria-expanded={projectMenuOpen} onClick={() => setProjectMenuOpen(open => !open)}>
+          <button type="button" className="learn-course-action" aria-label="Choose a project" aria-expanded={projectMenuOpen} onClick={() => { if (sheetHeight > 28) setSheetHeight(22); setProjectMenuOpen(open => !open) }}>
             <ChevronDown size={20} strokeWidth={1.8} aria-hidden="true" />
           </button>
         </div>
