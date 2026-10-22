@@ -1742,7 +1742,7 @@ function Home({ completedLessons, readLessons, answeredTasks, stars, xp, dailySt
             ? <BookOpen size={30} strokeWidth={2.2} aria-hidden="true" />
             : node.kind === "task" ? <ClipboardCheck size={27} strokeWidth={2.2} aria-hidden="true" />
               : node.kind === "words" ? <Languages size={27} strokeWidth={2.2} aria-hidden="true" />
-                : node.kind === "hard" ? <Zap size={27} strokeWidth={2.3} aria-hidden="true" />
+                : node.kind === "hard" ? <Dumbbell size={27} strokeWidth={2.3} aria-hidden="true" />
                   : <Timer size={27} strokeWidth={2.2} aria-hidden="true" />
           return <div className={"learn-path-node learn-path-node-" + status + " learn-path-node-kind-" + node.kind} key={node.key} style={{ left: (index % 2 === 0 ? 35 : 65) + "%", top: index * 132 + "px" }}>
             <button
@@ -1755,6 +1755,8 @@ function Home({ completedLessons, readLessons, answeredTasks, stars, xp, dailySt
               aria-disabled={status === "locked"}
               aria-label={activityDescription + ", " + (isForcedOpen ? "force-opened" : stateLabel) + ". Triple-click to force open."}
               onClick={() => {
+                // Completed lessons and activities are final: never reopen them for replay.
+                if (naturalStatus === "completed") return
                 const now = Date.now()
                 const previous = tripleClickTracker.current
                 const count = previous.key === node.key && now - previous.lastAt <= 650
@@ -1776,6 +1778,7 @@ function Home({ completedLessons, readLessons, answeredTasks, stars, xp, dailySt
               }}
             >
               {icon}
+              {status === "completed" && <span className="learn-path-node-check" aria-hidden="true"><Check size={17} strokeWidth={3} /></span>}
             </button>
             <span className="learn-path-node-label">{label}</span>
             {status === "current" && node.kind === "lesson" && <span className="learn-start-pill">START</span>}
