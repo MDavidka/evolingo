@@ -729,3 +729,364 @@ body .bottom-nav .nav-selection-indicator {
     transition: none !important;
   }
 }
+
+
+/* Evolingo v1.0: dashboard surfaces and design tokens */
+:root {
+  --evo-progress: #0562ef;
+  --evo-progress-subtle: rgb(5 98 239 / .12);
+  --evo-streak: #f48120;
+  --evo-streak-subtle: rgb(244 129 32 / .13);
+  --evo-island: #000;
+  --evo-island-ink: #fff;
+  --evo-island-ink-secondary: rgb(255 255 255 / .62);
+  --background: oklch(100% 0 0);
+  --surface: oklch(100% 0 0);
+  --surface-raised: oklch(100% 0 0);
+  --surface-muted: oklch(97.8% 0 0);
+  --foreground: oklch(15% 0 0);
+  --text-secondary: oklch(46% 0 0);
+  --text-muted: oklch(59% 0 0);
+  --border: oklch(93.5% 0 0);
+  --border-subtle: oklch(96.5% 0 0);
+  --border-strong: oklch(82% 0 0);
+  --accent: oklch(33% 0 0);
+  --accent-subtle: oklch(33% 0 0 / .1);
+  --radius-control: 18px;
+  --radius-panel: 26px;
+  --radius-surface: 34px;
+  --radius-pill: 9999px;
+  --duration-fast: 160ms;
+  --duration-standard: 240ms;
+  --ease-standard: cubic-bezier(.22,1,.36,1);
+  --evo-material: color-mix(in oklab, var(--background) 82%, transparent);
+  --shadow-floating: 0 20px 48px oklch(0% 0 0 / .105), 0 3px 10px oklch(0% 0 0 / .045);
+}
+:root[data-theme="dark"] {
+  --evo-progress: #6ba3ff;
+  --evo-progress-subtle: rgb(5 98 239 / .22);
+  --evo-streak: #ffad5e;
+  --evo-streak-subtle: rgb(244 129 32 / .2);
+  --background: oklch(19% 0 0);
+  --surface: oklch(21.5% 0 0);
+  --surface-raised: oklch(24% 0 0);
+  --surface-muted: oklch(26% 0 0);
+  --foreground: oklch(96% 0 0);
+  --text-secondary: oklch(77% 0 0);
+  --text-muted: oklch(64% 0 0);
+  --border: oklch(29% 0 0);
+  --border-subtle: oklch(25% 0 0);
+  --border-strong: oklch(40% 0 0);
+  --accent: oklch(80% 0 0);
+  --accent-subtle: oklch(80% 0 0 / .13);
+  --shadow-floating: 0 22px 55px oklch(0% 0 0 / .34);
+}
+html, body { background: var(--background) !important; color: var(--foreground); }
+.app-shell:has(.evo-dashboard), .app-shell:has(.evo-review-screen), .app-shell:has(.learn-home-screen) {
+  width: 100% !important;
+  max-width: none !important;
+  min-height: 100dvh !important;
+  margin: 0 !important;
+  padding-bottom: 96px !important;
+  background: var(--background) !important;
+}
+.screen-content:has(.evo-dashboard), .screen-content:has(.evo-review-screen), .screen-content:has(.learn-home-screen) {
+  min-height: 100dvh !important;
+  padding: 0 0 24px !important;
+  background: var(--background) !important;
+}
+.evo-dashboard, .evo-review-screen {
+  min-height: calc(100dvh - 80px);
+  width: 100%;
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-inter, Inter, sans-serif);
+  letter-spacing: -.01em;
+}
+.evo-topbar {
+  position: sticky;
+  z-index: 20;
+  top: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: calc(64px + env(safe-area-inset-top, 0px));
+  padding: calc(env(safe-area-inset-top, 0px) + 8px) clamp(16px, 4vw, 32px) 8px;
+  background: color-mix(in oklab, var(--background) 82%, transparent);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  backdrop-filter: blur(20px) saturate(180%);
+  border-bottom: 1px solid var(--border-subtle);
+}
+.evo-topbar .brand { min-width: 0; gap: 10px; }
+.evo-topbar .brand img { width: 38px; height: 38px; border-radius: 12px; }
+.evo-topbar .brand h1 {
+  margin: 0;
+  font-family: var(--font-body, Inter, sans-serif);
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: -.035em;
+  color: var(--foreground);
+}
+.evo-topbar .brand-copy { display: flex; flex-direction: column; gap: 2px; }
+.evo-topbar .brand-copy span { color: var(--text-muted); font-size: 12px; font-weight: 400; line-height: 1.25; }
+.evo-topbar-stats { display: flex; align-items: center; gap: 4px; flex-shrink: 0; }
+.evo-stat {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0 6px;
+  border-radius: var(--radius-control);
+  color: var(--foreground);
+  font-size: 14px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+.evo-stat svg { width: 20px; height: 20px; stroke-width: 1.75; }
+.evo-stat-streak svg { color: var(--evo-streak); }
+.evo-stat-hearts svg { color: var(--foreground); }
+.evo-stat-gems svg { color: var(--foreground); }
+@media (hover:hover) and (pointer:fine) {
+  .evo-stat:hover { background: var(--surface-muted); }
+}
+.evo-dashboard-content {
+  width: 100%;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 24px clamp(16px, 4vw, 32px) 112px;
+}
+.evo-notice {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 20px;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-control);
+  background: var(--surface);
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+.evo-notice button { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 12px; flex: none; }
+.evo-greeting { margin: 8px 0 24px; }
+.evo-greeting h1, .evo-page-heading h1 {
+  margin: 0;
+  color: var(--foreground);
+  font-family: var(--font-display, var(--font-geist, sans-serif));
+  font-size: clamp(28px, 4vw, 36px);
+  font-weight: 500;
+  line-height: 1.1;
+  letter-spacing: -.03em;
+  overflow-wrap: anywhere;
+}
+.evo-greeting p, .evo-page-heading p { margin: 8px 0 0; color: var(--text-secondary); font-size: 14px; line-height: 1.4; font-weight: 400; }
+.evo-card {
+  display: flex;
+  gap: 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-surface);
+  background: var(--surface);
+  padding: 20px;
+  margin-top: 16px;
+  box-shadow: none;
+}
+.evo-today-card { display: block; padding: 22px 20px 18px; margin-top: 0; }
+.evo-card-heading-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.evo-card h2 {
+  margin: 0;
+  color: var(--foreground);
+  font-family: var(--font-body, Inter, sans-serif);
+  font-size: 20px;
+  line-height: 1.3;
+  font-weight: 500;
+  letter-spacing: -.02em;
+}
+.evo-card-subtitle { margin: 4px 0 0; color: var(--text-secondary); font-size: 14px; line-height: 1.4; font-weight: 400; }
+.evo-goal-ring {
+  --goal-progress: 0%;
+  display: grid;
+  place-items: center;
+  width: 58px;
+  height: 58px;
+  flex: none;
+  border-radius: 50%;
+  background: conic-gradient(var(--evo-progress) var(--goal-progress), var(--border) 0);
+}
+.evo-goal-ring > span {
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: var(--surface);
+  color: var(--foreground);
+  font-size: 12px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+.evo-goal-meta { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 22px 0 8px; color: var(--text-secondary); font-size: 13px; }
+.evo-goal-meta span:last-child { color: var(--foreground); font-weight: 500; }
+.evo-progress-track { height: 7px; overflow: hidden; background: var(--surface-muted); border-radius: 999px; }
+.evo-progress-track > span { display: block; height: 100%; background: var(--evo-progress); border-radius: inherit; transition: width 240ms cubic-bezier(.22,1,.36,1); }
+.evo-streak-row { display: flex; align-items: center; gap: 12px; margin: 20px 0 18px; padding-top: 16px; border-top: 1px solid var(--border-subtle); }
+.evo-streak-symbol { display: grid; place-items: center; width: 40px; height: 40px; flex: none; border-radius: 14px; background: var(--evo-streak-subtle); color: var(--evo-streak); }
+.evo-streak-title { margin: 0; color: var(--foreground); font-size: 14px; line-height: 1.4; font-weight: 500; }
+.evo-streak-detail { margin: 2px 0 0; color: var(--text-secondary); font-size: 13px; line-height: 1.4; font-weight: 400; }
+.evo-primary-button, .evo-secondary-button {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  min-height: 50px;
+  border-radius: var(--radius-control);
+  padding: 0 18px;
+  font-family: var(--font-body, Inter, sans-serif);
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.2;
+  text-decoration: none;
+  transition: transform 160ms cubic-bezier(.22,1,.36,1), background-color 160ms cubic-bezier(.22,1,.36,1);
+}
+.evo-primary-button { width: 100%; background: var(--foreground); color: var(--background); }
+.evo-primary-button svg { color: currentColor; }
+.evo-primary-button:active, .evo-secondary-button:active { transform: scale(.98); }
+.evo-next-lesson { margin: 8px 0 0; text-align: center; color: var(--text-secondary); font-size: 14px; font-weight: 400; }
+.evo-secondary-button { min-height: 44px; padding: 0 14px; background: var(--surface-muted); color: var(--foreground); margin-top: 12px; }
+.evo-review-card, .evo-league-card { align-items: flex-start; }
+.evo-card-icon { display: grid; place-items: center; width: 42px; height: 42px; flex: none; border-radius: 14px; background: var(--surface-muted); color: var(--foreground); }
+.evo-secondary-card-copy { min-width: 0; flex: 1; }
+.evo-secondary-card-copy .evo-card-heading-row { justify-content: flex-start; }
+.evo-card-count { display: inline-grid; place-items: center; min-width: 28px; height: 28px; padding: 0 7px; border-radius: 14px; background: var(--surface-muted); color: var(--text-secondary); font-size: 12px; }
+.evo-xp-summary { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 16px; margin-top: 24px; padding: 0 4px; }
+.evo-xp-summary div { display: flex; min-width: 0; flex-direction: column; gap: 6px; }
+.evo-xp-summary span { color: var(--text-secondary); font-size: 12px; line-height: 1.35; }
+.evo-xp-summary strong { color: var(--foreground); font-size: 18px; font-weight: 500; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.evo-review-screen { max-width: 720px; margin: 0 auto; padding: 32px clamp(16px, 4vw, 32px) 120px; }
+.evo-page-heading { margin-bottom: 24px; }
+.evo-review-list { border: 1px solid var(--border); border-radius: var(--radius-surface); overflow: hidden; background: var(--surface); }
+.evo-review-row { display: flex; align-items: center; gap: 12px; padding: 12px 16px; min-height: 68px; }
+.evo-review-row + .evo-review-row { border-top: 1px solid var(--border-subtle); }
+.evo-review-row-icon { display: grid; place-items: center; width: 40px; height: 40px; flex: none; color: var(--text-secondary); }
+.evo-review-row-copy { min-width: 0; flex: 1; }
+.evo-review-row-copy h2 { margin: 0; color: var(--foreground); font-size: 16px; font-weight: 500; overflow-wrap: anywhere; }
+.evo-review-row-copy p { margin: 4px 0 0; color: var(--text-secondary); font-size: 13px; }
+.evo-review-open { width: 44px; height: 44px; flex: none; display: grid; place-items: center; border-radius: 14px; }
+.evo-empty-state { display: flex; flex-direction: column; align-items: flex-start; border: 1px solid var(--border); border-radius: var(--radius-surface); background: var(--surface); padding: 24px; }
+.evo-empty-icon { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 16px; background: var(--surface-muted); color: var(--foreground); }
+.evo-empty-state h2 { margin: 16px 0 0; font-size: 20px; font-weight: 500; }
+.evo-empty-state p { max-width: 40ch; margin: 8px 0 0; color: var(--text-secondary); font-size: 14px; line-height: 1.4; }
+.evo-empty-state .evo-primary-button { margin-top: 20px; }
+@media (hover:hover) and (pointer:fine) {
+  .evo-primary-button:hover { opacity: .9; }
+  .evo-secondary-button:hover, .evo-review-open:hover { background: var(--border-subtle); }
+}
+@media (max-width: 389px) {
+  .evo-topbar .brand img { width: 32px; height: 32px; border-radius: 10px; }
+  .evo-topbar .brand h1 { font-size: 18px; }
+  .evo-topbar-stats { gap: 0; }
+  .evo-stat { min-width: 38px; gap: 3px; padding: 0 4px; font-size: 12px; }
+  .evo-stat svg { width: 18px; height: 18px; }
+  .evo-card { gap: 12px; padding: 16px; }
+  .evo-today-card { padding: 18px 16px 16px; }
+  .evo-card h2 { font-size: 18px; }
+  .evo-xp-summary { gap: 8px; }
+  .evo-xp-summary span { font-size: 12px; }
+  .evo-xp-summary strong { font-size: 16px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .evo-progress-track > span, .evo-primary-button, .evo-secondary-button { transition: none !important; }
+}
+.bottom-nav {
+  position: fixed !important;
+  z-index: 80 !important;
+  left: 12px !important;
+  right: 12px !important;
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 8px) !important;
+  width: auto !important;
+  max-width: none !important;
+  height: 64px !important;
+  min-height: 64px !important;
+  padding: 6px !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 32px !important;
+  display: grid !important;
+  grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+  gap: 2px !important;
+  background: color-mix(in oklab, var(--background) 82%, transparent) !important;
+  box-shadow: var(--shadow-floating) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+  backdrop-filter: blur(20px) saturate(180%) !important;
+  transform: none !important;
+}
+.bottom-nav button {
+  min-width: 44px !important;
+  min-height: 50px !important;
+  height: 50px !important;
+  margin: 0 !important;
+  padding: 4px 1px !important;
+  border: 0 !important;
+  border-radius: 26px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  align-items: center !important;
+  gap: 2px !important;
+  background: transparent !important;
+  color: var(--text-muted) !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  box-shadow: none !important;
+}
+.bottom-nav button.active { background: var(--accent-subtle) !important; color: var(--foreground) !important; }
+.bottom-nav button svg { width: 24px !important; height: 24px !important; color: currentColor !important; stroke-width: 1.75 !important; opacity: 1 !important; }
+.bottom-nav button span:not(.learn-user-avatar) { font-size: 12px !important; line-height: 1 !important; font-weight: 500 !important; color: currentColor !important; }
+.bottom-nav .nav-selection-indicator { display: none !important; }
+@media (min-width: 1024px) {
+  .app-shell:has(.evo-dashboard), .app-shell:has(.evo-review-screen), .app-shell:has(.learn-home-screen) { padding-left: 240px !important; }
+  .bottom-nav {
+    left: 0 !important; right: auto !important; top: 0 !important; bottom: 0 !important;
+    width: 240px !important; height: 100dvh !important; min-height: 100dvh !important;
+    padding: 24px 16px !important; border: 0 !important; border-right: 1px solid var(--border) !important;
+    border-radius: 0 !important; display: flex !important; flex-direction: column !important;
+    align-items: stretch !important; justify-content: flex-start !important; gap: 8px !important;
+    background: var(--background) !important; box-shadow: none !important; backdrop-filter: none !important;
+  }
+  .bottom-nav button {
+    flex: 0 0 44px !important; width: 100% !important; min-height: 44px !important; height: 44px !important;
+    justify-content: flex-start !important; flex-direction: row !important; gap: 12px !important;
+    padding: 0 14px !important; border-radius: 18px !important; font-size: 14px !important;
+  }
+  .bottom-nav button span:not(.learn-user-avatar) { font-size: 14px !important; }
+  .evo-dashboard-content, .evo-review-screen { max-width: 1080px; }
+}
+@media (prefers-reduced-motion: reduce) { .bottom-nav button { transition: none !important; } }
+
+/* Learn path follows the v1 path-node state colors, rather than the old orange-only treatment. */
+body .learn-home-screen .learn-path-node { width: 88px !important; }
+body .learn-home-screen .learn-path-node-button {
+  width: 72px !important; height: 72px !important; min-width: 72px !important; min-height: 72px !important;
+  border: 2px solid var(--border) !important; background: var(--surface-muted) !important;
+  color: var(--text-muted) !important; box-shadow: none !important;
+}
+body .learn-home-screen .learn-path-node-current .learn-path-node-button {
+  background: var(--foreground) !important; border-color: var(--foreground) !important; color: var(--background) !important;
+}
+body .learn-home-screen .learn-path-node-completed .learn-path-node-button {
+  background: var(--evo-progress) !important; border-color: var(--evo-progress) !important; color: #fff !important;
+}
+body .learn-home-screen .learn-path-node-locked .learn-path-node-button {
+  background: var(--surface-muted) !important; border-color: var(--border) !important; color: var(--text-muted) !important;
+}
+body .learn-home-screen .learn-path-node-label { font-size: 12px !important; font-weight: 500 !important; line-height: 1.35 !important; color: var(--foreground) !important; }
+body .learn-home-screen .learn-start-pill { background: var(--foreground) !important; color: var(--background) !important; font-size: 12px !important; font-weight: 500 !important; letter-spacing: 0 !important; }
+body .learn-home-screen .learn-path-connectors path { stroke: var(--border-strong) !important; stroke-width: 2 !important; stroke-dasharray: none !important; }
+body .learn-home-screen .learn-path-node-button svg { width: 24px !important; height: 24px !important; stroke-width: 1.75 !important; }
+body .learn-home-screen .learn-home-gradient { display: none !important; }
+@media (prefers-reduced-motion: reduce) {
+  body .learn-home-screen .learn-path-node-button { animation: none !important; transition: none !important; }
+}
