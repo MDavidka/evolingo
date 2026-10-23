@@ -1468,7 +1468,6 @@ export default function App() {
         onOpenReview={() => setScreen("review")}
         onOpenLeaderboard={() => setScreen("leaderboard")}
         onOpenShop={() => setScreen("shop")}
-        onOpenProfile={() => setScreen("profile")}
         userName={userName}
       />}
       {screen === "learn" && <LearnPath
@@ -1601,7 +1600,7 @@ function ProjectNotebookIcon() {
   />
 }
 
-function Home({ lives, completedLessons, readLessons, answeredTasks, stars, xp, dailyStudy, notice, clearNotice, onOpenLesson, onOpenTask, onOpenLearn, onOpenReview, onOpenLeaderboard, onOpenShop, onOpenProfile, userName }: {
+function Home({ lives, completedLessons, readLessons, answeredTasks, stars, xp, dailyStudy, notice, clearNotice, onOpenLesson, onOpenTask, onOpenLearn, onOpenReview, onOpenLeaderboard, onOpenShop, userName }: {
   lives: number
   completedLessons: number[]
   readLessons: number[]
@@ -1617,7 +1616,6 @@ function Home({ lives, completedLessons, readLessons, answeredTasks, stars, xp, 
   onOpenReview: () => void
   onOpenLeaderboard: () => void
   onOpenShop: () => void
-  onOpenProfile: () => void
   userName: string
 }) {
   const [heartInfoOpen, setHeartInfoOpen] = useState(false)
@@ -1631,8 +1629,10 @@ function Home({ lives, completedLessons, readLessons, answeredTasks, stars, xp, 
   const reviewReadyCount = readLessons.length
   const continueLesson = () => {
     if (!currentLesson) { onOpenLearn(); return }
-    if (readLessons.includes(currentLesson.id)) onOpenTask(currentLesson.id, 0, currentLesson.id)
-    else onOpenLesson(currentLesson.id)
+    if (readLessons.includes(currentLesson.id)) {
+      const nextQuestion = currentLesson.questions.findIndex((_, index) => !answeredTasks.includes(currentLesson.id + "-" + index))
+      onOpenTask(currentLesson.id, Math.max(0, nextQuestion), currentLesson.id)
+    } else onOpenLesson(currentLesson.id)
   }
 
   return <div className="evo-dashboard">
