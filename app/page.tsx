@@ -3,7 +3,7 @@
 import Image from "next/image"
 import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent, type PointerEvent as ReactPointerEvent } from "react"
 import {
-  ArrowRight, BarChart3, Book, BookOpen, Check, CheckCircle2, Headphones, MessageCircle, CircleHelp, Puzzle,
+  ArrowRight, BarChart3, Book, BookOpen, Check, CheckCircle2, Headphones, MessageCircle, CircleHelp, Puzzle, House, Route,
   Flame, Heart, Lightbulb, Medal, RotateCcw, Trophy, UserRound, Dumbbell, Timer, Languages, Volume2,
   X, Zap, LockKeyhole, ClipboardCheck, Star, ShoppingBag, Gift, Palette, Pencil, Settings, ChevronRight, ChevronDown, Plus, GraduationCap, CalendarDays, Sparkles, Target, Search, UserPlus, Users, Link2, Bell, Share2, Contact2, Cloud,
 } from "lucide-react"
@@ -21,7 +21,7 @@ const lessonIllustrations: Record<number, { src: string; alt: string }> = {
   9: { src: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1200&q=85", alt: "Különböző magasságú hegycsúcsok" },
   10: { src: "https://images.unsplash.com/photo-1649843787933-a4e0d5313391?auto=format&fit=crop&w=1200&q=85", alt: "Sötét esőfelhők a feltételes mondatok példáihoz" },
 }
-type Screen = "home" | "lessonIntro" | "task" | "shop" | "leaderboard" | "profile" | "friends"
+type Screen = "home" | "learn" | "review" | "lessonIntro" | "task" | "shop" | "leaderboard" | "profile" | "friends"
 type DailyStudyState = { streak: number; lastStudyDate: string; todayActivityCount: number; activityDate: string; dailyGoal: number }
 type CloudSaveStatus = "loading" | "saving" | "saved" | "local" | "error"
 type LocalProgressSnapshot = { version: 1; sessionKey: string; savedAt: number; state: Record<string, unknown> }
@@ -1464,10 +1464,33 @@ export default function App() {
         clearNotice={() => setNotice("")}
         onOpenLesson={openLesson}
         onOpenTask={openTask}
+        onOpenLearn={() => setScreen("learn")}
+        onOpenReview={() => setScreen("review")}
+        onOpenLeaderboard={() => setScreen("leaderboard")}
+        onOpenProfile={() => setScreen("profile")}
+        userName={userName}
+      />}
+      {screen === "learn" && <LearnPath
+        lives={lives}
+        completedLessons={completedLessons}
+        readLessons={readLessons}
+        answeredTasks={answeredTasks}
+        stars={stars}
+        xp={xp}
+        dailyStudy={dailyStudy}
+        notice={notice}
+        clearNotice={() => setNotice("")}
+        onOpenLesson={openLesson}
+        onOpenTask={openTask}
         onOpenProfile={() => setScreen("profile")}
         userName={userName}
         avatar={avatar}
         avatarImage={avatarImage}
+      />}
+      {screen === "review" && <ReviewScreen
+        readLessons={readLessons}
+        onOpenLesson={openLesson}
+        onStartLearning={() => setScreen("learn")}
       />}
       {screen === "lessonIntro" && <LessonIntro
         lesson={activeLesson}
@@ -1577,7 +1600,144 @@ function ProjectNotebookIcon() {
   />
 }
 
-function Home({ lives, completedLessons, readLessons, answeredTasks, stars, xp, dailyStudy, notice, clearNotice, onOpenLesson, onOpenTask, onOpenProfile, userName, avatar, avatarImage }: {
+function Home({ lives, completedLessons, readLessons, answeredTasks, stars, xp, dailyStudy, notice, clearNotice, onOpenLesson, onOpenTask, onOpenLearn, onOpenReview, onOpenLeaderboard, userName }: {
+  lives: number
+  completedLessons: number[]
+  readLessons: number[]
+  answeredTasks: string[]
+  stars: number
+  xp: number
+  dailyStudy: DailyStudyState
+  notice: string
+  clearNotice: () => void
+  onOpenLesson: (id: number) => void
+  onOpenTask: (lessonId: number, index: number, sourceLessonId?: number, forceOpen?: boolean) => void
+  onOpenLearn: () => void
+  onOpenReview: () => void
+  onOpenLeaderboard: () => void
+  onOpenProfile: () => void
+  userName: string
+}) {
+  const currentLessonId = fullLessons.find(lesson => !completedLessons.includes(lesson.id))?.id ?? fullLessons[0]?.id ?? 1
+  const currentLesson = fullLessons.find(lesson => lesson.id === currentLessonId) ?? fullLessons[0]
+  const greetingHour = new Date().getHours()
+  const greeting = greetingHour < 12 ? "Good morning" : greetingHour < 18 ? "Good afternoon" : "Good evening"
+  const firstName = userName.trim().split(/\s+/)[0] || "there"
+  const goalTarget = Math.max(1, dailyStudy.dailyGoal)
+  const goalProgress = Math.min(100, Math.round((dailyStudy.todayActivityCount / goalTarget) * 100))
+  const reviewReadyCount = readLessons.length
+  const continueLesson = () => {
+    if (!currentLesson) { onOpenLearn(); return }
+    if (readLessons.includes(currentLesson.id)) onOpenTask(currentLesson.id, 0, currentLesson.id)
+    else onOpenLesson(currentLesson.id)
+  }
+
+  return <div className="evo-dashboard">
+    <header className="evo-topbar">
+      <Brand />
+      <div className="evo-topbar-stats" aria-label="Learning status">
+        <button type="button" className="evo-stat evo-stat-streak" onClick={onOpenLeaderboard} aria-label={dailyStudy.streak + " day streak. Open leaderboard"}>
+          <Flame size={20} strokeWidth={1.75} aria-hidden="true" />
+          <span className="num">{dailyStudy.streak}</span>
+        </button>
+        <button type="button" className="evo-stat evo-stat-hearts" onClick={() => {}} aria-label={lives + " hearts remaining"}>
+          <Heart size={20} strokeWidth={1.75} aria-hidden="true" />
+          <span className="num">{lives}</span>
+        </button>
+        <button type="button" className="evo-stat evo-stat-gems" onClick={onOpenReview} aria-label={stars + " gems. Open review"}>
+          <Zap size={20} strokeWidth={1.75} aria-hidden="true" />
+          <span className="num">{stars}</span>
+        </button>
+      </div>
+    </header>
+
+    <main className="evo-dashboard-content">
+      {notice && <div className="evo-notice" role="status"><span>{notice}</span><button type="button" onClick={clearNotice} aria-label="Dismiss notice"><X size={16} /></button></div>}
+      <section className="evo-greeting">
+        <h1>{greeting}, {firstName}</h1>
+        <p>A little progress adds up every day.</p>
+      </section>
+
+      <section className="evo-card evo-today-card" aria-labelledby="evo-today-title">
+        <div className="evo-card-heading-row">
+          <div>
+            <h2 id="evo-today-title">Today's goal</h2>
+            <p className="evo-card-subtitle">Keep your learning streak going</p>
+          </div>
+          <span className="evo-goal-ring" style={{ "--goal-progress": goalProgress + "%" } as React.CSSProperties}>
+            <span className="num">{goalProgress}%</span>
+          </span>
+        </div>
+        <div className="evo-goal-meta">
+          <span>Learning activity</span>
+          <span className="num">{dailyStudy.todayActivityCount} of {goalTarget}</span>
+        </div>
+        <div className="evo-progress-track" role="progressbar" aria-label="Today's learning activity" aria-valuemin={0} aria-valuemax={goalTarget} aria-valuenow={Math.min(goalTarget, dailyStudy.todayActivityCount)}>
+          <span style={{ width: goalProgress + "%" }} />
+        </div>
+        <div className="evo-streak-row">
+          <span className="evo-streak-symbol"><Flame size={20} strokeWidth={1.75} aria-hidden="true" /></span>
+          <div>
+            <p className="evo-streak-title">{dailyStudy.streak > 0 ? dailyStudy.streak + " day streak" : "Start your streak today"}</p>
+            <p className="evo-streak-detail">{dailyStudy.todayActivityCount > 0 ? "You've made progress today. Keep it up." : "One short lesson is a good place to start."}</p>
+          </div>
+        </div>
+        <button type="button" className="evo-primary-button" onClick={continueLesson}>
+          <span>Continue lesson</span><ArrowRight size={19} strokeWidth={1.75} aria-hidden="true" />
+        </button>
+        {currentLesson && <p className="evo-next-lesson">{currentLesson.title}</p>}
+      </section>
+
+      <section className="evo-card evo-review-card" aria-labelledby="evo-review-title">
+        <div className="evo-card-icon" aria-hidden="true"><RotateCcw size={22} strokeWidth={1.75} /></div>
+        <div className="evo-secondary-card-copy">
+          <div className="evo-card-heading-row">
+            <h2 id="evo-review-title">Review</h2>
+            <span className="evo-card-count num">{reviewReadyCount}</span>
+          </div>
+          <p className="evo-card-subtitle">{reviewReadyCount > 0 ? "Lessons you've opened are ready to revisit." : "Lesson notes you read will be available here to revisit."}</p>
+          <button type="button" className="evo-secondary-button" onClick={onOpenReview}>Review lessons <ArrowRight size={17} aria-hidden="true" /></button>
+        </div>
+      </section>
+
+      <section className="evo-card evo-league-card" aria-labelledby="evo-league-title">
+        <div className="evo-card-icon" aria-hidden="true"><Trophy size={22} strokeWidth={1.75} /></div>
+        <div className="evo-secondary-card-copy">
+          <h2 id="evo-league-title">Leaderboard</h2>
+          <p className="evo-card-subtitle">See how your weekly learning progress compares.</p>
+          <button type="button" className="evo-secondary-button" onClick={onOpenLeaderboard}>View leaderboard <ArrowRight size={17} aria-hidden="true" /></button>
+        </div>
+      </section>
+
+      <section className="evo-xp-summary" aria-label="Your progress">
+        <div><span>Total XP</span><strong className="num">{xp.toLocaleString("en-US")}</strong></div>
+        <div><span>Lessons completed</span><strong className="num">{completedLessons.length} / {fullLessons.length}</strong></div>
+        <div><span>Exercises answered</span><strong className="num">{answeredTasks.length}</strong></div>
+      </section>
+    </main>
+  </div>
+}
+
+function ReviewScreen({ readLessons, onOpenLesson, onStartLearning }: { readLessons: number[]; onOpenLesson: (id: number) => void; onStartLearning: () => void }) {
+  const reviewLessons = fullLessons.filter(lesson => readLessons.includes(lesson.id))
+  return <div className="evo-review-screen">
+    <header className="evo-page-heading"><h1>Review</h1><p>Revisit lesson material at your own pace.</p></header>
+    {reviewLessons.length ? <section className="evo-review-list" aria-label="Lessons to revisit">
+      {reviewLessons.map(lesson => <article className="evo-review-row" key={lesson.id}>
+        <div className="evo-review-row-icon"><BookOpen size={20} strokeWidth={1.75} aria-hidden="true" /></div>
+        <div className="evo-review-row-copy"><h2>{lesson.title}</h2><p>{lesson.level} · Lesson {lesson.id}</p></div>
+        <button type="button" className="evo-review-open" onClick={() => onOpenLesson(lesson.id)} aria-label={"Revisit " + lesson.title}><ChevronRight size={20} /></button>
+      </article>)}
+    </section> : <section className="evo-empty-state">
+      <div className="evo-empty-icon"><BookOpen size={26} strokeWidth={1.75} aria-hidden="true" /></div>
+      <h2>No lessons to review yet</h2>
+      <p>Open a lesson first. You can come back here to revisit its material.</p>
+      <button type="button" className="evo-primary-button" onClick={onStartLearning}>Open learning path <ArrowRight size={18} aria-hidden="true" /></button>
+    </section>}
+  </div>
+}
+
+function LearnPath({ lives, completedLessons, readLessons, answeredTasks, stars, xp, dailyStudy, notice, clearNotice, onOpenLesson, onOpenTask, onOpenProfile, userName, avatar, avatarImage }: {
   lives: number
   completedLessons: number[]
   readLessons: number[]
@@ -2855,7 +3015,7 @@ function PageHeader({ title }: { title: string }) {
   </header>
 }
 function Nav({ screen, setScreen, userName, avatar, avatarImage }: { screen: Screen; setScreen: (screen: Screen) => void; userName: string; avatar: string; avatarImage: string }) {
-  const items: [Screen, string, React.ElementType][] = [["home", "Tanulás", BookOpen], ["friends", "Barátok", Users], ["leaderboard", "Tanterem", BarChart3], ["profile", "Profil", UserRound]]
+  const items: [Screen, string, React.ElementType][] = [["home", "Home", House], ["learn", "Learn", Route], ["review", "Review", RotateCcw], ["leaderboard", "Leaderboard", Trophy], ["profile", "Profile", UserRound]]
   const activeIndex = Math.max(0, items.findIndex(([id]) => id === screen))
   const [dragIndex, setDragIndex] = useState<number | null>(null)
   const dragStart = useRef<{ x: number; index: number; width: number } | null>(null)
@@ -2912,6 +3072,6 @@ function Nav({ screen, setScreen, userName, avatar, avatarImage }: { screen: Scr
         setScreen(items[nextIndex][0])
       }}
     />
-    {items.map(([id, label, Icon], index) => <button key={id} data-tab-index={index} className={screen === id ? "active" : ""} onClick={() => setScreen(id)} aria-current={screen === id ? "page" : undefined} aria-label={id === "profile" ? "Profil: " + userName : label} title={id === "profile" ? userName : undefined}>{id === "profile" ? <UserAvatar userName={userName} avatar={avatar} avatarImage={avatarImage} variant="nav" /> : <Icon size={24} strokeWidth={2} aria-hidden="true" />}<span>{label}</span></button>)}
+    {items.map(([id, label, Icon], index) => <button key={id} data-tab-index={index} className={screen === id ? "active" : ""} onClick={() => setScreen(id)} aria-current={screen === id ? "page" : undefined} aria-label={id === "profile" ? "Profile: " + userName : label} title={id === "profile" ? userName : undefined}>{id === "profile" ? <UserAvatar userName={userName} avatar={avatar} avatarImage={avatarImage} variant="nav" /> : <Icon size={24} strokeWidth={2} aria-hidden="true" />}<span>{label}</span></button>)}
   </nav>
 }
