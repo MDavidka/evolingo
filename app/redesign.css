@@ -3137,3 +3137,86 @@ body .learn-home-screen .bottom-nav::before {
   transform: translateX(-50%) !important;
   pointer-events: none !important;
 }
+
+
+/* Fine sizing pass requested: smaller lesson cards, lighter/smaller section title, tighter gutters, slightly larger brand/profile. */
+body .learn-home-screen .learn-project-grid { gap: 10px !important; }
+body .learn-home-screen .learn-project-tile,
+body .learn-home-screen .learn-project-tile.selected,
+body .learn-home-screen .learn-project-tile-erasmus,
+body .learn-home-screen .learn-project-tile-erasmus.selected {
+  flex: 0 0 95px !important;
+  width: 95px !important;
+  min-width: 95px !important;
+  max-width: 95px !important;
+  height: 55px !important;
+  min-height: 55px !important;
+  max-height: 55px !important;
+  padding: 0 9px 8px !important;
+  border-radius: 16px !important;
+}
+body .learn-home-screen .learn-project-tile-add {
+  flex: 0 0 95px !important;
+  width: 95px !important;
+  min-width: 95px !important;
+  max-width: 95px !important;
+  height: 55px !important;
+  min-height: 55px !important;
+  max-height: 55px !important;
+  border-radius: 16px !important;
+}
+body .learn-home-screen .learn-project-tile-erasmus .learn-project-tile-symbol {
+  top: -9px !important;
+  left: 9px !important;
+  width: 22px !important;
+  height: 28px !important;
+}
+body .learn-home-screen .learn-project-tile-erasmus .project-notebook-icon {
+  width: 22px !important;
+  height: 28px !important;
+}
+body .learn-home-screen .learn-project-tile-title {
+  font-size: 12px !important;
+  line-height: 1.05 !important;
+  font-weight: 600 !important;
+}
+body .learn-home-screen .learn-project-tile-add .learn-project-add-ring {
+  width: 30px !important;
+  height: 30px !important;
+  min-width: 30px !important;
+  min-height: 30px !important;
+}
+body .learn-home-screen .learn-home-intro {
+  padding-left: 21.6px !important;
+  padding-right: 21.6px !important;
+}
+body .learn-home-screen .learn-header {
+  margin-left: 21.6px !important;
+  margin-right: 21.6px !important;
+  width: calc(100% - 43.2px) !important;
+}
+body .learn-home-screen .bottom-nav {
+  left: 21.6px !important;
+  right: 21.6px !important;
+  width: auto !important;
+}
+body .learn-home-screen .learn-project-section-heading h2 {
+  font-size: 17.1px !important;
+  font-weight: 500 !important;
+  letter-spacing: -.025em !important;
+}
+body .learn-home-screen .learn-header .brand-title,
+body .learn-home-screen .learn-header h1 {
+  font-size: 1.05em !important;
+}
+body .learn-home-screen .learn-header .profile-avatar,
+body .learn-home-screen .learn-header .learn-profile-avatar,
+body .learn-home-screen .learn-header img[alt*="profile" i] {
+  transform: scale(1.05) !important;
+  transform-origin: right center !important;
+}
+@media (max-width: 360px) {
+  body .learn-home-screen .learn-header { margin-left: 18px !important; margin-right: 18px !important; width: calc(100% - 36px) !important; }
+  body .learn-home-screen .learn-home-intro { padding-left: 18px !important; padding-right: 18px !important; }
+  body .learn-home-screen .bottom-nav { left: 18px !important; right: 18px !important; }
+}
