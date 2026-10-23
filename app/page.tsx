@@ -1496,8 +1496,8 @@ export default function App() {
 
 function Brand() {
   return <div className="brand">
-    <Image src={foxIcon} alt="Evölingo fox mascot" width={58} height={58} priority unoptimized />
-    <div><h1>Evölingo</h1></div>
+    <Image src={foxIcon} alt="Evölingo logo" width={58} height={58} priority unoptimized />
+    <div className="brand-copy"><h1>Evölingo</h1><span>By MDávid</span></div>
   </div>
 }
 
@@ -1772,9 +1772,10 @@ function Home({ completedLessons, readLessons, answeredTasks, stars, xp, dailySt
     <div className="learn-home-gradient" aria-hidden="true" />
     <header className="learn-header">
       <Brand />
-      <button className="learn-header-profile" type="button" onClick={onOpenProfile} aria-label={"Profil: " + userName}>
-        <UserAvatar userName={userName} avatar={avatar} avatarImage={avatarImage} variant="header" />
-      </button>
+      <div className="learn-lives" aria-label={lives + " lives remaining"}>
+        <Heart size={25} fill="#FF3038" color="#FF3038" strokeWidth={1.8} aria-hidden="true" />
+        <strong>{lives}</strong>
+      </div>
     </header>
     <section className="learn-home-intro" aria-label="Learning projects">
       <label className="learn-project-search">
