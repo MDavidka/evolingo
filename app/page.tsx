@@ -1649,7 +1649,7 @@ function Home({ lives, completedLessons, readLessons, answeredTasks, stars, xp, 
           <Heart size={20} strokeWidth={1.75} aria-hidden="true" />
           <span className="num">{lives}</span>
         </button>
-        <button type="button" className="evo-stat evo-stat-gems" onClick={onOpenShop} aria-label={stars + " gems. Open review"}>
+        <button type="button" className="evo-stat evo-stat-gems" onClick={onOpenShop} aria-label={stars + " gems. Open shop"}>
           <Zap size={20} strokeWidth={1.75} aria-hidden="true" />
           <span className="num">{stars}</span>
         </button>
