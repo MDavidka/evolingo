@@ -1090,3 +1090,32 @@ body .learn-home-screen .learn-home-gradient { display: none !important; }
 @media (prefers-reduced-motion: reduce) {
   body .learn-home-screen .learn-path-node-button { animation: none !important; transition: none !important; }
 }
+
+.evo-topbar { position: relative; }
+.evo-heart-popover {
+  position: absolute;
+  z-index: 30;
+  right: clamp(16px, 4vw, 32px);
+  top: calc(100% + 8px);
+  width: min(280px, calc(100vw - 32px));
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-panel);
+  background: var(--surface-raised);
+  color: var(--foreground);
+  box-shadow: var(--shadow-floating);
+}
+.evo-heart-popover p { margin: 0; color: var(--text-secondary); font-size: 14px; line-height: 1.45; }
+.evo-heart-popover button { margin-top: 12px; min-height: 36px; padding: 0 12px; border-radius: var(--radius-control); background: var(--surface-muted); color: var(--foreground); font-size: 14px; font-weight: 500; }
+.bottom-nav::before, .bottom-nav::after { display: none !important; content: none !important; }
+.bottom-nav button:focus-visible, .evo-stat:focus-visible, .evo-review-open:focus-visible, .evo-primary-button:focus-visible, .evo-secondary-button:focus-visible {
+  outline: 2px solid color-mix(in oklab, var(--accent) 72%, transparent) !important;
+  outline-offset: 2px !important;
+}
+@media (max-width: 360px) {
+  .bottom-nav button { gap: 1px !important; padding-inline: 0 !important; }
+  .bottom-nav button span:not(.learn-user-avatar) { font-size: 12px !important; transform: scale(.92); transform-origin: center; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .evo-goal-ring, .evo-review-row, .evo-heart-popover { scroll-behavior: auto !important; }
+}
