@@ -3072,3 +3072,68 @@ body .learn-home-screen .bottom-nav {
   body .learn-home-screen .learn-home-intro { padding-left: 16px !important; padding-right: 16px !important; }
   body .learn-home-screen .bottom-nav { left: 16px !important; right: 16px !important; width: auto !important; }
 }
+
+
+/* Restore the original compact gray lesson card and add the small swipe indicator above the dock. */
+body .learn-home-screen .learn-project-tile,
+body .learn-home-screen .learn-project-tile.selected,
+body .learn-home-screen .learn-project-tile-erasmus,
+body .learn-home-screen .learn-project-tile-erasmus.selected {
+  box-sizing: border-box !important;
+  flex: 0 0 158px !important;
+  width: 158px !important;
+  min-width: 158px !important;
+  max-width: 158px !important;
+  height: 92px !important;
+  min-height: 92px !important;
+  max-height: 92px !important;
+  padding: 0 14px 12px !important;
+  border-radius: 22px !important;
+  border: 1px solid #e5e7eb !important;
+  background: #e7e7e7 !important;
+  box-shadow: 0 2px 6px rgba(15,23,42,.035) !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+body .learn-home-screen .learn-project-tile::before,
+body .learn-home-screen .learn-project-tile-erasmus::after { display: none !important; }
+body .learn-home-screen .learn-project-tile-erasmus .learn-project-tile-symbol {
+  top: -13px !important;
+  left: 14px !important;
+  width: 32px !important;
+  height: 40px !important;
+}
+body .learn-home-screen .learn-project-tile-erasmus .project-notebook-icon {
+  width: 32px !important;
+  height: 40px !important;
+}
+body .learn-home-screen .learn-project-tile-title {
+  color: #111827 !important;
+  font-size: 14px !important;
+  font-weight: 650 !important;
+}
+body .learn-home-screen .learn-project-tile-add {
+  flex: 0 0 158px !important;
+  width: 158px !important;
+  min-width: 158px !important;
+  max-width: 158px !important;
+  height: 92px !important;
+  min-height: 92px !important;
+  max-height: 92px !important;
+  border-radius: 22px !important;
+  border: 1.5px dashed #e0e0e0 !important;
+  background: #fff !important;
+  box-shadow: none !important;
+}
+body .learn-home-screen .bottom-nav::before {
+  content: "" !important;
+  position: absolute !important;
+  left: 50% !important;
+  top: -22px !important;
+  width: 36px !important;
+  height: 4px !important;
+  border-radius: 999px !important;
+  background: #e2e8f0 !important;
+  transform: translateX(-50%) !important;
+  pointer-events: none !important;
+}
