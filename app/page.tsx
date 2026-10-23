@@ -1,6 +1,7 @@
 "use client"
 
 import Image from "next/image"
+import { EvoButton, EvoCard, EvoEmptyState, EvoMetric, EvoProgress } from "@/components/evo/ui"
 import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent, type PointerEvent as ReactPointerEvent, type CSSProperties } from "react"
 import {
   ArrowRight, BarChart3, Book, BookOpen, Check, CheckCircle2, Headphones, MessageCircle, CircleHelp, Puzzle, House, Route,
@@ -1625,7 +1626,8 @@ function Home({ lives, completedLessons, readLessons, answeredTasks, stars, xp, 
   const greeting = greetingHour < 12 ? "Good morning" : greetingHour < 18 ? "Good afternoon" : "Good evening"
   const firstName = userName.trim().split(/\s+/)[0] || "there"
   const goalTarget = Math.max(1, dailyStudy.dailyGoal)
-  const goalProgress = Math.min(100, Math.round((dailyStudy.todayActivityCount / goalTarget) * 100))
+  const completedToday = Math.min(goalTarget, dailyStudy.todayActivityCount)
+  const goalProgress = Math.min(100, Math.round((completedToday / goalTarget) * 100))
   const reviewReadyCount = readLessons.length
   const continueLesson = () => {
     if (!currentLesson) { onOpenLearn(); return }
@@ -1653,7 +1655,7 @@ function Home({ lives, completedLessons, readLessons, answeredTasks, stars, xp, 
         </button>
       </div>
       {heartInfoOpen && <div className="evo-heart-popover" role="dialog" aria-label="Hearts information">
-        <p>{lives} hearts remaining. One heart refills every 4 hours.</p>
+        <p>{lives} hearts remaining. Hearts are used when you make a mistake during a lesson.</p>
         <button type="button" onClick={() => setHeartInfoOpen(false)}>Close</button>
       </div>}
     </header>
@@ -1665,7 +1667,7 @@ function Home({ lives, completedLessons, readLessons, answeredTasks, stars, xp, 
         <p>A little progress adds up every day.</p>
       </section>
 
-      <section className="evo-card evo-today-card" aria-labelledby="evo-today-title">
+      <EvoCard className="evo-today-card" aria-labelledby="evo-today-title">
         <div className="evo-card-heading-row">
           <div>
             <h2 id="evo-today-title">Today's goal</h2>
@@ -1676,12 +1678,10 @@ function Home({ lives, completedLessons, readLessons, answeredTasks, stars, xp, 
           </span>
         </div>
         <div className="evo-goal-meta">
-          <span>Learning activity</span>
-          <span className="num">{dailyStudy.todayActivityCount} of {goalTarget}</span>
+          <span>Activities completed today</span>
+          <span className="num">{completedToday} of {goalTarget}</span>
         </div>
-        <div className="evo-progress-track" role="progressbar" aria-label="Today's learning activity" aria-valuemin={0} aria-valuemax={goalTarget} aria-valuenow={Math.min(goalTarget, dailyStudy.todayActivityCount)}>
-          <span style={{ width: goalProgress + "%" }} />
-        </div>
+        <EvoProgress value={completedToday} max={goalTarget} label="Daily learning activity goal" className="evo-progress-track" />
         <div className="evo-streak-row">
           <span className="evo-streak-symbol"><Flame size={20} strokeWidth={1.75} aria-hidden="true" /></span>
           <div>
@@ -1689,13 +1689,11 @@ function Home({ lives, completedLessons, readLessons, answeredTasks, stars, xp, 
             <p className="evo-streak-detail">{dailyStudy.todayActivityCount > 0 ? "You've made progress today. Keep it up." : "One short lesson is a good place to start."}</p>
           </div>
         </div>
-        <button type="button" className="evo-primary-button" onClick={continueLesson}>
-          <span>Continue lesson</span><ArrowRight size={19} strokeWidth={1.75} aria-hidden="true" />
-        </button>
+        <EvoButton onClick={continueLesson} trailing={<ArrowRight size={19} strokeWidth={1.75} />}>Continue lesson</EvoButton>
         {currentLesson && <p className="evo-next-lesson">{currentLesson.title}</p>}
-      </section>
+      </EvoCard>
 
-      <section className="evo-card evo-review-card" aria-labelledby="evo-review-title">
+      <EvoCard className="evo-review-card" aria-labelledby="evo-review-title">
         <div className="evo-card-icon" aria-hidden="true"><RotateCcw size={22} strokeWidth={1.75} /></div>
         <div className="evo-secondary-card-copy">
           <div className="evo-card-heading-row">
@@ -1703,23 +1701,23 @@ function Home({ lives, completedLessons, readLessons, answeredTasks, stars, xp, 
             <span className="evo-card-count num">{reviewReadyCount}</span>
           </div>
           <p className="evo-card-subtitle">{reviewReadyCount > 0 ? "Lessons you've opened are ready to revisit." : "Lesson notes you read will be available here to revisit."}</p>
-          <button type="button" className="evo-secondary-button" onClick={onOpenReview}>Review lessons <ArrowRight size={17} aria-hidden="true" /></button>
+          <EvoButton variant="secondary" onClick={onOpenReview} trailing={<ArrowRight size={17} />}>Review lessons</EvoButton>
         </div>
-      </section>
+      </EvoCard>
 
-      <section className="evo-card evo-league-card" aria-labelledby="evo-league-title">
+      <EvoCard className="evo-league-card" aria-labelledby="evo-league-title">
         <div className="evo-card-icon" aria-hidden="true"><Trophy size={22} strokeWidth={1.75} /></div>
         <div className="evo-secondary-card-copy">
           <h2 id="evo-league-title">Leaderboard</h2>
           <p className="evo-card-subtitle">See how your weekly learning progress compares.</p>
-          <button type="button" className="evo-secondary-button" onClick={onOpenLeaderboard}>View leaderboard <ArrowRight size={17} aria-hidden="true" /></button>
+          <EvoButton variant="secondary" onClick={onOpenLeaderboard} trailing={<ArrowRight size={17} />}>View leaderboard</EvoButton>
         </div>
-      </section>
+      </EvoCard>
 
       <section className="evo-xp-summary" aria-label="Your progress">
-        <div><span>Total XP</span><strong className="num">{xp.toLocaleString("en-US")}</strong></div>
-        <div><span>Lessons completed</span><strong className="num">{completedLessons.length} / {fullLessons.length}</strong></div>
-        <div><span>Exercises answered</span><strong className="num">{answeredTasks.length}</strong></div>
+        <EvoMetric label="Total XP" value={<span className="num">{xp.toLocaleString("en-US")}</span>} />
+        <EvoMetric label="Lessons completed" value={<span className="num">{completedLessons.length} / {fullLessons.length}</span>} />
+        <EvoMetric label="Exercises answered" value={<span className="num">{answeredTasks.length}</span>} />
       </section>
     </main>
   </div>
@@ -1735,12 +1733,11 @@ function ReviewScreen({ readLessons, onOpenLesson, onStartLearning }: { readLess
         <div className="evo-review-row-copy"><h2>{lesson.title}</h2><p>{lesson.level} · Lesson {lesson.id}</p></div>
         <button type="button" className="evo-review-open" onClick={() => onOpenLesson(lesson.id)} aria-label={"Revisit " + lesson.title}><ChevronRight size={20} /></button>
       </article>)}
-    </section> : <section className="evo-empty-state">
-      <div className="evo-empty-icon"><BookOpen size={26} strokeWidth={1.75} aria-hidden="true" /></div>
-      <h2>No lessons to review yet</h2>
-      <p>Open a lesson first. You can come back here to revisit its material.</p>
-      <button type="button" className="evo-primary-button" onClick={onStartLearning}>Open learning path <ArrowRight size={18} aria-hidden="true" /></button>
-    </section>}
+    </section> : <EvoEmptyState
+      title="No lessons to review yet"
+      description="Open a lesson first. You can come back here to revisit its material."
+      action={<EvoButton onClick={onStartLearning} trailing={<ArrowRight size={18} />}>Open learning path</EvoButton>}
+    />}
   </div>
 }
 
