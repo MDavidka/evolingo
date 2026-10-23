@@ -1,0 +1,411 @@
+/*
+ * Evölingo iOS polish layer
+ * Keep this file small and intentional: it overrides legacy cascade conflicts
+ * without replacing the existing learning flows or component behavior.
+ */
+
+:root {
+  color-scheme: light;
+  --ev-canvas: #ffffff;
+  --ev-ink: #111214;
+  --ev-muted: #858a93;
+  --ev-line: #e3e6eb;
+  --ev-tile: #f2f5f9;
+  --ev-focus: #2878e8;
+}
+
+html,
+body {
+  background: var(--ev-canvas) !important;
+  color: var(--ev-ink);
+}
+
+body .learn-home-screen {
+  background: var(--ev-canvas) !important;
+}
+
+body .learn-home-screen::after,
+body .learn-home-screen > .learn-home-gradient {
+  display: none !important;
+}
+
+/* Keep the header recognisable and align the screen to a consistent gutter. */
+body .learn-home-screen > .learn-header {
+  margin-inline: clamp(18px, 5.2vw, 24px) !important;
+  width: auto !important;
+}
+
+body .learn-home-screen .learn-header-profile {
+  min-width: 44px !important;
+  min-height: 44px !important;
+  border-radius: 50% !important;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body .learn-home-screen .learn-home-intro {
+  margin-top: clamp(26px, 4vh, 36px) !important;
+  padding-inline: clamp(18px, 5.2vw, 24px) !important;
+}
+
+/* Search is a quiet utility, not a floating glass panel. */
+body .learn-home-screen .learn-project-search {
+  box-sizing: border-box !important;
+  width: 100% !important;
+  height: 48px !important;
+  min-height: 48px !important;
+  gap: 10px !important;
+  padding: 0 14px !important;
+  border: 1px solid #e2e4e8 !important;
+  border-radius: 15px !important;
+  background: #ffffff !important;
+  box-shadow: none !important;
+  transition: border-color 150ms ease !important;
+}
+
+body .learn-home-screen .learn-project-search:focus-within {
+  border-color: #b8c6d8 !important;
+  box-shadow: 0 0 0 3px rgba(40, 120, 232, 0.08) !important;
+}
+
+body .learn-home-screen .learn-project-search input {
+  min-width: 0 !important;
+  width: 100% !important;
+  min-height: 44px !important;
+  padding: 0 !important;
+  color: var(--ev-ink) !important;
+  font-size: 15px !important;
+  font-weight: 400 !important;
+  letter-spacing: -0.01em !important;
+  line-height: 1.35 !important;
+}
+
+body .learn-home-screen .learn-project-search input::placeholder {
+  color: #929bab !important;
+  opacity: 1;
+}
+
+body .learn-home-screen .learn-project-search > svg {
+  flex: 0 0 auto !important;
+  width: 19px !important;
+  height: 19px !important;
+  color: #252b33 !important;
+  stroke-width: 1.8 !important;
+}
+
+/* Section heading: moderate weight, clear hierarchy, 44pt creation target. */
+body .learn-home-screen .learn-project-section-heading {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 12px !important;
+  margin-top: 28px !important;
+}
+
+body .learn-home-screen .learn-project-section-heading h2 {
+  margin: 0 !important;
+  color: var(--ev-ink) !important;
+  font-size: clamp(18px, 4.9vw, 20px) !important;
+  font-weight: 650 !important;
+  letter-spacing: -0.035em !important;
+  line-height: 1.2 !important;
+}
+
+body .learn-home-screen .learn-section-add {
+  display: grid !important;
+  flex: 0 0 44px !important;
+  place-items: center !important;
+  width: 44px !important;
+  height: 44px !important;
+  min-width: 44px !important;
+  min-height: 44px !important;
+  padding: 0 !important;
+  border: 1px solid #e3e6eb !important;
+  border-radius: 50% !important;
+  background: #ffffff !important;
+  color: #20252d !important;
+  box-shadow: none !important;
+  transition: background-color 150ms ease, border-color 150ms ease, transform 150ms ease !important;
+}
+
+body .learn-home-screen .learn-section-add svg {
+  width: 20px !important;
+  height: 20px !important;
+  stroke-width: 1.8 !important;
+}
+
+body .learn-home-screen .learn-section-add:active {
+  transform: scale(0.96) !important;
+  background: #f5f6f8 !important;
+}
+
+/* Horizontally scrolling project shelf: no cramped grid and no clipped labels. */
+body .learn-home-screen .learn-project-grid {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: stretch !important;
+  justify-content: flex-start !important;
+  grid-template-columns: none !important;
+  gap: 12px !important;
+  width: 100% !important;
+  max-width: none !important;
+  margin: 15px 0 0 !important;
+  padding: 17px 1px 10px !important;
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x proximity;
+  scroll-padding-inline: 1px;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+body .learn-home-screen .learn-project-grid::-webkit-scrollbar {
+  display: none !important;
+}
+
+body .learn-home-screen .learn-project-grid > .learn-project-tile,
+body .learn-home-screen .learn-project-grid > .learn-project-tile.selected,
+body .learn-home-screen .learn-project-grid > .learn-project-tile-erasmus,
+body .learn-home-screen .learn-project-grid > .learn-project-tile-erasmus.selected {
+  position: relative !important;
+  display: flex !important;
+  flex: 0 0 116px !important;
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  justify-content: flex-end !important;
+  box-sizing: border-box !important;
+  width: 116px !important;
+  min-width: 116px !important;
+  max-width: 116px !important;
+  height: 74px !important;
+  min-height: 74px !important;
+  max-height: 74px !important;
+  margin: 0 !important;
+  padding: 0 10px 10px !important;
+  overflow: visible !important;
+  border: 1px solid #e1e6ee !important;
+  border-radius: 18px !important;
+  background: var(--ev-tile) !important;
+  color: var(--ev-ink) !important;
+  box-shadow: none !important;
+  text-align: left !important;
+  scroll-snap-align: start;
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color 140ms ease, border-color 140ms ease, transform 140ms ease !important;
+}
+
+body .learn-home-screen .learn-project-grid > .learn-project-tile.selected {
+  background: #f0f4f9 !important;
+  border-color: #d9e1ec !important;
+}
+
+body .learn-home-screen .learn-project-grid > .learn-project-tile:active {
+  transform: scale(0.985) !important;
+  background: #edf1f6 !important;
+}
+
+body .learn-home-screen .learn-project-tile-erasmus .learn-project-tile-symbol {
+  position: absolute !important;
+  z-index: 2 !important;
+  top: -10px !important;
+  left: 10px !important;
+  display: block !important;
+  flex: none !important;
+  width: 26px !important;
+  height: 33px !important;
+  min-height: 33px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: visible !important;
+  font-size: 0 !important;
+  line-height: 0 !important;
+  transform: none !important;
+}
+
+body .learn-home-screen .learn-project-tile-erasmus .project-notebook-icon {
+  display: block !important;
+  width: 26px !important;
+  height: 33px !important;
+  object-fit: contain !important;
+  filter: none !important;
+}
+
+body .learn-home-screen .learn-project-tile-title {
+  display: block !important;
+  position: relative !important;
+  z-index: 1 !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0 !important;
+  overflow: visible !important;
+  color: #14171b !important;
+  font-size: 13px !important;
+  font-weight: 650 !important;
+  letter-spacing: -0.025em !important;
+  line-height: 1.2 !important;
+  text-overflow: clip !important;
+  white-space: nowrap !important;
+}
+
+/* The new-project tile stays recognisably secondary, with a real 44pt target. */
+body .learn-home-screen .learn-project-grid > .learn-project-tile-add {
+  align-items: center !important;
+  justify-content: center !important;
+  flex: 0 0 116px !important;
+  width: 116px !important;
+  min-width: 116px !important;
+  max-width: 116px !important;
+  height: 74px !important;
+  min-height: 74px !important;
+  max-height: 74px !important;
+  padding: 0 !important;
+  border: 1.5px dashed #d6dde7 !important;
+  border-radius: 18px !important;
+  background: #ffffff !important;
+  box-shadow: none !important;
+}
+
+body .learn-home-screen .learn-project-add-ring {
+  display: grid !important;
+  flex: 0 0 38px !important;
+  place-items: center !important;
+  width: 38px !important;
+  height: 38px !important;
+  min-width: 38px !important;
+  min-height: 38px !important;
+  border: 1px solid #e2e6ec !important;
+  border-radius: 50% !important;
+  background: #ffffff !important;
+  color: #303640 !important;
+}
+
+body .learn-home-screen .learn-project-add-ring svg {
+  width: 21px !important;
+  height: 21px !important;
+  stroke-width: 1.8 !important;
+}
+
+body .learn-home-screen .learn-project-add-label {
+  display: none !important;
+}
+
+/* Make the existing dock feel native without relying on blur or a deep shadow. */
+body .bottom-nav {
+  bottom: calc(14px + env(safe-area-inset-bottom)) !important;
+  left: 50% !important;
+  right: auto !important;
+  width: min(420px, calc(100% - 32px)) !important;
+  min-height: 76px !important;
+  height: 76px !important;
+  padding: 5px !important;
+  gap: 2px !important;
+  border: 1px solid #e8eaee !important;
+  border-radius: 38px !important;
+  background: #f3f4f6 !important;
+  box-shadow: none !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+  transform: translateX(-50%) !important;
+}
+
+body .bottom-nav button {
+  flex: 1 1 0 !important;
+  min-width: 0 !important;
+  min-height: 64px !important;
+  height: 64px !important;
+  padding: 6px 2px !important;
+  gap: 4px !important;
+  border: 1px solid transparent !important;
+  border-radius: 32px !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  color: #59616d !important;
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color 140ms ease, color 140ms ease !important;
+}
+
+body .bottom-nav button.active {
+  border-color: #eceef1 !important;
+  background: #ffffff !important;
+  box-shadow: none !important;
+  color: #111214 !important;
+}
+
+body .bottom-nav button.active svg,
+body .bottom-nav button.active span {
+  color: #111214 !important;
+}
+
+body .bottom-nav button svg {
+  width: 24px !important;
+  height: 24px !important;
+  flex: 0 0 auto !important;
+  stroke-width: 2 !important;
+}
+
+body .bottom-nav button span:not(.learn-user-avatar) {
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  line-height: 1.1 !important;
+  white-space: nowrap !important;
+}
+
+body .bottom-nav .nav-selection-indicator {
+  display: none !important;
+}
+
+@media (max-width: 360px) {
+  body .learn-home-screen .learn-project-grid {
+    gap: 10px !important;
+  }
+
+  body .learn-home-screen .learn-project-grid > .learn-project-tile,
+  body .learn-home-screen .learn-project-grid > .learn-project-tile.selected,
+  body .learn-home-screen .learn-project-grid > .learn-project-tile-erasmus,
+  body .learn-home-screen .learn-project-grid > .learn-project-tile-erasmus.selected,
+  body .learn-home-screen .learn-project-grid > .learn-project-tile-add {
+    flex-basis: 108px !important;
+    width: 108px !important;
+    min-width: 108px !important;
+    max-width: 108px !important;
+  }
+
+  body .learn-home-screen .learn-project-tile-title {
+    font-size: 12.5px !important;
+  }
+
+  body .bottom-nav {
+    width: calc(100% - 24px) !important;
+  }
+
+  body .bottom-nav button span:not(.learn-user-avatar) {
+    font-size: 10px !important;
+  }
+}
+
+@media (min-width: 560px) {
+  body .app-shell:has(.learn-home-screen) {
+    max-width: 480px !important;
+    margin-inline: auto !important;
+    border-inline: 1px solid #f4f5f7;
+  }
+
+  body .bottom-nav {
+    width: min(420px, calc(100% - 32px)) !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body .learn-home-screen .learn-project-search,
+  body .learn-home-screen .learn-section-add,
+  body .learn-home-screen .learn-project-tile,
+  body .bottom-nav button {
+    transition: none !important;
+  }
+}
+
+body .learn-home-screen :focus-visible,
+body .bottom-nav :focus-visible {
+  outline: 3px solid var(--ev-focus) !important;
+  outline-offset: 3px !important;
+}
