@@ -1453,6 +1453,7 @@ export default function App() {
   return <main className={"app-shell " + ((screen === "lessonIntro" || screen === "task") ? "lesson-open" : "")}>
     <section className={"screen-content " + (screen === "home" ? "learn-home-content " : "") + ((screen === "lessonIntro" || screen === "task") ? "lesson-page" : "")}>
       {screen === "home" && <Home
+        lives={lives}
         completedLessons={completedLessons}
         readLessons={readLessons}
         answeredTasks={answeredTasks}
@@ -1576,7 +1577,8 @@ function ProjectNotebookIcon() {
   />
 }
 
-function Home({ completedLessons, readLessons, answeredTasks, stars, xp, dailyStudy, notice, clearNotice, onOpenLesson, onOpenTask, onOpenProfile, userName, avatar, avatarImage }: {
+function Home({ lives, completedLessons, readLessons, answeredTasks, stars, xp, dailyStudy, notice, clearNotice, onOpenLesson, onOpenTask, onOpenProfile, userName, avatar, avatarImage }: {
+  lives: number
   completedLessons: number[]
   readLessons: number[]
   answeredTasks: string[]
