@@ -1,7 +1,7 @@
 "use client"
 
 import Image from "next/image"
-import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent, type PointerEvent as ReactPointerEvent } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent, type PointerEvent as ReactPointerEvent, type CSSProperties } from "react"
 import {
   ArrowRight, BarChart3, Book, BookOpen, Check, CheckCircle2, Headphones, MessageCircle, CircleHelp, Puzzle, House, Route,
   Flame, Heart, Lightbulb, Medal, RotateCcw, Trophy, UserRound, Dumbbell, Timer, Languages, Volume2,
@@ -1671,7 +1671,7 @@ function Home({ lives, completedLessons, readLessons, answeredTasks, stars, xp, 
             <h2 id="evo-today-title">Today's goal</h2>
             <p className="evo-card-subtitle">Keep your learning streak going</p>
           </div>
-          <span className="evo-goal-ring" style={{ "--goal-progress": goalProgress + "%" } as React.CSSProperties}>
+          <span className="evo-goal-ring" style={{ "--goal-progress": goalProgress + "%" } as CSSProperties}>
             <span className="num">{goalProgress}%</span>
           </span>
         </div>
