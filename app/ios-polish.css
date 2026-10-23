@@ -204,7 +204,7 @@ body .learn-home-screen .learn-project-grid > .learn-project-tile:active {
   background: #edf1f6 !important;
 }
 
-body .learn-home-screen .learn-project-tile-erasmus .learn-project-tile-symbol {
+body .learn-home-screen .learn-project-tile .learn-project-tile-symbol {
   position: absolute !important;
   z-index: 2 !important;
   top: -10px !important;
@@ -222,7 +222,7 @@ body .learn-home-screen .learn-project-tile-erasmus .learn-project-tile-symbol {
   transform: none !important;
 }
 
-body .learn-home-screen .learn-project-tile-erasmus .project-notebook-icon {
+body .learn-home-screen .learn-project-tile .project-notebook-icon {
   display: block !important;
   width: 26px !important;
   height: 33px !important;
