@@ -1467,6 +1467,7 @@ export default function App() {
         onOpenLearn={() => setScreen("learn")}
         onOpenReview={() => setScreen("review")}
         onOpenLeaderboard={() => setScreen("leaderboard")}
+        onOpenShop={() => setScreen("shop")}
         onOpenProfile={() => setScreen("profile")}
         userName={userName}
       />}
@@ -1600,7 +1601,7 @@ function ProjectNotebookIcon() {
   />
 }
 
-function Home({ lives, completedLessons, readLessons, answeredTasks, stars, xp, dailyStudy, notice, clearNotice, onOpenLesson, onOpenTask, onOpenLearn, onOpenReview, onOpenLeaderboard, userName }: {
+function Home({ lives, completedLessons, readLessons, answeredTasks, stars, xp, dailyStudy, notice, clearNotice, onOpenLesson, onOpenTask, onOpenLearn, onOpenReview, onOpenLeaderboard, onOpenShop, onOpenProfile, userName }: {
   lives: number
   completedLessons: number[]
   readLessons: number[]
@@ -1615,9 +1616,11 @@ function Home({ lives, completedLessons, readLessons, answeredTasks, stars, xp, 
   onOpenLearn: () => void
   onOpenReview: () => void
   onOpenLeaderboard: () => void
+  onOpenShop: () => void
   onOpenProfile: () => void
   userName: string
 }) {
+  const [heartInfoOpen, setHeartInfoOpen] = useState(false)
   const currentLessonId = fullLessons.find(lesson => !completedLessons.includes(lesson.id))?.id ?? fullLessons[0]?.id ?? 1
   const currentLesson = fullLessons.find(lesson => lesson.id === currentLessonId) ?? fullLessons[0]
   const greetingHour = new Date().getHours()
@@ -1640,15 +1643,19 @@ function Home({ lives, completedLessons, readLessons, answeredTasks, stars, xp, 
           <Flame size={20} strokeWidth={1.75} aria-hidden="true" />
           <span className="num">{dailyStudy.streak}</span>
         </button>
-        <button type="button" className="evo-stat evo-stat-hearts" onClick={() => {}} aria-label={lives + " hearts remaining"}>
+        <button type="button" className="evo-stat evo-stat-hearts" onClick={() => setHeartInfoOpen(open => !open)} aria-expanded={heartInfoOpen} aria-label={lives + " hearts remaining"}>
           <Heart size={20} strokeWidth={1.75} aria-hidden="true" />
           <span className="num">{lives}</span>
         </button>
-        <button type="button" className="evo-stat evo-stat-gems" onClick={onOpenReview} aria-label={stars + " gems. Open review"}>
+        <button type="button" className="evo-stat evo-stat-gems" onClick={onOpenShop} aria-label={stars + " gems. Open review"}>
           <Zap size={20} strokeWidth={1.75} aria-hidden="true" />
           <span className="num">{stars}</span>
         </button>
       </div>
+      {heartInfoOpen && <div className="evo-heart-popover" role="dialog" aria-label="Hearts information">
+        <p>{lives} hearts remaining. One heart refills every 4 hours.</p>
+        <button type="button" onClick={() => setHeartInfoOpen(false)}>Close</button>
+      </div>}
     </header>
 
     <main className="evo-dashboard-content">
