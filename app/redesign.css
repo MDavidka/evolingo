@@ -2987,3 +2987,88 @@ body .learn-home-screen .learn-project-tile-add {
   min-width: 122px !important;
   max-width: 122px !important;
 }
+
+
+/* Restore the reference home proportions: original compact lesson card, search width, and navbar dock. */
+body .learn-home-screen .learn-header {
+  margin-left: 24px !important;
+  margin-right: 24px !important;
+  width: calc(100% - 48px) !important;
+}
+body .learn-home-screen .learn-home-intro {
+  padding-left: 24px !important;
+  padding-right: 24px !important;
+}
+body .learn-home-screen .learn-project-search {
+  width: 100% !important;
+  height: 40px !important;
+  min-height: 40px !important;
+  border-radius: 12px !important;
+  background: transparent !important;
+  border: 1px solid #e2e2e2 !important;
+}
+body .learn-home-screen .learn-project-section-heading { margin-top: 28px !important; }
+body .learn-home-screen .learn-project-grid {
+  gap: 16px !important;
+  margin-top: 20px !important;
+  padding-top: 16px !important;
+}
+body .learn-home-screen .learn-project-tile,
+body .learn-home-screen .learn-project-tile.selected,
+body .learn-home-screen .learn-project-tile-erasmus,
+body .learn-home-screen .learn-project-tile-erasmus.selected {
+  box-sizing: border-box !important;
+  flex: 0 0 158px !important;
+  width: 158px !important;
+  min-width: 158px !important;
+  max-width: 158px !important;
+  height: 92px !important;
+  min-height: 92px !important;
+  max-height: 92px !important;
+  border-radius: 24px !important;
+}
+body .learn-home-screen .learn-project-tile-erasmus {
+  padding: 0 14px 13px !important;
+  border: 1px solid #dce5f5 !important;
+  background: #f5f7fc !important;
+  box-shadow: 0 2px 7px rgba(47,75,130,.04) !important;
+}
+body .learn-home-screen .learn-project-tile-erasmus::after {
+  height: 43% !important;
+  border-radius: 23px 23px 8px 8px !important;
+}
+body .learn-home-screen .learn-project-tile-erasmus .learn-project-tile-symbol {
+  top: -13px !important;
+  left: 14px !important;
+  width: 32px !important;
+  height: 40px !important;
+}
+body .learn-home-screen .learn-project-tile-erasmus .project-notebook-icon {
+  width: 32px !important;
+  height: 40px !important;
+}
+body .learn-home-screen .learn-project-tile-title { font-size: 14px !important; }
+body .learn-home-screen .learn-project-tile-add {
+  flex-basis: 158px !important;
+  width: 158px !important;
+  min-width: 158px !important;
+  max-width: 158px !important;
+  height: 92px !important;
+  min-height: 92px !important;
+  max-height: 92px !important;
+}
+body .learn-home-screen .bottom-nav {
+  left: 24px !important;
+  right: 24px !important;
+  width: auto !important;
+  max-width: none !important;
+  height: 68px !important;
+  min-height: 68px !important;
+  bottom: calc(28px + env(safe-area-inset-bottom)) !important;
+  border-radius: 34px !important;
+}
+@media (max-width: 360px) {
+  body .learn-home-screen .learn-header { margin-left: 16px !important; margin-right: 16px !important; width: calc(100% - 32px) !important; }
+  body .learn-home-screen .learn-home-intro { padding-left: 16px !important; padding-right: 16px !important; }
+  body .learn-home-screen .bottom-nav { left: 16px !important; right: 16px !important; width: auto !important; }
+}
