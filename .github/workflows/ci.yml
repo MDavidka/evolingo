@@ -15,12 +15,13 @@ concurrency:
 
 jobs:
   sync-lockfile:
-    if: github.event_name == 'push' && startsWith(github.ref, 'refs/heads/design/')
+    if: (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/design/')) || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository)
     runs-on: ubuntu-latest
     permissions:
       contents: write
     outputs:
       changed: ${{ steps.sync.outputs.changed }}
+      commit: ${{ steps.sync.outputs.commit }}
     steps:
       - name: Check out source
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
@@ -47,19 +48,22 @@ jobs:
             git push
             echo "changed=true" >> "$GITHUB_OUTPUT"
           fi
+          echo "commit=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
 
   build:
     name: Type-check and production build
     needs: sync-lockfile
-    if: always() && (needs.sync-lockfile.result == 'skipped' || needs.sync-lockfile.result == 'success') && needs.sync-lockfile.outputs.changed != 'true'
+    if: always() && (needs.sync-lockfile.result == 'skipped' || needs.sync-lockfile.result == 'success')
     runs-on: ubuntu-latest
     timeout-minutes: 15
     permissions:
       contents: read
     steps:
-      - name: Check out source
+      - name: Check out tested source
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
+          repository: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
+          ref: ${{ needs.sync-lockfile.outputs.commit || github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
 
       - name: Set up Node.js
