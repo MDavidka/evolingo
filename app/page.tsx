@@ -1,7 +1,7 @@
 "use client"
 
 import Image from "next/image"
-import { EvoButton, EvoCard, EvoEmptyState, EvoMetric, EvoProgress } from "@/components/evo/ui"
+import { EvoButton, EvoCard, EvoEmptyState, EvoMetric, EvoProgress } from "../components/evo/ui"
 import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent, type PointerEvent as ReactPointerEvent, type CSSProperties } from "react"
 import {
   ArrowRight, BarChart3, Book, BookOpen, Check, CheckCircle2, Headphones, MessageCircle, CircleHelp, Puzzle, House, Route,
