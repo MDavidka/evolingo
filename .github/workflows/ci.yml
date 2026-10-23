@@ -14,10 +14,48 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  sync-lockfile:
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/heads/design/')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    outputs:
+      changed: ${{ steps.sync.outputs.changed }}
+    steps:
+      - name: Check out source
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: true
+
+      - name: Set up Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Regenerate lockfile from package.json
+        id: sync
+        run: |
+          npm install --package-lock-only --ignore-scripts
+          if git diff --quiet -- package-lock.json; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add package-lock.json
+            git commit -m "chore: sync npm lockfile"
+            git push
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
   build:
     name: Type-check and production build
+    needs: sync-lockfile
+    if: always() && (needs.sync-lockfile.result == 'skipped' || needs.sync-lockfile.result == 'success') && needs.sync-lockfile.outputs.changed != 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    permissions:
+      contents: read
     steps:
       - name: Check out source
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
