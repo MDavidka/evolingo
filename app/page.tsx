@@ -357,9 +357,30 @@ export default function App() {
   const saveVersionRef = useRef(0)
   const chestClaimsRef = useRef(new Set<number>())
   useEffect(() => {
-    const shortMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches
-    const timer = window.setTimeout(() => setShowSplash(false), shortMotion ? 250 : 1100)
-    return () => window.clearTimeout(timer)
+    let cancelled = false
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    const minimumDisplayTime = reducedMotion ? 900 : 2400
+    const startedAt = Date.now()
+    const assets = [foxIcon, "/images/path-symbols.png"]
+
+    const preload = (src: string) => new Promise<void>((resolve) => {
+      const image = new Image()
+      image.onload = () => resolve()
+      image.onerror = () => resolve()
+      image.src = src
+    })
+
+    const finishSplash = async () => {
+      await Promise.race([
+        Promise.all(assets.map(preload)),
+        new Promise<void>((resolve) => window.setTimeout(resolve, 4000)),
+      ])
+      const remaining = Math.max(0, minimumDisplayTime - (Date.now() - startedAt))
+      window.setTimeout(() => { if (!cancelled) setShowSplash(false) }, remaining)
+    }
+
+    void finishSplash()
+    return () => { cancelled = true }
   }, [])
 
   useEffect(() => {
