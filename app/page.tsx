@@ -326,6 +326,7 @@ export default function App() {
   const [answeredTasks, setAnsweredTasks] = useState<string[]>([])
   const [xp, setXp] = useState(0)
   const [stars, setStars] = useState(0)
+  const [showSplash, setShowSplash] = useState(true)
   const [purchasedItems, setPurchasedItems] = useState<string[]>([])
   const [lives, setLives] = useState(5)
   const [userName, setUserName] = useState("Kíváncsi Vidra 4821")
@@ -342,6 +343,12 @@ export default function App() {
   const [sessionKey, setSessionKey] = useState("")
   const [saveStatus, setSaveStatus] = useState<CloudSaveStatus>("loading")
   const saveVersionRef = useRef(0)
+  const chestClaimsRef = useRef(new Set<number>())
+  useEffect(() => {
+    const shortMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    const timer = window.setTimeout(() => setShowSplash(false), shortMotion ? 250 : 1100)
+    return () => window.clearTimeout(timer)
+  }, [])
 
   useEffect(() => {
     let cancelled = false
@@ -545,14 +552,33 @@ export default function App() {
     const taskKey = lessonId + "-" + taskIndex
     const nextAnswered = answeredTasks.includes(taskKey) ? answeredTasks : [...answeredTasks, taskKey]
     setAnsweredTasks(nextAnswered)
-    const lesson = fullLessons.find((item) => item.id === lessonId)
+    const lesson = [...fullLessons, ...specialTasks].find((item) => item.id === lessonId)
     if (lesson && lesson.questions.every((_, index) => nextAnswered.includes(lessonId + "-" + index))) {
       setCompletedLessons((previous) => previous.includes(lessonId) ? previous : [...previous, lessonId])
     }
     setScreen("home")
     setNotice("Feladatcsomag teljesítve! " + (answeredTasks.includes(taskKey) ? "" : "Jutalom jóváírva."))
   }
-  return <main className={"app-shell " + ((screen === "lessonIntro" || screen === "task") ? "lesson-open" : "")}>
+  const completedLessonCount = fullLessons.filter(lesson => completedLessons.includes(lesson.id)).length
+  const claimableChest = Array.from({ length: Math.floor(completedLessonCount / 5) }, (_, index) => index + 1)
+    .find(level => !purchasedItems.includes("chest:" + level))
+  const nextChestAt = claimableChest ? claimableChest * 5 : (Math.floor(completedLessonCount / 5) + 1) * 5
+  const claimChest = () => {
+    if (!claimableChest) { setNotice("A következő láda " + nextChestAt + " lecke után nyílik meg."); return }
+    if (chestClaimsRef.current.has(claimableChest)) return
+    chestClaimsRef.current.add(claimableChest)
+    setPurchasedItems(previous => previous.includes("chest:" + claimableChest) ? previous : [...previous, "chest:" + claimableChest])
+    setStars(previous => previous + 5)
+    setNotice("Láda kinyitva: +5 csillag!")
+  }
+  const openHardChallenge = () => {
+    if (completedLessonCount < 4) { setNotice("A nehéz feladat 4 lecke után nyílik meg."); return }
+    setActiveLessonId(101)
+    setActiveTaskIndex(0)
+    setLives(5)
+    setScreen("task")
+  }
+  return <><main className={"app-shell " + ((screen === "lessonIntro" || screen === "task") ? "lesson-open" : "")}>
     <section className={"screen-content " + (screen === "home" ? "learn-home-content " : "") + ((screen === "lessonIntro" || screen === "task") ? "lesson-page" : "")}>
       {screen === "home" && <Home
         completedLessons={completedLessons}
@@ -561,6 +587,12 @@ export default function App() {
         onOpenLesson={openLesson}
         onOpenTask={openTask}
         onOpenProfile={() => setScreen("profile")}
+        stars={stars}
+        completedLessonCount={completedLessonCount}
+        nextChestAt={nextChestAt}
+        chestReady={Boolean(claimableChest)}
+        onClaimChest={claimChest}
+        onOpenHardChallenge={openHardChallenge}
         userName={userName}
         avatar={avatar}
         avatarImage={avatarImage}
@@ -576,10 +608,10 @@ export default function App() {
         lesson={activeLesson}
         taskIndex={activeTaskIndex}
         onExit={() => setScreen("home")}
-        onComplete={() => { const key = activeLesson.id + "-" + activeTaskIndex; if (!answeredTasks.includes(key)) recordDailyActivity(); setStars((current) => current + (answeredTasks.includes(key) ? 0 : 1)); setXp((current) => current + (answeredTasks.includes(key) ? 0 : 5)); completeTask(activeLesson.id, activeTaskIndex); }}
+        onComplete={() => { const key = activeLesson.id + "-" + activeTaskIndex; if (!answeredTasks.includes(key)) recordDailyActivity(); setStars((current) => current + (answeredTasks.includes(key) ? 0 : activeLesson.specialType === "hard" ? 3 : 1)); setXp((current) => current + (answeredTasks.includes(key) ? 0 : 5)); completeTask(activeLesson.id, activeTaskIndex); }}
         lives={lives}
         onWrongAnswer={() => setLives((current) => Math.max(0, current - 1))}
-        onNextQuestion={(nextIndex) => { const key = activeLesson.id + "-" + activeTaskIndex; if (!answeredTasks.includes(key)) { recordDailyActivity(); setAnsweredTasks((items) => items.includes(key) ? items : [...items, key]); setStars((current) => current + 1); setXp((current) => current + 5); } setActiveTaskIndex(nextIndex); }}
+        onNextQuestion={(nextIndex) => { const key = activeLesson.id + "-" + activeTaskIndex; if (!answeredTasks.includes(key)) { recordDailyActivity(); setAnsweredTasks((items) => items.includes(key) ? items : [...items, key]); setStars((current) => current + (activeLesson.specialType === "hard" ? 3 : 1)); setXp((current) => current + 5); } setActiveTaskIndex(nextIndex); }}
         onOutOfLives={() => { setNotice("Elfogytak az életeid. Pihenj egy kicsit, és próbáld újra!"); setScreen("home"); }}
       />}
       {screen === "shop" && <Shop stars={stars} purchasedItems={purchasedItems} onPurchase={(id, cost) => { if (stars >= cost && !purchasedItems.includes(id)) { setStars((value) => value - cost); setPurchasedItems((items) => [...items, id]); setNotice("Sikeres vásárlás!"); } }} />}
@@ -589,6 +621,16 @@ export default function App() {
     </section>
     {screen !== "lessonIntro" && screen !== "task" && <Nav screen={screen} setScreen={setScreen} userName={userName} avatar={avatar} avatarImage={avatarImage} />}
   </main>
+  {showSplash && <SplashScreen />}</>
+}
+
+function SplashScreen() {
+  return <div className="learn-splash" role="status" aria-label="Evölingo betöltése">
+    <img src={foxIcon} alt="" aria-hidden="true" />
+    <strong>Evölingo</strong>
+    <span>Tanulj minden nap egy kicsit.</span>
+    <div className="learn-splash-dots" aria-hidden="true"><i /><i /><i /></div>
+  </div>
 }
 
 function Brand() { return <div className="brand"><img src={foxIcon} alt="Evölingo fox mascot" /><div><h1>Evölingo</h1></div></div> }
@@ -635,7 +677,7 @@ function UserAvatar({ userName, avatar, avatarImage, variant }: {
   </span>
 }
 
-function Home({ completedLessons, notice, clearNotice, onOpenLesson, onOpenTask, onOpenProfile, userName, avatar, avatarImage }: {
+function Home({ completedLessons, notice, clearNotice, onOpenLesson, onOpenTask, onOpenProfile, userName, avatar, avatarImage, stars, completedLessonCount, nextChestAt, chestReady, onClaimChest, onOpenHardChallenge }: {
   completedLessons: number[]
   notice: string
   clearNotice: () => void
@@ -645,11 +687,17 @@ function Home({ completedLessons, notice, clearNotice, onOpenLesson, onOpenTask,
   userName: string
   avatar: string
   avatarImage: string
+  stars: number
+  completedLessonCount: number
+  nextChestAt: number
+  chestReady: boolean
+  onClaimChest: () => void
+  onOpenHardChallenge: () => void
 }) {
   const unitLessons = fullLessons
   const currentLessonId = unitLessons.find(lesson => !completedLessons.includes(lesson.id))?.id ?? null
-  const pathOffsets = [0, 26, 136, 214, 261, 343, 411, 482]
-  const pathHeight = Math.max(560, Math.ceil(unitLessons.length / pathOffsets.length) * 560)
+  const pathOffsets = [0, 96, 196, 292, 392, 490, 590, 688]
+  const pathHeight = Math.max(790, Math.ceil(unitLessons.length / pathOffsets.length) * 790)
   const nodeRefs = useRef<Map<number, HTMLButtonElement>>(new Map())
   useEffect(() => {
     if (currentLessonId === null) return
@@ -667,9 +715,14 @@ function Home({ completedLessons, notice, clearNotice, onOpenLesson, onOpenTask,
         <span className="learn-greeting-copy"><span>Hello {userName} 👋</span><strong>Let's grow together</strong></span>
       </button>
     </header>
+    <div className="learn-star-balance" aria-label={stars + " csillag"}><Star size={18} fill="currentColor" aria-hidden="true" /><strong>{stars}</strong></div>
     {notice && <button className="inline-notice learn-inline-notice" type="button" onClick={clearNotice}><span>{notice}</span><X size={16} aria-hidden="true" /></button>}
 
     <section className="learn-sheet" aria-label="Tanulási útvonal">
+      <div className="learn-quest-row">
+        <button type="button" className="learn-quest-button" onClick={onOpenHardChallenge} aria-label={completedLessonCount >= 4 ? "Nehéz feladat indítása" : "Nehéz feladat 4 lecke után"}><Zap size={17} aria-hidden="true" /><span>Hard mód</span>{completedLessonCount < 4 && <LockKeyhole size={12} aria-hidden="true" />}</button>
+        <button type="button" className={"learn-quest-button " + (chestReady ? "is-ready" : "")} onClick={onClaimChest} aria-label={chestReady ? "Láda kinyitása, 5 csillag" : "Láda " + nextChestAt + " lecke után"}><Gift size={17} aria-hidden="true" /><span>{chestReady ? "Láda nyitása" : "Láda · " + nextChestAt}</span></button>
+      </div>
       <div className="learn-path-track" style={{ height: pathHeight + "px" }}>
         {unitLessons.map((lesson, index) => {
           const isComplete = completedLessons.includes(lesson.id)
@@ -677,7 +730,7 @@ function Home({ completedLessons, notice, clearNotice, onOpenLesson, onOpenTask,
           const label = lesson.title
           const stateLabel = status === "completed" ? "kész" : status === "current" ? "indítás" : "zárolva"
           const pathPositions = [25, 54, 59, 38, 60, 50, 32, 25]
-          const pathTop = pathOffsets[index % pathOffsets.length] + Math.floor(index / pathOffsets.length) * 560
+          const pathTop = pathOffsets[index % pathOffsets.length] + Math.floor(index / pathOffsets.length) * 790
           return <div className={"learn-path-node learn-path-node-" + status} key={lesson.id} style={{ left: pathPositions[index % pathPositions.length] + "%", top: pathTop + "px" }}>
             <button
               ref={element => {
@@ -691,8 +744,9 @@ function Home({ completedLessons, notice, clearNotice, onOpenLesson, onOpenTask,
               aria-label={label + ", " + stateLabel}
               onClick={() => { if (status !== "locked") onOpenLesson(lesson.id) }}
             >
-              {status === "current" && <img className="learn-path-mascot" src={foxIcon} alt="" aria-hidden="true" />}
+              {status === "current" ? <img className="learn-path-mascot" src={foxIcon} alt="" aria-hidden="true" /> : status === "completed" ? <Check size={21} strokeWidth={3} aria-hidden="true" /> : <BookOpen size={20} strokeWidth={2.3} aria-hidden="true" />}
             </button>
+            {status === "current" && <button className="learn-node-start" type="button" onClick={() => onOpenLesson(lesson.id)}>Indítás <ArrowRight size={14} aria-hidden="true" /></button>}
           </div>
         })}
       </div>
