@@ -119,3 +119,30 @@ body .bottom-nav button.active{background:#fff !important;border-radius:30px !im
   body .learn-path-node-button{width:40px !important;height:40px !important;min-width:40px !important;min-height:40px !important}
   body .learn-path-mascot{width:56px !important;height:60px !important}
 }
+/* Progress mechanics on the same quiet white learning sheet. */
+body .learn-star-balance{position:absolute !important;z-index:5 !important;top:max(26px,calc(env(safe-area-inset-top) + 4px)) !important;right:16px !important;display:flex !important;align-items:center !important;justify-content:center !important;gap:6px !important;min-width:62px !important;height:41px !important;padding:0 12px !important;border-radius:999px !important;color:#d39b25 !important;background:#fff !important;box-shadow:0 8px 24px rgba(20,24,35,.09) !important;font-size:17px !important;font-variant-numeric:tabular-nums !important}
+body .learn-header{max-width:calc(100% - 106px) !important}
+body .learn-star-balance strong{color:#242424 !important}
+body .learn-quest-row{position:absolute !important;top:27px !important;right:18px !important;left:18px !important;display:flex !important;justify-content:space-between !important;gap:12px !important}
+body .learn-quest-button{display:inline-flex !important;align-items:center !important;justify-content:center !important;gap:6px !important;min-width:0 !important;min-height:42px !important;padding:0 12px !important;border:1px solid #eeeeef !important;border-radius:16px !important;color:#47454b !important;background:#fff !important;box-shadow:0 5px 14px rgba(30,31,38,.07) !important;font-size:12px !important;font-weight:700 !important;white-space:nowrap !important;cursor:pointer !important;transition:transform .16s ease,box-shadow .16s ease !important}
+body .learn-quest-button:first-child svg:first-child{color:#d99d2c !important}
+body .learn-quest-button.is-ready{border-color:#efd183 !important;background:#fff9e9 !important}
+body .learn-quest-button:active{transform:translateY(2px) !important;box-shadow:0 2px 7px rgba(30,31,38,.07) !important}
+body .learn-path-node-button{border:1px solid rgba(255,255,255,.5) !important;box-shadow:0 5px 0 #d3a943,0 9px 15px rgba(94,73,22,.13),inset 0 2px 0 rgba(255,255,255,.32) !important}
+body .learn-path-node-button svg{color:#fff !important;filter:drop-shadow(0 1px 1px rgba(90,63,12,.12)) !important}
+body .learn-path-node-locked .learn-path-node-button{border-color:#e3e3e3 !important;box-shadow:0 4px 0 #9e9e9e,0 8px 13px rgba(26,26,26,.08) !important}
+body .learn-path-node-locked .learn-path-node-button svg{color:#f4f4f4 !important}
+body .learn-path-node-current{z-index:3 !important}
+body .learn-node-start{position:absolute !important;top:51px !important;left:50% !important;display:inline-flex !important;align-items:center !important;justify-content:center !important;gap:4px !important;height:27px !important;padding:0 12px !important;border:0 !important;border-radius:999px !important;color:#fff !important;background:#242424 !important;box-shadow:0 4px 9px rgba(22,22,22,.16) !important;font-size:11px !important;font-weight:750 !important;white-space:nowrap !important;transform:translateX(-50%) !important;cursor:pointer !important}
+body .learn-node-start:active{transform:translateX(-50%) scale(.96) !important}
+body .learn-splash{position:fixed !important;z-index:100 !important;inset:0 !important;display:flex !important;flex-direction:column !important;align-items:center !important;justify-content:center !important;gap:11px !important;padding:24px !important;background:#f7f7f7 !important;color:#1e1b3a !important;text-align:center !important}
+body .learn-splash img{width:92px !important;height:92px !important;object-fit:contain !important;animation:learn-splash-rise .6s ease both !important}
+body .learn-splash strong{font-size:30px !important;letter-spacing:-.055em !important;line-height:1 !important}
+body .learn-splash > span{font-size:13px !important;color:#85858f !important}
+body .learn-splash-dots{display:flex !important;gap:5px !important;margin-top:17px !important}
+body .learn-splash-dots i{width:6px !important;height:6px !important;border-radius:50% !important;background:#efc45c !important;animation:learn-splash-pulse .8s ease-in-out infinite alternate !important}
+body .learn-splash-dots i:nth-child(2){animation-delay:.15s !important}body .learn-splash-dots i:nth-child(3){animation-delay:.3s !important}
+@keyframes learn-splash-rise{from{opacity:0;transform:translateY(12px) scale(.94)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes learn-splash-pulse{to{opacity:.35;transform:translateY(-4px)}}
+@media (max-width:360px){body .learn-star-balance{right:12px !important;padding:0 9px !important;min-width:50px !important}body .learn-quest-row{right:12px !important;left:12px !important}body .learn-quest-button{padding:0 9px !important;font-size:11px !important}}
+@media (prefers-reduced-motion:reduce){body .learn-splash img,body .learn-splash-dots i{animation:none !important}body .learn-quest-button,body .learn-path-node-button{transition:none !important}}
