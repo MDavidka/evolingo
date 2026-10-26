@@ -293,6 +293,12 @@ const curriculumTopics: CurriculumTopic[] = [
 {title:"Present and Past Habits",summary:"Jelenlegi és múltbeli szokások kifejezése.",prompt:"She _____ drinks tea in the morning.",options:["usually","yesterday","last","ago"],answer:"usually",explanation:"A usually gyakoriságot jelölő határozószó.",tip:"usually + Present Simple"},
 {title:"Inversion",summary:"Fordított szórend hangsúlyos, formális szerkezetekben.",prompt:"Never _____ I seen such a view.",options:["have","did","am","was"],answer:"have",explanation:"Never mondat elején segédige kerül az alany elé.",tip:"Never have I seen…"},
 {title:"Wishes and Regrets",summary:"Kívánságok és megbánás kifejezése wish szerkezettel.",prompt:"I wish I _____ taller.",options:["am","were","will be","have been"],answer:"were",explanation:"Jelenlegi, nem valós helyzetre gyakran wish + Past Simple áll.",tip:"I wish I were…"}
+,
+{title:"Modal Verbs",summary:"Módbeli segédigék: can, could, must, should, may, might és have to.",prompt:"You _____ wear a seat belt in a car; it is the law.",options:["might","must","could","may"],answer:"must",explanation:"A must erős kötelezettséget vagy szabályt fejez ki. A have to hasonló kötelezettséget jelöl, míg a can képességre, a could múltbeli képességre vagy udvarias kérésre utal.",tip:"can / could · must / have to · should · may / might"},
+{title:"Quantifiers",summary:"Mennyiséget kifejező szavak: a few, a little, enough, too much és too many.",prompt:"There are _____ people in the room for all these chairs.",options:["too much","enough","a little","much"],answer:"enough",explanation:"Az enough elegendő mennyiséget jelöl. A few megszámlálható főnevekkel, a little megszámlálhatatlan főnevekkel használatos.",tip:"a few books · a little water · enough chairs"},
+{title:"Possessive Adjectives and Pronouns",summary:"Birtokos melléknevek és névmások: my, mine, your és yours.",prompt:"This book belongs to me. It is _____.",options:["my","mine","me","I"],answer:"mine",explanation:"A mine birtokos névmás önállóan áll. A my birtokos melléknév, ezért utána főnév következik.",tip:"my book · the book is mine"},
+{title:"Adverbs and Adjectives",summary:"A melléknevek tulajdonságot, a határozószók a cselekvés módját írják le.",prompt:"She speaks English _____.",options:["fluent","fluently","fluency","more fluent"],answer:"fluently",explanation:"A beszéd módját határozószóval írjuk le: fluent → fluently.",tip:"quick → quickly · careful → carefully"}
+
 ]
 const generatedLessons: LessonUnit[] = curriculumTopics.map((topic, index) => {
   const id = 11 + index
