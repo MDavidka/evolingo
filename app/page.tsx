@@ -562,6 +562,7 @@ export default function App() {
       setNotice("Előbb olvasd át a leckét; utána megnyílnak a feladatok.")
       return
     }
+    playTaskSound("open")
     setScreen("task")
   }
   const completeTask = (lessonId: number, taskIndex: number) => {
@@ -777,8 +778,6 @@ function Home({ completedLessons, answeredTasks, readLessons, notice, clearNotic
               <span className={"learn-path-art learn-path-art--" + (lessonDone ? "checkpoint-active" : lessonCurrent ? "lesson-active" : "lesson-locked")} aria-hidden="true" />
             </button>
             <span className="learn-lesson-topic" title={lesson.title}>{lesson.title}</span>
-            {lessonCurrent && <img className="learn-path-mascot" src={foxIcon} alt="" aria-hidden="true" />}
-            {lessonCurrent && <button className="learn-node-start" type="button" onClick={() => onOpenLesson(lesson.id)}>Indítás <ArrowRight size={14} aria-hidden="true" /></button>}
           </div>
         })}
       </div>
@@ -929,26 +928,30 @@ function LessonSectionContent({ section, index }: { section: LessonSection; inde
   </section>
 }
 
-function playAnswerSound(correct: boolean) {
+function playTaskSound(kind: "open" | "correct" | "wrong" | "complete") {
   try {
     const AudioContextClass = window.AudioContext || (window as typeof window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext
     if (!AudioContextClass) return
     const context = new AudioContextClass()
-    const oscillator = context.createOscillator()
     const gain = context.createGain()
-    oscillator.connect(gain)
     gain.connect(context.destination)
-    oscillator.type = "sine"
+    const notes = kind === "open" ? [440, 660] : kind === "correct" ? [660, 880] : kind === "wrong" ? [220, 170] : [523, 659, 784]
+    const spacing = kind === "complete" ? 0.1 : 0.075
+    const duration = kind === "wrong" ? 0.12 : 0.14
     const now = context.currentTime
-    oscillator.frequency.setValueAtTime(correct ? 660 : 220, now)
-    if (correct) oscillator.frequency.setValueAtTime(880, now + 0.09)
+    notes.forEach((frequency, index) => {
+      const oscillator = context.createOscillator()
+      oscillator.type = kind === "wrong" ? "triangle" : "sine"
+      oscillator.frequency.setValueAtTime(frequency, now + index * spacing)
+      oscillator.connect(gain)
+      oscillator.start(now + index * spacing)
+      oscillator.stop(now + index * spacing + duration)
+    })
     gain.gain.setValueAtTime(0.0001, now)
-    gain.gain.exponentialRampToValueAtTime(0.12, now + 0.015)
-    gain.gain.exponentialRampToValueAtTime(0.0001, now + (correct ? 0.18 : 0.14))
-    oscillator.start(now)
-    oscillator.stop(now + (correct ? 0.19 : 0.15))
-    oscillator.onended = () => { void context.close() }
-  } catch { /* Sound is optional; keep the exercise working if audio is unavailable. */ }
+    gain.gain.exponentialRampToValueAtTime(0.1, now + 0.012)
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + notes.length * spacing + duration)
+    window.setTimeout(() => { void context.close() }, Math.ceil((notes.length * spacing + duration + 0.05) * 1000))
+  } catch { /* Audio remains optional on devices that disable Web Audio. */ }
 }
 
 function TaskExercise({ lesson, taskIndex, onExit, onComplete, lives, onWrongAnswer, onNextQuestion, onOutOfLives }: {
@@ -971,7 +974,7 @@ function TaskExercise({ lesson, taskIndex, onExit, onComplete, lives, onWrongAns
   const resetAnswer = () => { setSelectedAnswer(""); setTypedAnswer(""); setSelectedWords([]); setChecked(false); setAnswerCorrect(false); setHeartLost(false) }
   useEffect(() => { setSelectedAnswer(""); setTypedAnswer(""); setSelectedWords([]); setChecked(false); setAnswerCorrect(false); setHeartLost(false); setRewardPulse(false); setSecondsLeft(30) }, [taskIndex])
   useEffect(() => { if (!isTimedChallenge || checked || secondsLeft <= 0) return; const timer = window.setTimeout(() => setSecondsLeft(value => value - 1), 1000); return () => window.clearTimeout(timer) }, [isTimedChallenge, checked, secondsLeft])
-  useEffect(() => { if (isTimedChallenge && secondsLeft === 0 && !checked) { setChecked(true); setAnswerCorrect(false); setHeartLost(true); onWrongAnswer() } }, [isTimedChallenge, secondsLeft, checked, onWrongAnswer])
+  useEffect(() => { if (isTimedChallenge && secondsLeft === 0 && !checked) { setChecked(true); setAnswerCorrect(false); setHeartLost(true); playTaskSound("wrong"); onWrongAnswer() } }, [isTimedChallenge, secondsLeft, checked, onWrongAnswer])
   const submitAnswer = () => {
     if (lives <= 0) { onOutOfLives(); return }
     if (checked && !answerCorrect) { resetAnswer(); return }
@@ -979,6 +982,7 @@ function TaskExercise({ lesson, taskIndex, onExit, onComplete, lives, onWrongAns
       if (taskIndex + 1 < lesson.questions.length) {
         onNextQuestion(taskIndex + 1)
       } else {
+        playTaskSound("complete")
         onComplete()
       }
       return
@@ -986,6 +990,7 @@ function TaskExercise({ lesson, taskIndex, onExit, onComplete, lives, onWrongAns
     const correct = acceptedAnswers.some((answer) => normalizeAnswer(answer) === normalizeAnswer(currentAnswer))
     setAnswerCorrect(correct)
     setChecked(true)
+    playTaskSound(correct ? "correct" : "wrong")
     if (correct) {
       setRewardPulse(true)
       window.setTimeout(() => setRewardPulse(false), 750)
