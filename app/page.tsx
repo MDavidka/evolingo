@@ -631,6 +631,7 @@ export default function App() {
         onOpenProfile={() => setScreen("profile")}
         stars={stars}
         completedLessonCount={completedLessonCount}
+        nextChestAt={nextChestAt}
         chestReady={Boolean(claimableChest)}
         onClaimChest={claimChest}
         userName={userName}
@@ -717,7 +718,7 @@ function UserAvatar({ userName, avatar, avatarImage, variant }: {
   </span>
 }
 
-function Home({ completedLessons, answeredTasks, readLessons, notice, clearNotice, onOpenLesson, onOpenTask, onOpenProfile, userName, avatar, avatarImage, stars, completedLessonCount, chestReady, onClaimChest }: {
+function Home({ completedLessons, answeredTasks, readLessons, notice, clearNotice, onOpenLesson, onOpenTask, onOpenProfile, userName, avatar, avatarImage, stars, completedLessonCount, nextChestAt, chestReady, onClaimChest }: {
   completedLessons: number[]
   answeredTasks: string[]
   readLessons: number[]
@@ -731,6 +732,7 @@ function Home({ completedLessons, answeredTasks, readLessons, notice, clearNotic
   avatarImage: string
   stars: number
   completedLessonCount: number
+  nextChestAt: number
   chestReady: boolean
   onClaimChest: () => void
 }) {
