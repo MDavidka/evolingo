@@ -783,11 +783,10 @@ function Home({ completedLessons, answeredTasks, readLessons, notice, clearNotic
     <section className="learn-sheet" aria-label="Tanulási útvonal">
       <div className="learn-path-overview">
         <section className="learn-lesson-progress-banner" aria-label={currentLesson.title + " haladása: " + lessonPercent + "%"}>
-          <div className="learn-progress-banner-top"><span>Aktuális lecke</span><strong>{lessonPercent}%</strong></div>
+          <div className="learn-progress-banner-top"><span>Aktuális lecke</span><span className="learn-progress-badge" aria-hidden="true"><span className="learn-path-art learn-path-art--checkpoint-active" /></span></div>
           <h2>{currentLesson.title}</h2>
-          <div className="learn-progress-meter" aria-hidden="true"><span style={{ width: Math.max(6, lessonPercent) + "%" }} /></div>
-          <small>{answeredLessonTasks} / {totalLessonTasks} feladat</small>
-          <span className="learn-progress-badge"><span className="learn-path-art learn-path-art--checkpoint-active" aria-hidden="true" /></span>
+          <div className="learn-progress-meter" role="progressbar" aria-label="Lecke haladása" aria-valuemin={0} aria-valuemax={100} aria-valuenow={lessonPercent}><span style={{ width: lessonPercent + "%" }} /></div>
+          <div className="learn-progress-banner-bottom"><strong>{lessonPercent}%</strong><small>{answeredLessonTasks} / {totalLessonTasks} feladat</small></div>
         </section>
         <aside className="learn-side-countdowns" aria-label="Következő jutalmak és leckék">
           <button type="button" className={"learn-countdown-card chest " + (chestReady ? "is-available" : "is-counting")} onClick={onClaimChest} aria-label={chestReady ? "Láda nyitható" : "Láda visszaszámlálás: " + formatCountdown(chestSeconds)}>
