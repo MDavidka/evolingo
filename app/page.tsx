@@ -307,6 +307,17 @@ const generatedLessons: LessonUnit[] = curriculumTopics.map((topic, index) => {
   return { id, title: topic.title, level: index < 11 ? "A2" : "B1", summary: topic.summary, sections: [{ title: "Mikor használjuk?", body: topic.summary, tip: topic.tip }, { title: "Példa és szabály", body: topic.explanation, examples: [{ sentence: topic.prompt, translation: topic.answer }] }], questions: [question, second], }
 })
 const fullLessons = [...lessons, ...generatedLessons]
+function practicePacks(lesson: LessonUnit): Question[][] {
+  const count = lesson.questions.length >= 4 ? 2 : 1
+  return Array.from({ length: count }, (_, packIndex) => Array.from({ length: 5 }, (_, questionIndex) => {
+    const source = lesson.questions[(packIndex * 2 + questionIndex) % lesson.questions.length]
+    if (questionIndex >= lesson.questions.length && source.type === "choice") {
+      return { ...source, type: "text" as const, prompt: "Írd be a hiányzó szót: " + source.prompt, options: undefined }
+    }
+    return source
+  }))
+}
+const practiceKey = (lessonId: number, packIndex: number, questionIndex: number) => lessonId + "-p" + packIndex + "-" + questionIndex
 const placeholders = Array.from({ length: 90 }, (_, index) => ({ id: index + 11 + curriculumTopics.length, title: "Lecke " + (index + 11 + curriculumTopics.length), inDevelopment: true }))
 const pathItems = [...fullLessons, ...specialTasks, ...placeholders]
 const ranks = [
@@ -321,6 +332,7 @@ export default function App() {
   const [screen, setScreen] = useState<Screen>("home")
   const [activeLessonId, setActiveLessonId] = useState(1)
   const [activeTaskIndex, setActiveTaskIndex] = useState(0)
+  const [activePackIndex, setActivePackIndex] = useState<number | null>(null)
   const [readLessons, setReadLessons] = useState<number[]>([])
   const [completedLessons, setCompletedLessons] = useState<number[]>([])
   const [answeredTasks, setAnsweredTasks] = useState<string[]>([])
@@ -520,6 +532,9 @@ export default function App() {
     })
   }, [])
   const activeLesson = [...fullLessons, ...specialTasks].find((lesson) => lesson.id === activeLessonId) ?? lessons[0]
+  const activePracticeLesson = activePackIndex === null || activeLesson.specialType
+    ? activeLesson
+    : { ...activeLesson, questions: practicePacks(activeLesson)[activePackIndex] ?? practicePacks(activeLesson)[0] }
   const handleReadComplete = useCallback((lessonId: number) => {
     if (readLessons.includes(lessonId)) return
     setReadLessons((previous) => previous.includes(lessonId) ? previous : [...previous, lessonId])
@@ -530,9 +545,10 @@ export default function App() {
     setActiveLessonId(lessonId)
     setScreen("lessonIntro")
   }
-  const openTask = (lessonId: number, taskIndex: number) => {
+  const openTask = (lessonId: number, packIndex: number) => {
     setActiveLessonId(lessonId)
-    setActiveTaskIndex(taskIndex)
+    setActivePackIndex(packIndex)
+    setActiveTaskIndex(0)
     setLives(5)
     const special = specialTasks.find((item) => item.id === lessonId)
     const isUnlocked = special ? (lessonId === 103 ? completedLessons.length >= 1 : lessonId === 102 ? completedLessons.length >= 2 : completedLessons.length >= 4) : lessonId === 1 || completedLessons.includes(lessonId - 1)
@@ -549,13 +565,14 @@ export default function App() {
     setScreen("task")
   }
   const completeTask = (lessonId: number, taskIndex: number) => {
-    const taskKey = lessonId + "-" + taskIndex
+    const taskKey = activePackIndex === null ? lessonId + "-" + taskIndex : practiceKey(lessonId, activePackIndex, taskIndex)
     const nextAnswered = answeredTasks.includes(taskKey) ? answeredTasks : [...answeredTasks, taskKey]
     setAnsweredTasks(nextAnswered)
-    const lesson = [...fullLessons, ...specialTasks].find((item) => item.id === lessonId)
-    if (lesson && lesson.questions.every((_, index) => nextAnswered.includes(lessonId + "-" + index))) {
-      setCompletedLessons((previous) => previous.includes(lessonId) ? previous : [...previous, lessonId])
-    }
+    const lesson = [...fullLessons, ...specialTasks].find(item => item.id === lessonId)
+    const allDone = lesson?.specialType
+      ? lesson.questions.every((_, index) => nextAnswered.includes(lessonId + "-" + index))
+      : lesson ? practicePacks(lesson).every((pack, packIndex) => pack.every((_, index) => nextAnswered.includes(practiceKey(lessonId, packIndex, index)))) : false
+    if (allDone) setCompletedLessons(previous => previous.includes(lessonId) ? previous : [...previous, lessonId])
     setScreen("home")
     setNotice("Feladatcsomag teljesítve! " + (answeredTasks.includes(taskKey) ? "" : "Jutalom jóváírva."))
   }
@@ -574,6 +591,7 @@ export default function App() {
   const openHardChallenge = () => {
     if (completedLessonCount < 4) { setNotice("A nehéz feladat 4 lecke után nyílik meg."); return }
     setActiveLessonId(101)
+    setActivePackIndex(null)
     setActiveTaskIndex(0)
     setLives(5)
     setScreen("task")
@@ -606,13 +624,13 @@ export default function App() {
         onPractice={() => { setScreen("home"); setNotice("A feladatok megnyíltak — válassz egy narancssárga pontot!") }}
       />}
       {screen === "task" && <TaskExercise
-        lesson={activeLesson}
+        lesson={activePracticeLesson}
         taskIndex={activeTaskIndex}
         onExit={() => setScreen("home")}
-        onComplete={() => { const key = activeLesson.id + "-" + activeTaskIndex; if (!answeredTasks.includes(key)) recordDailyActivity(); setStars((current) => current + (answeredTasks.includes(key) ? 0 : activeLesson.specialType === "hard" ? 3 : 1)); setXp((current) => current + (answeredTasks.includes(key) ? 0 : 5)); completeTask(activeLesson.id, activeTaskIndex); }}
+        onComplete={() => { const key = activePackIndex === null ? activeLesson.id + "-" + activeTaskIndex : practiceKey(activeLesson.id, activePackIndex, activeTaskIndex); if (!answeredTasks.includes(key)) recordDailyActivity(); setStars((current) => current + (answeredTasks.includes(key) ? 0 : activeLesson.specialType === "hard" ? 3 : 1)); setXp((current) => current + (answeredTasks.includes(key) ? 0 : 5)); completeTask(activeLesson.id, activeTaskIndex); }}
         lives={lives}
         onWrongAnswer={() => setLives((current) => Math.max(0, current - 1))}
-        onNextQuestion={(nextIndex) => { const key = activeLesson.id + "-" + activeTaskIndex; if (!answeredTasks.includes(key)) { recordDailyActivity(); setAnsweredTasks((items) => items.includes(key) ? items : [...items, key]); setStars((current) => current + (activeLesson.specialType === "hard" ? 3 : 1)); setXp((current) => current + 5); } setActiveTaskIndex(nextIndex); }}
+        onNextQuestion={(nextIndex) => { const key = activePackIndex === null ? activeLesson.id + "-" + activeTaskIndex : practiceKey(activeLesson.id, activePackIndex, activeTaskIndex); if (!answeredTasks.includes(key)) { recordDailyActivity(); setAnsweredTasks((items) => items.includes(key) ? items : [...items, key]); setStars((current) => current + (activeLesson.specialType === "hard" ? 3 : 1)); setXp((current) => current + 5); } setActiveTaskIndex(nextIndex); }}
         onOutOfLives={() => { setNotice("Elfogytak az életeid. Pihenj egy kicsit, és próbáld újra!"); setScreen("home"); }}
       />}
       {screen === "shop" && <Shop stars={stars} purchasedItems={purchasedItems} onPurchase={(id, cost) => { if (stars >= cost && !purchasedItems.includes(id)) { setStars((value) => value - cost); setPurchasedItems((items) => [...items, id]); setNotice("Sikeres vásárlás!"); } }} />}
@@ -684,7 +702,7 @@ function Home({ completedLessons, answeredTasks, notice, clearNotice, onOpenLess
   notice: string
   clearNotice: () => void
   onOpenLesson: (id: number) => void
-  onOpenTask: (lessonId: number, index: number) => void
+  onOpenTask: (lessonId: number, packIndex: number) => void
   onOpenProfile: () => void
   userName: string
   avatar: string
@@ -696,21 +714,21 @@ function Home({ completedLessons, answeredTasks, notice, clearNotice, onOpenLess
   onClaimChest: () => void
   onOpenHardChallenge: () => void
 }) {
-  const unitLessons = fullLessons
-  const currentLessonId = unitLessons.find(lesson => !completedLessons.includes(lesson.id))?.id ?? null
-  const pathOffsets = [0, 96, 196, 292, 392, 490, 590, 688]
-  const pathHeight = Math.max(790, Math.ceil(unitLessons.length / pathOffsets.length) * 790)
+  const currentLessonId = fullLessons.find(lesson => !completedLessons.includes(lesson.id))?.id ?? null
+  const routeItems: { lesson: LessonUnit; packIndex: number | null }[] = fullLessons.flatMap(lesson => {
+    const items: { lesson: LessonUnit; packIndex: number | null }[] = [{ lesson, packIndex: null }]
+    practicePacks(lesson).forEach((_, packIndex) => items.push({ lesson, packIndex }))
+    return items
+  })
   const nodeRefs = useRef<Map<number, HTMLButtonElement>>(new Map())
   useEffect(() => {
     if (currentLessonId === null) return
-    const currentNode = nodeRefs.current.get(currentLessonId)
-    if (!currentNode) return
-    const frame = window.requestAnimationFrame(() => currentNode.scrollIntoView({ behavior: "auto", block: "center", inline: "nearest" }))
+    const node = nodeRefs.current.get(currentLessonId)
+    const frame = window.requestAnimationFrame(() => node?.scrollIntoView({ behavior: "auto", block: "center", inline: "nearest" }))
     return () => window.cancelAnimationFrame(frame)
-  }, [currentLessonId, pathHeight])
+  }, [currentLessonId])
 
   return <div className="learn-home-screen">
-    <div className="learn-home-gradient" aria-hidden="true" />
     <header className="learn-header">
       <button className="learn-greeting-pill" type="button" onClick={onOpenProfile} aria-label={"Profil: " + userName}>
         <UserAvatar userName={userName} avatar={avatar} avatarImage={avatarImage} variant="header" />
@@ -719,45 +737,37 @@ function Home({ completedLessons, answeredTasks, notice, clearNotice, onOpenLess
     </header>
     <div className="learn-star-balance" aria-label={stars + " csillag"}><Star size={18} fill="currentColor" aria-hidden="true" /><strong>{stars}</strong></div>
     {notice && <button className="inline-notice learn-inline-notice" type="button" onClick={clearNotice}><span>{notice}</span><X size={16} aria-hidden="true" /></button>}
-
     <section className="learn-sheet" aria-label="Tanulási útvonal">
       <div className="learn-quest-row">
         <button type="button" className="learn-quest-button" onClick={onOpenHardChallenge} aria-label={completedLessonCount >= 4 ? "Nehéz feladat indítása" : "Nehéz feladat 4 lecke után"}><Zap size={17} aria-hidden="true" /><span>Hard mód</span>{completedLessonCount < 4 && <LockKeyhole size={12} aria-hidden="true" />}</button>
         <button type="button" className={"learn-quest-button " + (chestReady ? "is-ready" : "")} onClick={onClaimChest} aria-label={chestReady ? "Láda kinyitása, 5 csillag" : "Láda " + nextChestAt + " lecke után"}><Gift size={17} aria-hidden="true" /><span>{chestReady ? "Láda nyitása" : "Láda · " + nextChestAt}</span></button>
       </div>
-      <div className="learn-path-track" style={{ height: pathHeight + "px" }}>
-        {unitLessons.map((lesson, index) => {
-          const isComplete = completedLessons.includes(lesson.id)
-          const status = isComplete ? "completed" : lesson.id === currentLessonId ? "current" : "locked"
-          const label = lesson.title
-          const stateLabel = status === "completed" ? "kész" : status === "current" ? "indítás" : "zárolva"
-          const pathPositions = [25, 54, 59, 38, 60, 50, 32, 25]
-          const pathTop = pathOffsets[index % pathOffsets.length] + Math.floor(index / pathOffsets.length) * 790
-          const tasksLeft = pathPositions[index % pathPositions.length] > 50
-          return <div className={"learn-path-node learn-path-node-" + status + (tasksLeft ? " tasks-left" : " tasks-right")} key={lesson.id} style={{ left: pathPositions[index % pathPositions.length] + "%", top: pathTop + "px" }}>
-            <button
-              ref={element => {
-                if (element) nodeRefs.current.set(lesson.id, element)
-                else nodeRefs.current.delete(lesson.id)
-              }}
-              type="button"
-              className="learn-path-node-button"
-              disabled={status === "locked"}
-              aria-disabled={status === "locked"}
-              aria-label={label + ", " + stateLabel}
-              onClick={() => { if (status !== "locked") onOpenLesson(lesson.id) }}
-            >
-              {status === "completed" ? <Check size={21} strokeWidth={3} aria-hidden="true" /> : <BookOpen size={20} strokeWidth={2.3} aria-hidden="true" />}
-            </button>
-            {status === "current" && <img className="learn-path-mascot" src={foxIcon} alt="" aria-hidden="true" />}
-            <div className="learn-task-tiles" role="group" aria-label={label + " feladatok"}>
-              {lesson.questions.map((question, taskIndex) => {
-                const done = answeredTasks.includes(lesson.id + "-" + taskIndex)
-                const TaskIcon = done ? Check : question.type === "text" ? Pencil : question.type === "arrange" ? Puzzle : CircleHelp
-                return <button key={taskIndex} type="button" className={"learn-task-tile " + (done ? "is-done" : status === "locked" ? "is-locked" : "is-open")} disabled={status === "locked"} aria-label={label + ", " + (taskIndex + 1) + ". feladat, " + (done ? "kész" : status === "locked" ? "zárolva" : "indítható")} onClick={() => onOpenTask(lesson.id, taskIndex)}><TaskIcon size={17} strokeWidth={2.4} aria-hidden="true" /></button>
-              })}
+      <div className="learn-path-track" style={{ height: routeItems.length * 104 + 100 + "px" }}>
+        {routeItems.map(({ lesson, packIndex }, index) => {
+          const position = [27, 53, 66, 47, 29, 55, 68, 41][index % 8]
+          const leftSide = position > 50
+          const lessonDone = completedLessons.includes(lesson.id)
+          const lessonCurrent = lesson.id === currentLessonId
+          if (packIndex !== null) {
+            const packs = practicePacks(lesson)
+            const pack = packs[packIndex]
+            const packDone = lessonDone || pack.every((_, questionIndex) => answeredTasks.includes(practiceKey(lesson.id, packIndex, questionIndex)))
+            const previousDone = packIndex === 0 || lessonDone || packs[packIndex - 1].every((_, questionIndex) => answeredTasks.includes(practiceKey(lesson.id, packIndex - 1, questionIndex)))
+            const unlocked = (lessonDone || lessonCurrent) && previousDone
+            return <div key={lesson.id + "-pack-" + packIndex} className={"learn-path-node learn-path-task-node " + (leftSide ? "tasks-left" : "tasks-right")} style={{ left: position + "%", top: index * 104 + "px" }}>
+              <button type="button" className={"learn-pack-button " + (packDone ? "is-done" : unlocked ? "is-ready" : "is-locked")} disabled={!unlocked} onClick={() => onOpenTask(lesson.id, packIndex)} aria-label={lesson.title + ", " + (packIndex + 1) + ". feladatcsomag, " + pack.length + " feladat" + (packDone ? ", kész" : unlocked ? "" : ", zárolva")}>
+                <strong>{pack.length}</strong>
+              </button>
+              <span className="learn-pack-caption">{packs.length > 1 ? "Feladat " + (packIndex + 1) : "Feladat"}</span>
             </div>
-            {status === "current" && <button className="learn-node-start" type="button" onClick={() => onOpenLesson(lesson.id)}>Indítás <ArrowRight size={14} aria-hidden="true" /></button>}
+          }
+          const status = lessonDone ? "completed" : lessonCurrent ? "current" : "locked"
+          return <div className={"learn-path-node learn-path-node-" + status + (leftSide ? " tasks-left" : " tasks-right")} key={lesson.id} style={{ left: position + "%", top: index * 104 + "px" }}>
+            <button ref={element => { if (element) nodeRefs.current.set(lesson.id, element); else nodeRefs.current.delete(lesson.id) }} type="button" className="learn-path-node-button" disabled={status === "locked"} aria-label={lesson.title + ", " + (lessonDone ? "kész" : lessonCurrent ? "indítás" : "zárolva")} onClick={() => onOpenLesson(lesson.id)}>
+              {lessonDone ? <Check size={21} strokeWidth={3} aria-hidden="true" /> : <BookOpen size={20} strokeWidth={2.3} aria-hidden="true" />}
+            </button>
+            {lessonCurrent && <img className="learn-path-mascot" src={foxIcon} alt="" aria-hidden="true" />}
+            {lessonCurrent && <button className="learn-node-start" type="button" onClick={() => onOpenLesson(lesson.id)}>Indítás <ArrowRight size={14} aria-hidden="true" /></button>}
           </div>
         })}
       </div>
