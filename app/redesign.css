@@ -191,7 +191,7 @@ body .learn-node-start{top:128px !important}
 
 
 /* Illustrated path symbols cut from the supplied sheet; each state uses its own artwork. */
-body .learn-path-art{display:block !important;flex:none !important;width:64px !important;height:64px !important;background-image:url("/images/path-symbols.webp") !important;background-repeat:no-repeat !important;background-size:384px 256px !important;pointer-events:none !important}
+body .learn-path-art{display:block !important;flex:none !important;width:64px !important;height:64px !important;background-image:url("/images/path-symbols.png") !important;background-repeat:no-repeat !important;background-size:384px 256px !important;pointer-events:none !important}
 body .learn-path-art--chest-locked{background-position:0 0 !important}
 body .learn-path-art--chest-active{background-position:-64px 0 !important}
 body .learn-path-art--checkpoint-active{background-position:-320px 0 !important}
