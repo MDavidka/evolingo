@@ -582,6 +582,7 @@ export default function App() {
     <section className={"screen-content " + (screen === "home" ? "learn-home-content " : "") + ((screen === "lessonIntro" || screen === "task") ? "lesson-page" : "")}>
       {screen === "home" && <Home
         completedLessons={completedLessons}
+        answeredTasks={answeredTasks}
         notice={notice}
         clearNotice={() => setNotice("")}
         onOpenLesson={openLesson}
@@ -677,8 +678,9 @@ function UserAvatar({ userName, avatar, avatarImage, variant }: {
   </span>
 }
 
-function Home({ completedLessons, notice, clearNotice, onOpenLesson, onOpenTask, onOpenProfile, userName, avatar, avatarImage, stars, completedLessonCount, nextChestAt, chestReady, onClaimChest, onOpenHardChallenge }: {
+function Home({ completedLessons, answeredTasks, notice, clearNotice, onOpenLesson, onOpenTask, onOpenProfile, userName, avatar, avatarImage, stars, completedLessonCount, nextChestAt, chestReady, onClaimChest, onOpenHardChallenge }: {
   completedLessons: number[]
+  answeredTasks: string[]
   notice: string
   clearNotice: () => void
   onOpenLesson: (id: number) => void
@@ -731,7 +733,8 @@ function Home({ completedLessons, notice, clearNotice, onOpenLesson, onOpenTask,
           const stateLabel = status === "completed" ? "kész" : status === "current" ? "indítás" : "zárolva"
           const pathPositions = [25, 54, 59, 38, 60, 50, 32, 25]
           const pathTop = pathOffsets[index % pathOffsets.length] + Math.floor(index / pathOffsets.length) * 790
-          return <div className={"learn-path-node learn-path-node-" + status} key={lesson.id} style={{ left: pathPositions[index % pathPositions.length] + "%", top: pathTop + "px" }}>
+          const tasksLeft = pathPositions[index % pathPositions.length] > 50
+          return <div className={"learn-path-node learn-path-node-" + status + (tasksLeft ? " tasks-left" : " tasks-right")} key={lesson.id} style={{ left: pathPositions[index % pathPositions.length] + "%", top: pathTop + "px" }}>
             <button
               ref={element => {
                 if (element) nodeRefs.current.set(lesson.id, element)
@@ -744,8 +747,16 @@ function Home({ completedLessons, notice, clearNotice, onOpenLesson, onOpenTask,
               aria-label={label + ", " + stateLabel}
               onClick={() => { if (status !== "locked") onOpenLesson(lesson.id) }}
             >
-              {status === "current" ? <img className="learn-path-mascot" src={foxIcon} alt="" aria-hidden="true" /> : status === "completed" ? <Check size={21} strokeWidth={3} aria-hidden="true" /> : <BookOpen size={20} strokeWidth={2.3} aria-hidden="true" />}<span className="learn-tile-task-count">{lesson.questions.length} feladat</span>
+              {status === "completed" ? <Check size={21} strokeWidth={3} aria-hidden="true" /> : <BookOpen size={20} strokeWidth={2.3} aria-hidden="true" />}
             </button>
+            {status === "current" && <img className="learn-path-mascot" src={foxIcon} alt="" aria-hidden="true" />}
+            <div className="learn-task-tiles" role="group" aria-label={label + " feladatok"}>
+              {lesson.questions.map((question, taskIndex) => {
+                const done = answeredTasks.includes(lesson.id + "-" + taskIndex)
+                const TaskIcon = done ? Check : question.type === "text" ? Pencil : question.type === "arrange" ? Puzzle : CircleHelp
+                return <button key={taskIndex} type="button" className={"learn-task-tile " + (done ? "is-done" : status === "locked" ? "is-locked" : "is-open")} disabled={status === "locked"} aria-label={label + ", " + (taskIndex + 1) + ". feladat, " + (done ? "kész" : status === "locked" ? "zárolva" : "indítható")} onClick={() => onOpenTask(lesson.id, taskIndex)}><TaskIcon size={17} strokeWidth={2.4} aria-hidden="true" /></button>
+              })}
+            </div>
             {status === "current" && <button className="learn-node-start" type="button" onClick={() => onOpenLesson(lesson.id)}>Indítás <ArrowRight size={14} aria-hidden="true" /></button>}
           </div>
         })}
