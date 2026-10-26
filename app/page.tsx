@@ -545,7 +545,7 @@ export default function App() {
     const taskKey = lessonId + "-" + taskIndex
     const nextAnswered = answeredTasks.includes(taskKey) ? answeredTasks : [...answeredTasks, taskKey]
     setAnsweredTasks(nextAnswered)
-    const lesson = lessons.find((item) => item.id === lessonId)
+    const lesson = fullLessons.find((item) => item.id === lessonId)
     if (lesson && lesson.questions.every((_, index) => nextAnswered.includes(lessonId + "-" + index))) {
       setCompletedLessons((previous) => previous.includes(lessonId) ? previous : [...previous, lessonId])
     }
