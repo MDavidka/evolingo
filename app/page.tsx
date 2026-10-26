@@ -744,7 +744,7 @@ function Home({ completedLessons, notice, clearNotice, onOpenLesson, onOpenTask,
               aria-label={label + ", " + stateLabel}
               onClick={() => { if (status !== "locked") onOpenLesson(lesson.id) }}
             >
-              {status === "current" ? <img className="learn-path-mascot" src={foxIcon} alt="" aria-hidden="true" /> : status === "completed" ? <Check size={21} strokeWidth={3} aria-hidden="true" /> : <BookOpen size={20} strokeWidth={2.3} aria-hidden="true" />}
+              {status === "current" ? <img className="learn-path-mascot" src={foxIcon} alt="" aria-hidden="true" /> : status === "completed" ? <Check size={21} strokeWidth={3} aria-hidden="true" /> : <BookOpen size={20} strokeWidth={2.3} aria-hidden="true" />}<span className="learn-tile-task-count">{lesson.questions.length} feladat</span>
             </button>
             {status === "current" && <button className="learn-node-start" type="button" onClick={() => onOpenLesson(lesson.id)}>Indítás <ArrowRight size={14} aria-hidden="true" /></button>}
           </div>
