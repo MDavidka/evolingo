@@ -230,3 +230,47 @@ body .learn-path-chest.is-ready {
   box-shadow: none !important;
   border-color: transparent !important;
 }
+
+
+/* Home path polish: a persistent utility row and calm topic dividers. */
+body .learn-sheet{
+  padding-top:92px !important;
+}
+body .learn-quest-row{
+  position:sticky !important;
+  top:10px !important;
+  z-index:12 !important;
+  margin:0 0 18px !important;
+  padding:4px 0 !important;
+  background:rgba(255,255,255,.76) !important;
+  backdrop-filter:blur(12px) !important;
+  -webkit-backdrop-filter:blur(12px) !important;
+}
+body .learn-quest-button{
+  box-shadow:0 8px 22px rgba(30,31,38,.10),0 1px 0 rgba(255,255,255,.96) inset !important;
+}
+body .learn-lesson-topic{
+  overflow:visible !important;
+  max-height:none !important;
+  padding:0 17px !important;
+  line-height:18px !important;
+}
+body .learn-lesson-topic::before,
+body .learn-lesson-topic::after{
+  content:"" !important;
+  position:absolute !important;
+  top:9px !important;
+  width:42px !important;
+  height:1px !important;
+  background:#e2e2e3 !important;
+}
+body .learn-lesson-topic::before{right:calc(100% + 7px) !important}
+body .learn-lesson-topic::after{left:calc(100% + 7px) !important}
+body .learn-path-node-locked .learn-lesson-topic::before,
+body .learn-path-node-locked .learn-lesson-topic::after{background:#ececed !important}
+@media(max-width:360px){
+  body .learn-sheet{padding-top:88px !important}
+  body .learn-quest-row{top:8px !important}
+  body .learn-lesson-topic::before,
+  body .learn-lesson-topic::after{width:26px !important}
+}
