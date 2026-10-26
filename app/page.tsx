@@ -723,6 +723,8 @@ function Home({ completedLessons, answeredTasks, readLessons, notice, clearNotic
     if ((lessonIndex + 1) % 5 === 0) items.push({ lesson, packIndex: null, chest: true })
     return items
   })
+  let routeHeight = 0
+  const routeTops = routeItems.map(item => { const top = routeHeight; routeHeight += item.chest || item.packIndex !== null ? 108 : 164; return top })
   const nodeRefs = useRef<Map<number, HTMLButtonElement>>(new Map())
   useEffect(() => {
     if (currentLessonId === null || !readLessons.length && !completedLessons.length) return
@@ -745,7 +747,7 @@ function Home({ completedLessons, answeredTasks, readLessons, notice, clearNotic
         <button type="button" className="learn-quest-button" onClick={onOpenHardChallenge} aria-label={completedLessonCount >= 4 ? "Nehéz feladat indítása" : "Nehéz feladat 4 lecke után"}><Zap size={17} aria-hidden="true" /><span>Hard mód</span>{completedLessonCount < 4 && <LockKeyhole size={12} aria-hidden="true" />}</button>
         <button type="button" className={"learn-quest-button " + (chestReady ? "is-ready" : "")} onClick={onClaimChest} aria-label={chestReady ? "Láda kinyitása, 5 csillag" : "Láda " + nextChestAt + " lecke után"}><Gift size={17} aria-hidden="true" /><span>{chestReady ? "Láda nyitása" : "Láda · " + nextChestAt}</span></button>
       </div>
-      <div className="learn-path-track" style={{ height: routeItems.length * 104 + 100 + "px" }}>
+      <div className="learn-path-track" style={{ height: routeHeight + 100 + "px" }}>
         {routeItems.map(({ lesson, packIndex, chest }, index) => {
           const position = [27, 53, 66, 47, 29, 55, 68, 41][index % 8]
           const leftSide = position > 50
@@ -753,7 +755,7 @@ function Home({ completedLessons, answeredTasks, readLessons, notice, clearNotic
           if (chest) {
             const level = Math.ceil(lesson.id / 5)
             const ready = completedLessonCount >= level * 5 && chestReady && nextChestAt === level * 5
-            return <div key={"chest-" + level} className="learn-path-node learn-path-chest-node" style={{ left: position + "%", top: index * 104 + "px" }}><button type="button" className={"learn-path-chest " + (ready ? "is-ready" : "")} onClick={onClaimChest} aria-label={"Láda " + level + (ready ? ", nyitható" : ", lezárva")}><Gift size={27} aria-hidden="true" /></button><span className="learn-pack-caption">Láda</span></div>
+            return <div key={"chest-" + level} className="learn-path-node learn-path-chest-node" style={{ left: position + "%", top: routeTops[index] + "px" }}><button type="button" className={"learn-path-chest " + (ready ? "is-ready" : "")} onClick={onClaimChest} aria-label={"Láda " + level + (ready ? ", nyitható" : ", lezárva")}><Gift size={27} aria-hidden="true" /></button><span className="learn-pack-caption">Láda</span></div>
           }
           const lessonCurrent = lesson.id === currentLessonId
           if (packIndex !== null) {
@@ -762,7 +764,7 @@ function Home({ completedLessons, answeredTasks, readLessons, notice, clearNotic
             const packDone = lessonDone || pack.every((_, questionIndex) => answeredTasks.includes(practiceKey(lesson.id, packIndex, questionIndex)))
             const previousDone = packIndex === 0 || lessonDone || packs[packIndex - 1].every((_, questionIndex) => answeredTasks.includes(practiceKey(lesson.id, packIndex - 1, questionIndex)))
             const unlocked = (lessonDone || lessonCurrent) && previousDone
-            return <div key={lesson.id + "-pack-" + packIndex} className={"learn-path-node learn-path-task-node " + (leftSide ? "tasks-left" : "tasks-right")} style={{ left: position + "%", top: index * 104 + "px" }}>
+            return <div key={lesson.id + "-pack-" + packIndex} className={"learn-path-node learn-path-task-node " + (leftSide ? "tasks-left" : "tasks-right")} style={{ left: position + "%", top: routeTops[index] + "px" }}>
               <button type="button" className={"learn-pack-button " + (packDone ? "is-done" : unlocked ? "is-ready" : "is-locked")} disabled={!unlocked} onClick={() => onOpenTask(lesson.id, packIndex)} aria-label={lesson.title + ", " + (packIndex + 1) + ". feladatcsomag, " + pack.length + " feladat" + (packDone ? ", kész" : unlocked ? "" : ", zárolva")}>
                 <strong>{pack.length}</strong>
               </button>
@@ -770,11 +772,11 @@ function Home({ completedLessons, answeredTasks, readLessons, notice, clearNotic
             </div>
           }
           const status = lessonDone ? "completed" : lessonCurrent ? "current" : "locked"
-          return <div className={"learn-path-node learn-path-node-" + status + (leftSide ? " tasks-left" : " tasks-right")} key={lesson.id} style={{ left: position + "%", top: index * 104 + "px" }}>
-            <span className="learn-lesson-topic">{lesson.title}</span><button ref={element => { if (element) nodeRefs.current.set(lesson.id, element); else nodeRefs.current.delete(lesson.id) }} type="button" className="learn-path-node-button" disabled={status === "locked"} aria-label={lesson.title + ", " + (lessonDone ? "kész" : lessonCurrent ? "indítás" : "zárolva")} onClick={() => onOpenLesson(lesson.id)}>
+          return <div className={"learn-path-node learn-path-node-" + status + (leftSide ? " tasks-left" : " tasks-right")} key={lesson.id} style={{ left: position + "%", top: routeTops[index] + "px" }}>
+            <button ref={element => { if (element) nodeRefs.current.set(lesson.id, element); else nodeRefs.current.delete(lesson.id) }} type="button" className="learn-path-node-button" disabled={status === "locked"} aria-label={lesson.title + ", " + (lessonDone ? "kész" : lessonCurrent ? "indítás" : "zárolva")} onClick={() => onOpenLesson(lesson.id)}>
               {lessonDone ? <Check size={21} strokeWidth={3} aria-hidden="true" /> : <BookOpen size={20} strokeWidth={2.3} aria-hidden="true" />}
             </button>
-            <span className="learn-lesson-subtitle">{lesson.level} · {lesson.summary}</span>
+            <span className="learn-lesson-topic" title={lesson.title}>{lesson.title}</span>
             {lessonCurrent && <img className="learn-path-mascot" src={foxIcon} alt="" aria-hidden="true" />}
             {lessonCurrent && <button className="learn-node-start" type="button" onClick={() => onOpenLesson(lesson.id)}>Indítás <ArrowRight size={14} aria-hidden="true" /></button>}
           </div>
