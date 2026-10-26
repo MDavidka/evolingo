@@ -718,7 +718,7 @@ function Home({ completedLessons, answeredTasks, readLessons, notice, clearNotic
 }) {
   const currentLessonId = fullLessons.find(lesson => !completedLessons.includes(lesson.id))?.id ?? null
   const routeItems: { lesson: LessonUnit; packIndex: number | null; chest?: boolean }[] = fullLessons.flatMap((lesson, lessonIndex) => {
-    const items: { lesson: LessonUnit; packIndex: number | null }[] = [{ lesson, packIndex: null }]
+    const items: { lesson: LessonUnit; packIndex: number | null; chest?: boolean }[] = [{ lesson, packIndex: null }]
     practicePacks(lesson).forEach((_, packIndex) => items.push({ lesson, packIndex }))
     if ((lessonIndex + 1) % 5 === 0) items.push({ lesson, packIndex: null, chest: true })
     return items
