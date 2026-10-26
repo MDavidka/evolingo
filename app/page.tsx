@@ -631,10 +631,8 @@ export default function App() {
         onOpenProfile={() => setScreen("profile")}
         stars={stars}
         completedLessonCount={completedLessonCount}
-        nextChestAt={nextChestAt}
         chestReady={Boolean(claimableChest)}
         onClaimChest={claimChest}
-        onOpenHardChallenge={openHardChallenge}
         userName={userName}
         avatar={avatar}
         avatarImage={avatarImage}
@@ -719,7 +717,7 @@ function UserAvatar({ userName, avatar, avatarImage, variant }: {
   </span>
 }
 
-function Home({ completedLessons, answeredTasks, readLessons, notice, clearNotice, onOpenLesson, onOpenTask, onOpenProfile, userName, avatar, avatarImage, stars, completedLessonCount, nextChestAt, chestReady, onClaimChest, onOpenHardChallenge }: {
+function Home({ completedLessons, answeredTasks, readLessons, notice, clearNotice, onOpenLesson, onOpenTask, onOpenProfile, userName, avatar, avatarImage, stars, completedLessonCount, chestReady, onClaimChest }: {
   completedLessons: number[]
   answeredTasks: string[]
   readLessons: number[]
@@ -733,10 +731,8 @@ function Home({ completedLessons, answeredTasks, readLessons, notice, clearNotic
   avatarImage: string
   stars: number
   completedLessonCount: number
-  nextChestAt: number
   chestReady: boolean
   onClaimChest: () => void
-  onOpenHardChallenge: () => void
 }) {
   const currentLessonId = fullLessons.find(lesson => !completedLessons.includes(lesson.id))?.id ?? null
   const currentLesson = fullLessons.find(lesson => lesson.id === currentLessonId) ?? fullLessons[fullLessons.length - 1]!
@@ -783,10 +779,6 @@ function Home({ completedLessons, answeredTasks, readLessons, notice, clearNotic
     <div className="learn-star-balance" aria-label={stars + " csillag"}><Star size={18} fill="currentColor" aria-hidden="true" /><strong>{stars}</strong></div>
     {notice && <button className="inline-notice learn-inline-notice" type="button" onClick={clearNotice}><span>{notice}</span><X size={16} aria-hidden="true" /></button>}
     <section className="learn-sheet" aria-label="Tanulási útvonal">
-      <div className="learn-quest-row">
-        <button type="button" className="learn-quest-button" onClick={onOpenHardChallenge} aria-label={completedLessonCount >= 4 ? "Nehéz feladat indítása" : "Nehéz feladat 4 lecke után"}><span className={"learn-path-art learn-path-art--" + (completedLessonCount >= 4 ? "hard-active" : "hard-locked")} aria-hidden="true" /><span>Hard mód</span>{completedLessonCount < 4 && <LockKeyhole size={12} aria-hidden="true" />}</button>
-        <button type="button" className={"learn-quest-button " + (chestReady ? "is-ready" : "")} onClick={onClaimChest} aria-label={chestReady ? "Láda kinyitása, 5 csillag" : "Láda " + nextChestAt + " lecke után"}><span className={"learn-path-art learn-path-art--" + (chestReady ? "chest-active" : "chest-locked")} aria-hidden="true" /><span>{chestReady ? "Láda nyitása" : "Láda · " + nextChestAt}</span></button>
-      </div>
       <div className="learn-path-overview">
         <section className="learn-lesson-progress-banner" aria-label={currentLesson.title + " haladása: " + lessonPercent + "%"}>
           <div className="learn-progress-banner-top"><span>Aktuális lecke</span><strong>{lessonPercent}%</strong></div>
