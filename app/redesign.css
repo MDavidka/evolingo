@@ -146,3 +146,12 @@ body .learn-splash-dots i:nth-child(2){animation-delay:.15s !important}body .lea
 @keyframes learn-splash-pulse{to{opacity:.35;transform:translateY(-4px)}}
 @media (max-width:360px){body .learn-star-balance{right:12px !important;padding:0 9px !important;min-width:50px !important}body .learn-quest-row{right:12px !important;left:12px !important}body .learn-quest-button{padding:0 9px !important;font-size:11px !important}}
 @media (prefers-reduced-motion:reduce){body .learn-splash img,body .learn-splash-dots i{animation:none !important}body .learn-quest-button,body .learn-path-node-button{transition:none !important}}
+
+body .learn-path-node{width:58px !important;height:58px !important}
+body .learn-path-node-button{width:56px !important;height:56px !important;min-width:56px !important;min-height:56px !important;border-radius:14px !important}
+body .learn-path-node-button svg{width:24px !important;height:24px !important}
+body .learn-path-mascot{width:70px !important;height:74px !important}
+body .learn-tile-task-count{position:absolute !important;top:61px !important;left:50% !important;transform:translateX(-50%) !important;color:#626269 !important;font-size:10px !important;font-weight:700 !important;white-space:nowrap !important}
+body .learn-path-node-current .learn-tile-task-count{display:none !important}
+body .learn-node-start{top:63px !important}
+body .learn-splash img,body .learn-user-avatar img[src*="Image-D15751D4"]{background:transparent !important;border:0 !important;mix-blend-mode:multiply !important}
