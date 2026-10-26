@@ -601,6 +601,7 @@ export default function App() {
       {screen === "home" && <Home
         completedLessons={completedLessons}
         answeredTasks={answeredTasks}
+        readLessons={readLessons}
         notice={notice}
         clearNotice={() => setNotice("")}
         onOpenLesson={openLesson}
@@ -696,9 +697,10 @@ function UserAvatar({ userName, avatar, avatarImage, variant }: {
   </span>
 }
 
-function Home({ completedLessons, answeredTasks, notice, clearNotice, onOpenLesson, onOpenTask, onOpenProfile, userName, avatar, avatarImage, stars, completedLessonCount, nextChestAt, chestReady, onClaimChest, onOpenHardChallenge }: {
+function Home({ completedLessons, answeredTasks, readLessons, notice, clearNotice, onOpenLesson, onOpenTask, onOpenProfile, userName, avatar, avatarImage, stars, completedLessonCount, nextChestAt, chestReady, onClaimChest, onOpenHardChallenge }: {
   completedLessons: number[]
   answeredTasks: string[]
+  readLessons: number[]
   notice: string
   clearNotice: () => void
   onOpenLesson: (id: number) => void
@@ -715,14 +717,15 @@ function Home({ completedLessons, answeredTasks, notice, clearNotice, onOpenLess
   onOpenHardChallenge: () => void
 }) {
   const currentLessonId = fullLessons.find(lesson => !completedLessons.includes(lesson.id))?.id ?? null
-  const routeItems: { lesson: LessonUnit; packIndex: number | null }[] = fullLessons.flatMap(lesson => {
+  const routeItems: { lesson: LessonUnit; packIndex: number | null; chest?: boolean }[] = fullLessons.flatMap((lesson, lessonIndex) => {
     const items: { lesson: LessonUnit; packIndex: number | null }[] = [{ lesson, packIndex: null }]
     practicePacks(lesson).forEach((_, packIndex) => items.push({ lesson, packIndex }))
+    if ((lessonIndex + 1) % 5 === 0) items.push({ lesson, packIndex: null, chest: true })
     return items
   })
   const nodeRefs = useRef<Map<number, HTMLButtonElement>>(new Map())
   useEffect(() => {
-    if (currentLessonId === null) return
+    if (currentLessonId === null || !readLessons.length && !completedLessons.length) return
     const node = nodeRefs.current.get(currentLessonId)
     const frame = window.requestAnimationFrame(() => node?.scrollIntoView({ behavior: "auto", block: "center", inline: "nearest" }))
     return () => window.cancelAnimationFrame(frame)
@@ -743,10 +746,15 @@ function Home({ completedLessons, answeredTasks, notice, clearNotice, onOpenLess
         <button type="button" className={"learn-quest-button " + (chestReady ? "is-ready" : "")} onClick={onClaimChest} aria-label={chestReady ? "Láda kinyitása, 5 csillag" : "Láda " + nextChestAt + " lecke után"}><Gift size={17} aria-hidden="true" /><span>{chestReady ? "Láda nyitása" : "Láda · " + nextChestAt}</span></button>
       </div>
       <div className="learn-path-track" style={{ height: routeItems.length * 104 + 100 + "px" }}>
-        {routeItems.map(({ lesson, packIndex }, index) => {
+        {routeItems.map(({ lesson, packIndex, chest }, index) => {
           const position = [27, 53, 66, 47, 29, 55, 68, 41][index % 8]
           const leftSide = position > 50
           const lessonDone = completedLessons.includes(lesson.id)
+          if (chest) {
+            const level = Math.ceil(lesson.id / 5)
+            const ready = completedLessonCount >= level * 5 && chestReady && nextChestAt === level * 5
+            return <div key={"chest-" + level} className="learn-path-node learn-path-chest-node" style={{ left: position + "%", top: index * 104 + "px" }}><button type="button" className={"learn-path-chest " + (ready ? "is-ready" : "")} onClick={onClaimChest} aria-label={"Láda " + level + (ready ? ", nyitható" : ", lezárva")}><Gift size={27} aria-hidden="true" /></button><span className="learn-pack-caption">Láda</span></div>
+          }
           const lessonCurrent = lesson.id === currentLessonId
           if (packIndex !== null) {
             const packs = practicePacks(lesson)
@@ -763,9 +771,10 @@ function Home({ completedLessons, answeredTasks, notice, clearNotice, onOpenLess
           }
           const status = lessonDone ? "completed" : lessonCurrent ? "current" : "locked"
           return <div className={"learn-path-node learn-path-node-" + status + (leftSide ? " tasks-left" : " tasks-right")} key={lesson.id} style={{ left: position + "%", top: index * 104 + "px" }}>
-            <button ref={element => { if (element) nodeRefs.current.set(lesson.id, element); else nodeRefs.current.delete(lesson.id) }} type="button" className="learn-path-node-button" disabled={status === "locked"} aria-label={lesson.title + ", " + (lessonDone ? "kész" : lessonCurrent ? "indítás" : "zárolva")} onClick={() => onOpenLesson(lesson.id)}>
+            <span className="learn-lesson-topic">{lesson.title}</span><button ref={element => { if (element) nodeRefs.current.set(lesson.id, element); else nodeRefs.current.delete(lesson.id) }} type="button" className="learn-path-node-button" disabled={status === "locked"} aria-label={lesson.title + ", " + (lessonDone ? "kész" : lessonCurrent ? "indítás" : "zárolva")} onClick={() => onOpenLesson(lesson.id)}>
               {lessonDone ? <Check size={21} strokeWidth={3} aria-hidden="true" /> : <BookOpen size={20} strokeWidth={2.3} aria-hidden="true" />}
             </button>
+            <span className="learn-lesson-subtitle">{lesson.level} · {lesson.summary}</span>
             {lessonCurrent && <img className="learn-path-mascot" src={foxIcon} alt="" aria-hidden="true" />}
             {lessonCurrent && <button className="learn-node-start" type="button" onClick={() => onOpenLesson(lesson.id)}>Indítás <ArrowRight size={14} aria-hidden="true" /></button>}
           </div>
