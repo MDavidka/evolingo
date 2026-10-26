@@ -783,19 +783,19 @@ function Home({ completedLessons, answeredTasks, readLessons, notice, clearNotic
     <section className="learn-sheet" aria-label="Tanulási útvonal">
       <div className="learn-path-overview">
         <section className="learn-lesson-progress-banner" aria-label={currentLesson.title + " haladása: " + lessonPercent + "%"}>
-          <div className="learn-progress-banner-top"><span>Aktuális lecke</span><span className="learn-progress-badge" aria-hidden="true"><span className="learn-path-art learn-path-art--checkpoint-active" /></span></div>
-          <h2>{currentLesson.title}</h2>
+          <div className="learn-progress-banner-top"><h2>{currentLesson.title}</h2><strong>{lessonPercent}%</strong></div>
           <div className="learn-progress-meter" role="progressbar" aria-label="Lecke haladása" aria-valuemin={0} aria-valuemax={100} aria-valuenow={lessonPercent}><span style={{ width: lessonPercent + "%" }} /></div>
-          <div className="learn-progress-banner-bottom"><strong>{lessonPercent}%</strong><small>{answeredLessonTasks} / {totalLessonTasks} feladat</small></div>
+          <small>{answeredLessonTasks}/{totalLessonTasks} feladat</small>
+          <span className="learn-progress-badge" aria-hidden="true"><img src="/images/lesson-level-6.png" alt="" /></span>
         </section>
         <aside className="learn-side-countdowns" aria-label="Következő jutalmak és leckék">
           <button type="button" className={"learn-countdown-card chest " + (chestReady ? "is-available" : "is-counting")} onClick={onClaimChest} aria-label={chestReady ? "Láda nyitható" : "Láda visszaszámlálás: " + formatCountdown(chestSeconds)}>
             <span className={"learn-countdown-art learn-path-art learn-path-art--" + (chestReady ? "chest-active" : "chest-locked")} aria-hidden="true" />
-            <small>Láda</small><strong>{chestReady ? "Nyisd ki" : formatCountdown(chestSeconds)}</strong>
+            <small>Láda</small><strong>{chestReady ? "0:00" : formatCountdown(chestSeconds)}</strong>
           </button>
           <button type="button" className={"learn-countdown-card lesson " + (lessonSeconds === 0 || completedLessons.includes(currentLesson.id) ? "is-available" : "is-counting")} onClick={() => onOpenLesson(currentLesson.id)} aria-label={lessonSeconds === 0 ? "Következő lecke elérhető" : "Lecke visszaszámlálás: " + formatCountdown(lessonSeconds)}>
             <span className={"learn-countdown-art learn-path-art learn-path-art--" + (lessonSeconds === 0 || completedLessons.includes(currentLesson.id) ? "lesson-active" : "lesson-locked")} aria-hidden="true" />
-            <small>Lecke</small><strong>{lessonSeconds === 0 || completedLessons.includes(currentLesson.id) ? "Mehet" : formatCountdown(lessonSeconds)}</strong>
+            <small>Lecke</small><strong>{lessonSeconds === 0 || completedLessons.includes(currentLesson.id) ? "0:00" : formatCountdown(lessonSeconds)}</strong>
           </button>
         </aside>
       </div>
