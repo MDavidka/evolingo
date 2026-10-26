@@ -215,3 +215,18 @@ body .learn-node-start{top:133px !important}
 body .learn-path-node .learn-path-mascot{top:-9px !important}
 body .learn-quest-button .learn-path-art{transform:scale(.5) !important;margin:-16px !important}
 @media(max-width:360px){body .learn-lesson-topic{top:74px !important}body .learn-node-start{top:132px !important}}
+
+
+/* State selectors have higher specificity than the earlier button colors. */
+body .learn-path-node-completed .learn-path-node-button,
+body .learn-path-node-current .learn-path-node-button,
+body .learn-path-node-locked .learn-path-node-button,
+body .learn-pack-button.is-ready,
+body .learn-pack-button.is-done,
+body .learn-pack-button.is-locked,
+body .learn-path-chest.is-ready {
+  background-color: transparent !important;
+  background-image: none !important;
+  box-shadow: none !important;
+  border-color: transparent !important;
+}
