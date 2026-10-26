@@ -744,8 +744,8 @@ function Home({ completedLessons, answeredTasks, readLessons, notice, clearNotic
     {notice && <button className="inline-notice learn-inline-notice" type="button" onClick={clearNotice}><span>{notice}</span><X size={16} aria-hidden="true" /></button>}
     <section className="learn-sheet" aria-label="Tanulási útvonal">
       <div className="learn-quest-row">
-        <button type="button" className="learn-quest-button" onClick={onOpenHardChallenge} aria-label={completedLessonCount >= 4 ? "Nehéz feladat indítása" : "Nehéz feladat 4 lecke után"}><Zap size={17} aria-hidden="true" /><span>Hard mód</span>{completedLessonCount < 4 && <LockKeyhole size={12} aria-hidden="true" />}</button>
-        <button type="button" className={"learn-quest-button " + (chestReady ? "is-ready" : "")} onClick={onClaimChest} aria-label={chestReady ? "Láda kinyitása, 5 csillag" : "Láda " + nextChestAt + " lecke után"}><Gift size={17} aria-hidden="true" /><span>{chestReady ? "Láda nyitása" : "Láda · " + nextChestAt}</span></button>
+        <button type="button" className="learn-quest-button" onClick={onOpenHardChallenge} aria-label={completedLessonCount >= 4 ? "Nehéz feladat indítása" : "Nehéz feladat 4 lecke után"}><span className={"learn-path-art learn-path-art--" + (completedLessonCount >= 4 ? "hard-active" : "hard-locked")} aria-hidden="true" /><span>Hard mód</span>{completedLessonCount < 4 && <LockKeyhole size={12} aria-hidden="true" />}</button>
+        <button type="button" className={"learn-quest-button " + (chestReady ? "is-ready" : "")} onClick={onClaimChest} aria-label={chestReady ? "Láda kinyitása, 5 csillag" : "Láda " + nextChestAt + " lecke után"}><span className={"learn-path-art learn-path-art--" + (chestReady ? "chest-active" : "chest-locked")} aria-hidden="true" /><span>{chestReady ? "Láda nyitása" : "Láda · " + nextChestAt}</span></button>
       </div>
       <div className="learn-path-track" style={{ height: routeHeight + 100 + "px" }}>
         {routeItems.map(({ lesson, packIndex, chest }, index) => {
@@ -755,7 +755,7 @@ function Home({ completedLessons, answeredTasks, readLessons, notice, clearNotic
           if (chest) {
             const level = Math.ceil(lesson.id / 5)
             const ready = completedLessonCount >= level * 5 && chestReady && nextChestAt === level * 5
-            return <div key={"chest-" + level} className="learn-path-node learn-path-chest-node" style={{ left: position + "%", top: routeTops[index] + "px" }}><button type="button" className={"learn-path-chest " + (ready ? "is-ready" : "")} onClick={onClaimChest} aria-label={"Láda " + level + (ready ? ", nyitható" : ", lezárva")}><Gift size={27} aria-hidden="true" /></button><span className="learn-pack-caption">Láda</span></div>
+            return <div key={"chest-" + level} className="learn-path-node learn-path-chest-node" style={{ left: position + "%", top: routeTops[index] + "px" }}><button type="button" className={"learn-path-chest " + (ready ? "is-ready" : "")} onClick={onClaimChest} aria-label={"Láda " + level + (ready ? ", nyitható" : ", lezárva")}><span className={"learn-path-art learn-path-art--" + (completedLessonCount >= level * 5 ? "chest-active" : "chest-locked")} aria-hidden="true" /></button><span className="learn-pack-caption">Láda</span></div>
           }
           const lessonCurrent = lesson.id === currentLessonId
           if (packIndex !== null) {
@@ -766,7 +766,7 @@ function Home({ completedLessons, answeredTasks, readLessons, notice, clearNotic
             const unlocked = (lessonDone || lessonCurrent) && previousDone
             return <div key={lesson.id + "-pack-" + packIndex} className={"learn-path-node learn-path-task-node " + (leftSide ? "tasks-left" : "tasks-right")} style={{ left: position + "%", top: routeTops[index] + "px" }}>
               <button type="button" className={"learn-pack-button " + (packDone ? "is-done" : unlocked ? "is-ready" : "is-locked")} disabled={!unlocked} onClick={() => onOpenTask(lesson.id, packIndex)} aria-label={lesson.title + ", " + (packIndex + 1) + ". feladatcsomag, " + pack.length + " feladat" + (packDone ? ", kész" : unlocked ? "" : ", zárolva")}>
-                <strong>{pack.length}</strong>
+                <span className={"learn-path-art learn-path-art--" + (unlocked ? "task-active" : "task-locked")} aria-hidden="true" /><strong className="learn-pack-count">{pack.length}</strong>
               </button>
               <span className="learn-pack-caption">{packs.length > 1 ? "Feladat " + (packIndex + 1) : "Feladat"}</span>
             </div>
@@ -774,7 +774,7 @@ function Home({ completedLessons, answeredTasks, readLessons, notice, clearNotic
           const status = lessonDone ? "completed" : lessonCurrent ? "current" : "locked"
           return <div className={"learn-path-node learn-path-node-" + status + (leftSide ? " tasks-left" : " tasks-right")} key={lesson.id} style={{ left: position + "%", top: routeTops[index] + "px" }}>
             <button ref={element => { if (element) nodeRefs.current.set(lesson.id, element); else nodeRefs.current.delete(lesson.id) }} type="button" className="learn-path-node-button" disabled={status === "locked"} aria-label={lesson.title + ", " + (lessonDone ? "kész" : lessonCurrent ? "indítás" : "zárolva")} onClick={() => onOpenLesson(lesson.id)}>
-              {lessonDone ? <Check size={21} strokeWidth={3} aria-hidden="true" /> : <BookOpen size={20} strokeWidth={2.3} aria-hidden="true" />}
+              <span className={"learn-path-art learn-path-art--" + (lessonDone ? "checkpoint-active" : lessonCurrent ? "lesson-active" : "lesson-locked")} aria-hidden="true" />
             </button>
             <span className="learn-lesson-topic" title={lesson.title}>{lesson.title}</span>
             {lessonCurrent && <img className="learn-path-mascot" src={foxIcon} alt="" aria-hidden="true" />}

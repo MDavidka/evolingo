@@ -188,3 +188,30 @@ body .learn-path-node-locked .learn-lesson-topic{color:#777780 !important}
 body .learn-lesson-subtitle{display:none !important}
 body .learn-node-start{top:128px !important}
 @media(max-width:360px){body .learn-lesson-topic{width:min(160px,52vw) !important;font-size:12px !important;line-height:17px !important;max-height:51px !important}body .learn-node-start{top:126px !important}}
+
+
+/* Illustrated path symbols cut from the supplied sheet; each state uses its own artwork. */
+body .learn-path-art{display:block !important;flex:none !important;width:64px !important;height:64px !important;background-image:url("/images/path-symbols.webp") !important;background-repeat:no-repeat !important;background-size:384px 256px !important;pointer-events:none !important}
+body .learn-path-art--chest-locked{background-position:0 0 !important}
+body .learn-path-art--chest-active{background-position:-64px 0 !important}
+body .learn-path-art--checkpoint-active{background-position:-320px 0 !important}
+body .learn-path-art--task-locked{background-position:0 -128px !important}
+body .learn-path-art--task-active{background-position:-64px -128px !important}
+body .learn-path-art--hard-locked{background-position:-256px -128px !important}
+body .learn-path-art--hard-active{background-position:-320px -128px !important}
+body .learn-path-art--lesson-locked{background-position:-128px -192px !important}
+body .learn-path-art--lesson-active{background-position:-192px -192px !important}
+body .learn-path-node{width:68px !important;height:68px !important}
+body .learn-path-node-button,body .learn-pack-button,body .learn-path-chest{position:relative !important;display:grid !important;place-items:center !important;width:64px !important;height:64px !important;min-width:64px !important;min-height:64px !important;padding:0 !important;border:0 !important;border-radius:0 !important;background:transparent !important;box-shadow:none !important;overflow:visible !important}
+body .learn-path-node-button:active:not(:disabled),body .learn-pack-button:active:not(:disabled),body .learn-path-chest:active{transform:translateY(2px) scale(.96) !important;filter:brightness(.98) !important;box-shadow:none !important}
+body .learn-path-node-button:focus-visible,body .learn-pack-button:focus-visible,body .learn-path-chest:focus-visible{outline:3px solid #242424 !important;outline-offset:3px !important;border-radius:16px !important}
+body .learn-path-chest.is-ready{background:transparent !important;box-shadow:none !important}
+body .learn-pack-count{position:absolute !important;right:-1px !important;bottom:1px !important;display:grid !important;place-items:center !important;width:23px !important;height:23px !important;border:2px solid #fff !important;border-radius:50% !important;background:#242424 !important;color:#fff !important;font-size:12px !important;line-height:1 !important;box-shadow:0 2px 5px rgba(0,0,0,.16) !important}
+body .learn-pack-button.is-locked .learn-pack-count{background:#777 !important}
+body .learn-pack-button.is-done .learn-pack-count{background:#218c35 !important}
+body .learn-pack-caption,body .learn-path-chest-node .learn-pack-caption{top:68px !important}
+body .learn-lesson-topic{top:74px !important}
+body .learn-node-start{top:133px !important}
+body .learn-path-node .learn-path-mascot{top:-9px !important}
+body .learn-quest-button .learn-path-art{transform:scale(.5) !important;margin:-16px !important}
+@media(max-width:360px){body .learn-lesson-topic{top:74px !important}body .learn-node-start{top:132px !important}}
