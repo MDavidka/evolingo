@@ -480,3 +480,41 @@ body .learn-countdown-card strong{
   body .learn-countdown-art{top:-20px !important;transform:translateX(-50%) scale(.58) !important}
   body .learn-countdown-card strong{font-size:13px !important}
 }
+
+
+/* The original Hard mode / Chest row is replaced by one sticky progress module. */
+body .learn-quest-row{display:none !important}
+body .learn-sheet{padding-top:104px !important}
+body .learn-path-overview{
+  position:sticky !important;
+  top:8px !important;
+  z-index:11 !important;
+  padding:8px 0 14px !important;
+  margin:0 0 8px !important;
+  background:rgba(255,255,255,.86) !important;
+  box-shadow:0 14px 22px rgba(255,255,255,.90) !important;
+  backdrop-filter:blur(16px) saturate(1.06) !important;
+  -webkit-backdrop-filter:blur(16px) saturate(1.06) !important;
+}
+body .learn-path-overview::after{
+  content:"" !important;
+  position:absolute !important;
+  right:0 !important;
+  bottom:0 !important;
+  left:0 !important;
+  height:1px !important;
+  background:rgba(35,35,35,.05) !important;
+}
+body .learn-lesson-progress-banner{
+  min-height:112px !important;
+  border-radius:22px !important;
+}
+body .learn-side-countdowns{
+  position:relative !important;
+  z-index:1 !important;
+}
+@media(max-width:360px){
+  body .learn-sheet{padding-top:96px !important}
+  body .learn-path-overview{top:6px !important;padding-top:6px !important}
+  body .learn-lesson-progress-banner{min-height:104px !important}
+}
