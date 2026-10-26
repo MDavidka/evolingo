@@ -646,7 +646,7 @@ function Home({ completedLessons, notice, clearNotice, onOpenLesson, onOpenTask,
   avatar: string
   avatarImage: string
 }) {
-  const unitLessons = lessons.filter(lesson => lesson.id <= 10)
+  const unitLessons = fullLessons
   const currentLessonId = unitLessons.find(lesson => !completedLessons.includes(lesson.id))?.id ?? null
   const completedCount = unitLessons.filter(lesson => completedLessons.includes(lesson.id)).length
   const progress = unitLessons.length ? Math.round(completedCount / unitLessons.length * 100) : 0
