@@ -739,6 +739,24 @@ function Home({ completedLessons, answeredTasks, readLessons, notice, clearNotic
   onOpenHardChallenge: () => void
 }) {
   const currentLessonId = fullLessons.find(lesson => !completedLessons.includes(lesson.id))?.id ?? null
+  const currentLesson = fullLessons.find(lesson => lesson.id === currentLessonId) ?? fullLessons[fullLessons.length - 1]!
+  const currentPacks = practicePacks(currentLesson)
+  const totalLessonTasks = currentPacks.reduce((total, pack) => total + pack.length, 0)
+  const answeredLessonTasks = currentPacks.reduce((total, pack, packIndex) => total + pack.filter((_, questionIndex) => answeredTasks.includes(practiceKey(currentLesson.id, packIndex, questionIndex))).length, 0)
+  const lessonPercent = completedLessons.includes(currentLesson.id) ? 100 : Math.round((answeredLessonTasks / Math.max(1, totalLessonTasks)) * 100)
+  const [chestSeconds, setChestSeconds] = useState(86)
+  const [lessonSeconds, setLessonSeconds] = useState(66)
+  useEffect(() => {
+    if (chestReady) return
+    const timer = window.setInterval(() => setChestSeconds(seconds => Math.max(0, seconds - 1)), 1000)
+    return () => window.clearInterval(timer)
+  }, [chestReady])
+  useEffect(() => {
+    if (completedLessons.includes(currentLesson.id)) return
+    const timer = window.setInterval(() => setLessonSeconds(seconds => Math.max(0, seconds - 1)), 1000)
+    return () => window.clearInterval(timer)
+  }, [completedLessons, currentLesson.id])
+  const formatCountdown = (seconds: number) => String(Math.floor(seconds / 60)) + ":" + String(seconds % 60).padStart(2, "0")
   const routeItems: { lesson: LessonUnit; packIndex: number | null; chest?: boolean }[] = fullLessons.flatMap((lesson, lessonIndex) => {
     const items: { lesson: LessonUnit; packIndex: number | null; chest?: boolean }[] = [{ lesson, packIndex: null }]
     practicePacks(lesson).forEach((_, packIndex) => items.push({ lesson, packIndex }))
@@ -768,6 +786,25 @@ function Home({ completedLessons, answeredTasks, readLessons, notice, clearNotic
       <div className="learn-quest-row">
         <button type="button" className="learn-quest-button" onClick={onOpenHardChallenge} aria-label={completedLessonCount >= 4 ? "Nehéz feladat indítása" : "Nehéz feladat 4 lecke után"}><span className={"learn-path-art learn-path-art--" + (completedLessonCount >= 4 ? "hard-active" : "hard-locked")} aria-hidden="true" /><span>Hard mód</span>{completedLessonCount < 4 && <LockKeyhole size={12} aria-hidden="true" />}</button>
         <button type="button" className={"learn-quest-button " + (chestReady ? "is-ready" : "")} onClick={onClaimChest} aria-label={chestReady ? "Láda kinyitása, 5 csillag" : "Láda " + nextChestAt + " lecke után"}><span className={"learn-path-art learn-path-art--" + (chestReady ? "chest-active" : "chest-locked")} aria-hidden="true" /><span>{chestReady ? "Láda nyitása" : "Láda · " + nextChestAt}</span></button>
+      </div>
+      <div className="learn-path-overview">
+        <section className="learn-lesson-progress-banner" aria-label={currentLesson.title + " haladása: " + lessonPercent + "%"}>
+          <div className="learn-progress-banner-top"><span>Aktuális lecke</span><strong>{lessonPercent}%</strong></div>
+          <h2>{currentLesson.title}</h2>
+          <div className="learn-progress-meter" aria-hidden="true"><span style={{ width: Math.max(6, lessonPercent) + "%" }} /></div>
+          <small>{answeredLessonTasks} / {totalLessonTasks} feladat</small>
+          <span className="learn-progress-badge"><span className="learn-path-art learn-path-art--checkpoint-active" aria-hidden="true" /></span>
+        </section>
+        <aside className="learn-side-countdowns" aria-label="Következő jutalmak és leckék">
+          <button type="button" className={"learn-countdown-card chest " + (chestReady ? "is-available" : "is-counting")} onClick={onClaimChest} aria-label={chestReady ? "Láda nyitható" : "Láda visszaszámlálás: " + formatCountdown(chestSeconds)}>
+            <span className={"learn-countdown-art learn-path-art learn-path-art--" + (chestReady ? "chest-active" : "chest-locked")} aria-hidden="true" />
+            <small>Láda</small><strong>{chestReady ? "Nyisd ki" : formatCountdown(chestSeconds)}</strong>
+          </button>
+          <button type="button" className={"learn-countdown-card lesson " + (lessonSeconds === 0 || completedLessons.includes(currentLesson.id) ? "is-available" : "is-counting")} onClick={() => onOpenLesson(currentLesson.id)} aria-label={lessonSeconds === 0 ? "Következő lecke elérhető" : "Lecke visszaszámlálás: " + formatCountdown(lessonSeconds)}>
+            <span className={"learn-countdown-art learn-path-art learn-path-art--" + (lessonSeconds === 0 || completedLessons.includes(currentLesson.id) ? "lesson-active" : "lesson-locked")} aria-hidden="true" />
+            <small>Lecke</small><strong>{lessonSeconds === 0 || completedLessons.includes(currentLesson.id) ? "Mehet" : formatCountdown(lessonSeconds)}</strong>
+          </button>
+        </aside>
       </div>
       <div className="learn-path-track" style={{ height: routeHeight + 100 + "px" }}>
         {routeItems.map(({ lesson, packIndex, chest }, index) => {
