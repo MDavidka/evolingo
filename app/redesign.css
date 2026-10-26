@@ -518,3 +518,72 @@ body .learn-side-countdowns{
   body .learn-path-overview{top:6px !important;padding-top:6px !important}
   body .learn-lesson-progress-banner{min-height:104px !important}
 }
+
+
+/* Compact, symmetrical progress module across phone widths. */
+body .learn-path-overview{
+  box-sizing:border-box !important;
+  grid-template-columns:minmax(0,1fr) 64px !important;
+  width:calc(100% - 32px) !important;
+  max-width:448px !important;
+  gap:8px !important;
+  margin:0 auto 10px !important;
+  padding:7px 0 11px !important;
+  background:rgba(255,255,255,.94) !important;
+  box-shadow:0 12px 20px rgba(255,255,255,.92) !important;
+}
+body .learn-lesson-progress-banner{
+  box-sizing:border-box !important;
+  min-height:116px !important;
+  padding:13px 56px 11px 14px !important;
+  border-radius:19px !important;
+}
+body .learn-progress-banner-top{margin-bottom:2px !important;font-size:9px !important}
+body .learn-progress-banner-top strong{font-size:13px !important}
+body .learn-lesson-progress-banner h2{
+  margin-bottom:10px !important;
+  font-size:clamp(16px,4.7vw,20px) !important;
+}
+body .learn-progress-meter{height:10px !important}
+body .learn-lesson-progress-banner > small{margin-top:6px !important;font-size:9px !important}
+body .learn-progress-badge{
+  top:12px !important;
+  right:9px !important;
+  width:47px !important;
+  height:47px !important;
+  box-shadow:0 4px 0 #95c072,0 7px 12px rgba(55,111,33,.17) !important;
+}
+body .learn-progress-badge .learn-path-art{transform:scale(.53) !important}
+body .learn-side-countdowns{gap:8px !important;padding-top:0 !important}
+body .learn-countdown-card{
+  box-sizing:border-box !important;
+  width:64px !important;
+  min-height:54px !important;
+  height:54px !important;
+  padding:18px 4px 5px !important;
+  border-radius:14px !important;
+  box-shadow:0 5px 11px rgba(39,42,48,.12),inset 0 1px 0 rgba(255,255,255,.7) !important;
+}
+body .learn-countdown-art{
+  top:-16px !important;
+  transform:translateX(-50%) scale(.48) !important;
+}
+body .learn-countdown-card small{margin-bottom:1px !important;font-size:8px !important}
+body .learn-countdown-card strong{font-size:13px !important}
+@media(min-width:430px){
+  body .learn-path-overview{grid-template-columns:minmax(0,1fr) 72px !important}
+  body .learn-lesson-progress-banner{min-height:118px !important;padding-right:60px !important}
+  body .learn-side-countdowns{gap:8px !important}
+  body .learn-countdown-card{width:72px !important;min-height:55px !important;height:55px !important}
+}
+@media(max-width:360px){
+  body .learn-path-overview{grid-template-columns:minmax(0,1fr) 58px !important;width:calc(100% - 24px) !important;gap:7px !important}
+  body .learn-lesson-progress-banner{min-height:108px !important;padding:12px 49px 10px 12px !important;border-radius:17px !important}
+  body .learn-lesson-progress-banner h2{font-size:16px !important}
+  body .learn-progress-badge{top:11px !important;right:7px !important;width:42px !important;height:42px !important}
+  body .learn-progress-badge .learn-path-art{transform:scale(.47) !important}
+  body .learn-side-countdowns{gap:8px !important}
+  body .learn-countdown-card{width:58px !important;min-height:50px !important;height:50px !important;padding-top:16px !important;border-radius:13px !important}
+  body .learn-countdown-art{top:-17px !important;transform:translateX(-50%) scale(.44) !important}
+  body .learn-countdown-card strong{font-size:12px !important}
+}
