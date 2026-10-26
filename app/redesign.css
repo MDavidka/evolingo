@@ -87,3 +87,35 @@ body .lesson-choice-popover{max-width:calc(100vw - 40px) !important;z-index:4 !i
 @media (min-width:560px){
   body .app-shell{max-width:480px !important;margin:0 auto !important}
 }
+
+/* Compact lesson path inspired by the supplied mobile reference. */
+body .app-shell:has(.learn-home-content){height:100dvh !important;min-height:100dvh !important;padding:0 !important;overflow:hidden !important;background:#f3f3f3 !important}
+body .screen-content.learn-home-content{height:100dvh !important;min-height:100dvh !important;padding:0 !important;overflow:hidden !important;background:#f3f3f3 !important}
+body .learn-home-screen{position:relative !important;display:block !important;width:100% !important;height:100dvh !important;min-height:100dvh !important;padding:0 !important;overflow:hidden !important;background:linear-gradient(180deg,#f7f7f7 0%,#ececed 24%,#f4f4f5 52%,#fff 74%) !important;color:#15151a !important}
+body .learn-home-gradient{display:none !important}
+body .learn-header{position:absolute !important;z-index:5 !important;top:max(22px,env(safe-area-inset-top)) !important;left:16px !important;width:max-content !important;max-width:calc(100% - 32px) !important;height:48px !important;padding:5px 17px 5px 7px !important;display:flex !important;align-items:center !important;justify-content:flex-start !important;gap:9px !important;border-radius:999px !important;background:rgba(255,255,255,.94) !important;box-shadow:0 10px 30px rgba(20,24,35,.08),0 2px 6px rgba(20,24,35,.04) !important}
+body .learn-greeting-pill{display:flex !important;align-items:center !important;gap:9px !important;min-width:0 !important;width:100% !important;height:100% !important;padding:0 !important;border:0 !important;background:transparent !important;text-align:left !important;cursor:pointer !important}
+body .learn-user-avatar-header{width:32px !important;height:32px !important;background:#f0f0f0 !important}
+body .learn-greeting-copy{display:flex !important;flex-direction:column !important;min-width:0 !important;gap:1px !important;line-height:1.15 !important;white-space:nowrap !important}
+body .learn-greeting-copy > span{overflow:hidden !important;color:#85858f !important;font-size:11px !important;font-weight:400 !important;text-overflow:ellipsis !important}
+body .learn-greeting-copy strong{overflow:hidden !important;color:#1e1b3a !important;font-size:14px !important;font-weight:750 !important;letter-spacing:-.35px !important;text-overflow:ellipsis !important}
+body .learn-sheet{position:absolute !important;z-index:1 !important;top:max(94px,calc(env(safe-area-inset-top) + 36px)) !important;right:0 !important;bottom:0 !important;left:0 !important;display:block !important;width:100% !important;height:auto !important;min-height:0 !important;margin:0 !important;padding:110px 0 calc(94px + env(safe-area-inset-bottom)) !important;overflow-x:hidden !important;overflow-y:auto !important;overscroll-behavior:contain !important;border-radius:38px 38px 0 0 !important;background:#fff !important;box-shadow:0 -22px 58px rgba(255,255,255,.92),0 -12px 42px rgba(45,48,56,.10) !important;scrollbar-width:none !important}
+body .learn-sheet::-webkit-scrollbar{display:none !important}
+body .learn-path-track{position:relative !important;width:100% !important;margin:0 !important;overflow:visible !important}
+body .learn-path-node{position:absolute !important;z-index:1 !important;display:block !important;width:46px !important;height:46px !important;max-width:none !important;transform:translateX(-50%) !important;text-align:center !important}
+body .learn-path-node-button{position:relative !important;display:grid !important;place-items:center !important;width:44px !important;height:44px !important;min-width:44px !important;min-height:44px !important;padding:0 !important;overflow:visible !important;border:0 !important;border-radius:11px !important;background:#efc45c !important;color:transparent !important;box-shadow:0 1px 2px rgba(90,65,18,.08) !important;cursor:pointer !important;transition:transform .16s ease,filter .16s ease !important}
+body .learn-path-node-completed .learn-path-node-button{background:#efc45c !important}
+body .learn-path-node-current .learn-path-node-button{background:#efc45c !important}
+body .learn-path-node-locked .learn-path-node-button{background:#b7b7b7 !important;color:transparent !important;box-shadow:none !important;cursor:default !important}
+body .learn-path-node-button:active:not(:disabled){transform:scale(.95) !important;box-shadow:none !important}
+body .learn-path-mascot{position:absolute !important;z-index:2 !important;left:50% !important;bottom:-5px !important;width:62px !important;height:66px !important;max-width:none !important;object-fit:contain !important;transform:translateX(-50%) !important;pointer-events:none !important}
+body .learn-path-node-label,body .learn-start-pill{display:none !important}
+body .bottom-nav{position:fixed !important;z-index:10 !important;right:14px !important;bottom:max(12px,env(safe-area-inset-bottom)) !important;left:14px !important;width:auto !important;height:68px !important;padding:5px !important;border:1px solid rgba(255,255,255,.94) !important;border-radius:36px !important;background:rgba(239,240,244,.94) !important;box-shadow:0 12px 34px rgba(31,35,45,.12),0 2px 8px rgba(31,35,45,.06) !important;backdrop-filter:blur(18px) saturate(1.2) !important;-webkit-backdrop-filter:blur(18px) saturate(1.2) !important}
+body .bottom-nav button.active{background:#fff !important;border-radius:30px !important;box-shadow:0 3px 12px rgba(25,29,38,.09) !important}
+@media (max-width:360px){
+  body .learn-header{left:12px !important;max-width:calc(100% - 24px) !important}
+  body .learn-sheet{padding-top:100px !important}
+  body .learn-path-node{width:42px !important;height:42px !important}
+  body .learn-path-node-button{width:40px !important;height:40px !important;min-width:40px !important;min-height:40px !important}
+  body .learn-path-mascot{width:56px !important;height:60px !important}
+}
