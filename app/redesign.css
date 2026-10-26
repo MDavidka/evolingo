@@ -169,3 +169,13 @@ body .learn-task-tile.is-locked{background:#e9e9e9 !important;color:#a6a6a6 !imp
 body .learn-task-tile:active:not(:disabled){transform:translateY(2px) !important;box-shadow:0 1px 0 #d7aa4d !important}
 body .learn-task-tile:focus-visible{outline:3px solid #242424 !important;outline-offset:3px !important}
 @media(max-width:360px){body .learn-task-tiles{gap:3px !important}body .learn-task-tile{width:28px !important;height:28px !important;min-width:28px !important;min-height:28px !important}body .learn-task-tile svg{width:14px !important;height:14px !important}body .learn-path-node.tasks-left .learn-task-tiles{right:calc(100% + 6px) !important}body .learn-path-node.tasks-right .learn-task-tiles{left:calc(100% + 6px) !important}}
+
+/* Practice packs follow their lesson as separate numbered circles. */
+body .learn-path-task-node{z-index:2 !important}
+body .learn-pack-button{display:grid !important;place-items:center !important;width:55px !important;height:55px !important;min-width:55px !important;min-height:55px !important;padding:0 !important;border:2px solid rgba(255,255,255,.85) !important;border-radius:50% !important;background:#efc45c !important;color:#242424 !important;box-shadow:0 5px 0 #d3a943,0 9px 16px rgba(94,73,22,.13) !important;font-size:20px !important;font-weight:800 !important;cursor:pointer !important}
+body .learn-pack-button.is-done{background:#d9e6c5 !important;box-shadow:0 5px 0 #b1c69c !important}
+body .learn-pack-button.is-locked{background:#b7b7b7 !important;color:#f7f7f7 !important;box-shadow:0 5px 0 #9e9e9e !important;cursor:default !important}
+body .learn-pack-button:active:not(:disabled){transform:translateY(3px) !important;box-shadow:0 2px 0 #d3a943 !important}
+body .learn-pack-button:focus-visible{outline:3px solid #242424 !important;outline-offset:3px !important}
+body .learn-pack-caption{position:absolute !important;top:63px !important;left:50% !important;transform:translateX(-50%) !important;color:#606068 !important;font-size:11px !important;font-weight:700 !important;white-space:nowrap !important}
+body .learn-path-task-node .learn-path-mascot{display:none !important}
