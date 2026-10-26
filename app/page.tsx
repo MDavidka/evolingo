@@ -648,58 +648,9 @@ function Home({ completedLessons, notice, clearNotice, onOpenLesson, onOpenTask,
 }) {
   const unitLessons = fullLessons
   const currentLessonId = unitLessons.find(lesson => !completedLessons.includes(lesson.id))?.id ?? null
-  const completedCount = unitLessons.filter(lesson => completedLessons.includes(lesson.id)).length
-  const progress = unitLessons.length ? Math.round(completedCount / unitLessons.length * 100) : 0
-  const pathHeight = Math.max(140, (unitLessons.length - 1) * 112 + 140)
-  const pathRef = useRef<HTMLDivElement | null>(null)
-  const sheetRef = useRef<HTMLElement | null>(null)
+  const pathOffsets = [0, 26, 136, 214, 261, 343, 411, 482]
+  const pathHeight = Math.max(560, Math.ceil(unitLessons.length / pathOffsets.length) * 560)
   const nodeRefs = useRef<Map<number, HTMLButtonElement>>(new Map())
-  const [pathSize, setPathSize] = useState({ width: 0, height: 0 })
-  const [connectorPaths, setConnectorPaths] = useState<string[]>([])
-  const statusKey = unitLessons.map(lesson => {
-    if (completedLessons.includes(lesson.id)) return lesson.id + ":completed"
-    if (lesson.id === currentLessonId) return lesson.id + ":current"
-    return lesson.id + ":locked"
-  }).join("|")
-
-  useEffect(() => {
-    const host = pathRef.current
-    if (!host) return
-    let frame = 0
-    const updateConnectors = () => {
-      const bounds = host.getBoundingClientRect()
-      const points = unitLessons.map(lesson => {
-        const node = nodeRefs.current.get(lesson.id)
-        if (!node) return null
-        const rect = node.getBoundingClientRect()
-        return { x: rect.left + rect.width / 2 - bounds.left, y: rect.top + rect.height / 2 - bounds.top }
-      })
-      const paths: string[] = []
-      for (let index = 0; index < points.length - 1; index++) {
-        const from = points[index]
-        const to = points[index + 1]
-        if (!from || !to) continue
-        const controlY = from.y + (to.y - from.y) * 0.5
-        paths.push("M " + from.x + " " + from.y + " C " + from.x + " " + controlY + ", " + to.x + " " + controlY + ", " + to.x + " " + to.y)
-      }
-      setPathSize(previous => previous.width === bounds.width && previous.height === bounds.height ? previous : { width: bounds.width, height: bounds.height })
-      setConnectorPaths(previous => previous.length === paths.length && previous.every((path, index) => path === paths[index]) ? previous : paths)
-    }
-    const scheduleUpdate = () => {
-      window.cancelAnimationFrame(frame)
-      frame = window.requestAnimationFrame(updateConnectors)
-    }
-    scheduleUpdate()
-    const observer = typeof ResizeObserver !== "undefined" ? new ResizeObserver(scheduleUpdate) : null
-    observer?.observe(host)
-    window.addEventListener("resize", scheduleUpdate)
-    return () => {
-      window.cancelAnimationFrame(frame)
-      observer?.disconnect()
-      window.removeEventListener("resize", scheduleUpdate)
-    }
-  }, [statusKey, unitLessons.length, pathHeight])
-
   useEffect(() => {
     if (currentLessonId === null) return
     const currentNode = nodeRefs.current.get(currentLessonId)
@@ -711,36 +662,23 @@ function Home({ completedLessons, notice, clearNotice, onOpenLesson, onOpenTask,
   return <div className="learn-home-screen">
     <div className="learn-home-gradient" aria-hidden="true" />
     <header className="learn-header">
-      <Brand />
-      <button className="learn-header-profile" type="button" onClick={onOpenProfile} aria-label={"Profil: " + userName}>
+      <button className="learn-greeting-pill" type="button" onClick={onOpenProfile} aria-label={"Profil: " + userName}>
         <UserAvatar userName={userName} avatar={avatar} avatarImage={avatarImage} variant="header" />
+        <span className="learn-greeting-copy"><span>Hello {userName} 👋</span><strong>Let's grow together</strong></span>
       </button>
     </header>
     {notice && <button className="inline-notice learn-inline-notice" type="button" onClick={clearNotice}><span>{notice}</span><X size={16} aria-hidden="true" /></button>}
 
-    <section className="learn-sheet" ref={sheetRef} aria-label="Tanulási útvonal">
-      <div className="learn-sheet-handle" aria-hidden="true" />
-      <div className="learn-sheet-heading">
-        <h1>Present simple</h1>
-        <p>Ebben a fejezetben a jelen időt tanulod</p>
-        <div className="learn-progress-row">
-          <div className="learn-progress-track" role="progressbar" aria-label="Leckék teljesítése" aria-valuemin={0} aria-valuemax={unitLessons.length} aria-valuenow={completedCount}>
-            <span style={{ width: progress + "%" }} />
-          </div>
-          <span className="learn-progress-value">{completedCount} / {unitLessons.length}</span>
-        </div>
-      </div>
-
-      <div className="learn-path-track" ref={pathRef} style={{ height: pathHeight + "px" }}>
-        <svg className="learn-path-connectors" width="100%" height="100%" viewBox={"0 0 " + Math.max(1, pathSize.width) + " " + Math.max(1, pathSize.height)} preserveAspectRatio="none" aria-hidden="true">
-          {connectorPaths.map((path, index) => <path key={index} d={path} />)}
-        </svg>
+    <section className="learn-sheet" aria-label="Tanulási útvonal">
+      <div className="learn-path-track" style={{ height: pathHeight + "px" }}>
         {unitLessons.map((lesson, index) => {
           const isComplete = completedLessons.includes(lesson.id)
           const status = isComplete ? "completed" : lesson.id === currentLessonId ? "current" : "locked"
-          const label = "Lesson " + (index + 1)
+          const label = lesson.title
           const stateLabel = status === "completed" ? "kész" : status === "current" ? "indítás" : "zárolva"
-          return <div className={"learn-path-node learn-path-node-" + status} key={lesson.id} style={{ left: (index % 2 === 0 ? 35 : 65) + "%", top: index * 112 + "px" }}>
+          const pathPositions = [25, 54, 59, 38, 60, 50, 32, 25]
+          const pathTop = pathOffsets[index % pathOffsets.length] + Math.floor(index / pathOffsets.length) * 560
+          return <div className={"learn-path-node learn-path-node-" + status} key={lesson.id} style={{ left: pathPositions[index % pathPositions.length] + "%", top: pathTop + "px" }}>
             <button
               ref={element => {
                 if (element) nodeRefs.current.set(lesson.id, element)
@@ -753,14 +691,8 @@ function Home({ completedLessons, notice, clearNotice, onOpenLesson, onOpenTask,
               aria-label={label + ", " + stateLabel}
               onClick={() => { if (status !== "locked") onOpenLesson(lesson.id) }}
             >
-              {status === "completed"
-                ? <Check size={34} strokeWidth={3} aria-hidden="true" />
-                : status === "current"
-                  ? <Book size={30} strokeWidth={2.2} aria-hidden="true" />
-                  : <LockKeyhole size={30} strokeWidth={2.1} aria-hidden="true" />}
+              {status === "current" && <img className="learn-path-mascot" src={foxIcon} alt="" aria-hidden="true" />}
             </button>
-            <span className="learn-path-node-label">{label}</span>
-            {status === "current" && <span className="learn-start-pill">INDÍTÁS</span>}
           </div>
         })}
       </div>
