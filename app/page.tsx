@@ -1,7 +1,7 @@
 "use client"
 
 import { memo, useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from "react"
-import Image from "next/image"
+import NextImage from "next/image"
 import {
   ArrowRight, Book, BookOpen, Check, CheckCircle2, Headphones, MessageCircle, CircleHelp, Puzzle,
   Flame, Heart, Lightbulb, Medal, RotateCcw, Trophy, UserRound, Dumbbell, Timer, Languages, Volume2,
@@ -1223,7 +1223,7 @@ function Leaderboard() {
       <p className="leaderboard-campaign-copy">Végezz a ranglista 1. helyén és nyern 1 darab matrica csomagot</p>
       <div className="leaderboard-prize">
         <div className="leaderboard-prize-image">
-          <Image src={campaignStickerPack} alt="Evolingo matricacsomag" width={720} height={704} sizes="(max-width: 480px) 42vw, 220px" priority unoptimized />
+          <NextImage src={campaignStickerPack} alt="Evolingo matricacsomag" width={720} height={704} sizes="(max-width: 480px) 42vw, 220px" priority unoptimized />
         </div>
         <div className="leaderboard-prize-copy">
           <strong>50 darabos evolingo matricacsomag</strong>
