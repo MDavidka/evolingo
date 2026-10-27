@@ -6902,3 +6902,95 @@ body,
   .leaderboard-entry > strong { font-size: 14px; }
   .leaderboard-stars { gap: 3px; font-size: 13px; }
 }
+
+
+/* Leaderboard campaign */
+.leaderboard-page .leaderboard-campaign {
+  margin: 4px 0 28px;
+}
+.leaderboard-campaign h2 {
+  margin: 0 0 12px;
+  color: #111;
+  font-size: clamp(29px, 8vw, 38px);
+  font-weight: 800;
+  line-height: 1.06;
+  letter-spacing: -1.4px;
+  font-variant-numeric: tabular-nums;
+}
+.leaderboard-campaign-copy {
+  max-width: 540px;
+  margin: 0;
+  color: #202020;
+  font-size: clamp(17px, 4.5vw, 21px);
+  line-height: 1.45;
+}
+.leaderboard-prize {
+  display: grid;
+  grid-template-columns: minmax(120px, 1fr) minmax(130px, .9fr);
+  align-items: center;
+  gap: clamp(14px, 4vw, 28px);
+  margin: 20px 0 28px;
+}
+.leaderboard-prize img {
+  display: block;
+  width: 100%;
+  max-width: 270px;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border-radius: 24px;
+}
+.leaderboard-prize strong {
+  color: #111;
+  font-size: clamp(16px, 4vw, 21px);
+  font-weight: 750;
+  line-height: 1.4;
+  text-align: center;
+}
+.leaderboard-first-place {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: fit-content;
+  margin: 0 auto 24px;
+}
+.leaderboard-first-place .leaderboard-avatar {
+  width: 48px;
+  height: 48px;
+  background: #eee;
+}
+.leaderboard-first-place > div {
+  display: grid;
+  gap: 2px;
+}
+.leaderboard-first-place > div strong:last-child {
+  color: #111;
+  font-size: 16px;
+}
+.leaderboard-first-rank {
+  color: #aaa;
+  font-size: 25px;
+  line-height: 1;
+  font-weight: 850;
+}
+.leaderboard-list {
+  border-top: 1px solid #f0f0f0;
+}
+.leaderboard-entry {
+  border: 0;
+  border-bottom: 1px solid #f0f0f0;
+  border-radius: 0;
+  background: transparent;
+}
+.leaderboard-entry.is-current {
+  background: transparent;
+}
+@media (max-width: 420px) {
+  .leaderboard-page .leaderboard-campaign { margin-top: 0; }
+  .leaderboard-prize { grid-template-columns: minmax(110px, 1fr) minmax(110px, .9fr); }
+  .leaderboard-prize img { border-radius: 18px; }
+}
+@media (max-width: 359px) {
+  .leaderboard-campaign h2 { letter-spacing: -1px; }
+  .leaderboard-prize { grid-template-columns: 1fr; }
+  .leaderboard-prize img { width: min(100%, 220px); margin-inline: auto; }
+}
