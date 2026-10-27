@@ -1955,26 +1955,36 @@ function Profile({ completedCount, readCount, completedTaskCount, xp, stars, use
   const defaultAvatar = avatar === "fox" ? "🦊" : avatar === "book" ? "📚" : avatar === "star" ? "⭐" : "✨"
 
   return <div className={"profile-page profile-theme-" + profileTheme}>
-    <section className="profile-hero">
-      <div className={"profile-cover" + (bannerImage ? " has-custom-banner" : "")} aria-hidden="true">{bannerImage && <img className="profile-cover-image" src={bannerImage} alt="" />}</div>
-      <button className="profile-streak-badge" type="button" onClick={() => setShowStreakSettings(true)} aria-label={visibleStreak + " napos tanulási sorozat, napi cél beállítása"} aria-haspopup="dialog">
-        <span className="profile-streak-icon"><Flame size={17} fill="currentColor" /></span>
-        <span className="profile-streak-copy"><strong>{visibleStreak} nap</strong><small>NAPI SOROZAT</small></span>
-        <Settings size={14} className="profile-streak-settings-icon" aria-hidden="true" />
-      </button>
-      <button className="profile-banner-settings" type="button" aria-label="Profil és borítókép szerkesztése" title="Profil szerkesztése" onClick={openSettings}>
-        <Pencil size={20} strokeWidth={2.2} />
-      </button>
-      <div className="profile-identity">
+    <section className="profile-hero profile-reference-hero">
+      <div className="profile-reference-topbar">
+        <div className="profile-language-pill" aria-label="Angol nyelv, Erasmus">
+          <img src="https://flagcdn.com/w80/gb.png" alt="" width="30" height="30" />
+          <strong>erasmus</strong>
+        </div>
+        <div className="profile-reference-controls">
+          <button className="profile-banner-settings" type="button" aria-label="Profil szerkesztése" title="Profil szerkesztése" onClick={openSettings}>
+            <Pencil size={21} strokeWidth={2.7} />
+          </button>
+          <button className="profile-gear-settings" type="button" onClick={() => setShowStreakSettings(true)} aria-label={visibleStreak + " napos tanulási sorozat beállításai"} aria-haspopup="dialog">
+            <Settings size={23} strokeWidth={2.7} />
+          </button>
+        </div>
+      </div>
+      <div className="profile-identity profile-reference-identity">
+        <div className="profile-reference-copy">
+          <h1 className="profile-display-name">{userName || "Tanuló"}</h1>
+          <p className="profile-handle">@{(userName || "tanulo").normalize("NFKD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "").slice(0, 20) || "tanulo"}</p>
+        </div>
         <div className="profile-avatar-wrap">
           <div className="large-avatar">
             {avatarImage ? <img src={avatarImage} alt="Egyéni profilkép" /> : avatar === "fox" ? <img src={foxIcon} alt="Róka profilkép" /> : <span className="avatar-emoji">{defaultAvatar}</span>}
           </div>
-          <button className="profile-avatar-edit" type="button" onClick={() => avatarInputRef.current?.click()} aria-label="Profilkép kiválasztása a galériából"><Pencil size={18} strokeWidth={2.5} /></button>
           <input ref={avatarInputRef} className="profile-file-input" type="file" accept="image/*" aria-label="Profilkép kiválasztása" onChange={event => { void handleGalleryImage(event.target.files?.[0], "avatar"); event.currentTarget.value = "" }} />
         </div>
-        <h1 className="profile-display-name">{userName || "Tanuló"}</h1>
-        <p className="profile-handle">@{(userName || "tanulo").normalize("NFKD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "").slice(0, 20) || "tanulo"}</p>
+      </div>
+      <div className="profile-reference-actions" aria-label="Profilműveletek">
+        <span className="profile-reference-action profile-reference-action--wide">Add friend</span>
+        <span className="profile-reference-action">Add friend</span>
       </div>
     </section>
 
