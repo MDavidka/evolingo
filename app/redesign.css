@@ -710,3 +710,9 @@ body .learn-path-overview {
   background: transparent !important;
   box-shadow: none !important;
 }
+
+
+/* Align the lesson progress banner with the top edge of the chest tile. */
+body .learn-path-overview {
+  align-items: start !important;
+}
