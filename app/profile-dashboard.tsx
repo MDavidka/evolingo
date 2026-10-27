@@ -4,10 +4,9 @@ import { useEffect, useMemo, useState } from "react"
 import {
   BookOpen, Check, ChevronDown, ChevronRight, Clock3, Compass, Crown, Flame,
   Flag, Gem, Heart, LockKeyhole, Settings, Share, Sparkles, Star, Target,
-  Trophy, UserRound, Users, X, Zap, type LucideIcon,
+  Trophy, Users, X, Zap, type LucideIcon,
 } from "lucide-react"
 
-type FriendPreview = { id: string; name: string; avatar: string; avatarImage?: string }
 type BadgeDefinition = {
   id: string
   label: string
@@ -119,7 +118,6 @@ export default function ProfileDashboard({
   const [allBadgesOpen, setAllBadgesOpen] = useState(false)
   const [selectedBadgeId, setSelectedBadgeId] = useState<string | null>(null)
   const [friendCount, setFriendCount] = useState(0)
-  const [friendPreview, setFriendPreview] = useState<FriendPreview[]>([])
   const [shareNotice, setShareNotice] = useState("")
   const [collapsed, setCollapsed] = useState(false)
   const [badgeDates, setBadgeDates] = useState<Record<string, string>>({})
@@ -159,16 +157,6 @@ export default function ProfileDashboard({
       }
       if (cancelled) return
       setFriendCount(friendIds.length)
-      if (!friendIds.length) { setFriendPreview([]); return }
-
-      try {
-        const response = await fetch("/api/friends/suggestions", { credentials: "same-origin", cache: "no-store" })
-        if (!response.ok) return
-        const result = await response.json() as { profiles?: FriendPreview[] }
-        if (!cancelled && Array.isArray(result.profiles)) {
-          setFriendPreview(result.profiles.filter(profile => friendIds.includes(profile.id)).slice(0, 4))
-        }
-      } catch { /* Avatar previews are optional. */ }
     }
     void loadFriends()
     return () => { cancelled = true }
@@ -245,7 +233,6 @@ export default function ProfileDashboard({
     Number(b.earned) - Number(a.earned) || Number(b.inProgress) - Number(a.inProgress)
   )
   const selectedBadge = badges.find(badge => badge.id === selectedBadgeId) || null
-  const profileProgress = Math.min(100, Math.round(completedCount / 10 * 100))
   const shareProfile = async () => {
     const url = window.location.origin
     try {
@@ -284,32 +271,28 @@ export default function ProfileDashboard({
         </p>
       </div>
       <div className="evo-profile-avatar-ring" aria-label="Profilkép">
-        {profileProgress > 0 && <svg viewBox="0 0 88 88" className="evo-avatar-progress" aria-hidden="true">
-          <circle cx="44" cy="44" r="42" style={{ strokeDasharray: (profileProgress / 100 * 263.9) + " 263.9" }} />
-        </svg>}
         <span className="evo-profile-avatar-inner">
           {avatarImageSrc ? <img src={avatarImageSrc} alt="" /> : avatar === "book" ? <BookOpen size={32} strokeWidth={1.7} /> : avatar === "star" ? <Star size={32} strokeWidth={1.7} /> : <Sparkles size={32} strokeWidth={1.7} />}
         </span>
       </div>
     </section>
-
     <div className="evo-profile-actions">
       <button type="button" className="evo-profile-edit" onClick={onEdit}>Profil szerkesztése</button>
       <button type="button" className="evo-profile-share" onClick={() => { void shareProfile() }} aria-label="Profil megosztása" title="Profil megosztása">
-        <Share size={22} strokeWidth={1.7} aria-hidden="true" />
+        <Share size={20} strokeWidth={1.7} aria-hidden="true" />
       </button>
     </div>
     {shareNotice && <p className="evo-profile-share-status" role="status">{shareNotice}</p>}
 
     <section className="evo-profile-stats" aria-label="Profilstatisztikák">
-      <button type="button" className="evo-profile-stat" onClick={onStreakSettings} aria-label={streak + " nap sorozat. Napi cél beállításai."}>
-        <Flame className={hasStudiedToday && streak > 0 ? "is-active" : ""} size={18} strokeWidth={1.7} aria-hidden="true" />
+      <button type="button" className={"evo-profile-stat" + (hasStudiedToday && streak > 0 ? " is-active" : "")} onClick={onStreakSettings} aria-label={streak + " nap sorozat. Napi cél beállításai."}>
+        <Flame className="evo-stat-icon is-streak" size={20} strokeWidth={1.8} aria-hidden="true" />
         <strong>{formatNumber(streak)}</strong><span>nap sorozat</span>
       </button>
-      <div className="evo-profile-stat"><Star size={18} strokeWidth={1.7} aria-hidden="true" /><strong>{formatNumber(xp)}</strong><span>pont</span></div>
-      <div className="evo-profile-stat"><Trophy size={18} strokeWidth={1.7} aria-hidden="true" /><strong>Arany</strong><span>liga</span></div>
+      <div className="evo-profile-stat"><Star className="evo-stat-icon is-points" size={20} strokeWidth={1.8} aria-hidden="true" /><strong>{formatNumber(xp)}</strong><span>pont</span></div>
+      <div className="evo-profile-stat"><Trophy className="evo-stat-icon is-league" size={20} strokeWidth={1.8} aria-hidden="true" /><strong>Arany</strong><span>liga</span></div>
       <button type="button" className="evo-profile-stat" onClick={onFriendsClick} aria-label={friendCount + " barát. Barátok megnyitása."}>
-        <Users size={18} strokeWidth={1.7} aria-hidden="true" /><strong>{formatNumber(friendCount)}</strong><span>barát</span>
+        <Users className="evo-stat-icon is-friends" size={20} strokeWidth={1.8} aria-hidden="true" /><strong>{formatNumber(friendCount)}</strong><span>barát</span>
       </button>
     </section>
 
@@ -336,15 +319,6 @@ export default function ProfileDashboard({
         </div>)}
       </div>
     </section>
-
-    <button type="button" className="evo-profile-friends-preview" onClick={onFriendsClick} aria-label={friendCount + " barát. Barátok megnyitása."}>
-      <span className="evo-profile-friends-avatars" aria-hidden="true">
-        {friendPreview.length ? friendPreview.slice(0, 4).map((friend, index) => <span className="evo-friend-avatar" key={friend.id} style={{ zIndex: 4 - index }}>
-          {friend.avatarImage ? <img src={friend.avatarImage} alt="" /> : <UserRound size={17} strokeWidth={1.7} />}
-        </span>) : <span className="evo-friend-avatar"><Users size={20} strokeWidth={1.7} /></span>}
-      </span>
-      <strong>{formatNumber(friendCount)} barát</strong><ChevronRight size={16} strokeWidth={1.7} aria-hidden="true" />
-    </button>
 
     {courseOpen && <BottomSheet title="Tanfolyamválasztás" onClose={() => setCourseOpen(false)}>
       <button className="evo-course-option" type="button" onClick={() => setCourseOpen(false)}>
