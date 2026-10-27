@@ -1143,7 +1143,7 @@ function LeaderboardAvatar({ name, src }: { name: string; src?: string }) {
     </span>
   }
   if (initials) {
-    return <span className={"leaderboard-avatar leaderboard-avatar-tone-" + tone} aria-label={"Profilkép: " + name}>
+    return <span className={"leaderboard-avatar leaderboard-avatar-tone-" + tone} role="img" aria-label={"Profilkép: " + name}>
       {initials}
     </span>
   }
