@@ -761,3 +761,5 @@ body .system-notice-close:focus-visible,body .system-notice-action:focus-visible
   body .system-notice-backdrop,body .system-notice-sheet{animation:none!important}
   body .system-notice-action{transition:none!important}
 }
+
+body .system-notice-chest-art{display:block!important;width:104px!important;height:84px!important;object-fit:contain!important;margin:0 0 22px!important}
