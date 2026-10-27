@@ -305,15 +305,27 @@ const curriculumTopics: CurriculumTopic[] = [
 const generatedLessons: LessonUnit[] = curriculumTopics.map((topic, index) => {
   const id = 11 + index
   const question: Question = { type: "choice", instruction: topic.title + " · Válaszd ki a helyes választ", prompt: topic.prompt, options: topic.options, answer: topic.answer, explanation: topic.explanation, tip: topic.tip }
-  const second: Question = { type: "choice", instruction: topic.title + " · Válaszd ki a helyes választ", prompt: topic.prompt, options: topic.options, answer: topic.answer, explanation: topic.explanation, tip: topic.tip }
-  return { id, title: topic.title, level: index < 11 ? "A2" : "B1", summary: topic.summary, sections: [{ title: "Mikor használjuk?", body: topic.summary, tip: topic.tip }, { title: "Példa és szabály", body: topic.explanation, examples: [{ sentence: topic.prompt, translation: topic.answer }] }], questions: [question, second], }
+  const otherTopics = curriculumTopics.filter((_, topicIndex) => topicIndex !== index)
+  const ruleOptions = [topic.tip, ...Array.from({ length: 3 }, (_, offset) => otherTopics[(index + offset) % otherTopics.length].tip)]
+  const ruleQuestion: Question = { type: "choice", instruction: "Válaszd ki a témához illő szabályt", prompt: "Melyik szabály segít a(z) " + topic.title + " helyes használatában?", options: ruleOptions, answer: topic.tip, explanation: topic.explanation, tip: topic.tip }
+  const completedSentence = topic.prompt.includes("_") ? topic.prompt.replace(/_+/g, topic.answer) : ""
+  const sentenceChoices = topic.options.map(option => topic.prompt.includes("_") ? topic.prompt.replace(/_+/g, option) : option)
+  const sentenceQuestion: Question = { type: "choice", instruction: "Válaszd ki a helyes példamondatot", prompt: "Melyik változat követi a(z) " + topic.title + " szabályát?", options: sentenceChoices, answer: completedSentence || topic.answer, explanation: topic.explanation, tip: topic.tip }
+  const topicOptions = [topic.summary, ...Array.from({ length: 3 }, (_, offset) => otherTopics[(index + offset + 2) % otherTopics.length].summary)]
+  const conceptQuestion: Question = { type: "choice", instruction: "Párosítsd a témát a jelentésével", prompt: "Melyik leírás illik erre: " + topic.title + "?", options: topicOptions, answer: topic.summary, explanation: topic.explanation, tip: topic.tip }
+  const extraQuestion: Question = topic.title === "Countable and Uncountable Nouns"
+    ? { type: "choice", instruction: "Válaszd ki a megszámlálható főnevet", prompt: "Melyik főnév jelöl megszámolható dolgot?", options: ["apple", "information", "water", "advice"], answer: "apple", explanation: "Az apple megszámlálható, az information, water és advice megszámlálhatatlan.", tip: "one apple · some information" }
+    : { type: "choice", instruction: "Válaszd ki a jelentéshez illő kifejezést", prompt: "Melyik kifejezés jelenti azt, hogy „gondoskodni valakiről vagy valamiről”?", options: ["look after", "give up", "find out", "wake up"], answer: "look after", explanation: "A look after jelentése: gondoskodni valakiről vagy valamiről.", tip: "look after = gondoskodni valakiről" }
+  const questions: Question[] = topic.prompt.includes("_")
+    ? [question, ruleQuestion, sentenceQuestion, conceptQuestion]
+    : [question, ruleQuestion, extraQuestion, conceptQuestion]
+  return { id, title: topic.title, level: index < 11 ? "A2" : "B1", summary: topic.summary, sections: [{ title: "Mikor használjuk?", body: topic.summary, tip: topic.tip }, { title: "Példa és szabály", body: topic.explanation, examples: [{ sentence: topic.prompt, translation: topic.answer }] }], questions }
 })
 const fullLessons = [...lessons, ...generatedLessons]
 function practicePacks(lesson: LessonUnit): Question[][] {
-  const questionsPerPack = 5
-  return Array.from({ length: Math.ceil(lesson.questions.length / questionsPerPack) }, (_, packIndex) =>
-    lesson.questions.slice(packIndex * questionsPerPack, (packIndex + 1) * questionsPerPack)
-  )
+  if (lesson.specialType) return [lesson.questions]
+  const packSize = Math.ceil(lesson.questions.length / 2)
+  return [lesson.questions.slice(0, packSize), lesson.questions.slice(packSize)].filter(pack => pack.length > 0)
 }
 const practiceKey = (lessonId: number, packIndex: number, questionIndex: number) => lessonId + "-p" + packIndex + "-" + questionIndex
 const placeholders = Array.from({ length: 90 }, (_, index) => ({ id: index + 11 + curriculumTopics.length, title: "Lecke " + (index + 11 + curriculumTopics.length), inDevelopment: true }))
@@ -409,8 +421,19 @@ export default function App() {
       if (typeof data.notifications === "boolean") setNotifications(data.notifications)
       if (typeof data.compactMode === "boolean") setCompactMode(data.compactMode)
       if (Array.isArray(data.readLessons)) setReadLessons(data.readLessons.filter((v): v is number => Number.isInteger(v)))
-      if (Array.isArray(data.completedLessons)) setCompletedLessons(data.completedLessons.filter((v): v is number => Number.isInteger(v)))
-      if (Array.isArray(data.answeredTasks)) setAnsweredTasks(data.answeredTasks.filter((v): v is string => typeof v === "string"))
+      const restoredAnswers = Array.isArray(data.answeredTasks) ? data.answeredTasks.filter((v): v is string => typeof v === "string") : []
+      setAnsweredTasks(restoredAnswers)
+      if (Array.isArray(data.completedLessons)) {
+        const savedCompletions = data.completedLessons.filter((v): v is number => Number.isInteger(v))
+        const verifiedCompletions = savedCompletions.filter(lessonId => {
+          const lesson = fullLessons.find(item => item.id === lessonId)
+          if (!lesson) return true
+          return practicePacks(lesson).every((pack, packIndex) =>
+            pack.every((_, questionIndex) => restoredAnswers.includes(practiceKey(lessonId, packIndex, questionIndex)))
+          )
+        })
+        setCompletedLessons(verifiedCompletions)
+      }
       if (Array.isArray(data.purchasedItems)) setPurchasedItems(data.purchasedItems.filter((v): v is string => typeof v === "string"))
       if (typeof data.xp === "number" && Number.isFinite(data.xp)) setXp(Math.max(0, data.xp))
       if (typeof data.stars === "number" && Number.isFinite(data.stars)) setStars(Math.max(0, data.stars))
@@ -570,18 +593,13 @@ export default function App() {
     if (!targetPack || targetPack.every((_, index) => answeredTasks.includes(practiceKey(lessonId, packIndex, index)))) return
     setActiveLessonId(lessonId)
     setActivePackIndex(packIndex)
-    setActiveTaskIndex(0)
+    setActiveTaskIndex(targetPack.findIndex((_, index) => !answeredTasks.includes(practiceKey(lessonId, packIndex, index))))
     setLives(5)
     const special = specialTasks.find((item) => item.id === lessonId)
     const isUnlocked = special ? (lessonId === 103 ? completedLessons.length >= 1 : lessonId === 102 ? completedLessons.length >= 2 : completedLessons.length >= 4) : lessonId === 1 || completedLessons.includes(lessonId - 1)
     if (!isUnlocked) {
       setNotice("Először fejezd be az előző leckét!")
       setScreen("home")
-      return
-    }
-    if (!readLessons.includes(lessonId)) {
-      setScreen("lessonIntro")
-      setNotice("Előbb olvasd át a leckét; utána megnyílnak a feladatok.")
       return
     }
     playTaskSound("open")
@@ -815,8 +833,7 @@ function Home({ completedLessons, answeredTasks, readLessons, notice, clearNotic
             const packs = practicePacks(lesson)
             const pack = packs[packIndex]
             const packDone = lessonDone || pack.every((_, questionIndex) => answeredTasks.includes(practiceKey(lesson.id, packIndex, questionIndex)))
-            const previousDone = packIndex === 0 || lessonDone || packs[packIndex - 1].every((_, questionIndex) => answeredTasks.includes(practiceKey(lesson.id, packIndex - 1, questionIndex)))
-            const unlocked = (lessonDone || lessonCurrent) && previousDone
+            const unlocked = lessonDone || lessonCurrent
             return <div key={lesson.id + "-pack-" + packIndex} className={"learn-path-node learn-path-task-node " + (leftSide ? "tasks-left" : "tasks-right")} style={{ left: position + "%", top: routeTops[index] + "px" }}>
               <button type="button" className={"learn-pack-button " + (packDone ? "is-done" : unlocked ? "is-ready" : "is-locked")} disabled={!unlocked || packDone} onClick={() => onOpenTask(lesson.id, packIndex)} aria-label={lesson.title + ", " + (packIndex + 1) + ". feladatcsomag, " + pack.length + " feladat" + (packDone ? ", kész" : unlocked ? "" : ", zárolva")}>
                 <span className={"learn-path-art learn-path-art--" + (unlocked ? "task-active" : "task-locked")} aria-hidden="true" /><strong className="learn-pack-count">{pack.length}</strong>
