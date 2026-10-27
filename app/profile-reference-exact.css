@@ -1,0 +1,455 @@
+/*
+ * Evölingo profile — pixel-aligned mobile reference (Oct 2026).
+ * Visual overrides only; the user's profile, edit dialogs and progress data stay intact.
+ * This sheet is loaded after redesign.css and profile-mobile.css.
+ */
+body .app-shell:has(.profile-page),
+body .screen-content:has(.profile-page),
+body .profile-page {
+  background: #fff !important;
+  color: #080808 !important;
+}
+body .app-shell:has(.profile-page) {
+  width: 100% !important;
+  min-height: 100dvh !important;
+  padding-bottom: calc(96px + env(safe-area-inset-bottom)) !important;
+  overflow-x: clip !important;
+}
+body .screen-content:has(.profile-page) {
+  min-height: 100dvh !important;
+  padding: max(34px, calc(env(safe-area-inset-top, 0px) + 5px)) 18px calc(104px + env(safe-area-inset-bottom, 0px)) !important;
+  overflow: visible !important;
+}
+body .profile-page {
+  width: 100% !important;
+  max-width: 448px !important;
+  min-height: calc(100dvh - 120px) !important;
+  padding: 0 !important;
+  margin: 0 auto !important;
+  overflow: visible !important;
+}
+body .profile-page .profile-reference-hero {
+  position: relative !important;
+  display: flex !important;
+  width: 100% !important;
+  min-height: 286px !important;
+  height: 286px !important;
+  flex-direction: column !important;
+  align-items: stretch !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+/* Upper floating UK pill and joined edit/settings controls. */
+body .profile-page .profile-reference-topbar {
+  width: 100% !important;
+  min-height: 42px !important;
+  height: 42px !important;
+  flex: 0 0 42px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 16px !important;
+  margin: 0 !important;
+  padding: 0 clamp(10px, 4.7vw, 21px) !important;
+  box-sizing: border-box !important;
+}
+body .profile-page .profile-language-pill {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  flex: 0 1 auto !important;
+  min-width: 0 !important;
+  width: auto !important;
+  min-height: 41px !important;
+  height: 41px !important;
+  margin: 0 !important;
+  padding: 5px 16px 5px 7px !important;
+  border-radius: 999px !important;
+  border: 0 !important;
+  background: #fff !important;
+  color: #070707 !important;
+  box-shadow: 0 5px 30px rgba(27, 33, 48, .065) !important;
+  font-size: 16px !important;
+  line-height: 1 !important;
+}
+body .profile-page .profile-language-pill img {
+  width: 28px !important;
+  height: 28px !important;
+  border-radius: 50% !important;
+  object-fit: cover !important;
+}
+body .profile-page .profile-language-pill strong {
+  color: #0b0b0b !important;
+  font-size: 16px !important;
+  font-weight: 750 !important;
+  letter-spacing: -.025em !important;
+  white-space: nowrap !important;
+}
+body .profile-page .profile-reference-controls {
+  min-width: 100px !important;
+  min-height: 41px !important;
+  height: 41px !important;
+  flex: none !important;
+  gap: 0 !important;
+  margin: 0 !important;
+  border: 0 !important;
+  border-radius: 999px !important;
+  overflow: hidden !important;
+  background: #fff !important;
+  box-shadow: 0 5px 30px rgba(27, 33, 48, .065) !important;
+}
+body .profile-page .profile-reference-controls button {
+  position: static !important;
+  display: grid !important;
+  width: 50px !important;
+  min-width: 50px !important;
+  height: 41px !important;
+  min-height: 41px !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  place-items: center !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  color: #050505 !important;
+  box-shadow: none !important;
+}
+body .profile-page .profile-reference-controls button + button {
+  border: 0 !important;
+}
+body .profile-page .profile-reference-controls svg {
+  width: 23px !important;
+  height: 23px !important;
+  color: #080808 !important;
+  stroke-width: 2.7 !important;
+}
+
+/* Name / handle on left, smaller round avatar on right. */
+body .profile-page .profile-reference-identity {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  width: auto !important;
+  min-width: 0 !important;
+  height: 66px !important;
+  min-height: 66px !important;
+  gap: 12px !important;
+  flex: 0 0 66px !important;
+  margin: 43px clamp(22px, 6.5vw, 31px) 0 !important;
+  padding: 0 !important;
+  text-align: left !important;
+  box-sizing: border-box !important;
+}
+body .profile-page .profile-reference-copy {
+  min-width: 0 !important;
+  flex: 1 1 auto !important;
+}
+body .profile-page .profile-reference-identity .profile-display-name {
+  max-width: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  color: #050505 !important;
+  font-size: clamp(29px, 8.8vw, 35px) !important;
+  font-weight: 840 !important;
+  letter-spacing: -.035em !important;
+  line-height: 1.08 !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+body .profile-page .profile-reference-identity .profile-handle {
+  margin: 10px 0 0 !important;
+  color: #242424 !important;
+  font-size: 13px !important;
+  font-weight: 420 !important;
+  line-height: 18px !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+body .profile-page .profile-reference-identity .profile-avatar-wrap,
+body .profile-page .profile-reference-identity .large-avatar {
+  display: block !important;
+  width: 65px !important;
+  min-width: 65px !important;
+  height: 65px !important;
+  min-height: 65px !important;
+  flex: 0 0 65px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 50% !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  overflow: hidden !important;
+}
+body .profile-page .profile-reference-identity .large-avatar img {
+  width: 100% !important;
+  height: 100% !important;
+  border-radius: 50% !important;
+  object-fit: cover !important;
+}
+body .profile-page .profile-reference-identity .large-avatar .avatar-emoji {
+  display: grid !important;
+  width: 100% !important;
+  height: 100% !important;
+  place-items: center !important;
+  background: #f6f6f7 !important;
+  font-size: 31px !important;
+}
+
+/* Two softly raised secondary action pills, precisely spaced as in the reference. */
+body .profile-page .profile-reference-actions {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) !important;
+  gap: clamp(14px, 4vw, 23px) !important;
+  min-width: 0 !important;
+  width: auto !important;
+  min-height: 40px !important;
+  margin: 47px 12px 0 !important;
+  padding: 0 !important;
+  box-sizing: border-box !important;
+}
+body .profile-page .profile-reference-action {
+  display: flex !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  min-height: 40px !important;
+  height: 40px !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 0 8px !important;
+  border: 0 !important;
+  border-radius: 999px !important;
+  background: #fff !important;
+  box-shadow: 0 6px 28px rgba(23, 27, 40, .065) !important;
+  color: #101010 !important;
+  font-size: clamp(15px, 4.5vw, 17px) !important;
+  font-weight: 440 !important;
+  line-height: 1.2 !important;
+  text-align: center !important;
+  white-space: nowrap !important;
+}
+body .profile-page .profile-reference-action--wide {
+  font-weight: 800 !important;
+}
+
+/* The reference is intentionally sparse: no progress and stats cards on this screen. */
+body .profile-page > .guest-save-banner,
+body .profile-page > .profile-social-stats,
+body .profile-page > .profile-learning-card {
+  display: none !important;
+}
+
+/* Horizontal illustrated silver badges with centered captions built into the artwork. */
+body .profile-page > .profile-badges {
+  width: 100% !important;
+  min-width: 0 !important;
+  margin: 10px 0 0 !important;
+  padding: 0 !important;
+  background: transparent !important;
+}
+body .profile-page .profile-badges-heading {
+  display: flex !important;
+  min-height: 25px !important;
+  height: 25px !important;
+  gap: 5px !important;
+  align-items: baseline !important;
+  margin: 0 0 29px clamp(27px, 9vw, 37px) !important;
+  padding: 0 !important;
+}
+body .profile-page .profile-badges-heading h2 {
+  margin: 0 !important;
+  color: #0b0b0b !important;
+  font-size: 17px !important;
+  line-height: 23px !important;
+  font-weight: 820 !important;
+  letter-spacing: -.035em !important;
+}
+body .profile-page .profile-badges-heading > span {
+  color: #c5c5c6 !important;
+  font-size: 16px !important;
+  letter-spacing: 1px !important;
+  line-height: 15px !important;
+}
+body .profile-page .profile-badges-list {
+  display: flex !important;
+  gap: 3px !important;
+  align-items: flex-start !important;
+  width: calc(100% + 36px) !important;
+  max-width: none !important;
+  height: 92px !important;
+  margin: 0 -18px !important;
+  padding: 0 17px 10px clamp(28px, 7.7vw, 35px) !important;
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+  scrollbar-width: none !important;
+  scroll-snap-type: x proximity;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+  background: transparent !important;
+  box-sizing: border-box !important;
+}
+body .profile-page .profile-badges-list::-webkit-scrollbar {
+  display: none !important;
+}
+body .profile-page .profile-badge {
+  position: relative !important;
+  display: block !important;
+  width: 66px !important;
+  min-width: 66px !important;
+  height: 84px !important;
+  min-height: 84px !important;
+  flex: 0 0 66px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+  scroll-snap-align: start;
+  transform: none !important;
+  animation: none !important;
+}
+body .profile-page .profile-badge-medal,
+body .profile-page .profile-badge--gold .profile-badge-medal,
+body .profile-page .profile-badge--green .profile-badge-medal,
+body .profile-page .profile-badge--navy .profile-badge-medal {
+  position: absolute !important;
+  inset: 0 auto auto 50% !important;
+  display: block !important;
+  width: 70px !important;
+  min-width: 70px !important;
+  height: 76px !important;
+  min-height: 76px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  transform: translateX(-50%) !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  color: inherit !important;
+  box-shadow: none !important;
+  overflow: visible !important;
+}
+body .profile-page .profile-badge-medal::before,
+body .profile-page .profile-badge-medal::after {
+  display: none !important;
+  content: none !important;
+}
+body .profile-page .profile-badge-medal img {
+  display: block !important;
+  width: 70px !important;
+  height: 76px !important;
+  max-width: none !important;
+  object-fit: contain !important;
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+body .profile-page .profile-badge > span:last-child {
+  position: absolute !important;
+  z-index: 2 !important;
+  top: 39px !important;
+  bottom: auto !important;
+  left: 50% !important;
+  display: -webkit-box !important;
+  width: max-content !important;
+  min-width: 39px !important;
+  max-width: 62px !important;
+  min-height: 18px !important;
+  margin: 0 !important;
+  padding: 3px 4px !important;
+  transform: translateX(-50%) !important;
+  border: 1px solid rgba(255, 255, 255, .13) !important;
+  border-radius: 7px !important;
+  background: #515154 !important;
+  color: #fff !important;
+  box-shadow: 0 2px 0 rgba(23, 23, 24, .40) !important;
+  font-size: 9px !important;
+  font-weight: 830 !important;
+  line-height: 10px !important;
+  letter-spacing: -.02em !important;
+  text-align: center !important;
+  white-space: normal !important;
+  overflow-wrap: normal !important;
+  -webkit-box-orient: vertical !important;
+  -webkit-line-clamp: 2 !important;
+}
+
+/* Frosted floating four-tab dock; labels are still routed by the actual screen. */
+body .app-shell:has(.profile-page) .bottom-nav {
+  position: fixed !important;
+  z-index: 40 !important;
+  bottom: max(10px, calc(env(safe-area-inset-bottom, 0px) - 10px)) !important;
+  left: 50% !important;
+  display: flex !important;
+  width: min(448px, calc(100vw - 26px)) !important;
+  max-width: 448px !important;
+  min-height: 76px !important;
+  height: 76px !important;
+  margin: 0 !important;
+  padding: 6px !important;
+  transform: translateX(-50%) !important;
+  gap: 0 !important;
+  border: 2px solid #f7f7f8 !important;
+  border-radius: 999px !important;
+  background: #eceef2 !important;
+  box-shadow: 0 5px 20px rgba(24, 32, 45, .075) !important;
+}
+body .app-shell:has(.profile-page) .bottom-nav button {
+  position: relative !important;
+  z-index: 2 !important;
+  flex: 1 1 0 !important;
+  height: 62px !important;
+  min-height: 62px !important;
+  min-width: 0 !important;
+  gap: 4px !important;
+  padding: 6px 2px 5px !important;
+  border: 0 !important;
+  border-radius: 999px !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  color: #41434a !important;
+  font-size: clamp(10px, 2.9vw, 12px) !important;
+  font-weight: 660 !important;
+}
+body .app-shell:has(.profile-page) .bottom-nav button.active {
+  background: #fff !important;
+  color: #111 !important;
+  box-shadow: 0 5px 15px rgba(22, 28, 38, .07) !important;
+}
+body .app-shell:has(.profile-page) .bottom-nav button > svg {
+  width: 25px !important;
+  height: 25px !important;
+  stroke-width: 2.1 !important;
+}
+body .app-shell:has(.profile-page) .bottom-nav button > .learn-user-avatar {
+  width: 25px !important;
+  height: 25px !important;
+}
+body .app-shell:has(.profile-page) .bottom-nav .nav-selection-indicator {
+  border-radius: 999px !important;
+  background: rgba(255, 255, 255, .9) !important;
+  box-shadow: 0 4px 12px rgba(24, 32, 45, .04) !important;
+}
+@media (max-width: 360px) {
+  body .screen-content:has(.profile-page) { padding-right: 14px !important; padding-left: 14px !important; }
+  body .profile-page .profile-reference-topbar { padding-inline: 7px !important; }
+  body .profile-page .profile-reference-identity { margin-inline: 13px !important; }
+  body .profile-page .profile-reference-identity .profile-display-name { font-size: 29px !important; }
+  body .profile-page .profile-reference-actions { margin-inline: 3px !important; gap: 10px !important; }
+  body .profile-page .profile-reference-action { font-size: 14px !important; }
+  body .profile-page .profile-badges-heading { margin-left: 26px !important; }
+}
+@media (max-height: 650px) {
+  body .profile-page .profile-reference-hero { min-height: 268px !important; height: 268px !important; }
+  body .profile-page .profile-reference-identity { margin-top: 30px !important; }
+  body .profile-page .profile-reference-actions { margin-top: 38px !important; }
+  body .profile-page .profile-badges-heading { margin-bottom: 18px !important; }
+}
+@media (prefers-reduced-motion: reduce) {
+  body .app-shell:has(.profile-page) .bottom-nav button { transition: none !important; }
+}

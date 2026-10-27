@@ -5,7 +5,7 @@ import NextImage from "next/image"
 import {
   ArrowRight, Book, BookOpen, Check, CheckCircle2, Headphones, MessageCircle, CircleHelp, Puzzle,
   Flame, Heart, Lightbulb, Medal, RotateCcw, Trophy, UserRound, Dumbbell, Timer, Languages, Volume2,
-  X, Zap, LockKeyhole, ClipboardCheck, Star, ShoppingBag, Gift, Palette, Pencil, Settings, ChevronRight, CalendarDays, Sparkles, Target, Search, UserPlus, Users, Link2, Bell, Share2, Contact2, Cloud,
+  X, Zap, LockKeyhole, ClipboardCheck, Star, ShoppingBag, Gift, Palette, Pencil, Settings, ChevronRight, CalendarDays, Sparkles, Target, Search, UserPlus, Users, Link2, Bell, Share2, Contact2, Cloud, BarChart3,
 } from "lucide-react"
 
 const foxIcon = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Image-D15751D4-6Ne8AGNrryN8wlvyBepC8VDGQkHTw4.jpeg"
@@ -1822,8 +1822,8 @@ function ProfileBadges() {
       <span aria-hidden="true">•••</span>
     </div>
     <div className="profile-badges-list" role="list" aria-label="Elért jelvények">
-      {profileBadgeItems.map(({ id, label, Icon, tone }) => <div className={"profile-badge profile-badge--" + tone} key={id} role="listitem" title={label}>
-        <span className="profile-badge-medal" aria-hidden="true"><Icon size={25} strokeWidth={2.35} /></span>
+      {profileBadgeItems.map(({ id, label, tone }) => <div className={"profile-badge profile-badge--" + tone} key={id} role="listitem" title={label}>
+        <span className="profile-badge-medal" aria-hidden="true"><img src={"/images/profile-badges/" + id + ".svg"} width="70" height="76" alt="" loading="lazy" /></span>
         <span>{label}</span>
       </div>)}
     </div>
@@ -2058,7 +2058,7 @@ function Profile({ completedCount, readCount, completedTaskCount, xp, stars, use
 }
 function PageHeader({ title }: { title: string }) { return <header className={"page-header " + (title === "Ranglista" ? "leaderboard-header" : "")}><div className="brand compact"><img src={foxIcon} alt="Evölingo róka" /><div><span className="brand-wordmark">Evölingo</span></div></div><h1>{title}</h1></header> }
 function Nav({ screen, setScreen, userName, avatar, avatarImage }: { screen: Screen; setScreen: (screen: Screen) => void; userName: string; avatar: string; avatarImage: string }) {
-  const items: [Screen, string, React.ElementType][] = [["home", "Tanulás", BookOpen], ["friends", "Barátok", Users], ["leaderboard", "Csillag", Star], ["profile", "Profil", UserRound]]
+  const items: [Screen, string, React.ElementType][] = [["home", "Tanulás", BookOpen], ["friends", "Barátok", Users], ["leaderboard", "Tanterem", BarChart3], ["profile", "Profil", UserRound]]
   const activeIndex = Math.max(0, items.findIndex(([id]) => id === screen))
   const [dragIndex, setDragIndex] = useState<number | null>(null)
   const dragStart = useRef<{ x: number; index: number; width: number } | null>(null)
