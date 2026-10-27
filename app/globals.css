@@ -6921,6 +6921,7 @@ body,
   background: var(--lb-surface);
   color: var(--lb-text);
 }
+.leaderboard-app { padding-bottom: 0; }
 .leaderboard-screen-content {
   padding: max(24px, env(safe-area-inset-top)) 20px 0;
   background: var(--lb-surface);
@@ -6928,7 +6929,7 @@ body,
 .leaderboard-page {
   width: 100%;
   min-height: calc(100dvh - env(safe-area-inset-top));
-  padding: 0 0 calc(92px + env(safe-area-inset-bottom) + 16px);
+  padding: 0;
   color: var(--lb-text);
 }
 .leaderboard-header {
