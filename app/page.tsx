@@ -186,7 +186,7 @@ const lessons: LessonUnit[] = [
     questions: [
       { type: "choice", instruction: "Válaszd ki a megfelelő szót", prompt: "How _____ apples do we need?", options: ["much", "many", "any", "some"], answer: "many", explanation: "Az apples megszámlálható többes szám, ezért many kell.", tip: "many + megszámlálható főnév" },
       { type: "text", instruction: "Egészítsd ki", prompt: "How _____ time do we have?", answer: "much", explanation: "A time megszámlálhatatlan főnév, ezért much használatos.", tip: "much + megszámlálhatatlan főnév" },
-      { type: "arrange", instruction: "Rakd sorrendbe a kérdést", prompt: "Mennyi pénzed van?", words: ["money?", "much", "you", "How", "do", "have"], answer: "How much money do you have?", explanation: "How much + főnév + do + alany + ige.", tip: "How much money…?" },
+      { type: "arrange", instruction: "Rakd sorrendbe a kérdést", prompt: "Mennyi pénzed van?", words: ["money", "much", "you", "How", "do", "have?"], answer: "How much money do you have?", explanation: "A kérdőjel a mondat végére kerül: How much money do you have?", tip: "How much money…?" },
       { type: "choice", instruction: "Válaszd ki a helyes mondatot", prompt: "Which sentence is correct?", options: ["There are much cars.", "We don't have many time.", "There isn't much milk.", "How many sugar?"], answer: "There isn't much milk.", explanation: "A milk megszámlálhatatlan, ezért much illik hozzá.", tip: "milk → much" },
     ],
   },
@@ -406,6 +406,10 @@ export default function App() {
     void finishSplash()
     return () => { cancelled = true }
   }, [])
+
+  useEffect(() => {
+    if (!showSplash) playTaskSound("welcome")
+  }, [showSplash])
 
   useEffect(() => {
     let cancelled = false
@@ -1057,29 +1061,43 @@ function LessonSectionContent({ section, index }: { section: LessonSection; inde
   </section>
 }
 
-function playTaskSound(kind: "open" | "correct" | "wrong" | "complete") {
+let taskAudioContext: AudioContext | null = null
+let scheduledTaskSoundUntil = 0
+
+function playTaskSound(kind: "welcome" | "open" | "correct" | "wrong" | "complete") {
   try {
     const AudioContextClass = window.AudioContext || (window as typeof window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext
     if (!AudioContextClass) return
-    const context = new AudioContextClass()
-    const gain = context.createGain()
-    gain.connect(context.destination)
-    const notes = kind === "open" ? [440, 660] : kind === "correct" ? [660, 880] : kind === "wrong" ? [220, 170] : [523, 659, 784]
-    const spacing = kind === "complete" ? 0.1 : 0.075
-    const duration = kind === "wrong" ? 0.12 : 0.14
-    const now = context.currentTime
-    notes.forEach((frequency, index) => {
+    if (!taskAudioContext || taskAudioContext.state === "closed") taskAudioContext = new AudioContextClass()
+    const context = taskAudioContext
+    if (context.state === "suspended") void context.resume().catch(() => {})
+
+    const sequences = {
+      welcome: { notes: [587.33, 739.99, 880, 1174.66, 987.77, 1174.66], spacing: 0.24, duration: 0.34, volume: 0.045 },
+      open: { notes: [392, 493.88, 587.33, 783.99, 987.77], spacing: 0.22, duration: 0.32, volume: 0.055 },
+      correct: { notes: [659.25, 880], spacing: 0.11, duration: 0.17, volume: 0.055 },
+      wrong: { notes: [220, 174.61], spacing: 0.1, duration: 0.16, volume: 0.045 },
+      complete: { notes: [523.25, 659.25, 783.99], spacing: 0.16, duration: 0.28, volume: 0.06 },
+    } as const
+    const sequence = sequences[kind]
+    const startAt = Math.max(context.currentTime + 0.025, scheduledTaskSoundUntil)
+    const endAt = startAt + (sequence.notes.length - 1) * sequence.spacing + sequence.duration
+    scheduledTaskSoundUntil = endAt + 0.04
+
+    sequence.notes.forEach((frequency, index) => {
+      const when = startAt + index * sequence.spacing
       const oscillator = context.createOscillator()
-      oscillator.type = kind === "wrong" ? "triangle" : "sine"
-      oscillator.frequency.setValueAtTime(frequency, now + index * spacing)
-      oscillator.connect(gain)
-      oscillator.start(now + index * spacing)
-      oscillator.stop(now + index * spacing + duration)
+      const noteGain = context.createGain()
+      oscillator.type = kind === "wrong" ? "triangle" : kind === "open" ? "triangle" : "sine"
+      oscillator.frequency.setValueAtTime(frequency, when)
+      noteGain.gain.setValueAtTime(0.0001, when)
+      noteGain.gain.exponentialRampToValueAtTime(sequence.volume, when + 0.025)
+      noteGain.gain.exponentialRampToValueAtTime(0.0001, when + sequence.duration)
+      oscillator.connect(noteGain)
+      noteGain.connect(context.destination)
+      oscillator.start(when)
+      oscillator.stop(when + sequence.duration + 0.02)
     })
-    gain.gain.setValueAtTime(0.0001, now)
-    gain.gain.exponentialRampToValueAtTime(0.1, now + 0.012)
-    gain.gain.exponentialRampToValueAtTime(0.0001, now + notes.length * spacing + duration)
-    window.setTimeout(() => { void context.close() }, Math.ceil((notes.length * spacing + duration + 0.05) * 1000))
   } catch { /* Audio remains optional on devices that disable Web Audio. */ }
 }
 
