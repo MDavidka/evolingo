@@ -343,7 +343,7 @@ body .learn-path-overview{
   top:0 !important;
   z-index:7 !important;
   display:grid !important;
-  grid-template-columns:minmax(0,1fr) clamp(62px,17vw,72px) !important;
+  grid-template-columns:minmax(0,1fr) clamp(80px,22vw,94px) !important;
   align-items:center !important;
   box-sizing:border-box !important;
   width:calc(100% - 24px) !important;
@@ -362,9 +362,9 @@ body .learn-lesson-progress-banner{
   justify-content:center !important;
   box-sizing:border-box !important;
   min-width:0 !important;
-  min-height:88px !important;
+  min-height:62px !important;
   margin:0 !important;
-  padding:12px 56px 11px 13px !important;
+  padding:9px 50px 8px 12px !important;
   border:0 !important;
   border-radius:16px !important;
   color:#fff !important;
@@ -376,7 +376,7 @@ body .learn-progress-banner-top{
   align-items:center !important;
   justify-content:space-between !important;
   gap:6px !important;
-  margin:0 0 8px !important;
+  margin:0 0 6px !important;
 }
 body .learn-progress-banner-top h2{
   min-width:0 !important;
@@ -399,7 +399,7 @@ body .learn-progress-banner-top strong{
 }
 body .learn-progress-meter{
   width:100% !important;
-  height:8px !important;
+  height:6px !important;
   overflow:hidden !important;
   border-radius:999px !important;
   background:rgba(255,255,255,.55) !important;
@@ -414,7 +414,7 @@ body .learn-progress-meter span{
 }
 body .learn-lesson-progress-banner > small{
   display:block !important;
-  margin-top:6px !important;
+  margin-top:4px !important;
   color:#fff !important;
   font-size:10px !important;
   font-weight:700 !important;
@@ -422,10 +422,10 @@ body .learn-lesson-progress-banner > small{
 }
 body .learn-progress-badge{
   position:absolute !important;
-  top:-14px !important;
+  top:-10px !important;
   right:9px !important;
-  width:52px !important;
-  height:52px !important;
+  width:44px !important;
+  height:44px !important;
   pointer-events:none !important;
 }
 body .learn-progress-badge img{
@@ -437,7 +437,7 @@ body .learn-progress-badge img{
 }
 body .learn-side-countdowns{
   display:grid !important;
-  grid-template-rows:repeat(2,1fr) !important;
+  grid-template-rows:repeat(2,minmax(48px,1fr)) !important;
   align-self:stretch !important;
   min-width:0 !important;
   gap:6px !important;
@@ -453,9 +453,9 @@ body .learn-countdown-card{
   width:100% !important;
   min-height:0 !important;
   margin:0 !important;
-  padding:5px 7px 5px 29px !important;
+  padding:7px 9px 7px 38px !important;
   border:0 !important;
-  border-radius:12px !important;
+  border-radius:16px !important;
   background:#dededf !important;
   color:#45454d !important;
   font:inherit !important;
@@ -476,21 +476,21 @@ body .learn-countdown-card.lesson.is-available{
 body .learn-countdown-art{
   position:absolute !important;
   top:50% !important;
-  left:4px !important;
+  left:5px !important;
   margin:0 !important;
-  transform:translateY(-50%) scale(.34) !important;
+  transform:translateY(-50%) scale(.44) !important;
   transform-origin:left center !important;
 }
 body .learn-countdown-card small{
   margin:0 0 2px !important;
-  font-size:8px !important;
+  font-size:10px !important;
   font-weight:650 !important;
   line-height:1 !important;
   color:inherit !important;
 }
 body .learn-countdown-card strong{
   color:inherit !important;
-  font-size:13px !important;
+  font-size:16px !important;
   font-weight:800 !important;
   line-height:1 !important;
   font-variant-numeric:tabular-nums !important;
@@ -499,26 +499,26 @@ body .learn-countdown-card:active{transform:translateY(1px) !important}
 body .learn-countdown-card:focus-visible{outline:2px solid #242424 !important;outline-offset:2px !important}
 @media(max-width:359px){
   body .learn-path-overview{
-    grid-template-columns:minmax(0,1fr) 58px !important;
+    grid-template-columns:minmax(0,1fr) 72px !important;
     gap:6px !important;
     width:calc(100% - 20px) !important;
     padding:7px !important;
   }
   body .learn-lesson-progress-banner{
-    min-height:82px !important;
-    padding:10px 47px 9px 11px !important;
+    min-height:57px !important;
+    padding:8px 42px 7px 10px !important;
     border-radius:14px !important;
   }
   body .learn-progress-badge{
-    top:-12px !important;
+    top:-9px !important;
     right:6px !important;
-    width:44px !important;
-    height:44px !important;
+    width:38px !important;
+    height:38px !important;
   }
   body .learn-progress-banner-top h2{font-size:15px !important}
-  body .learn-countdown-card{padding-left:26px !important;padding-right:5px !important}
-  body .learn-countdown-art{left:3px !important;transform:translateY(-50%) scale(.30) !important}
-  body .learn-countdown-card strong{font-size:12px !important}
+  body .learn-countdown-card{padding-left:32px !important;padding-right:6px !important}
+  body .learn-countdown-art{left:4px !important;transform:translateY(-50%) scale(.38) !important}
+  body .learn-countdown-card strong{font-size:14px !important}
 }
 @media(prefers-reduced-motion:reduce){
   body .learn-progress-meter span,
