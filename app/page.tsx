@@ -1989,7 +1989,7 @@ function Profile({ completedCount, readCount, completedTaskCount, xp, stars, use
     <section className="profile-learning-card">
       <div className="profile-section-link"><span><strong>Tanulási haladás</strong><small>{progressPercent === 100 ? "Szép munka!" : "Folytasd a fejlődést!"}</small></span><ChevronRight size={21} /></div>
       <div className="profile-learning-content">
-        <div className="profile-progress-ring" role="progressbar" aria-label="Teljesített alaptémák" aria-valuemin={0} aria-valuemax={10} aria-valuenow={Math.min(completedCount, 10)} style={{ background: "conic-gradient(var(--evo-green) " + progressPercent + "%, color-mix(in srgb, var(--evo-green) 18%, var(--evo-surface)) " + progressPercent + "% 100%)" }}>
+        <div className={"profile-progress-ring " + (progressPercent === 100 ? "is-complete" : "")} role="progressbar" aria-label="Teljesített alaptémák" aria-valuemin={0} aria-valuemax={10} aria-valuenow={Math.min(completedCount, 10)} style={{ background: "conic-gradient(var(--evo-green) " + progressPercent + "%, color-mix(in srgb, var(--evo-green) 18%, var(--evo-surface)) " + progressPercent + "% 100%)" }}>
           <div><strong>{progressPercent}%</strong><span>kész</span></div>
         </div>
         <div className="profile-learning-metrics">
