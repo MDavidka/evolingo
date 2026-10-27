@@ -7158,8 +7158,8 @@ body,
   flex: none;
   padding: 2px 7px;
   border-radius: 999px;
-  background: var(--lb-accent);
-  color: #fff;
+  background: #dcedd4;
+  color: #244e16;
   font-size: .6875rem;
   line-height: 1rem;
   font-weight: 700;
@@ -7274,7 +7274,7 @@ body,
   .leaderboard-rank-1 { color: #ffe1a0; background: #514222; }
   .leaderboard-rank-2 { color: #e0e1e7; background: #414247; }
   .leaderboard-rank-3 { color: #f0c1a2; background: #4a372c; }
-  .leaderboard-you { color: #14220f; }
+  .leaderboard-you { background: #35452e; color: #d9f5cd; }
   .leaderboard-prize-image { background: #39393d; }
   .leaderboard-nav button { color: #d4d4d8; }
   .leaderboard-nav button.active { color: #d9f5cd !important; background: #35452e !important; }
