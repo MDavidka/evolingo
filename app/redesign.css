@@ -701,3 +701,12 @@ body .learn-path-art--chest-opened {
 body .learn-path-chest.is-opened {
   cursor: default !important;
 }
+
+
+/* Remove the outer summary panel; keep the progress and countdown controls on the page surface. */
+body .learn-path-overview {
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
