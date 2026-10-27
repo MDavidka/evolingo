@@ -3,7 +3,7 @@
  * Imported after the legacy profile CSS to prevent old orange styling from leaking.
  */
 body .evo-profile-dashboard {
-  --bg: #F5F5F7;
+  --bg: #FFFFFF;
   --card: #FFFFFF;
   --text: #1D1D1F;
   --muted: #86868B;
@@ -47,7 +47,7 @@ body .evo-profile-dashboard p { margin: 0; }
 body .app-shell:has(.profile-page),
 body .screen-content:has(.profile-page),
 body .profile-page {
-  background: #F5F5F7 !important;
+  background: #FFFFFF !important;
   color: #1D1D1F !important;
 }
 body .app-shell:has(.profile-page) {
@@ -812,37 +812,7 @@ body .evo-badge-detail-track > span {
   body .bottom-nav button { animation: none !important; transition: opacity 120ms linear !important; }
   body .evo-sheet { animation: none !important; }
 }
-@media (prefers-color-scheme: dark) {
-  body .evo-profile-dashboard {
-    --bg: #000000;
-    --card: #1C1C1E;
-    --text: #F5F5F7;
-    --muted: #98989D;
-    --muted-readable: #BABAC0;
-    --line: #38383A;
-    --fill: #2C2C2E;
-    --accent: #6FA07E;
-    --accent-soft: #1F2E24;
-    --star: #C9A24B;
-    --shadow: none;
-    --glass: rgba(28,28,30,.75);
-  }
-  body .app-shell:has(.profile-page),
-  body .screen-content:has(.profile-page),
-  body .profile-page { background: #000000 !important; color: #F5F5F7 !important; }
-  body .evo-profile-topbar { border-color: rgba(255,255,255,.05) !important; }
-  body .evo-badge-art.is-locked { color: #98989D !important; }
-  body .evo-badge-mini-lock { color: #98989D; }
-  body .evo-profile-edit { color: #FFFFFF !important; }
-  body .app-shell:has(.profile-page) .bottom-nav {
-    background: rgba(28,28,30,.75) !important;
-    border-color: rgba(255,255,255,.08) !important;
-    box-shadow: none !important;
-  }
-  body .app-shell:has(.profile-page) .bottom-nav .nav-selection-indicator { background: rgba(255,255,255,.09) !important; }
-  body .app-shell:has(.profile-page) .bottom-nav button,
-  body .app-shell:has(.profile-page) .bottom-nav button span { color: #98989D !important; }
-  body .app-shell:has(.profile-page) .bottom-nav button.active,
-  body .app-shell:has(.profile-page) .bottom-nav button.active span,
-  body .app-shell:has(.profile-page) .bottom-nav button.active svg { color: #F5F5F7 !important; }
-}
+/* The profile is intentionally a white-screen design across device appearances.
+ * Removing the prior automatic dark override keeps backgrounds, text and cards
+ * legible when an iPhone is using system dark appearance.
+ */
