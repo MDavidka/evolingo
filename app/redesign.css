@@ -716,3 +716,48 @@ body .learn-path-overview {
 body .learn-path-overview {
   align-items: start !important;
 }
+
+
+/* System notification sheets: shared for lesson, chest, notification permission and friend requests. */
+body .system-notice-backdrop{
+  position:fixed!important;z-index:90!important;inset:0!important;display:flex!important;align-items:flex-end!important;
+  justify-content:center!important;padding:max(16px,env(safe-area-inset-top)) 0 0!important;background:rgba(20,24,35,.28)!important;
+  animation:system-notice-fade .2s ease both!important;
+}
+body .system-notice-sheet{
+  position:relative!important;display:flex!important;box-sizing:border-box!important;min-height:min(66dvh,540px)!important;width:100%!important;
+  max-width:480px!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:0!important;
+  padding:46px clamp(24px,8vw,42px) max(28px,calc(24px + env(safe-area-inset-bottom)))!important;border:0!important;
+  border-radius:32px 32px 0 0!important;background:#fff!important;color:#1e1b3a!important;text-align:center!important;
+  box-shadow:0 -16px 42px rgba(20,24,35,.12)!important;animation:system-notice-rise .26s cubic-bezier(.2,.8,.2,1) both!important;
+}
+body .system-notice-close{
+  position:absolute!important;top:16px!important;right:16px!important;display:grid!important;width:44px!important;height:44px!important;place-items:center!important;
+  padding:0!important;border:0!important;border-radius:999px!important;background:#f3f4f2!important;color:#1e1b3a!important;
+}
+body .system-notice-icon{
+  display:grid!important;width:72px!important;height:72px!important;margin:0 0 22px!important;place-items:center!important;border-radius:24px!important;
+  background:#dcf1cf!important;color:#43a41d!important;box-shadow:0 5px 0 #b8dca7!important;
+}
+body .system-notice-sheet>p{margin:0 0 10px!important;color:#85858f!important;font-size:11px!important;font-weight:800!important;letter-spacing:.08em!important;line-height:1.2!important}
+body .system-notice-sheet h2{max-width:360px!important;margin:0!important;color:#1e1b3a!important;font-size:clamp(27px,8vw,36px)!important;font-weight:850!important;letter-spacing:-.04em!important;line-height:1.1!important}
+body .system-notice-copy{display:block!important;max-width:340px!important;margin:22px 0 36px!important;color:#4e4d59!important;font-size:16px!important;font-weight:500!important;line-height:1.45!important}
+body .system-notice-action{
+  display:flex!important;align-items:center!important;justify-content:center!important;min-height:56px!important;width:100%!important;padding:0 18px!important;border:0!important;
+  border-radius:999px!important;background:#52b926!important;color:#fff!important;box-shadow:0 5px 0 #43a41d!important;font:inherit!important;font-size:17px!important;font-weight:800!important;
+  transition:transform .16s ease,box-shadow .16s ease!important;
+}
+body .system-notice-action:active{transform:translateY(3px)!important;box-shadow:0 2px 0 #43a41d!important}
+body .system-notice-secondary{min-height:44px!important;margin-top:12px!important;padding:0 14px!important;border:0!important;background:transparent!important;color:#85858f!important;font:inherit!important;font-size:14px!important;font-weight:700!important}
+body .system-notice-close:focus-visible,body .system-notice-action:focus-visible,body .system-notice-secondary:focus-visible{outline:3px solid #1e1b3a!important;outline-offset:3px!important}
+@keyframes system-notice-fade{from{opacity:0}to{opacity:1}}
+@keyframes system-notice-rise{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
+@media(max-height:680px){
+  body .system-notice-sheet{min-height:0!important;padding-top:34px!important}
+  body .system-notice-icon{width:58px!important;height:58px!important;margin-bottom:15px!important;border-radius:20px!important}
+  body .system-notice-copy{margin:14px 0 23px!important}
+}
+@media(prefers-reduced-motion:reduce){
+  body .system-notice-backdrop,body .system-notice-sheet{animation:none!important}
+  body .system-notice-action{transition:none!important}
+}
