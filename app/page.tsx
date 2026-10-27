@@ -22,7 +22,7 @@ const lessonIllustrations: Record<number, { src: string; alt: string }> = {
   9: { src: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1200&q=85", alt: "Különböző magasságú hegycsúcsok" },
   10: { src: "https://images.unsplash.com/photo-1649843787933-a4e0d5313391?auto=format&fit=crop&w=1200&q=85", alt: "Sötét esőfelhők a feltételes mondatok példáihoz" },
 }
-type Screen = "home" | "lessonIntro" | "task" | "shop" | "leaderboard" | "profile" | "friends"
+type Screen = "home" | "lessonIntro" | "task" | "chestOpen" | "shop" | "leaderboard" | "profile" | "friends"
 type DailyStudyState = { streak: number; lastStudyDate: string; todayActivityCount: number; activityDate: string; dailyGoal: number }
 type CloudSaveStatus = "loading" | "saving" | "saved" | "local" | "error"
 type LocalProgressSnapshot = { version: 1; sessionKey: string; savedAt: number; state: Record<string, unknown> }
@@ -343,6 +343,8 @@ export default function App() {
   const [activeLessonId, setActiveLessonId] = useState(1)
   const [activeTaskIndex, setActiveTaskIndex] = useState(0)
   const [activePackIndex, setActivePackIndex] = useState<number | null>(null)
+  const [activeChestLevel, setActiveChestLevel] = useState<number | null>(null)
+  const [chestReward, setChestReward] = useState<number | null>(null)
   const [readLessons, setReadLessons] = useState<number[]>([])
   const [completedLessons, setCompletedLessons] = useState<number[]>([])
   const [answeredTasks, setAnsweredTasks] = useState<string[]>([])
@@ -584,6 +586,7 @@ export default function App() {
     recordDailyActivity()
   }, [readLessons, recordDailyActivity])
   const openLesson = (lessonId: number) => {
+    if ((lessonId > 1 && !completedLessons.includes(lessonId - 1)) || !chestGateIsOpen(lessonId)) return
     setActiveLessonId(lessonId)
     setScreen("lessonIntro")
   }
@@ -596,7 +599,7 @@ export default function App() {
     setActiveTaskIndex(targetPack.findIndex((_, index) => !answeredTasks.includes(practiceKey(lessonId, packIndex, index))))
     setLives(5)
     const special = specialTasks.find((item) => item.id === lessonId)
-    const isUnlocked = special ? (lessonId === 103 ? completedLessons.length >= 1 : lessonId === 102 ? completedLessons.length >= 2 : completedLessons.length >= 4) : lessonId === 1 || completedLessons.includes(lessonId - 1)
+    const isUnlocked = special ? (lessonId === 103 ? completedLessons.length >= 1 : lessonId === 102 ? completedLessons.length >= 2 : completedLessons.length >= 4) : (lessonId === 1 || completedLessons.includes(lessonId - 1)) && chestGateIsOpen(lessonId)
     if (!isUnlocked) {
       setNotice("Először fejezd be az előző leckét!")
       setScreen("home")
@@ -621,13 +624,32 @@ export default function App() {
   const claimableChest = Array.from({ length: Math.floor(completedLessonCount / 5) }, (_, index) => index + 1)
     .find(level => !purchasedItems.includes("chest:" + level))
   const nextChestAt = claimableChest ? claimableChest * 5 : (Math.floor(completedLessonCount / 5) + 1) * 5
+  const chestGateIsOpen = (lessonId: number) => {
+    const requiredChestLevel = Math.floor((lessonId - 1) / 5)
+    return requiredChestLevel === 0 || purchasedItems.includes("chest:" + requiredChestLevel)
+  }
   const claimChest = () => {
     if (!claimableChest) { setNotice("A következő láda " + nextChestAt + " lecke után nyílik meg."); return }
-    if (chestClaimsRef.current.has(claimableChest)) return
-    chestClaimsRef.current.add(claimableChest)
-    setPurchasedItems(previous => previous.includes("chest:" + claimableChest) ? previous : [...previous, "chest:" + claimableChest])
-    setStars(previous => previous + 5)
-    setNotice("Láda kinyitva: +5 csillag!")
+    if (purchasedItems.includes("chest:" + claimableChest)) return
+    setActiveChestLevel(claimableChest)
+    setChestReward(null)
+    setScreen("chestOpen")
+  }
+  const openChestReward = () => {
+    if (activeChestLevel === null || chestReward !== null) return
+    const chestKey = "chest:" + activeChestLevel
+    if (purchasedItems.includes(chestKey) || chestClaimsRef.current.has(activeChestLevel)) return
+    chestClaimsRef.current.add(activeChestLevel)
+    const reward = 1 + Math.floor(Math.random() * 50)
+    setPurchasedItems(previous => previous.includes(chestKey) ? previous : [...previous, chestKey])
+    setStars(previous => previous + reward)
+    setChestReward(reward)
+  }
+  const continueFromChest = () => {
+    setActiveChestLevel(null)
+    setChestReward(null)
+    setNotice("")
+    setScreen("home")
   }
   const openHardChallenge = () => {
     if (completedLessonCount < 4) { setNotice("A nehéz feladat 4 lecke után nyílik meg."); return }
@@ -637,8 +659,8 @@ export default function App() {
     setLives(5)
     setScreen("task")
   }
-  return <><main className={"app-shell " + ((screen === "lessonIntro" || screen === "task") ? "lesson-open" : "") + (screen === "leaderboard" ? " leaderboard-app" : "")}>
-    <section className={"screen-content " + (screen === "home" ? "learn-home-content " : "") + ((screen === "lessonIntro" || screen === "task") ? "lesson-page" : "") + (screen === "leaderboard" ? " leaderboard-screen-content" : "")}>
+  return <><main className={"app-shell " + ((screen === "lessonIntro" || screen === "task" || screen === "chestOpen") ? "lesson-open" : "") + (screen === "leaderboard" ? " leaderboard-app" : "")}>
+    <section className={"screen-content " + (screen === "home" ? "learn-home-content " : "") + ((screen === "lessonIntro" || screen === "task" || screen === "chestOpen") ? "lesson-page" : "") + (screen === "leaderboard" ? " leaderboard-screen-content" : "")}>
       {screen === "home" && <Home
         completedLessons={completedLessons}
         answeredTasks={answeredTasks}
@@ -652,6 +674,7 @@ export default function App() {
         completedLessonCount={completedLessonCount}
         nextChestAt={nextChestAt}
         chestReady={Boolean(claimableChest)}
+        openedChests={purchasedItems.filter(item => item.startsWith("chest:"))}
         onClaimChest={claimChest}
         userName={userName}
         avatar={avatar}
@@ -664,6 +687,7 @@ export default function App() {
         onReadComplete={() => handleReadComplete(activeLesson.id)}
         onPractice={() => { setScreen("home"); setNotice("A feladatok megnyíltak — válassz egy narancssárga pontot!") }}
       />}
+      {screen === "chestOpen" && <ChestOpeningScreen reward={chestReward} onOpen={openChestReward} onContinue={continueFromChest} onExit={() => { setActiveChestLevel(null); setChestReward(null); setScreen("home") }} />}
       {screen === "task" && <TaskExercise
         lesson={activePracticeLesson}
         taskIndex={activeTaskIndex}
@@ -679,7 +703,7 @@ export default function App() {
       {screen === "friends" && <Friends userName={userName} avatar={avatar} avatarImage={avatarImage} xp={xp} dailyStudy={dailyStudy} saveStatus={saveStatus} onRetryCloudSave={retryCloudSave} />}
       {screen === "profile" && <Profile completedCount={completedLessons.length} readCount={readLessons.length} completedTaskCount={answeredTasks.length} xp={xp} stars={stars} userName={userName} setUserName={setUserName} avatar={avatar} setAvatar={setAvatar} avatarImage={avatarImage} setAvatarImage={setAvatarImage} bannerImage={bannerImage} setBannerImage={setBannerImage} dailyStudy={dailyStudy} onDailyGoalChange={(dailyGoal) => setDailyStudy(previous => ({ ...previous, dailyGoal }))} saveStatus={saveStatus} onRetryCloudSave={retryCloudSave} notifications={notifications} setNotifications={setNotifications} compactMode={compactMode} setCompactMode={setCompactMode} showSettings={showSettings} setShowSettings={setShowSettings} />}
     </section>
-    {screen !== "lessonIntro" && screen !== "task" && <Nav screen={screen} setScreen={setScreen} userName={userName} avatar={avatar} avatarImage={avatarImage} />}
+    {screen !== "lessonIntro" && screen !== "task" && screen !== "chestOpen" && <Nav screen={screen} setScreen={setScreen} userName={userName} avatar={avatar} avatarImage={avatarImage} />}
   </main>
   {showSplash && <SplashScreen />}</>
 }
@@ -737,7 +761,7 @@ function UserAvatar({ userName, avatar, avatarImage, variant }: {
   </span>
 }
 
-function Home({ completedLessons, answeredTasks, readLessons, notice, clearNotice, onOpenLesson, onOpenTask, onOpenProfile, userName, avatar, avatarImage, stars, completedLessonCount, nextChestAt, chestReady, onClaimChest }: {
+function Home({ completedLessons, answeredTasks, readLessons, notice, clearNotice, onOpenLesson, onOpenTask, onOpenProfile, userName, avatar, avatarImage, stars, completedLessonCount, nextChestAt, chestReady, openedChests, onClaimChest }: {
   completedLessons: number[]
   answeredTasks: string[]
   readLessons: number[]
@@ -753,6 +777,7 @@ function Home({ completedLessons, answeredTasks, readLessons, notice, clearNotic
   completedLessonCount: number
   nextChestAt: number
   chestReady: boolean
+  openedChests: string[]
   onClaimChest: () => void
 }) {
   const currentLessonId = fullLessons.find(lesson => !completedLessons.includes(lesson.id))?.id ?? null
@@ -829,11 +854,13 @@ function Home({ completedLessons, answeredTasks, readLessons, notice, clearNotic
             return <div key={"chest-" + level} className="learn-path-node learn-path-chest-node" style={{ left: position + "%", top: routeTops[index] + "px" }}><button type="button" className={"learn-path-chest " + (ready ? "is-ready" : "")} onClick={onClaimChest} aria-label={"Láda " + level + (ready ? ", nyitható" : ", lezárva")}><span className={"learn-path-art learn-path-art--" + (completedLessonCount >= level * 5 ? "chest-active" : "chest-locked")} aria-hidden="true" /></button><span className="learn-pack-caption">Láda</span></div>
           }
           const lessonCurrent = lesson.id === currentLessonId
+          const requiredChestLevel = Math.floor((lesson.id - 1) / 5)
+          const chestGateOpen = requiredChestLevel === 0 || openedChests.includes("chest:" + requiredChestLevel)
           if (packIndex !== null) {
             const packs = practicePacks(lesson)
             const pack = packs[packIndex]
             const packDone = lessonDone || pack.every((_, questionIndex) => answeredTasks.includes(practiceKey(lesson.id, packIndex, questionIndex)))
-            const unlocked = lessonDone || lessonCurrent
+            const unlocked = lessonDone || (lessonCurrent && chestGateOpen)
             return <div key={lesson.id + "-pack-" + packIndex} className={"learn-path-node learn-path-task-node " + (leftSide ? "tasks-left" : "tasks-right")} style={{ left: position + "%", top: routeTops[index] + "px" }}>
               <button type="button" className={"learn-pack-button " + (packDone ? "is-done" : unlocked ? "is-ready" : "is-locked")} disabled={!unlocked || packDone} onClick={() => onOpenTask(lesson.id, packIndex)} aria-label={lesson.title + ", " + (packIndex + 1) + ". feladatcsomag, " + pack.length + " feladat" + (packDone ? ", kész" : unlocked ? "" : ", zárolva")}>
                 <span className={"learn-path-art learn-path-art--" + (unlocked ? "task-active" : "task-locked")} aria-hidden="true" /><strong className="learn-pack-count">{pack.length}</strong>
@@ -841,7 +868,7 @@ function Home({ completedLessons, answeredTasks, readLessons, notice, clearNotic
               <span className="learn-pack-caption">{packs.length > 1 ? "Feladat " + (packIndex + 1) : "Feladat"}</span>
             </div>
           }
-          const status = lessonDone ? "completed" : lessonCurrent ? "current" : "locked"
+          const status = lessonDone ? "completed" : lessonCurrent && chestGateOpen ? "current" : "locked"
           return <div className={"learn-path-node learn-path-node-" + status + (leftSide ? " tasks-left" : " tasks-right")} key={lesson.id} style={{ left: position + "%", top: routeTops[index] + "px" }}>
             <button ref={element => { if (element) nodeRefs.current.set(lesson.id, element); else nodeRefs.current.delete(lesson.id) }} type="button" className="learn-path-node-button" disabled={status === "locked"} aria-label={lesson.title + ", " + (lessonDone ? "kész" : lessonCurrent ? "indítás" : "zárolva")} onClick={() => onOpenLesson(lesson.id)}>
               <span className={"learn-path-art learn-path-art--" + (lessonDone ? "checkpoint-active" : lessonCurrent ? "lesson-active" : "lesson-locked")} aria-hidden="true" />
@@ -854,6 +881,25 @@ function Home({ completedLessons, answeredTasks, readLessons, notice, clearNotic
   </div>
 }
 
+function ChestOpeningScreen({ reward, onOpen, onContinue, onExit }: {
+  reward: number | null
+  onOpen: () => void
+  onContinue: () => void
+  onExit: () => void
+}) {
+  const isOpened = reward !== null
+  return <div className="chest-opening-screen">
+    <button className="chest-opening-back" type="button" onClick={onExit} aria-label="Vissza a tanulási útvonalhoz"><ChevronRight size={22} /></button>
+    <div className="chest-opening-content">
+      <h1>{isOpened ? "Láda kinyitva" : "Kattints a láda kinyitásához"}</h1>
+      <button className={"chest-opening-art " + (isOpened ? "is-opened" : "")} type="button" onClick={isOpened ? onContinue : onOpen} aria-label={isOpened ? "Tovább a tanulási útvonalhoz" : "Láda kinyitása"}>
+        <span className={"learn-path-art learn-path-art--chest-" + (isOpened ? "active" : "locked")} aria-hidden="true" />
+      </button>
+      {isOpened && <div className="chest-opening-reward"><strong>+{reward}</strong><Star size={25} fill="currentColor" aria-hidden="true" /><span>csillag</span></div>}
+      {isOpened && <button className="chest-opening-continue" type="button" onClick={onContinue}>Tovább <ArrowRight size={18} /></button>}
+    </div>
+  </div>
+}
 function LessonIntro({ lesson, onExit, onReadComplete, onPractice, alreadyRead }: {
   lesson: LessonUnit; onExit: () => void; onReadComplete: () => void; onPractice: () => void; alreadyRead: boolean
 }) {
