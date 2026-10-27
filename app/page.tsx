@@ -324,10 +324,21 @@ const generatedLessons: LessonUnit[] = curriculumTopics.map((topic, index) => {
 const fullLessons = [...lessons, ...generatedLessons]
 function practicePacks(lesson: LessonUnit): Question[][] {
   if (lesson.specialType) return [lesson.questions]
-  const packSize = Math.ceil(lesson.questions.length / 2)
-  return [lesson.questions.slice(0, packSize), lesson.questions.slice(packSize)].filter(pack => pack.length > 0)
+  const firstPackSize = lesson.questions.length >= 4
+    ? [3, 2, 1][lesson.id % 3]
+    : Math.ceil(lesson.questions.length / 2)
+  return [lesson.questions.slice(0, firstPackSize), lesson.questions.slice(firstPackSize)].filter(pack => pack.length > 0)
 }
-const practiceKey = (lessonId: number, packIndex: number, questionIndex: number) => lessonId + "-p" + packIndex + "-" + questionIndex
+const practiceKey = (lessonId: number, packIndex: number, questionIndex: number) => {
+  const lesson = fullLessons.find(item => item.id === lessonId)
+  if (!lesson || lesson.specialType) return lessonId + "-p" + packIndex + "-" + questionIndex
+  const packs = practicePacks(lesson)
+  const globalQuestionIndex = packs.slice(0, packIndex).reduce((count, pack) => count + pack.length, 0) + questionIndex
+  const previousPackSize = Math.ceil(lesson.questions.length / 2)
+  const previousPackIndex = Math.floor(globalQuestionIndex / previousPackSize)
+  const previousQuestionIndex = globalQuestionIndex % previousPackSize
+  return lessonId + "-p" + previousPackIndex + "-" + previousQuestionIndex
+}
 const placeholders = Array.from({ length: 90 }, (_, index) => ({ id: index + 11 + curriculumTopics.length, title: "Lecke " + (index + 11 + curriculumTopics.length), inDevelopment: true }))
 const pathItems = [...fullLessons, ...specialTasks, ...placeholders]
 const ranks = [
