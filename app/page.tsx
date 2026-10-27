@@ -1129,6 +1129,10 @@ type LeaderboardEntry = {
 function Leaderboard() {
   const [entries, setEntries] = useState<LeaderboardEntry[] | null>(null)
   const [loadFailed, setLoadFailed] = useState(false)
+  const [clicks, setClicks] = useState(0)
+  const [purgeCount, setPurgeCount] = useState<number | null>(null)
+  const [purgeMessage, setPurgeMessage] = useState("")
+  const [purging, setPurging] = useState(false)
 
   useEffect(() => {
     let cancelled = false
@@ -1145,6 +1149,8 @@ function Leaderboard() {
 
   return <div className="leaderboard-page">
     <PageHeader title="Ranglista" />
+    <button className="leaderboard-purge-trigger" type="button" onClick={() => { const next = clicks + 1; setClicks(next); if (next >= 3) { setPurgeCount(null); fetch("/api/admin/purge-zero-stars", { cache: "no-store" }).then(r => r.json()).then(data => setPurgeCount(Number(data.count) || 0)).catch(() => setPurgeMessage("A darabszám lekérése nem sikerült.")) } }}>Csillag</button>
+    {clicks >= 3 && <section className="leaderboard-purge"><strong>Nulla csillagos felhasználók: {purgeCount === null ? "…" : purgeCount}</strong><button type="button" disabled={purging || !purgeCount} onClick={async () => { if (!window.confirm(`Biztosan törlöd ezt a ${purgeCount} felhasználót?`)) return; setPurging(true); try { const response = await fetch("/api/admin/purge-zero-stars", { method: "DELETE" }); const data = await response.json(); setPurgeMessage(`Törölve: ${data.deletedCount ?? 0}`); setPurgeCount(0) } catch { setPurgeMessage("A törlés nem sikerült.") } finally { setPurging(false) } }}> {purging ? "Törlés…" : "Nulla csillagosak törlése"}</button>{purgeMessage && <span role="status">{purgeMessage}</span>}</section> }
     <section className="leaderboard-list" aria-label="Csillag ranglista">
       {entries === null && !loadFailed && <><div className="leaderboard-skeleton" /><div className="leaderboard-skeleton" /><div className="leaderboard-skeleton" /></>}
       {entries?.map(entry => <article className={"leaderboard-entry " + (entry.isCurrent ? "is-current" : "")} key={entry.id}>
