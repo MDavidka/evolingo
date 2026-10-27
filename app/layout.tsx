@@ -3,7 +3,9 @@ import { Inter } from "next/font/google"
 import "./globals.css"
 import "./redesign.css"
 import "./profile-mobile.css"
+import "./development-notice.css"
 import PwaRegister from "./pwa-register"
+import DevelopmentNotice from "./development-notice"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -16,4 +18,4 @@ export const metadata: Metadata = {
   formatDetection: { telephone: false },
 }
 export const viewport: Viewport = { width: "device-width", initialScale: 1, maximumScale: 1, themeColor: "#ffffff", viewportFit: "cover" }
-export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) { return <html lang="en"><body className={inter.className}><PwaRegister />{children}</body></html> }
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) { return <html lang="en"><body className={inter.className}><PwaRegister /><DevelopmentNotice />{children}</body></html> }
