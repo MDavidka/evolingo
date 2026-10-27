@@ -363,6 +363,7 @@ export default function App() {
   const [xp, setXp] = useState(0)
   const [stars, setStars] = useState(0)
   const [showSplash, setShowSplash] = useState(true)
+  const [systemNotice, setSystemNotice] = useState<"permission" | "lesson" | "chest" | "friend" | null>(null)
   const [purchasedItems, setPurchasedItems] = useState<string[]>([])
   const [lives, setLives] = useState(5)
   const [userName, setUserName] = useState("Kíváncsi Vidra 4821")
@@ -410,6 +411,28 @@ export default function App() {
   useEffect(() => {
     if (!showSplash) playTaskSound("welcome")
   }, [showSplash])
+
+  useEffect(() => {
+    if (showSplash) return
+    try {
+      if (!localStorage.getItem("evolingo.notification-intro.v1")) setSystemNotice("permission")
+      else setSystemNotice("lesson")
+    } catch {
+      setSystemNotice("lesson")
+    }
+  }, [showSplash])
+
+  const requestSystemNotifications = async () => {
+    try {
+      const permission = "Notification" in window ? await Notification.requestPermission() : "denied"
+      setNotifications(permission === "granted")
+    } catch {
+      setNotifications(false)
+    } finally {
+      try { localStorage.setItem("evolingo.notification-intro.v1", "1") } catch {}
+      setSystemNotice("lesson")
+    }
+  }
 
   useEffect(() => {
     let cancelled = false
@@ -645,7 +668,7 @@ export default function App() {
     return requiredChestLevel === 0 || purchasedItems.includes("chest:" + requiredChestLevel)
   }
   const claimChest = () => {
-    if (!claimableChest) { setNotice("A következő láda " + nextChestAt + " lecke után nyílik meg."); return }
+    if (!claimableChest) { setSystemNotice("chest"); return }
     if (purchasedItems.includes("chest:" + claimableChest)) return
     setActiveChestLevel(claimableChest)
     setChestReward(null)
@@ -686,6 +709,7 @@ export default function App() {
         onOpenLesson={openLesson}
         onOpenTask={openTask}
         onOpenProfile={() => setScreen("profile")}
+        onShowSystemNotice={setSystemNotice}
         stars={stars}
         completedLessonCount={completedLessonCount}
         nextChestAt={nextChestAt}
@@ -721,6 +745,15 @@ export default function App() {
     </section>
     {screen !== "lessonIntro" && screen !== "task" && screen !== "chestOpen" && <Nav screen={screen} setScreen={setScreen} userName={userName} avatar={avatar} avatarImage={avatarImage} />}
   </main>
+  {systemNotice && <SystemNotificationSheet
+    kind={systemNotice}
+    lessonTitle={fullLessons.find(lesson => !completedLessons.includes(lesson.id))?.title ?? fullLessons[fullLessons.length - 1]?.title ?? "Következő lecke"}
+    nextChestAt={nextChestAt}
+    onClose={() => setSystemNotice(null)}
+    onAllowNotifications={requestSystemNotifications}
+    onOpenLesson={() => { setSystemNotice(null); openLesson(fullLessons.find(lesson => !completedLessons.includes(lesson.id))?.id ?? 1) }}
+    onOpenFriends={() => { setSystemNotice(null); setScreen("friends") }}
+  />}
   {showSplash && <SplashScreen />}</>
 }
 
@@ -731,6 +764,69 @@ function SplashScreen() {
     <span>Tanulj minden nap egy kicsit.</span>
     <div className="learn-splash-dots" aria-hidden="true"><i /><i /><i /></div>
   </div>
+}
+
+
+function SystemNotificationSheet({ kind, lessonTitle, nextChestAt, onClose, onAllowNotifications, onOpenLesson, onOpenFriends }: {
+  kind: "permission" | "lesson" | "chest" | "friend"
+  lessonTitle: string
+  nextChestAt: number
+  onClose: () => void
+  onAllowNotifications: () => void
+  onOpenLesson: () => void
+  onOpenFriends: () => void
+}) {
+  const details = {
+    permission: {
+      icon: Bell,
+      eyebrow: "ÉRTESÍTÉSEK",
+      title: "Maradj képben!",
+      copy: "Szólunk, amikor új feladat, kinyitható láda vagy barátkérelem vár rád.",
+      action: "Értesítések engedélyezése",
+      onAction: onAllowNotifications,
+    },
+    lesson: {
+      icon: BookOpen,
+      eyebrow: "AKTUÁLIS LECKE",
+      title: lessonTitle,
+      copy: "Folytasd ott, ahol abbahagytad — a következő feladat készen áll.",
+      action: "Folytatom",
+      onAction: onOpenLesson,
+    },
+    chest: {
+      icon: Gift,
+      eyebrow: "KÖVETKEZŐ JUTALOM",
+      title: "A láda még zárva van",
+      copy: "Teljesíts még leckéket, és a " + nextChestAt + ". lecke után újra megnyithatod.",
+      action: "Értem",
+      onAction: onClose,
+    },
+    friend: {
+      icon: UserPlus,
+      eyebrow: "ÚJ BARÁTKÉRELEM",
+      title: "Új tanulótárs vár rád",
+      copy: "Nézd meg a kérést, és döntsd el, szeretnéd-e elfogadni.",
+      action: "Kérések megnyitása",
+      onAction: onOpenFriends,
+    },
+  } as const
+  const item = details[kind]
+  const Icon = item.icon
+  return <div className="system-notice-backdrop" role="presentation" onMouseDown={event => { if (event.target === event.currentTarget) onClose() }}>
+    <section className="system-notice-sheet" role="dialog" aria-modal="true" aria-labelledby="system-notice-title">
+      <button className="system-notice-close" type="button" aria-label="Bezárás" onClick={onClose}><X size={21} /></button>
+      <span className="system-notice-icon" aria-hidden="true"><Icon size={34} strokeWidth={2.2} /></span>
+      <p>{item.eyebrow}</p>
+      <h2 id="system-notice-title">{item.title}</h2>
+      <span className="system-notice-copy">{item.copy}</span>
+      <button className="system-notice-action" type="button" onClick={item.onAction}>{item.action}</button>
+      {kind === "permission" && <button className="system-notice-secondary" type="button" onClick={() => { try { localStorage.setItem("evolingo.notification-intro.v1", "1") } catch {}; setSystemNoticeAfterDismiss(onClose) }}>Most nem</button>}
+    </section>
+  </div>
+}
+
+function setSystemNoticeAfterDismiss(onClose: () => void) {
+  onClose()
 }
 
 function Brand() { return <div className="brand"><img src={foxIcon} alt="Evölingo fox mascot" /><div><h1>Evölingo</h1></div></div> }
@@ -777,7 +873,7 @@ function UserAvatar({ userName, avatar, avatarImage, variant }: {
   </span>
 }
 
-function Home({ completedLessons, answeredTasks, readLessons, notice, clearNotice, onOpenLesson, onOpenTask, onOpenProfile, userName, avatar, avatarImage, stars, completedLessonCount, nextChestAt, chestReady, openedChests, onClaimChest }: {
+function Home({ completedLessons, answeredTasks, readLessons, notice, clearNotice, onOpenLesson, onOpenTask, onOpenProfile, onShowSystemNotice, userName, avatar, avatarImage, stars, completedLessonCount, nextChestAt, chestReady, openedChests, onClaimChest }: {
   completedLessons: number[]
   answeredTasks: string[]
   readLessons: number[]
@@ -786,6 +882,7 @@ function Home({ completedLessons, answeredTasks, readLessons, notice, clearNotic
   onOpenLesson: (id: number) => void
   onOpenTask: (lessonId: number, packIndex: number) => void
   onOpenProfile: () => void
+  onShowSystemNotice: (kind: "permission" | "lesson" | "chest" | "friend") => void
   userName: string
   avatar: string
   avatarImage: string
@@ -842,12 +939,12 @@ function Home({ completedLessons, answeredTasks, readLessons, notice, clearNotic
     {notice && <button className="inline-notice learn-inline-notice" type="button" onClick={clearNotice}><span>{notice}</span><X size={16} aria-hidden="true" /></button>}
     <section className="learn-sheet" aria-label="Tanulási útvonal">
       <div className="learn-path-overview">
-        <section className="learn-lesson-progress-banner" aria-label={currentLesson.title + " haladása: " + lessonPercent + "%"}>
+        <button type="button" className="learn-lesson-progress-banner" onClick={() => onShowSystemNotice("lesson")} aria-label={currentLesson.title + " haladása: " + lessonPercent + "%"}>
           <div className="learn-progress-banner-top"><h2>{currentLesson.title}</h2><strong>{lessonPercent}%</strong></div>
           <div className="learn-progress-meter" role="progressbar" aria-label="Lecke haladása" aria-valuemin={0} aria-valuemax={100} aria-valuenow={lessonPercent}><span style={{ width: lessonPercent + "%" }} /></div>
           <small>{answeredLessonTasks}/{totalLessonTasks} feladat</small>
           <span className="learn-progress-badge" aria-hidden="true"><img src="/images/lesson-level-6.png" alt="" /></span>
-        </section>
+        </button>
         <aside className="learn-side-countdowns" aria-label="Következő jutalmak és leckék">
           <button type="button" className={"learn-countdown-card chest " + (chestReady ? "is-available" : "is-counting")} onClick={onClaimChest} aria-label={chestReady ? "Láda nyitható" : "Láda visszaszámlálás: " + formatCountdown(chestSeconds)}>
             <span className={"learn-countdown-art learn-path-art learn-path-art--" + (chestReady ? "chest-active" : "chest-locked")} aria-hidden="true" />
