@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from "react"
 import {
-  ArrowRight, BarChart3, Book, BookOpen, Check, CheckCircle2, Headphones, MessageCircle, CircleHelp, Puzzle,
+  ArrowRight, Book, BookOpen, Check, CheckCircle2, Headphones, MessageCircle, CircleHelp, Puzzle,
   Flame, Heart, Lightbulb, Medal, RotateCcw, Trophy, UserRound, Dumbbell, Timer, Languages, Volume2,
   X, Zap, LockKeyhole, ClipboardCheck, Star, ShoppingBag, Gift, Palette, Pencil, Settings, ChevronRight, CalendarDays, Sparkles, Target, Search, UserPlus, Users, Link2, Bell, Share2, Contact2, Cloud,
 } from "lucide-react"
@@ -1116,7 +1116,48 @@ function Shop({ stars, purchasedItems, onPurchase }: { stars: number; purchasedI
     return <article className="shop-item" key={item.id}><div className="shop-item-icon"><Icon size={26} /></div><div className="shop-item-copy"><strong>{item.name}</strong><p>{item.description}</p><span><Star size={14} fill="currentColor" /> {item.cost} csillag</span></div><button className="shop-buy" disabled={owned || !canAfford} onClick={() => onPurchase(item.id, item.cost)}>{owned ? "Megvéve" : canAfford ? "Megveszem" : "Kevés csillag"}</button></article>
   })}</div><p className="shop-footnote">A bolt bemutató funkció: a megvett jutalmak egyelőre csak az alkalmazás aktuális munkamenetében maradnak meg.</p></>
 }
-function Leaderboard() { return <div className="leaderboard-page classroom-empty"><PageHeader title="Tanterem" /></div> }
+type LeaderboardEntry = {
+  id: string
+  rank: number
+  name: string
+  avatar: string
+  avatarImage?: string
+  stars: number
+  isCurrent: boolean
+}
+
+function Leaderboard() {
+  const [entries, setEntries] = useState<LeaderboardEntry[] | null>(null)
+  const [loadFailed, setLoadFailed] = useState(false)
+
+  useEffect(() => {
+    let cancelled = false
+    fetch("/api/leaderboard", { credentials: "same-origin", cache: "no-store" })
+      .then(response => response.ok ? response.json() as Promise<{ entries?: LeaderboardEntry[] }> : Promise.reject(new Error("leaderboard")))
+      .then(result => {
+        if (!cancelled) setEntries(Array.isArray(result.entries) ? result.entries : [])
+      })
+      .catch(() => {
+        if (!cancelled) setLoadFailed(true)
+      })
+    return () => { cancelled = true }
+  }, [])
+
+  return <div className="leaderboard-page">
+    <PageHeader title="Ranglista" />
+    <section className="leaderboard-list" aria-label="Csillag ranglista">
+      {entries === null && !loadFailed && <><div className="leaderboard-skeleton" /><div className="leaderboard-skeleton" /><div className="leaderboard-skeleton" /></>}
+      {entries?.map(entry => <article className={"leaderboard-entry " + (entry.isCurrent ? "is-current" : "")} key={entry.id}>
+        <span className="leaderboard-rank">#{entry.rank}</span>
+        <span className="leaderboard-avatar">{entry.avatarImage ? <img src={entry.avatarImage} alt="" /> : entry.avatar === "fox" ? <img src={foxIcon} alt="" /> : entry.avatar}</span>
+        <strong>{entry.name}</strong>
+        <span className="leaderboard-stars"><Star size={17} fill="currentColor" aria-hidden="true" />{entry.stars.toLocaleString("hu-HU")}</span>
+      </article>)}
+      {entries?.length === 0 && <p className="leaderboard-empty">Még nincs rangsorolt tanuló.</p>}
+      {loadFailed && <p className="leaderboard-empty">A ranglista most nem érhető el.</p>}
+    </section>
+  </div>
+}
 type FriendProfile = {
   id: string
   name: string
@@ -1692,7 +1733,7 @@ function Profile({ completedCount, readCount, completedTaskCount, xp, stars, use
 }
 function PageHeader({ title }: { title: string }) { return <header className="page-header"><div className="brand compact"><img src={foxIcon} alt="Evölingo róka" /><div><h1>Evölingo</h1></div></div><h1>{title}</h1></header> }
 function Nav({ screen, setScreen, userName, avatar, avatarImage }: { screen: Screen; setScreen: (screen: Screen) => void; userName: string; avatar: string; avatarImage: string }) {
-  const items: [Screen, string, React.ElementType][] = [["home", "Tanulás", BookOpen], ["friends", "Barátok", Users], ["leaderboard", "Tanterem", BarChart3], ["profile", "Profil", UserRound]]
+  const items: [Screen, string, React.ElementType][] = [["home", "Tanulás", BookOpen], ["friends", "Barátok", Users], ["leaderboard", "Csillag", Star], ["profile", "Profil", UserRound]]
   const activeIndex = Math.max(0, items.findIndex(([id]) => id === screen))
   const [dragIndex, setDragIndex] = useState<number | null>(null)
   const dragStart = useRef<{ x: number; index: number; width: number } | null>(null)
