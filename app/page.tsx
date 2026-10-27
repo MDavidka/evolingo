@@ -850,8 +850,10 @@ function Home({ completedLessons, answeredTasks, readLessons, notice, clearNotic
           const lessonDone = completedLessons.includes(lesson.id)
           if (chest) {
             const level = Math.ceil(lesson.id / 5)
-            const ready = completedLessonCount >= level * 5 && chestReady && nextChestAt === level * 5
-            return <div key={"chest-" + level} className="learn-path-node learn-path-chest-node" style={{ left: position + "%", top: routeTops[index] + "px" }}><button type="button" className={"learn-path-chest " + (ready ? "is-ready" : "")} onClick={onClaimChest} aria-label={"Láda " + level + (ready ? ", nyitható" : ", lezárva")}><span className={"learn-path-art learn-path-art--" + (completedLessonCount >= level * 5 ? "chest-active" : "chest-locked")} aria-hidden="true" /></button><span className="learn-pack-caption">Láda</span></div>
+            const chestOpened = openedChests.includes("chest:" + level)
+            const ready = !chestOpened && completedLessonCount >= level * 5 && chestReady && nextChestAt === level * 5
+            const chestArt = chestOpened ? "chest-opened" : completedLessonCount >= level * 5 ? "chest-active" : "chest-locked"
+            return <div key={"chest-" + level} className="learn-path-node learn-path-chest-node" style={{ left: position + "%", top: routeTops[index] + "px" }}><button type="button" className={"learn-path-chest " + (ready ? "is-ready" : "") + (chestOpened ? " is-opened" : "")} disabled={chestOpened} onClick={onClaimChest} aria-label={"Láda " + level + (chestOpened ? ", kinyitva" : ready ? ", nyitható" : ", lezárva")}><span className={"learn-path-art learn-path-art--" + chestArt} aria-hidden="true" /></button><span className="learn-pack-caption">Láda</span></div>
           }
           const lessonCurrent = lesson.id === currentLessonId
           const requiredChestLevel = Math.floor((lesson.id - 1) / 5)
@@ -863,7 +865,7 @@ function Home({ completedLessons, answeredTasks, readLessons, notice, clearNotic
             const unlocked = lessonDone || (lessonCurrent && chestGateOpen)
             return <div key={lesson.id + "-pack-" + packIndex} className={"learn-path-node learn-path-task-node " + (leftSide ? "tasks-left" : "tasks-right")} style={{ left: position + "%", top: routeTops[index] + "px" }}>
               <button type="button" className={"learn-pack-button " + (packDone ? "is-done" : unlocked ? "is-ready" : "is-locked")} disabled={!unlocked || packDone} onClick={() => onOpenTask(lesson.id, packIndex)} aria-label={lesson.title + ", " + (packIndex + 1) + ". feladatcsomag, " + pack.length + " feladat" + (packDone ? ", kész" : unlocked ? "" : ", zárolva")}>
-                <span className={"learn-path-art learn-path-art--" + (unlocked ? "task-active" : "task-locked")} aria-hidden="true" /><strong className="learn-pack-count">{pack.length}</strong>
+                <span className={"learn-path-art learn-path-art--" + (packDone ? "task-active" : unlocked ? "task-ready" : "task-locked")} aria-hidden="true" /><strong className="learn-pack-count">{pack.length}</strong>
               </button>
               <span className="learn-pack-caption">{packs.length > 1 ? "Feladat " + (packIndex + 1) : "Feladat"}</span>
             </div>
@@ -893,7 +895,7 @@ function ChestOpeningScreen({ reward, onOpen, onContinue, onExit }: {
     <div className="chest-opening-content">
       <h1>{isOpened ? "Láda kinyitva" : "Kattints a láda kinyitásához"}</h1>
       <button className={"chest-opening-art " + (isOpened ? "is-opened" : "")} type="button" onClick={isOpened ? onContinue : onOpen} aria-label={isOpened ? "Tovább a tanulási útvonalhoz" : "Láda kinyitása"}>
-        <span className={"learn-path-art learn-path-art--chest-" + (isOpened ? "active" : "locked")} aria-hidden="true" />
+        <span className={"learn-path-art learn-path-art--" + (isOpened ? "chest-opened" : "chest-locked")} aria-hidden="true" />
       </button>
       {isOpened && <div className="chest-opening-reward"><strong>+{reward}</strong><Star size={25} fill="currentColor" aria-hidden="true" /><span>csillag</span></div>}
       {isOpened && <button className="chest-opening-continue" type="button" onClick={onContinue}>Tovább <ArrowRight size={18} /></button>}
