@@ -305,7 +305,7 @@ const curriculumTopics: CurriculumTopic[] = [
 const generatedLessons: LessonUnit[] = curriculumTopics.map((topic, index) => {
   const id = 11 + index
   const question: Question = { type: "choice", instruction: topic.title + " · Válaszd ki a helyes választ", prompt: topic.prompt, options: topic.options, answer: topic.answer, explanation: topic.explanation, tip: topic.tip }
-  const second: Question = { type: "text", instruction: topic.title + " · Emlékezz a szabályra", prompt: "Írd be a helyes választ: " + topic.prompt, answer: topic.answer, explanation: topic.explanation, tip: topic.tip }
+  const second: Question = { type: "choice", instruction: topic.title + " · Válaszd ki a helyes választ", prompt: topic.prompt, options: topic.options, answer: topic.answer, explanation: topic.explanation, tip: topic.tip }
   return { id, title: topic.title, level: index < 11 ? "A2" : "B1", summary: topic.summary, sections: [{ title: "Mikor használjuk?", body: topic.summary, tip: topic.tip }, { title: "Példa és szabály", body: topic.explanation, examples: [{ sentence: topic.prompt, translation: topic.answer }] }], questions: [question, second], }
 })
 const fullLessons = [...lessons, ...generatedLessons]
@@ -313,9 +313,6 @@ function practicePacks(lesson: LessonUnit): Question[][] {
   const count = lesson.questions.length >= 4 ? 2 : 1
   return Array.from({ length: count }, (_, packIndex) => Array.from({ length: 5 }, (_, questionIndex) => {
     const source = lesson.questions[(packIndex * 2 + questionIndex) % lesson.questions.length]
-    if (questionIndex >= lesson.questions.length && source.type === "choice") {
-      return { ...source, type: "text" as const, prompt: "Írd be a hiányzó szót: " + source.prompt, options: undefined }
-    }
     return source
   }))
 }
