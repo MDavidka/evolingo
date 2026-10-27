@@ -1805,6 +1805,31 @@ function Friends({ userName, avatar, avatarImage, xp, dailyStudy, saveStatus, on
   </div>
 }
 
+const profileBadgeItems: { id: string; label: string; Icon: React.ElementType; tone: "green" | "gold" | "navy" }[] = [
+  { id: "streak", label: "Napi sorozat", Icon: Flame, tone: "gold" },
+  { id: "complete", label: "Teljesítés", Icon: Trophy, tone: "green" },
+  { id: "points", label: "2 pont", Icon: Star, tone: "gold" },
+  { id: "double", label: "Dupla pont", Icon: Zap, tone: "green" },
+  { id: "milestone", label: "Mérföldkő", Icon: Medal, tone: "navy" },
+  { id: "favorite", label: "Kedvenc", Icon: Heart, tone: "green" },
+  { id: "special", label: "Különleges", Icon: Sparkles, tone: "gold" },
+]
+
+function ProfileBadges() {
+  return <section className="profile-badges" aria-labelledby="profile-badges-title">
+    <div className="profile-badges-heading">
+      <h2 id="profile-badges-title">Jelvények</h2>
+      <span aria-hidden="true">•••</span>
+    </div>
+    <div className="profile-badges-list" role="list" aria-label="Elért jelvények">
+      {profileBadgeItems.map(({ id, label, Icon, tone }) => <div className={"profile-badge profile-badge--" + tone} key={id} role="listitem" title={label}>
+        <span className="profile-badge-medal" aria-hidden="true"><Icon size={25} strokeWidth={2.35} /></span>
+        <span>{label}</span>
+      </div>)}
+    </div>
+  </section>
+}
+
 function Profile({ completedCount, readCount, completedTaskCount, xp, stars, userName, setUserName, avatar, setAvatar, avatarImage, setAvatarImage, bannerImage, setBannerImage, dailyStudy, onDailyGoalChange, saveStatus, onRetryCloudSave, notifications, setNotifications, compactMode, setCompactMode, showSettings, setShowSettings }: {
   completedCount: number; readCount: number; completedTaskCount: number; xp: number; stars: number; userName: string; setUserName: (value: string) => void;
   avatar: string; setAvatar: (value: string) => void; avatarImage: string; setAvatarImage: (value: string) => void; bannerImage: string; setBannerImage: (value: string) => void;
@@ -1956,6 +1981,8 @@ function Profile({ completedCount, readCount, completedTaskCount, xp, stars, use
     <input ref={bannerInputRef} className="profile-file-input" type="file" accept="image/*" aria-label="Borítókép kiválasztása" onChange={event => { void handleGalleryImage(event.target.files?.[0], "banner"); event.currentTarget.value = "" }} />
 
     <GuestSaveBanner userName={userName} status={saveStatus} onRetry={onRetryCloudSave} />
+
+    <ProfileBadges />
 
     {showStreakSettings && <div className="profile-streak-backdrop" role="presentation" onMouseDown={event => { if (event.target === event.currentTarget) setShowStreakSettings(false) }}>
       <section className="profile-streak-sheet" role="dialog" aria-modal="true" aria-labelledby="profile-streak-title">
