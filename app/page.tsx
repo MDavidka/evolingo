@@ -143,7 +143,7 @@ const lessons: LessonUnit[] = [
     ],
     questions: [
       { type: "choice", instruction: "Válaszd ki a jövő idejű alakot", prompt: "I think you _____ the test.", options: ["pass", "passed", "will pass", "will passed"], answer: "will pass", explanation: "A will után az ige alapformája, a pass áll.", tip: "will + alapige" },
-      { type: "text", instruction: "Egészítsd ki", prompt: "Don't worry. I _____ help you.", answer: "will", explanation: "A will segít jövőbeli ígéret kifejezésében.", tip: "I will help you." },
+      { type: "text", instruction: "Egészítsd ki", prompt: "Don't worry. I _____ help you.", answer: "will", accepted: ["can"], explanation: "A will segít jövőbeli ígéret kifejezésében.", tip: "I will help you." },
       { type: "arrange", instruction: "Állítsd össze a mondatot", prompt: "Holnap felhívlak.", words: ["tomorrow.", "will", "call", "I", "you"], answer: "I will call you tomorrow.", explanation: "Alany + will + alapige + tárgy + időhatározó.", tip: "A will után call áll, nem called." },
       { type: "choice", instruction: "Melyik kérdés helyes?", prompt: "Ask about the future.", options: ["Will they come?", "Do they will come?", "Will they came?", "They will come?"], answer: "Will they come?", explanation: "Kérdésben a will kerül az alany elé, utána alapige jön.", tip: "Will + alany + alapige?" },
     ],
@@ -171,7 +171,7 @@ const lessons: LessonUnit[] = [
     ],
     questions: [
       { type: "choice", instruction: "Válaszd ki a helyes szót", prompt: "There are _____ books on the table.", options: ["any", "some", "much", "a"], answer: "some", explanation: "Állító mondatban általában some szerepel.", tip: "Állító mondat → gyakran some" },
-      { type: "text", instruction: "Írd be a hiányzó szót", prompt: "We don't have _____ bread.", answer: "any", explanation: "Tagadásban általában any-t használunk.", tip: "don't have any…" },
+      { type: "text", instruction: "Írd be a hiányzó szót", prompt: "We don't have _____ bread.", answer: "any", accepted: ["much", "enough"], explanation: "Tagadásban általában any-t használunk.", tip: "don't have any…" },
       { type: "arrange", instruction: "Rakd össze a kérdést", prompt: "Van egy kis teád?", words: ["tea?", "you", "Do", "have", "any"], answer: "Do you have any tea?", explanation: "Kérdésben a Do + alany + ige + any + főnév szerkezetet használjuk.", tip: "Do you have any…?" },
       { type: "choice", instruction: "Válaszd ki a természetes ajánlatot", prompt: "You are offering a drink.", options: ["Would you like any tea?", "Would you like some tea?", "Would you like many tea?", "Would like some teas you?"], answer: "Would you like some tea?", explanation: "Udvarias kínálásban természetes a some.", tip: "Ajánlat vagy kérés → gyakran some" },
     ],
@@ -213,7 +213,7 @@ const lessons: LessonUnit[] = [
     ],
     questions: [
       { type: "choice", instruction: "Válaszd ki a helyes alakot", prompt: "If it _____, we'll stay at home.", options: ["will rain", "rains", "rain", "rained"], answer: "rains", explanation: "Az if-es részben Present Simple áll, nem will.", tip: "If + Present Simple" },
-      { type: "text", instruction: "Egészítsd ki", prompt: "If you study, you _____ pass the test.", answer: "will", explanation: "A következményt a főmondatban will + alapige fejezi ki.", tip: "will + alapige" },
+      { type: "text", instruction: "Egészítsd ki", prompt: "If you study, you _____ pass the test.", answer: "will", accepted: ["can", "may", "might"], explanation: "A következményt a főmondatban will + alapige fejezi ki.", tip: "will + alapige" },
       { type: "arrange", instruction: "Állítsd össze a mondatot", prompt: "Ha sietsz, eléred a buszt.", words: ["the bus.", "catch", "you", "will", "you", "If", "hurry,"], answer: "If you hurry, you will catch the bus.", explanation: "If + alany + Present Simple, majd will + alapige.", tip: "Az if-es részben ne használj will-t." },
       { type: "choice", instruction: "Melyik mondat helyes?", prompt: "Choose the correct First Conditional.", options: ["If she will call, I answer.", "If she calls, I'll answer.", "If she called, I'll answer.", "If she call, I will answered."], answer: "If she calls, I'll answer.", explanation: "If + Present Simple, a főmondatban will + alapige.", tip: "calls + will answer" },
     ],
@@ -223,7 +223,7 @@ const lessons: LessonUnit[] = [
 const specialTasks: LessonUnit[] = [
   { id: 101, title: "Hard mód", level: "Kihívás", summary: "Nehezebb, összetettebb kérdések.", specialType: "hard", sections: [], questions: [
     { type: "choice", instruction: "Hard mód · Nyelvtan", prompt: "If I _____ enough time, I would have helped you.", options: ["had", "have", "would have", "had had"], answer: "had had", explanation: "Harmadik feltételes szerkezet: If + past perfect, would have + past participle.", tip: "If I had had…, I would have helped…" },
-    { type: "text", instruction: "Hard mód · Egészítsd ki", prompt: "Neither of the answers _____ correct.", answer: "is", explanation: "A neither of szerkezethez formális angolban gyakran egyes számú ige tartozik.", tip: "Neither of + többes számú főnév + egyes számú ige." },
+    { type: "text", instruction: "Hard mód · Egészítsd ki", prompt: "Neither of the answers _____ correct.", answer: "is", accepted: ["are"], explanation: "A neither of szerkezethez formális angolban gyakran egyes számú ige tartozik.", tip: "Neither of + többes számú főnév + egyes számú ige." },
     { type: "choice", instruction: "Hard mód · Válaszd ki", prompt: "By the time we arrived, the film _____.", options: ["already started", "had already started", "has already started", "was already start"], answer: "had already started", explanation: "A korábban befejeződött múltbeli eseményhez Past Perfectet használunk.", tip: "A korábbi esemény: had + ige harmadik alakja." }
   ] },
   { id: 102, title: "Időkihívás", level: "Időre", summary: "Válaszolj 30 másodperc alatt!", specialType: "timed", sections: [], questions: [
