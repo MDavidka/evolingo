@@ -740,7 +740,7 @@ export default function App() {
       />}
       {screen === "shop" && <Shop stars={stars} purchasedItems={purchasedItems} onPurchase={(id, cost) => { if (stars >= cost && !purchasedItems.includes(id)) { setStars((value) => value - cost); setPurchasedItems((items) => [...items, id]); setNotice("Sikeres vásárlás!"); } }} />}
       {screen === "leaderboard" && <Leaderboard />}
-      {screen === "friends" && <Friends userName={userName} avatar={avatar} avatarImage={avatarImage} xp={xp} dailyStudy={dailyStudy} saveStatus={saveStatus} onRetryCloudSave={retryCloudSave} />}
+      {screen === "friends" && <Friends userName={userName} avatar={avatar} avatarImage={avatarImage} xp={xp} dailyStudy={dailyStudy} saveStatus={saveStatus} onRetryCloudSave={retryCloudSave} onNewFriendRequest={() => setSystemNotice("friend")} />}
       {screen === "profile" && <Profile completedCount={completedLessons.length} readCount={readLessons.length} completedTaskCount={answeredTasks.length} xp={xp} stars={stars} userName={userName} setUserName={setUserName} avatar={avatar} setAvatar={setAvatar} avatarImage={avatarImage} setAvatarImage={setAvatarImage} bannerImage={bannerImage} setBannerImage={setBannerImage} dailyStudy={dailyStudy} onDailyGoalChange={(dailyGoal) => setDailyStudy(previous => ({ ...previous, dailyGoal }))} saveStatus={saveStatus} onRetryCloudSave={retryCloudSave} notifications={notifications} setNotifications={setNotifications} compactMode={compactMode} setCompactMode={setCompactMode} showSettings={showSettings} setShowSettings={setShowSettings} />}
     </section>
     {screen !== "lessonIntro" && screen !== "task" && screen !== "chestOpen" && <Nav screen={screen} setScreen={setScreen} userName={userName} avatar={avatar} avatarImage={avatarImage} />}
@@ -1458,9 +1458,9 @@ type FriendProfile = {
 
 type FriendsTab = "friends" | "requests" | "suggested"
 
-function Friends({ userName, avatar, avatarImage, xp, dailyStudy, saveStatus, onRetryCloudSave }: {
+function Friends({ userName, avatar, avatarImage, xp, dailyStudy, saveStatus, onRetryCloudSave, onNewFriendRequest }: {
   userName: string; avatar: string; avatarImage: string; xp: number; dailyStudy: DailyStudyState
-  saveStatus: CloudSaveStatus; onRetryCloudSave: () => void
+  saveStatus: CloudSaveStatus; onRetryCloudSave: () => void; onNewFriendRequest: () => void
 }) {
   const [tab, setTab] = useState<FriendsTab>("friends")
   const [query, setQuery] = useState("")
@@ -1572,6 +1572,14 @@ function Friends({ userName, avatar, avatarImage, xp, dailyStudy, saveStatus, on
   const visibleFriends = followedFriends.filter(friend => matchesQuery(friend, normalizedQuery))
   const visibleOutgoing = outgoingRequests.filter(friend => matchesQuery(friend, normalizedQuery))
   const visibleIncoming = incomingProfiles.filter(friend => matchesQuery(friend, normalizedQuery))
+  useEffect(() => {
+    if (!stateReady || incomingProfiles.length === 0) return
+    try {
+      if (localStorage.getItem("evolingo.friend-request-notice.v1")) return
+      localStorage.setItem("evolingo.friend-request-notice.v1", "1")
+    } catch { /* Displaying the request is still useful without local storage. */ }
+    onNewFriendRequest()
+  }, [stateReady, incomingProfiles.length, onNewFriendRequest])
   // Show real registered accounts on the Friends tab, not just followed friends or demo recommendations.
   const registeredUsers = profiles
     .filter(friend => friend.handle.replace(/^@/, "").toLocaleLowerCase("hu") !== userName.toLocaleLowerCase("hu"))
