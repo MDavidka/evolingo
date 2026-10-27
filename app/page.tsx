@@ -844,7 +844,7 @@ function GuestSaveBanner({ userName, status, onRetry }: { userName: string; stat
       <strong>Vendégprofil · {userName}</strong>
       <small>{message}</small>
     </span>
-    {(status === "local" || status === "error") && <button type="button" onClick={onRetry}>Újrapróbál</button>}
+    <button type="button" onClick={onRetry}>Fiók mentése</button>
   </aside>
 }
 
@@ -1987,13 +1987,13 @@ function Profile({ completedCount, readCount, completedTaskCount, xp, stars, use
     </section>
 
     <section className="profile-learning-card">
-      <div className="profile-section-link"><span><strong>Tanulási haladás</strong><small>Folytasd a fejlődést!</small></span><ChevronRight size={21} /></div>
+      <div className="profile-section-link"><span><strong>Tanulási haladás</strong><small>{progressPercent === 100 ? "Szép munka!" : "Folytasd a fejlődést!"}</small></span><ChevronRight size={21} /></div>
       <div className="profile-learning-content">
-        <div className="profile-progress-ring" role="progressbar" aria-label="Teljesített alaptémák" aria-valuemin={0} aria-valuemax={10} aria-valuenow={Math.min(completedCount, 10)} style={{ background: "conic-gradient(#252525 " + progressPercent + "%, #e9e9e9 " + progressPercent + "% 100%)" }}>
+        <div className="profile-progress-ring" role="progressbar" aria-label="Teljesített alaptémák" aria-valuemin={0} aria-valuemax={10} aria-valuenow={Math.min(completedCount, 10)} style={{ background: "conic-gradient(var(--evo-green) " + progressPercent + "%, color-mix(in srgb, var(--evo-green) 18%, var(--evo-surface)) " + progressPercent + "% 100%)" }}>
           <div><strong>{progressPercent}%</strong><span>kész</span></div>
         </div>
         <div className="profile-learning-metrics">
-          <div><BookOpen size={20} /><span><strong>{completedCount}</strong><small>Teljesített lecke</small></span></div>
+          <div><Flame size={20} /><span><strong>{visibleStreak}</strong><small>Napi sorozat</small></span></div>
           <div><CheckCircle2 size={20} /><span><strong>{completedTaskCount}</strong><small>Kész feladatcsomag</small></span></div>
           <div><Star size={20} /><span><strong>{stars.toLocaleString("en-US")}</strong><small>Összegyűjtött csillag</small></span></div>
         </div>
