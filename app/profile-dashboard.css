@@ -1,0 +1,684 @@
+/* Evölingo profile dashboard — orange-accented 390px reference. Only profile is affected. */
+body .app-shell:has(.profile-page),
+body .screen-content:has(.profile-page),
+body .profile-page {
+  background: #fff !important;
+  color: #101827 !important;
+}
+body .app-shell:has(.profile-page) {
+  padding-bottom: calc(102px + env(safe-area-inset-bottom, 0px)) !important;
+  min-height: 100dvh !important;
+  overflow-x: clip !important;
+}
+body .screen-content:has(.profile-page) {
+  background: #fff !important;
+  padding: max(22px, calc(env(safe-area-inset-top, 0px) + 8px)) 24px calc(106px + env(safe-area-inset-bottom, 0px)) !important;
+  min-height: 100dvh !important;
+  overflow-x: clip !important;
+}
+body .profile-page {
+  width: 100% !important;
+  max-width: 448px !important;
+  padding: 0 !important;
+  margin: 0 auto !important;
+  overflow: visible !important;
+  min-height: 0 !important;
+}
+body .evo-profile-dashboard,
+body .evo-profile-dashboard * { box-sizing: border-box; }
+body .evo-profile-dashboard {
+  width: 100%;
+  max-width: 448px;
+  margin: 0 auto;
+  color: #101827;
+  font-family: inherit;
+}
+body .evo-profile-dashboard button {
+  font-family: inherit;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+body .evo-profile-dashboard button:focus-visible {
+  outline: 3px solid #ff7a00 !important;
+  outline-offset: 3px !important;
+}
+
+/* Floating top bar */
+body .evo-profile-topbar {
+  display: flex !important;
+  height: 48px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+body .evo-profile-course-anchor { position: relative; min-width: 0; }
+body .evo-profile-course,
+body .evo-profile-settings {
+  display: flex !important;
+  height: 46px !important;
+  align-items: center !important;
+  border: 1px solid #edeef1 !important;
+  background: #fff !important;
+  color: #111827 !important;
+  box-shadow: 0 6px 20px rgba(25, 32, 46, .055) !important;
+}
+body .evo-profile-course {
+  max-width: 100%;
+  gap: 10px;
+  padding: 5px 12px 5px 9px !important;
+  border-radius: 999px !important;
+}
+body .evo-profile-course > img {
+  display: block !important;
+  width: 29px !important;
+  height: 29px !important;
+  flex: 0 0 29px !important;
+  border-radius: 50% !important;
+  object-fit: cover !important;
+  background: transparent !important;
+}
+body .evo-profile-course > span {
+  display: block;
+  font-size: 16px;
+  font-weight: 760;
+  white-space: nowrap;
+  letter-spacing: -.02em;
+}
+body .evo-profile-course > svg { flex-shrink: 0; margin-left: 3px; }
+body .evo-profile-settings {
+  display: grid !important;
+  width: 46px !important;
+  min-width: 46px !important;
+  padding: 0 !important;
+  border-radius: 50% !important;
+  place-items: center;
+}
+body .evo-profile-course-menu {
+  position: absolute;
+  z-index: 30;
+  top: calc(100% + 9px);
+  left: 0;
+  display: flex;
+  min-width: 218px;
+  flex-direction: column;
+  gap: 4px;
+  padding: 14px 16px;
+  border: 1px solid #eff0f3;
+  border-radius: 17px;
+  background: #fff;
+  box-shadow: 0 18px 36px rgba(18, 30, 49, .12);
+}
+body .evo-profile-course-menu strong { font-size: 15px; }
+body .evo-profile-course-menu span { font-size: 12px; color: #747d8b; }
+
+/* Identity and orange-ringed round photo */
+body .evo-profile-intro {
+  display: flex !important;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 111px;
+  gap: 12px;
+  margin: 25px 0 0;
+  padding: 0 2px;
+}
+body .evo-profile-identity { min-width: 0; flex: 1 1 auto; }
+body .evo-profile-identity h1 {
+  margin: 0 !important;
+  overflow: hidden;
+  color: #111827 !important;
+  font-size: clamp(29px, 8.5vw, 39px) !important;
+  font-weight: 850 !important;
+  line-height: 1.08 !important;
+  letter-spacing: -.052em !important;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+body .evo-profile-handle {
+  margin: 9px 0 0 !important;
+  overflow: hidden;
+  color: #656c7a !important;
+  font-size: clamp(14px, 3.8vw, 16px) !important;
+  font-weight: 650 !important;
+  line-height: 1.2 !important;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+body .evo-profile-joined {
+  margin: 8px 0 0 !important;
+  color: #818998 !important;
+  font-size: clamp(11px, 3vw, 13px) !important;
+  line-height: 1.35 !important;
+  white-space: nowrap;
+}
+body .evo-profile-avatar-ring {
+  display: grid;
+  position: relative;
+  flex: 0 0 clamp(92px, 26vw, 109px);
+  width: clamp(92px, 26vw, 109px);
+  height: clamp(92px, 26vw, 109px);
+  place-items: center;
+  border-radius: 50%;
+  background: conic-gradient(from -38deg, #ff7a00 0deg 230deg, transparent 230deg 264deg, #ff7a00 264deg 316deg, #eceef0 316deg 360deg);
+}
+body .evo-profile-avatar-ring::before {
+  position: absolute;
+  inset: 5px;
+  border-radius: 50%;
+  background: #fff;
+  content: "";
+}
+body .evo-profile-avatar-inner {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  width: calc(100% - 16px);
+  height: calc(100% - 16px);
+  overflow: hidden;
+  border-radius: 50%;
+  background: #f5f5f6;
+  place-items: center;
+}
+body .evo-profile-avatar-inner img {
+  display: block !important;
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+}
+body .evo-profile-avatar-emoji { font-size: 36px; }
+
+/* Action row */
+body .evo-profile-actions {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 9px;
+  width: 100%;
+  margin: 22px 0 0;
+}
+body .evo-profile-edit,
+body .evo-profile-share {
+  display: flex !important;
+  width: 100% !important;
+  min-width: 0;
+  height: 52px !important;
+  min-height: 52px !important;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 0 8px !important;
+  border-radius: 999px !important;
+  font-size: clamp(12px, 3.25vw, 15px) !important;
+  font-weight: 780 !important;
+  letter-spacing: -.02em;
+  white-space: nowrap;
+}
+body .evo-profile-edit {
+  border: 1px solid #ff7a00 !important;
+  background: #ff7a00 !important;
+  color: #fff !important;
+  box-shadow: 0 8px 16px rgba(255, 122, 0, .13) !important;
+}
+body .evo-profile-share {
+  border: 1px solid #d9dde5 !important;
+  background: #fff !important;
+  color: #111827 !important;
+  box-shadow: 0 5px 16px rgba(18, 30, 49, .035) !important;
+}
+body .evo-profile-share svg { flex-shrink: 0; }
+body .evo-profile-edit:active,
+body .evo-profile-share:active { transform: scale(.985); }
+body .evo-profile-share-status {
+  margin: 7px 0 0 !important;
+  color: #657083;
+  font-size: 12px;
+  text-align: center;
+}
+
+/* Four equal, elevated stat tiles */
+body .evo-profile-stats {
+  display: grid !important;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  margin: 20px 0 0;
+}
+body .evo-profile-stat,
+body button.evo-profile-stat {
+  display: flex !important;
+  height: 98px !important;
+  min-width: 0 !important;
+  min-height: 98px !important;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  margin: 0 !important;
+  padding: 10px 3px !important;
+  border: 1px solid #f0f1f3 !important;
+  border-radius: 19px !important;
+  background: #fff !important;
+  box-shadow: 0 7px 22px rgba(24, 31, 43, .055) !important;
+  text-align: center;
+}
+body .evo-profile-stat > svg { flex-shrink: 0; }
+body .evo-stat-flame { color: #ff7410 !important; }
+body .evo-stat-star { color: #ffb800 !important; }
+body .evo-stat-trophy { color: #ffae08 !important; }
+body .evo-stat-friends { color: #a4a9b4 !important; }
+body .evo-profile-stat strong {
+  display: block;
+  width: 100%;
+  overflow: hidden;
+  color: #111827 !important;
+  font-size: clamp(16px, 4.4vw, 21px) !important;
+  font-weight: 850 !important;
+  line-height: 1.1 !important;
+  letter-spacing: -.03em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+body .evo-profile-stat > span {
+  display: block;
+  color: #747c8b !important;
+  font-size: clamp(9px, 2.6vw, 11px) !important;
+  line-height: 1.1;
+  white-space: nowrap;
+}
+body button.evo-profile-stat:active { transform: translateY(2px); }
+
+/* Badges — separate single-line labels below 72px round medallions */
+body .evo-profile-badges { margin: 26px 0 0; }
+body .evo-profile-section-heading {
+  display: flex !important;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 0 1px;
+}
+body .evo-profile-section-heading h2 {
+  margin: 0 !important;
+  color: #121a29 !important;
+  font-size: 20px !important;
+  font-weight: 850 !important;
+  line-height: 1.2 !important;
+  letter-spacing: -.035em;
+  white-space: nowrap;
+}
+body .evo-profile-section-heading h2 span {
+  color: #646c7a !important;
+  font-size: 17px;
+  font-weight: 600;
+}
+body .evo-profile-see-all {
+  min-width: 0;
+  flex-shrink: 0;
+  padding: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+  color: #ff7100 !important;
+  font-size: 14px !important;
+  font-weight: 800 !important;
+  white-space: nowrap;
+}
+body .evo-profile-see-all > span { padding-left: 1px; font-size: 20px; }
+body .evo-profile-badges-viewport { position: relative; margin: 14px -24px 0; }
+body .evo-profile-badges-viewport::after {
+  position: absolute;
+  z-index: 2;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 27px;
+  background: linear-gradient(90deg, transparent, #fff 92%);
+  pointer-events: none;
+  content: "";
+}
+body .evo-profile-badges-rail {
+  display: flex !important;
+  width: 100%;
+  gap: 12px;
+  padding: 0 24px 10px !important;
+  margin: 0 !important;
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x proximity;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+body .evo-profile-badges-rail::-webkit-scrollbar { display: none; }
+body .evo-profile-badge {
+  display: flex !important;
+  width: 72px;
+  min-width: 72px;
+  flex: 0 0 72px;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 0;
+  scroll-snap-align: start;
+}
+body .evo-badge-art {
+  position: relative;
+  display: grid;
+  flex: 0 0 72px;
+  width: 72px;
+  height: 72px;
+  place-items: center;
+  border-radius: 50%;
+}
+body .evo-badge-art.is-earned {
+  border: 3px solid #ffae29;
+  background: radial-gradient(circle at 34% 23%, #ffc26a 0%, #ff8c19 25%, #ff6a00 69%, #ce4700 100%);
+  box-shadow: inset 0 3px 0 rgba(255, 255, 255, .40), inset 0 -4px 0 rgba(121, 51, 0, .2), 0 3px 6px rgba(255, 121, 0, .11);
+}
+body .evo-badge-art--complete.is-earned {
+  border-color: #ffd54a;
+  background: radial-gradient(circle at 35% 23%, #fff3b8 0%, #fcca35 30%, #efa211 75%, #b36c00 100%);
+}
+body .evo-badge-art.is-earned::before {
+  position: absolute;
+  inset: 4px;
+  border: 1px solid rgba(255, 255, 255, .32);
+  border-radius: 50%;
+  content: "";
+}
+body .evo-badge-symbol {
+  position: relative;
+  display: grid;
+  place-items: center;
+  color: #ffe379;
+  filter: drop-shadow(0 2px 1px rgba(155, 56, 0, .35));
+}
+body .evo-badge-art--complete .evo-badge-symbol { color: #fff1a7; }
+body .evo-badge-art.is-locked {
+  padding: 6px;
+  background: conic-gradient(from -12deg, #ff7a00 0 var(--badge-progress, 0%), #e9ebef var(--badge-progress, 0%) 100%);
+}
+body .evo-badge-art.is-locked::before {
+  position: absolute;
+  inset: 6px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 40% 24%, #f8f9fa 0%, #e9ebee 82%);
+  box-shadow: inset 0 3px 6px rgba(28, 36, 52, .035);
+  content: "";
+}
+body .evo-badge-lock {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  color: #a2a8b4;
+  place-items: center;
+}
+body .evo-profile-badge-label {
+  display: block;
+  width: 92px;
+  max-width: 92px;
+  color: #656e7e;
+  font-size: 11px;
+  font-weight: 560;
+  line-height: 1.15;
+  letter-spacing: -.025em;
+  text-align: center;
+  white-space: nowrap;
+}
+
+/* Compact real-time weekly study chart */
+body .evo-profile-weekly {
+  min-width: 0;
+  margin: 22px 0 0;
+  padding: 18px 17px 15px;
+  border: 1px solid #eff0f3;
+  border-radius: 22px;
+  background: #fff;
+  box-shadow: 0 9px 27px rgba(22, 30, 45, .045);
+}
+body .evo-profile-weekly-heading {
+  display: flex !important;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+body .evo-profile-weekly-heading h2 {
+  margin: 0 !important;
+  color: #121a29 !important;
+  font-size: 18px !important;
+  font-weight: 850 !important;
+  letter-spacing: -.035em;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+body .evo-profile-weekly-heading > span {
+  color: #646d7c !important;
+  font-size: clamp(10px, 2.7vw, 12px);
+  line-height: 1.2;
+  text-align: right;
+}
+body .evo-profile-week-chart {
+  display: grid !important;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: clamp(8px, 3vw, 14px);
+  margin: 15px 0 0;
+  align-items: end;
+}
+body .evo-profile-day {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  align-items: center;
+  gap: 7px;
+}
+body .evo-profile-bar-track {
+  display: flex;
+  width: 100%;
+  height: 68px;
+  align-items: flex-end;
+  justify-content: center;
+}
+body .evo-profile-bar {
+  display: block;
+  width: 100%;
+  max-width: 30px;
+  min-width: 12px;
+  border-radius: 8px 8px 5px 5px;
+  background: #dfe2e7;
+  transition: height 180ms ease;
+}
+body .evo-profile-day.is-today .evo-profile-bar {
+  background: linear-gradient(180deg, #ff8412 0%, #ff6a00 100%);
+}
+body .evo-profile-day-name {
+  display: block;
+  color: #757d8a;
+  font-size: 11px;
+  font-weight: 540;
+  line-height: 1.2;
+}
+body .evo-profile-day.is-today .evo-profile-day-name { color: #ff7900; font-weight: 760; }
+
+/* Friend avatars + count. Placeholders are not fake accounts. */
+body .evo-profile-friends-preview {
+  display: flex !important;
+  width: 100%;
+  min-height: 72px !important;
+  align-items: center;
+  gap: 12px;
+  margin: 17px 0 0;
+  padding: 11px 16px !important;
+  border: 1px solid #eff0f3 !important;
+  border-radius: 22px !important;
+  background: #fff !important;
+  box-shadow: 0 7px 22px rgba(25, 31, 44, .045) !important;
+  color: #111827 !important;
+}
+body .evo-profile-friends-avatars {
+  display: flex;
+  flex: 1 1 auto;
+  align-items: center;
+  min-width: 0;
+  padding-left: 2px;
+}
+body .evo-friend-avatar {
+  position: relative;
+  display: grid;
+  flex: 0 0 35px;
+  width: 35px;
+  height: 35px;
+  place-items: center;
+  margin-left: -7px;
+  overflow: hidden;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  background: #edf0f4;
+  color: #a2a9b3;
+  box-shadow: 0 1px 4px rgba(24, 34, 48, .10);
+}
+body .evo-friend-avatar:first-child { margin-left: 0; }
+body .evo-friend-avatar-1 { background: #f5f0e9; }
+body .evo-friend-avatar-2 { background: #e8ecf0; }
+body .evo-friend-avatar-3 { background: #f3eceb; }
+body .evo-friend-avatar-4 { background: #e6e9eb; }
+body .evo-friend-avatar > img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+body .evo-friend-avatar > span { font-size: 18px; }
+body .evo-profile-friends-preview > strong {
+  flex: 0 0 auto;
+  color: #111827 !important;
+  font-size: clamp(14px, 4vw, 17px);
+  font-weight: 840;
+  white-space: nowrap;
+}
+body .evo-profile-friends-preview > svg { flex: 0 0 auto; }
+body .evo-profile-friends-preview:active { transform: translateY(1px); }
+
+/* Profile-only floating navigation; preserve actual Nav behaviour. */
+body .app-shell:has(.profile-page) .bottom-nav {
+  display: flex !important;
+  position: fixed !important;
+  z-index: 35 !important;
+  left: 50% !important;
+  bottom: max(10px, env(safe-area-inset-bottom, 0px)) !important;
+  transform: translateX(-50%) !important;
+  width: min(448px, calc(100vw - 26px)) !important;
+  height: 70px !important;
+  min-height: 70px !important;
+  gap: 2px !important;
+  padding: 6px !important;
+  border: 1px solid #e9ebef !important;
+  border-radius: 999px !important;
+  background: #f0f1f4 !important;
+  box-shadow: 0 5px 24px rgba(22, 30, 46, .08) !important;
+}
+body .app-shell:has(.profile-page) .bottom-nav button {
+  display: flex !important;
+  flex: 1 1 0 !important;
+  min-width: 0 !important;
+  height: 57px !important;
+  min-height: 57px !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex-direction: column !important;
+  gap: 3px !important;
+  padding: 5px 0 !important;
+  border: 0 !important;
+  border-radius: 999px !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  color: #757c89 !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+}
+body .app-shell:has(.profile-page) .bottom-nav button.active {
+  background: #fff !important;
+  color: #111827 !important;
+  box-shadow: 0 4px 14px rgba(22, 32, 46, .07) !important;
+  font-weight: 820 !important;
+}
+body .app-shell:has(.profile-page) .bottom-nav button > svg {
+  width: 23px !important;
+  height: 23px !important;
+  stroke-width: 2.1 !important;
+}
+body .app-shell:has(.profile-page) .bottom-nav button .learn-user-avatar {
+  width: 26px !important;
+  height: 26px !important;
+}
+body .app-shell:has(.profile-page) .nav-selection-indicator {
+  background: #fff !important;
+  border-radius: 999px !important;
+  box-shadow: 0 4px 14px rgba(22, 32, 46, .04) !important;
+}
+
+/* "Összes" drawer */
+body .evo-badge-modal-backdrop {
+  display: flex !important;
+  position: fixed !important;
+  z-index: 10010 !important;
+  inset: 0;
+  align-items: flex-end;
+  justify-content: center;
+  background: rgba(14, 22, 34, .25);
+}
+body .evo-badge-modal {
+  width: min(100%, 500px);
+  max-height: 78dvh;
+  padding: 22px 24px calc(26px + env(safe-area-inset-bottom, 0px));
+  overflow-y: auto;
+  border-radius: 28px 28px 0 0;
+  background: #fff;
+  box-shadow: 0 -15px 50px rgba(15, 23, 42, .10);
+}
+body .evo-badge-modal > header {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 12px;
+}
+body .evo-badge-modal > header h2 {
+  margin: 0;
+  color: #111827;
+  font-size: 23px;
+  font-weight: 820;
+}
+body .evo-badge-modal > header p { margin: 3px 0 0; color: #7a8190; font-size: 13px; }
+body .evo-badge-modal > header button {
+  display: grid;
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: 50%;
+  place-items: center;
+  color: #5b6472;
+  background: #f1f2f4;
+}
+body .evo-badge-modal-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  justify-items: center;
+  gap: 20px 9px;
+  margin-top: 24px;
+}
+@media (max-width: 360px) {
+  body .screen-content:has(.profile-page) { padding-left: 16px !important; padding-right: 16px !important; }
+  body .evo-profile-badges-viewport { margin-inline: -16px; }
+  body .evo-profile-badges-rail { padding-inline: 16px !important; gap: 10px; }
+  body .evo-profile-intro { gap: 8px; }
+  body .evo-profile-avatar-ring { flex-basis: 90px; width: 90px; height: 90px; }
+  body .evo-profile-identity h1 { font-size: 28px !important; }
+  body .evo-profile-joined { font-size: 11px !important; }
+  body .evo-profile-weekly { padding-inline: 13px; }
+  body .evo-profile-week-chart { gap: 8px; }
+  body .evo-profile-badges { margin-top: 22px; }
+}
+@media (max-height: 720px) {
+  body .evo-profile-intro { margin-top: 15px; min-height: 100px; }
+  body .evo-profile-actions { margin-top: 16px; }
+  body .evo-profile-stats { margin-top: 16px; }
+  body .evo-profile-badges { margin-top: 20px; }
+  body .evo-profile-weekly { margin-top: 17px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  body .evo-profile-dashboard button,
+  body .evo-profile-bar { transition: none !important; }
+}

@@ -2,6 +2,7 @@
 
 import { memo, useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from "react"
 import NextImage from "next/image"
+import ProfileDashboard from "./profile-dashboard"
 import {
   ArrowRight, Book, BookOpen, Check, CheckCircle2, Headphones, MessageCircle, CircleHelp, Puzzle,
   Flame, Heart, Lightbulb, Medal, RotateCcw, Trophy, UserRound, Dumbbell, Timer, Languages, Volume2,
@@ -371,6 +372,8 @@ export default function App() {
   const [avatarImage, setAvatarImage] = useState("")
   const [bannerImage, setBannerImage] = useState("")
   const [dailyStudy, setDailyStudy] = useState<DailyStudyState>({ streak: 0, lastStudyDate: "", todayActivityCount: 0, activityDate: getLocalDateKey(), dailyGoal: 1 })
+  const [weeklyStudySeconds, setWeeklyStudySeconds] = useState<Record<string, number>>({})
+  const [weeklyStudyReady, setWeeklyStudyReady] = useState(false)
   const [notifications, setNotifications] = useState(false)
   const [compactMode, setCompactMode] = useState(false)
   const [showSettings, setShowSettings] = useState(false)
@@ -381,6 +384,54 @@ export default function App() {
   const [saveStatus, setSaveStatus] = useState<CloudSaveStatus>("loading")
   const saveVersionRef = useRef(0)
   const chestClaimsRef = useRef(new Set<number>())
+  // Record real active study time for the weekly chart without touching lessons or scoring.
+  useEffect(() => {
+    try {
+      const raw = window.localStorage.getItem("evolingo.weekly-study-seconds.v1")
+      if (raw) {
+        const data = JSON.parse(raw) as Record<string, unknown>
+        const entries = Object.entries(data).filter(([key, value]) => /^\d{4}-\d{2}-\d{2}$/.test(key) && typeof value === "number" && Number.isFinite(value) && value >= 0)
+        setWeeklyStudySeconds(Object.fromEntries(entries.slice(-21)) as Record<string, number>)
+      }
+    } catch {
+      // A new activity chart is safe if storage is unavailable.
+    }
+    setWeeklyStudyReady(true)
+  }, [])
+
+  useEffect(() => {
+    if (!weeklyStudyReady) return
+    try {
+      window.localStorage.setItem("evolingo.weekly-study-seconds.v1", JSON.stringify(weeklyStudySeconds))
+    } catch {
+      // Activity persistence is best effort.
+    }
+  }, [weeklyStudyReady, weeklyStudySeconds])
+
+  useEffect(() => {
+    if (!weeklyStudyReady || showSplash || (screen !== "lessonIntro" && screen !== "task")) return
+    let lastTick = Date.now()
+    const record = () => {
+      const now = Date.now()
+      const delta = Math.max(0, Math.min(15, (now - lastTick) / 1000))
+      lastTick = now
+      if (document.visibilityState !== "visible" || delta <= 0) return
+      const today = getLocalDateKey()
+      setWeeklyStudySeconds(previous => ({ ...previous, [today]: (previous[today] || 0) + delta }))
+    }
+    const interval = window.setInterval(record, 10000)
+    const onVisibilityChange = () => {
+      if (document.visibilityState !== "visible") lastTick = Date.now()
+      else lastTick = Date.now()
+    }
+    document.addEventListener("visibilitychange", onVisibilityChange)
+    return () => {
+      window.clearInterval(interval)
+      document.removeEventListener("visibilitychange", onVisibilityChange)
+      record()
+    }
+  }, [weeklyStudyReady, showSplash, screen])
+
   useEffect(() => {
     let cancelled = false
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches
@@ -744,7 +795,7 @@ export default function App() {
       {screen === "shop" && <Shop stars={stars} purchasedItems={purchasedItems} onPurchase={(id, cost) => { if (stars >= cost && !purchasedItems.includes(id)) { setStars((value) => value - cost); setPurchasedItems((items) => [...items, id]); setNotice("Sikeres vásárlás!"); } }} />}
       {screen === "leaderboard" && <Leaderboard />}
       {screen === "friends" && <Friends userName={userName} avatar={avatar} avatarImage={avatarImage} xp={xp} dailyStudy={dailyStudy} saveStatus={saveStatus} onRetryCloudSave={retryCloudSave} onNewFriendRequest={() => setSystemNotice("friend")} />}
-      {screen === "profile" && <Profile completedCount={completedLessons.length} readCount={readLessons.length} completedTaskCount={answeredTasks.length} xp={xp} stars={stars} userName={userName} setUserName={setUserName} avatar={avatar} setAvatar={setAvatar} avatarImage={avatarImage} setAvatarImage={setAvatarImage} bannerImage={bannerImage} setBannerImage={setBannerImage} dailyStudy={dailyStudy} onDailyGoalChange={(dailyGoal) => setDailyStudy(previous => ({ ...previous, dailyGoal }))} saveStatus={saveStatus} onRetryCloudSave={retryCloudSave} notifications={notifications} setNotifications={setNotifications} compactMode={compactMode} setCompactMode={setCompactMode} showSettings={showSettings} setShowSettings={setShowSettings} />}
+      {screen === "profile" && <Profile completedCount={completedLessons.length} readCount={readLessons.length} completedTaskCount={answeredTasks.length} xp={xp} stars={stars} userName={userName} setUserName={setUserName} avatar={avatar} setAvatar={setAvatar} avatarImage={avatarImage} setAvatarImage={setAvatarImage} bannerImage={bannerImage} setBannerImage={setBannerImage} dailyStudy={dailyStudy} onDailyGoalChange={(dailyGoal) => setDailyStudy(previous => ({ ...previous, dailyGoal }))} saveStatus={saveStatus} onRetryCloudSave={retryCloudSave} notifications={notifications} setNotifications={setNotifications} compactMode={compactMode} setCompactMode={setCompactMode} showSettings={showSettings} setShowSettings={setShowSettings} weeklyStudySeconds={weeklyStudySeconds} onOpenFriends={() => setScreen("friends")} />}
     </section>
     {screen !== "lessonIntro" && screen !== "task" && screen !== "chestOpen" && <Nav screen={screen} setScreen={setScreen} userName={userName} avatar={avatar} avatarImage={avatarImage} />}
   </main>
@@ -1805,36 +1856,12 @@ function Friends({ userName, avatar, avatarImage, xp, dailyStudy, saveStatus, on
   </div>
 }
 
-const profileBadgeItems: { id: string; label: string; Icon: React.ElementType; tone: "green" | "gold" | "navy" }[] = [
-  { id: "streak", label: "Napi sorozat", Icon: Flame, tone: "gold" },
-  { id: "complete", label: "Teljesítés", Icon: Trophy, tone: "green" },
-  { id: "points", label: "2 pont", Icon: Star, tone: "gold" },
-  { id: "double", label: "Dupla pont", Icon: Zap, tone: "green" },
-  { id: "milestone", label: "Mérföldkő", Icon: Medal, tone: "navy" },
-  { id: "favorite", label: "Kedvenc", Icon: Heart, tone: "green" },
-  { id: "special", label: "Különleges", Icon: Sparkles, tone: "gold" },
-]
-
-function ProfileBadges() {
-  return <section className="profile-badges" aria-labelledby="profile-badges-title">
-    <div className="profile-badges-heading">
-      <h2 id="profile-badges-title">Jelvények</h2>
-      <span aria-hidden="true">•••</span>
-    </div>
-    <div className="profile-badges-list" role="list" aria-label="Elért jelvények">
-      {profileBadgeItems.map(({ id, label, tone }) => <div className={"profile-badge profile-badge--" + tone} key={id} role="listitem" title={label}>
-        <span className="profile-badge-medal" aria-hidden="true"><img src={"/images/profile-badges/" + id + ".svg"} width="70" height="76" alt="" loading="lazy" /></span>
-        <span>{label}</span>
-      </div>)}
-    </div>
-  </section>
-}
-
-function Profile({ completedCount, readCount, completedTaskCount, xp, stars, userName, setUserName, avatar, setAvatar, avatarImage, setAvatarImage, bannerImage, setBannerImage, dailyStudy, onDailyGoalChange, saveStatus, onRetryCloudSave, notifications, setNotifications, compactMode, setCompactMode, showSettings, setShowSettings }: {
+function Profile({ completedCount, readCount, completedTaskCount, xp, stars, userName, setUserName, avatar, setAvatar, avatarImage, setAvatarImage, bannerImage, setBannerImage, dailyStudy, onDailyGoalChange, saveStatus, onRetryCloudSave, notifications, setNotifications, compactMode, setCompactMode, showSettings, setShowSettings, weeklyStudySeconds, onOpenFriends }: {
   completedCount: number; readCount: number; completedTaskCount: number; xp: number; stars: number; userName: string; setUserName: (value: string) => void;
   avatar: string; setAvatar: (value: string) => void; avatarImage: string; setAvatarImage: (value: string) => void; bannerImage: string; setBannerImage: (value: string) => void;
   dailyStudy: DailyStudyState; onDailyGoalChange: (goal: number) => void; saveStatus: CloudSaveStatus; onRetryCloudSave: () => void; notifications: boolean; setNotifications: (value: boolean) => void;
-  compactMode: boolean; setCompactMode: (value: boolean) => void; showSettings: boolean; setShowSettings: (value: boolean) => void
+  compactMode: boolean; setCompactMode: (value: boolean) => void; showSettings: boolean; setShowSettings: (value: boolean) => void;
+  weeklyStudySeconds: Record<string, number>; onOpenFriends: () => void
 }) {
   const [draftName, setDraftName] = useState(userName)
   const [saved, setSaved] = useState(false)
@@ -1955,44 +1982,22 @@ function Profile({ completedCount, readCount, completedTaskCount, xp, stars, use
   const defaultAvatar = avatar === "fox" ? "🦊" : avatar === "book" ? "📚" : avatar === "star" ? "⭐" : "✨"
 
   return <div className={"profile-page profile-theme-" + profileTheme}>
-    <section className="profile-hero profile-reference-hero">
-      <div className="profile-reference-topbar">
-        <div className="profile-language-pill" aria-label="Angol nyelv, Erasmus">
-          <img src="https://flagcdn.com/w80/gb.png" alt="" width="30" height="30" />
-          <strong>erasmus</strong>
-        </div>
-        <div className="profile-reference-controls">
-          <button className="profile-banner-settings" type="button" aria-label="Profil szerkesztése" title="Profil szerkesztése" onClick={openSettings}>
-            <Pencil size={21} strokeWidth={2.7} />
-          </button>
-          <button className="profile-gear-settings" type="button" onClick={() => setShowStreakSettings(true)} aria-label={visibleStreak + " napos tanulási sorozat beállításai"} aria-haspopup="dialog">
-            <Settings size={23} strokeWidth={2.7} />
-          </button>
-        </div>
-      </div>
-      <div className="profile-identity profile-reference-identity">
-        <div className="profile-reference-copy">
-          <h1 className="profile-display-name">{userName || "Tanuló"}</h1>
-          <p className="profile-handle">@{(userName || "tanulo").normalize("NFKD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "").slice(0, 20) || "tanulo"}</p>
-        </div>
-        <div className="profile-avatar-wrap">
-          <div className="large-avatar">
-            {avatarImage ? <img src={avatarImage} alt="Egyéni profilkép" /> : avatar === "fox" ? <img src={foxIcon} alt="Róka profilkép" /> : <span className="avatar-emoji">{defaultAvatar}</span>}
-          </div>
-          <input ref={avatarInputRef} className="profile-file-input" type="file" accept="image/*" aria-label="Profilkép kiválasztása" onChange={event => { void handleGalleryImage(event.target.files?.[0], "avatar"); event.currentTarget.value = "" }} />
-        </div>
-      </div>
-      <div className="profile-reference-actions" aria-label="Profilműveletek">
-        <span className="profile-reference-action profile-reference-action--wide">Add friend</span>
-        <span className="profile-reference-action">Add friend</span>
-      </div>
-    </section>
+    <ProfileDashboard
+      userName={userName}
+      avatar={avatar}
+      avatarImage={avatarImage}
+      fallbackAvatar={foxIcon}
+      xp={xp}
+      streak={visibleStreak}
+      weeklyStudySeconds={weeklyStudySeconds}
+      onEdit={openSettings}
+      onStreakSettings={() => setShowStreakSettings(true)}
+      onFriendsClick={onOpenFriends}
+    />
 
+    <input ref={avatarInputRef} className="profile-file-input" type="file" accept="image/*" aria-label="Profilkép kiválasztása" onChange={event => { void handleGalleryImage(event.target.files?.[0], "avatar"); event.currentTarget.value = "" }} />
     <input ref={bannerInputRef} className="profile-file-input" type="file" accept="image/*" aria-label="Borítókép kiválasztása" onChange={event => { void handleGalleryImage(event.target.files?.[0], "banner"); event.currentTarget.value = "" }} />
-
     <GuestSaveBanner userName={userName} status={saveStatus} onRetry={onRetryCloudSave} />
-
-    <ProfileBadges />
 
     {showStreakSettings && <div className="profile-streak-backdrop" role="presentation" onMouseDown={event => { if (event.target === event.currentTarget) setShowStreakSettings(false) }}>
       <section className="profile-streak-sheet" role="dialog" aria-modal="true" aria-labelledby="profile-streak-title">
