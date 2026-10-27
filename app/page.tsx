@@ -422,7 +422,7 @@ export default function App() {
         setSystemNotice("daily")
       }
     } catch {
-      setSystemNotice("lesson")
+      setSystemNotice("daily")
     }
   }, [showSplash])
 
