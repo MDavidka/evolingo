@@ -310,11 +310,10 @@ const generatedLessons: LessonUnit[] = curriculumTopics.map((topic, index) => {
 })
 const fullLessons = [...lessons, ...generatedLessons]
 function practicePacks(lesson: LessonUnit): Question[][] {
-  const count = lesson.questions.length >= 4 ? 2 : 1
-  return Array.from({ length: count }, (_, packIndex) => Array.from({ length: 5 }, (_, questionIndex) => {
-    const source = lesson.questions[(packIndex * 2 + questionIndex) % lesson.questions.length]
-    return source
-  }))
+  const questionsPerPack = 5
+  return Array.from({ length: Math.ceil(lesson.questions.length / questionsPerPack) }, (_, packIndex) =>
+    lesson.questions.slice(packIndex * questionsPerPack, (packIndex + 1) * questionsPerPack)
+  )
 }
 const practiceKey = (lessonId: number, packIndex: number, questionIndex: number) => lessonId + "-p" + packIndex + "-" + questionIndex
 const placeholders = Array.from({ length: 90 }, (_, index) => ({ id: index + 11 + curriculumTopics.length, title: "Lecke " + (index + 11 + curriculumTopics.length), inDevelopment: true }))
@@ -566,6 +565,9 @@ export default function App() {
     setScreen("lessonIntro")
   }
   const openTask = (lessonId: number, packIndex: number) => {
+    const targetLesson = fullLessons.find(lesson => lesson.id === lessonId)
+    const targetPack = targetLesson ? practicePacks(targetLesson)[packIndex] : undefined
+    if (!targetPack || targetPack.every((_, index) => answeredTasks.includes(practiceKey(lessonId, packIndex, index)))) return
     setActiveLessonId(lessonId)
     setActivePackIndex(packIndex)
     setActiveTaskIndex(0)
@@ -816,7 +818,7 @@ function Home({ completedLessons, answeredTasks, readLessons, notice, clearNotic
             const previousDone = packIndex === 0 || lessonDone || packs[packIndex - 1].every((_, questionIndex) => answeredTasks.includes(practiceKey(lesson.id, packIndex - 1, questionIndex)))
             const unlocked = (lessonDone || lessonCurrent) && previousDone
             return <div key={lesson.id + "-pack-" + packIndex} className={"learn-path-node learn-path-task-node " + (leftSide ? "tasks-left" : "tasks-right")} style={{ left: position + "%", top: routeTops[index] + "px" }}>
-              <button type="button" className={"learn-pack-button " + (packDone ? "is-done" : unlocked ? "is-ready" : "is-locked")} disabled={!unlocked} onClick={() => onOpenTask(lesson.id, packIndex)} aria-label={lesson.title + ", " + (packIndex + 1) + ". feladatcsomag, " + pack.length + " feladat" + (packDone ? ", kész" : unlocked ? "" : ", zárolva")}>
+              <button type="button" className={"learn-pack-button " + (packDone ? "is-done" : unlocked ? "is-ready" : "is-locked")} disabled={!unlocked || packDone} onClick={() => onOpenTask(lesson.id, packIndex)} aria-label={lesson.title + ", " + (packIndex + 1) + ". feladatcsomag, " + pack.length + " feladat" + (packDone ? ", kész" : unlocked ? "" : ", zárolva")}>
                 <span className={"learn-path-art learn-path-art--" + (unlocked ? "task-active" : "task-locked")} aria-hidden="true" /><strong className="learn-pack-count">{pack.length}</strong>
               </button>
               <span className="learn-pack-caption">{packs.length > 1 ? "Feladat " + (packIndex + 1) : "Feladat"}</span>
