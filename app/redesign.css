@@ -1354,3 +1354,95 @@ body .profile-badge>span:last-child{
   body .profile-reference-actions{gap:10px!important}
   body .profile-reference-action{font-size:16px!important}
 }
+
+
+/* Profile reference layout: fluid from 360px to 430px and safe with long names. */
+body .profile-reference-hero{
+  min-height:clamp(420px,115vw,470px)!important;
+}
+body .profile-reference-topbar{
+  gap:12px!important;
+}
+body .profile-language-pill{
+  min-width:0!important;
+  min-height:clamp(48px,13.5vw,52px)!important;
+  padding-inline:clamp(9px,3vw,17px)!important;
+  gap:clamp(7px,2.5vw,10px)!important;
+  font-size:clamp(16px,5vw,20px)!important;
+}
+body .profile-language-pill img{
+  width:clamp(26px,8vw,30px)!important;
+  height:clamp(26px,8vw,30px)!important;
+}
+body .profile-reference-controls{
+  min-height:clamp(48px,13.5vw,52px)!important;
+  flex:none!important;
+}
+body .profile-reference-controls button{
+  width:clamp(48px,13.5vw,52px)!important;
+  height:clamp(48px,13.5vw,52px)!important;
+}
+body .profile-reference-identity{
+  min-width:0!important;
+  min-height:clamp(132px,38vw,164px)!important;
+  gap:clamp(12px,4vw,28px)!important;
+  margin:clamp(18px,6vw,26px) clamp(4px,5.5vw,22px) 0!important;
+}
+body .profile-reference-copy{
+  min-width:0!important;
+  flex:1 1 auto!important;
+}
+body .profile-reference-identity .profile-display-name{
+  overflow:hidden!important;
+  font-size:clamp(36px,12vw,56px)!important;
+  text-overflow:ellipsis!important;
+  white-space:nowrap!important;
+}
+body .profile-reference-identity .profile-handle{
+  overflow:hidden!important;
+  margin-top:clamp(10px,4vw,18px)!important;
+  font-size:clamp(16px,5.3vw,19px)!important;
+  text-overflow:ellipsis!important;
+  white-space:nowrap!important;
+}
+body .profile-reference-identity .profile-avatar-wrap,
+body .profile-reference-identity .large-avatar{
+  width:clamp(92px,29vw,120px)!important;
+  height:clamp(92px,29vw,120px)!important;
+}
+body .profile-reference-actions{
+  grid-template-columns:minmax(0,1.3fr) minmax(0,1fr)!important;
+  gap:clamp(10px,3.5vw,14px)!important;
+  margin-top:clamp(28px,11vw,44px)!important;
+}
+body .profile-reference-action{
+  min-width:0!important;
+  min-height:clamp(54px,16vw,64px)!important;
+  padding-inline:10px!important;
+  overflow:hidden!important;
+  font-size:clamp(15px,5vw,18px)!important;
+  text-align:center!important;
+  text-overflow:ellipsis!important;
+  white-space:nowrap!important;
+}
+body .profile-page>.profile-badges{margin-top:clamp(6px,3vw,14px)!important}
+body .profile-badges-heading{margin-left:clamp(8px,6vw,24px)!important}
+body .profile-badges-list{
+  width:calc(100% + 12px)!important;
+  margin-inline:-6px!important;
+  padding-inline:6px!important;
+}
+@media(min-width:400px){
+  body .profile-reference-hero{min-height:484px!important}
+  body .profile-reference-actions{margin-top:48px!important}
+  body .profile-badges-list{gap:12px!important}
+}
+@media(max-width:374px){
+  body .screen-content:has(.profile-page){padding-inline:16px!important}
+  body .profile-reference-topbar{gap:8px!important}
+  body .profile-language-pill strong{font-size:16px!important}
+  body .profile-reference-identity{margin-inline:0!important}
+  body .profile-reference-actions{gap:8px!important}
+  body .profile-badge{width:74px!important;min-width:74px!important}
+  body .profile-badge>span:last-child{max-width:72px!important}
+}
