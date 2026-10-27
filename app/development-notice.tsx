@@ -1,11 +1,12 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 
-const DISMISS_KEY = "evolingo.notice.developments.v1"
+const DISMISS_KEY = "evolingo.notice.developments.v2"
 
 export default function DevelopmentNotice() {
   const [visible, setVisible] = useState(false)
+  const acknowledgeButton = useRef<HTMLButtonElement>(null)
 
   useEffect(() => {
     try {
@@ -15,53 +16,63 @@ export default function DevelopmentNotice() {
     }
   }, [])
 
+  useEffect(() => {
+    if (!visible) return
+
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = "hidden"
+    acknowledgeButton.current?.focus({ preventScroll: true })
+
+    return () => {
+      document.body.style.overflow = previousOverflow
+    }
+  }, [visible])
+
   const dismiss = () => {
     setVisible(false)
     try {
       window.localStorage.setItem(DISMISS_KEY, "dismissed")
     } catch {
-      // Dismissing still works when browser storage is disabled.
+      // The button still dismisses the dialog if storage is unavailable.
     }
   }
 
   if (!visible) return null
 
   return (
-    <aside
-      className="ev-system-notice"
-      role="status"
-      aria-live="polite"
-      aria-label="Evölingo fejlesztési értesítés"
-    >
-      <img
-        className="ev-system-notice__icon"
-        src="/images/development-warning.png"
-        alt=""
-        aria-hidden="true"
-        width={56}
-        height={48}
-      />
-      <div className="ev-system-notice__content">
-        <div className="ev-system-notice__meta">
-          <span className="ev-system-notice__app">Evölingo</span>
-          <span className="ev-system-notice__time">most</span>
-        </div>
-        <p className="ev-system-notice__title">Fejlesztések</p>
-        <p className="ev-system-notice__message">
-          Dávid továbbra is az Evölingo fejlesztésén dolgozik. Az alkalmazás ezért néha megakadhat, vagy nem töltődhetnek be bizonyos dolgok.
-        </p>
-      </div>
-      <button
-        type="button"
-        className="ev-system-notice__close"
-        onClick={dismiss}
-        aria-label="Értesítés bezárása"
-        title="Bezárás"
+    <div className="ev-development-overlay">
+      <section
+        className="ev-development-sheet"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="ev-development-heading"
+        aria-describedby="ev-development-description"
       >
-        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-          <path d="M6 6l12 12M18 6 6 18" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
-        </svg>
-      </button>
-    </aside>
+        <div className="ev-development-body">
+          <img
+            className="ev-development-icon"
+            src="/images/development-warning.png"
+            width={72}
+            height={72}
+            alt=""
+            aria-hidden="true"
+          />
+          <h2 id="ev-development-heading" className="ev-development-heading">
+            Fejlesztések
+          </h2>
+          <p id="ev-development-description" className="ev-development-description">
+            Dávid továbbra is az Evölingo fejlesztésén dolgozik. Az alkalmazás ezért néha megakadhat, vagy nem töltődhetnek be bizonyos dolgok.
+          </p>
+        </div>
+        <button
+          ref={acknowledgeButton}
+          type="button"
+          className="ev-development-confirm"
+          onClick={dismiss}
+        >
+          Értem!
+        </button>
+      </section>
+    </div>
   )
 }
