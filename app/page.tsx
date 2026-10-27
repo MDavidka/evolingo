@@ -1129,10 +1129,7 @@ type LeaderboardEntry = {
 function Leaderboard() {
   const [entries, setEntries] = useState<LeaderboardEntry[] | null>(null)
   const [loadFailed, setLoadFailed] = useState(false)
-  const [clicks, setClicks] = useState(0)
-  const [purgeCount, setPurgeCount] = useState<number | null>(null)
-  const [purgeMessage, setPurgeMessage] = useState("")
-  const [purging, setPurging] = useState(false)
+  const [countdown, setCountdown] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 })
 
   useEffect(() => {
     let cancelled = false
@@ -1147,10 +1144,42 @@ function Leaderboard() {
     return () => { cancelled = true }
   }, [])
 
+  useEffect(() => {
+    const updateCountdown = () => {
+      const now = new Date()
+      const year = now.getFullYear()
+      let target = new Date(year, 10, 15, 23, 59, 59)
+      if (now > target) target = new Date(year + 1, 10, 15, 23, 59, 59)
+      const remaining = Math.max(0, target.getTime() - now.getTime())
+      const totalSeconds = Math.floor(remaining / 1000)
+      setCountdown({
+        days: Math.floor(totalSeconds / 86400),
+        hours: Math.floor((totalSeconds % 86400) / 3600),
+        minutes: Math.floor((totalSeconds % 3600) / 60),
+        seconds: totalSeconds % 60,
+      })
+    }
+    updateCountdown()
+    const timer = window.setInterval(updateCountdown, 1000)
+    return () => window.clearInterval(timer)
+  }, [])
+
+  const winner = entries?.find(entry => entry.rank === 1)
+
   return <div className="leaderboard-page">
     <PageHeader title="Ranglista" />
-    <button className="leaderboard-purge-trigger" type="button" onClick={() => { const next = clicks + 1; setClicks(next); if (next >= 3) { setPurgeCount(null); fetch("/api/admin/purge-zero-stars", { cache: "no-store" }).then(r => r.json()).then(data => setPurgeCount(Number(data.count) || 0)).catch(() => setPurgeMessage("A darabszám lekérése nem sikerült.")) } }}>Csillag</button>
-    {clicks >= 3 && <section className="leaderboard-purge"><strong>Nulla csillagos felhasználók: {purgeCount === null ? "…" : purgeCount}</strong><button type="button" disabled={purging || !purgeCount} onClick={async () => { if (!window.confirm(`Biztosan törlöd ezt a ${purgeCount} felhasználót?`)) return; setPurging(true); try { const response = await fetch("/api/admin/purge-zero-stars", { method: "DELETE" }); const data = await response.json(); setPurgeMessage(`Törölve: ${data.deletedCount ?? 0}`); setPurgeCount(0) } catch { setPurgeMessage("A törlés nem sikerült.") } finally { setPurging(false) } }}> {purging ? "Törlés…" : "Nulla csillagosak törlése"}</button>{purgeMessage && <span role="status">{purgeMessage}</span>}</section> }
+    <section className="leaderboard-campaign" aria-label="Novemberi matrica nyereményjáték">
+      <h2>{countdown.days} nap {countdown.hours} óra {countdown.minutes} perc</h2>
+      <p className="leaderboard-campaign-copy">Végezz a ranglista 1. helyén és nyern 1 darab matrica csomagot</p>
+      <div className="leaderboard-prize">
+        <img src="/campaign-sticker-pack.jpeg" alt="Evolingo matricacsomag" />
+        <strong>50 darabos evolingo matricacsomag</strong>
+      </div>
+      {winner && <div className="leaderboard-first-place">
+        <span className="leaderboard-avatar">{winner.avatarImage ? <img src={winner.avatarImage} alt="" /> : winner.avatar === "fox" ? <img src={foxIcon} alt="" /> : winner.avatar}</span>
+        <div><strong className="leaderboard-first-rank">#1</strong><strong>{winner.stars.toLocaleString("hu-HU")} csillag</strong></div>
+      </div>}
+    </section>
     <section className="leaderboard-list" aria-label="Csillag ranglista">
       {entries === null && !loadFailed && <><div className="leaderboard-skeleton" /><div className="leaderboard-skeleton" /><div className="leaderboard-skeleton" /></>}
       {entries?.map(entry => <article className={"leaderboard-entry " + (entry.isCurrent ? "is-current" : "")} key={entry.id}>
@@ -1164,6 +1193,7 @@ function Leaderboard() {
     </section>
   </div>
 }
+
 type FriendProfile = {
   id: string
   name: string
