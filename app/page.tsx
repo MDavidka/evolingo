@@ -820,14 +820,11 @@ function SystemNotificationSheet({ kind, lessonTitle, nextChestAt, onClose, onAl
       <h2 id="system-notice-title">{item.title}</h2>
       <span className="system-notice-copy">{item.copy}</span>
       <button className="system-notice-action" type="button" onClick={item.onAction}>{item.action}</button>
-      {kind === "permission" && <button className="system-notice-secondary" type="button" onClick={() => { try { localStorage.setItem("evolingo.notification-intro.v1", "1") } catch {}; setSystemNoticeAfterDismiss(onClose) }}>Most nem</button>}
+      {kind === "permission" && <button className="system-notice-secondary" type="button" onClick={() => { try { localStorage.setItem("evolingo.notification-intro.v1", "1") } catch {}; onClose() }}>Most nem</button>}
     </section>
   </div>
 }
 
-function setSystemNoticeAfterDismiss(onClose: () => void) {
-  onClose()
-}
 
 function Brand() { return <div className="brand"><img src={foxIcon} alt="Evölingo fox mascot" /><div><h1>Evölingo</h1></div></div> }
 
