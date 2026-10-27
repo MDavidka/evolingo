@@ -1217,7 +1217,7 @@ function Leaderboard() {
   const gap = first && current && current.rank > 1 ? Math.max(0, first.stars - current.stars) : null
 
   return <div className="leaderboard-page">
-    <PageHeader title="Ranglista" />
+    <header className="leaderboard-home-header"><img src={foxIcon} alt="Evölingo róka" /><h1>Ranglista</h1></header>
     <CampaignCountdown />
     <section className="leaderboard-campaign" aria-label="Novemberi matrica nyereményjáték">
       <div className="leaderboard-prize">
