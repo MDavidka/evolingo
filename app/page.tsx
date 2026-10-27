@@ -363,7 +363,7 @@ export default function App() {
   const [xp, setXp] = useState(0)
   const [stars, setStars] = useState(0)
   const [showSplash, setShowSplash] = useState(true)
-  const [systemNotice, setSystemNotice] = useState<"permission" | "lesson" | "chest" | "friend" | null>(null)
+  const [systemNotice, setSystemNotice] = useState<"permission" | "daily" | "chest" | "friend" | null>(null)
   const [purchasedItems, setPurchasedItems] = useState<string[]>([])
   const [lives, setLives] = useState(5)
   const [userName, setUserName] = useState("Kíváncsi Vidra 4821")
@@ -415,8 +415,12 @@ export default function App() {
   useEffect(() => {
     if (showSplash) return
     try {
-      if (!localStorage.getItem("evolingo.notification-intro.v1")) setSystemNotice("permission")
-      else setSystemNotice("lesson")
+      if (!localStorage.getItem("evolingo.notification-intro.v1")) {
+        setSystemNotice("permission")
+      } else if (localStorage.getItem("evolingo.daily-notice.v1") !== getLocalDateKey()) {
+        localStorage.setItem("evolingo.daily-notice.v1", getLocalDateKey())
+        setSystemNotice("daily")
+      }
     } catch {
       setSystemNotice("lesson")
     }
@@ -430,7 +434,7 @@ export default function App() {
       setNotifications(false)
     } finally {
       try { localStorage.setItem("evolingo.notification-intro.v1", "1") } catch {}
-      setSystemNotice("lesson")
+      setSystemNotice(null)
     }
   }
 
@@ -709,7 +713,6 @@ export default function App() {
         onOpenLesson={openLesson}
         onOpenTask={openTask}
         onOpenProfile={() => setScreen("profile")}
-        onShowSystemNotice={setSystemNotice}
         stars={stars}
         completedLessonCount={completedLessonCount}
         nextChestAt={nextChestAt}
@@ -747,11 +750,9 @@ export default function App() {
   </main>
   {systemNotice && <SystemNotificationSheet
     kind={systemNotice}
-    lessonTitle={fullLessons.find(lesson => !completedLessons.includes(lesson.id))?.title ?? fullLessons[fullLessons.length - 1]?.title ?? "Következő lecke"}
     nextChestAt={nextChestAt}
     onClose={() => setSystemNotice(null)}
     onAllowNotifications={requestSystemNotifications}
-    onOpenLesson={() => { setSystemNotice(null); openLesson(fullLessons.find(lesson => !completedLessons.includes(lesson.id))?.id ?? 1) }}
     onOpenFriends={() => { setSystemNotice(null); setScreen("friends") }}
   />}
   {showSplash && <SplashScreen />}</>
@@ -767,13 +768,11 @@ function SplashScreen() {
 }
 
 
-function SystemNotificationSheet({ kind, lessonTitle, nextChestAt, onClose, onAllowNotifications, onOpenLesson, onOpenFriends }: {
-  kind: "permission" | "lesson" | "chest" | "friend"
-  lessonTitle: string
+function SystemNotificationSheet({ kind, nextChestAt, onClose, onAllowNotifications, onOpenFriends }: {
+  kind: "permission" | "daily" | "chest" | "friend"
   nextChestAt: number
   onClose: () => void
   onAllowNotifications: () => void
-  onOpenLesson: () => void
   onOpenFriends: () => void
 }) {
   const details = {
@@ -785,14 +784,15 @@ function SystemNotificationSheet({ kind, lessonTitle, nextChestAt, onClose, onAl
       action: "Értesítések engedélyezése",
       onAction: onAllowNotifications,
     },
-    lesson: {
-      icon: BookOpen,
-      eyebrow: "AKTUÁLIS LECKE",
-      title: lessonTitle,
-      copy: "Folytasd ott, ahol abbahagytad — a következő feladat készen áll.",
-      action: "Folytatom",
-      onAction: onOpenLesson,
-    },
+    daily: (() => {
+      const options = [
+        { icon: Users, eyebrow: "TANULÓTÁRSAK", title: "Valaki ma már tanult", copy: "Egy tanulótársad teljesített egy leckét. Csatlakozz te is a mai fejlődéshez!" },
+        { icon: Trophy, eyebrow: "RANGLISTA", title: "Mozgás van a ranglistán", copy: "Valaki több csillagot gyűjtött ma. Egy feladat megoldásával te is közelebb kerülsz az élmezőnyhöz." },
+        { icon: BookOpen, eyebrow: "NAPI TANULÁS", title: "Egy rövid lecke is számít", copy: "Szánj pár percet egy feladatra, és tartsd életben a napi sorozatodat." },
+      ] as const
+      const option = options[new Date().getDate() % options.length]
+      return { ...option, action: "Értem", onAction: onClose }
+    })(),
     chest: {
       icon: Gift,
       eyebrow: "KÖVETKEZŐ JUTALOM",
@@ -815,7 +815,7 @@ function SystemNotificationSheet({ kind, lessonTitle, nextChestAt, onClose, onAl
   return <div className="system-notice-backdrop" role="presentation" onMouseDown={event => { if (event.target === event.currentTarget) onClose() }}>
     <section className="system-notice-sheet" role="dialog" aria-modal="true" aria-labelledby="system-notice-title">
       <button className="system-notice-close" type="button" aria-label="Bezárás" onClick={onClose}><X size={21} /></button>
-      <span className="system-notice-icon" aria-hidden="true"><Icon size={34} strokeWidth={2.2} /></span>
+      {kind === "chest" ? <img className="system-notice-chest-art" src="/images/chest-notification.svg" alt="" aria-hidden="true" /> : <span className="system-notice-icon" aria-hidden="true"><Icon size={34} strokeWidth={2.2} /></span>}
       <p>{item.eyebrow}</p>
       <h2 id="system-notice-title">{item.title}</h2>
       <span className="system-notice-copy">{item.copy}</span>
@@ -870,7 +870,7 @@ function UserAvatar({ userName, avatar, avatarImage, variant }: {
   </span>
 }
 
-function Home({ completedLessons, answeredTasks, readLessons, notice, clearNotice, onOpenLesson, onOpenTask, onOpenProfile, onShowSystemNotice, userName, avatar, avatarImage, stars, completedLessonCount, nextChestAt, chestReady, openedChests, onClaimChest }: {
+function Home({ completedLessons, answeredTasks, readLessons, notice, clearNotice, onOpenLesson, onOpenTask, onOpenProfile, userName, avatar, avatarImage, stars, completedLessonCount, nextChestAt, chestReady, openedChests, onClaimChest }: {
   completedLessons: number[]
   answeredTasks: string[]
   readLessons: number[]
@@ -879,7 +879,6 @@ function Home({ completedLessons, answeredTasks, readLessons, notice, clearNotic
   onOpenLesson: (id: number) => void
   onOpenTask: (lessonId: number, packIndex: number) => void
   onOpenProfile: () => void
-  onShowSystemNotice: (kind: "permission" | "lesson" | "chest" | "friend") => void
   userName: string
   avatar: string
   avatarImage: string
@@ -936,12 +935,12 @@ function Home({ completedLessons, answeredTasks, readLessons, notice, clearNotic
     {notice && <button className="inline-notice learn-inline-notice" type="button" onClick={clearNotice}><span>{notice}</span><X size={16} aria-hidden="true" /></button>}
     <section className="learn-sheet" aria-label="Tanulási útvonal">
       <div className="learn-path-overview">
-        <button type="button" className="learn-lesson-progress-banner" onClick={() => onShowSystemNotice("lesson")} aria-label={currentLesson.title + " haladása: " + lessonPercent + "%"}>
+        <section className="learn-lesson-progress-banner" aria-label={currentLesson.title + " haladása: " + lessonPercent + "%"}>
           <div className="learn-progress-banner-top"><h2>{currentLesson.title}</h2><strong>{lessonPercent}%</strong></div>
           <div className="learn-progress-meter" role="progressbar" aria-label="Lecke haladása" aria-valuemin={0} aria-valuemax={100} aria-valuenow={lessonPercent}><span style={{ width: lessonPercent + "%" }} /></div>
           <small>{answeredLessonTasks}/{totalLessonTasks} feladat</small>
           <span className="learn-progress-badge" aria-hidden="true"><img src="/images/lesson-level-6.png" alt="" /></span>
-        </button>
+        </section>
         <aside className="learn-side-countdowns" aria-label="Következő jutalmak és leckék">
           <button type="button" className={"learn-countdown-card chest " + (chestReady ? "is-available" : "is-counting")} onClick={onClaimChest} aria-label={chestReady ? "Láda nyitható" : "Láda visszaszámlálás: " + formatCountdown(chestSeconds)}>
             <span className={"learn-countdown-art learn-path-art learn-path-art--" + (chestReady ? "chest-active" : "chest-locked")} aria-hidden="true" />
