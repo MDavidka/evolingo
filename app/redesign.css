@@ -685,3 +685,19 @@ body .leaderboard-error button{min-height:44px;padding:0 16px;border-radius:999p
   .chest-opening-art { transition: none; }
 }
 
+
+
+/* State illustrations: unlocked tasks stay orange, claimed chests show open. */
+body .learn-path-art--task-ready {
+  background-image: url("/images/task-ready.svg") !important;
+  background-position: center !important;
+  background-size: contain !important;
+}
+body .learn-path-art--chest-opened {
+  background-image: url("/images/chest-open.svg") !important;
+  background-position: center !important;
+  background-size: contain !important;
+}
+body .learn-path-chest.is-opened {
+  cursor: default !important;
+}
