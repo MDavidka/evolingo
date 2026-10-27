@@ -1220,13 +1220,13 @@ function Leaderboard() {
     <PageHeader title="Ranglista" />
     <CampaignCountdown />
     <section className="leaderboard-campaign" aria-label="Novemberi matrica nyereményjáték">
-      <p className="leaderboard-campaign-copy">Végezz a ranglista 1. helyén és nyern 1 darab matrica csomagot</p>
       <div className="leaderboard-prize">
         <div className="leaderboard-prize-image">
           <NextImage src={campaignStickerPack} alt="Evolingo matricacsomag" width={720} height={704} sizes="(max-width: 480px) 42vw, 220px" priority />
         </div>
         <div className="leaderboard-prize-copy">
-          <strong>50 darabos evolingo matricacsomag</strong>
+          <p>Végezz a ranglista 1. helyén és nyern 1 darab matrica csomagot</p>
+          <span>50 darabos evolingo matricacsomag</span>
         </div>
       </div>
     </section>
