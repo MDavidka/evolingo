@@ -1,684 +1,848 @@
-/* Evölingo profile dashboard — orange-accented 390px reference. Only profile is affected. */
-body .app-shell:has(.profile-page),
-body .screen-content:has(.profile-page),
-body .profile-page {
-  background: #fff !important;
-  color: #101827 !important;
-}
-body .app-shell:has(.profile-page) {
-  padding-bottom: calc(102px + env(safe-area-inset-bottom, 0px)) !important;
-  min-height: 100dvh !important;
-  overflow-x: clip !important;
-}
-body .screen-content:has(.profile-page) {
-  background: #fff !important;
-  padding: max(22px, calc(env(safe-area-inset-top, 0px) + 8px)) 24px calc(106px + env(safe-area-inset-bottom, 0px)) !important;
-  min-height: 100dvh !important;
-  overflow-x: clip !important;
-}
-body .profile-page {
-  width: 100% !important;
-  max-width: 448px !important;
-  padding: 0 !important;
-  margin: 0 auto !important;
-  overflow: visible !important;
-  min-height: 0 !important;
-}
-body .evo-profile-dashboard,
-body .evo-profile-dashboard * { box-sizing: border-box; }
+/*
+ * Evölingo profile — calm Apple-style design system.
+ * Imported after the legacy profile CSS to prevent old orange styling from leaking.
+ */
 body .evo-profile-dashboard {
+  --bg: #F5F5F7;
+  --card: #FFFFFF;
+  --text: #1D1D1F;
+  --muted: #86868B;
+  --muted-readable: #63636A;
+  --line: #E5E5EA;
+  --fill: #EDEDF0;
+  --accent: #5B8C6A;
+  --accent-soft: #E8F0EA;
+  --star: #C9A24B;
+  --shadow: 0 1px 2px rgba(0,0,0,.04), 0 6px 20px rgba(0,0,0,.05);
+  --glass: rgba(255,255,255,.75);
+  color: var(--text);
+  background: transparent;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Inter", system-ui, sans-serif;
   width: 100%;
   max-width: 448px;
   margin: 0 auto;
-  color: #101827;
-  font-family: inherit;
+  font-size: 17px;
+  line-height: 22px;
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
 }
+body .evo-profile-dashboard *,
+body .evo-profile-dashboard *::before,
+body .evo-profile-dashboard *::after { box-sizing: border-box; }
 body .evo-profile-dashboard button {
-  font-family: inherit;
-  cursor: pointer;
+  font: inherit;
+  color: inherit;
   -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  cursor: pointer;
+  transition: transform 120ms ease-out, opacity 120ms ease-out, background-color 240ms cubic-bezier(.2,.8,.2,1);
 }
-body .evo-profile-dashboard button:focus-visible {
-  outline: 3px solid #ff7a00 !important;
-  outline-offset: 3px !important;
-}
+body .evo-profile-dashboard button:active { transform: scale(.97); opacity: .9; }
+body .evo-profile-dashboard button:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+body .evo-profile-dashboard h1,
+body .evo-profile-dashboard h2,
+body .evo-profile-dashboard h3,
+body .evo-profile-dashboard p { margin: 0; }
 
-/* Floating top bar */
+body .app-shell:has(.profile-page),
+body .screen-content:has(.profile-page),
+body .profile-page {
+  background: #F5F5F7 !important;
+  color: #1D1D1F !important;
+}
+body .app-shell:has(.profile-page) {
+  width: 100% !important;
+  padding: 0 0 calc(140px + env(safe-area-inset-bottom, 0px)) !important;
+  overflow-x: clip !important;
+  min-height: 100dvh !important;
+}
+body .screen-content:has(.profile-page) {
+  width: 100% !important;
+  overflow: visible !important;
+  padding: max(0px, env(safe-area-inset-top, 0px)) 20px calc(140px + env(safe-area-inset-bottom, 0px)) !important;
+  min-height: 100dvh !important;
+}
+body .profile-page {
+  display: block !important;
+  max-width: 448px !important;
+  width: 100% !important;
+  margin: 0 auto !important;
+  padding: 0 !important;
+  min-height: 0 !important;
+  overflow: visible !important;
+}
+body .profile-page > .guest-save-banner,
+body .profile-page > .profile-social-stats,
+body .profile-page > .profile-learning-card { display: none !important; }
+
+/* 1. Sticky glass top bar, matching the shared material of the tab bar. */
 body .evo-profile-topbar {
   display: flex !important;
-  height: 48px;
-  align-items: center;
-  justify-content: space-between;
-  gap: 14px;
-}
-body .evo-profile-course-anchor { position: relative; min-width: 0; }
-body .evo-profile-course,
-body .evo-profile-settings {
-  display: flex !important;
-  height: 46px !important;
+  position: sticky !important;
+  z-index: 30;
+  top: env(safe-area-inset-top, 0px) !important;
+  width: calc(100% + 40px) !important;
+  min-height: 68px !important;
   align-items: center !important;
-  border: 1px solid #edeef1 !important;
-  background: #fff !important;
-  color: #111827 !important;
-  box-shadow: 0 6px 20px rgba(25, 32, 46, .055) !important;
+  justify-content: space-between !important;
+  gap: 12px;
+  margin: 0 -20px !important;
+  padding: 16px 20px 12px !important;
+  background: var(--glass) !important;
+  border: 1px solid rgba(0,0,0,.05) !important;
+  border-top: 0 !important;
+  box-shadow: none !important;
+  -webkit-backdrop-filter: saturate(180%) blur(24px);
+  backdrop-filter: saturate(180%) blur(24px);
 }
 body .evo-profile-course {
-  max-width: 100%;
-  gap: 10px;
-  padding: 5px 12px 5px 9px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
+  flex: 0 1 auto;
+  min-width: 0 !important;
+  min-height: 44px !important;
+  padding: 8px 12px !important;
+  color: var(--text) !important;
+  background: var(--card) !important;
+  border: none !important;
   border-radius: 999px !important;
+  box-shadow: var(--shadow) !important;
+  white-space: nowrap;
 }
-body .evo-profile-course > img {
+body .evo-profile-course img {
   display: block !important;
-  width: 29px !important;
-  height: 29px !important;
-  flex: 0 0 29px !important;
-  border-radius: 50% !important;
-  object-fit: cover !important;
-  background: transparent !important;
+  width: 24px !important;
+  height: 24px !important;
+  min-width: 24px;
+  object-fit: cover;
+  border-radius: 50%;
 }
 body .evo-profile-course > span {
-  display: block;
-  font-size: 16px;
-  font-weight: 760;
+  overflow: hidden;
+  color: var(--text) !important;
+  font-size: 15px !important;
+  line-height: 20px;
+  font-weight: 600 !important;
+  letter-spacing: -.1px;
+  text-overflow: ellipsis;
   white-space: nowrap;
-  letter-spacing: -.02em;
 }
-body .evo-profile-course > svg { flex-shrink: 0; margin-left: 3px; }
+body .evo-profile-course > svg { flex: 0 0 auto; color: var(--muted); }
+body .evo-profile-collapsed-title {
+  position: absolute;
+  left: 50%;
+  max-width: min(35%, 140px);
+  transform: translateX(-50%);
+  opacity: 0;
+  overflow: hidden;
+  color: var(--text);
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 22px;
+  letter-spacing: -.2px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  pointer-events: none;
+  transition: opacity 220ms cubic-bezier(.2,.8,.2,1);
+}
+body .evo-profile-collapsed-title.is-visible { opacity: 1; }
 body .evo-profile-settings {
   display: grid !important;
-  width: 46px !important;
-  min-width: 46px !important;
+  flex: 0 0 44px !important;
+  width: 44px !important;
+  height: 44px !important;
+  min-width: 44px !important;
+  min-height: 44px !important;
   padding: 0 !important;
-  border-radius: 50% !important;
   place-items: center;
+  color: var(--text) !important;
+  background: var(--card) !important;
+  border: none !important;
+  border-radius: 999px !important;
+  box-shadow: var(--shadow) !important;
 }
-body .evo-profile-course-menu {
-  position: absolute;
-  z-index: 30;
-  top: calc(100% + 9px);
-  left: 0;
-  display: flex;
-  min-width: 218px;
-  flex-direction: column;
-  gap: 4px;
-  padding: 14px 16px;
-  border: 1px solid #eff0f3;
-  border-radius: 17px;
-  background: #fff;
-  box-shadow: 0 18px 36px rgba(18, 30, 49, .12);
-}
-body .evo-profile-course-menu strong { font-size: 15px; }
-body .evo-profile-course-menu span { font-size: 12px; color: #747d8b; }
 
-/* Identity and orange-ringed round photo */
+/* 2. Large title and 88px circular avatar. */
 body .evo-profile-intro {
   display: flex !important;
-  align-items: center;
-  justify-content: space-between;
-  min-height: 111px;
+  align-items: center !important;
+  justify-content: space-between !important;
   gap: 12px;
-  margin: 25px 0 0;
-  padding: 0 2px;
+  margin: 32px 0 0 !important;
+  min-height: 88px;
 }
-body .evo-profile-identity { min-width: 0; flex: 1 1 auto; }
+body .evo-profile-identity { flex: 1 1 auto; min-width: 0; }
 body .evo-profile-identity h1 {
-  margin: 0 !important;
   overflow: hidden;
-  color: #111827 !important;
-  font-size: clamp(29px, 8.5vw, 39px) !important;
-  font-weight: 850 !important;
-  line-height: 1.08 !important;
-  letter-spacing: -.052em !important;
+  color: var(--text) !important;
+  font-size: 34px !important;
+  font-weight: 700 !important;
+  line-height: 40px !important;
+  letter-spacing: -.6px !important;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-body .evo-profile-handle {
-  margin: 9px 0 0 !important;
+body .evo-profile-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  column-gap: 4px;
+  row-gap: 4px;
+  margin-top: 8px !important;
+  color: var(--muted-readable) !important;
+  font-size: 15px !important;
+  line-height: 20px !important;
+  font-weight: 400 !important;
+  letter-spacing: -.1px;
+}
+body .evo-profile-meta > span:first-child {
+  max-width: 100%;
   overflow: hidden;
-  color: #656c7a !important;
-  font-size: clamp(14px, 3.8vw, 16px) !important;
-  font-weight: 650 !important;
-  line-height: 1.2 !important;
   text-overflow: ellipsis;
-  white-space: nowrap;
 }
-body .evo-profile-joined {
-  margin: 8px 0 0 !important;
-  color: #818998 !important;
-  font-size: clamp(11px, 3vw, 13px) !important;
-  line-height: 1.35 !important;
-  white-space: nowrap;
-}
+body .evo-profile-meta-dot { font-weight: 600; }
 body .evo-profile-avatar-ring {
-  display: grid;
   position: relative;
-  flex: 0 0 clamp(92px, 26vw, 109px);
-  width: clamp(92px, 26vw, 109px);
-  height: clamp(92px, 26vw, 109px);
+  display: grid !important;
+  flex: 0 0 88px;
+  width: 88px !important;
+  height: 88px !important;
+  border: 3px solid var(--accent-soft);
+  border-radius: 50%;
   place-items: center;
-  border-radius: 50%;
-  background: conic-gradient(from -38deg, #ff7a00 0deg 230deg, transparent 230deg 264deg, #ff7a00 264deg 316deg, #eceef0 316deg 360deg);
 }
-body .evo-profile-avatar-ring::before {
+body .evo-avatar-progress {
   position: absolute;
-  inset: 5px;
-  border-radius: 50%;
-  background: #fff;
-  content: "";
+  z-index: 1;
+  inset: -3px;
+  width: 88px;
+  height: 88px;
+  transform: rotate(-90deg);
+  overflow: visible;
+  pointer-events: none;
+}
+body .evo-avatar-progress circle {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 3px;
+  stroke-linecap: round;
 }
 body .evo-profile-avatar-inner {
-  position: relative;
-  z-index: 1;
-  display: grid;
-  width: calc(100% - 16px);
-  height: calc(100% - 16px);
+  display: grid !important;
+  width: 78px !important;
+  height: 78px !important;
   overflow: hidden;
-  border-radius: 50%;
-  background: #f5f5f6;
   place-items: center;
+  color: var(--muted);
+  background: var(--card);
+  border-radius: 50%;
 }
 body .evo-profile-avatar-inner img {
-  display: block !important;
   width: 100% !important;
   height: 100% !important;
-  object-fit: cover !important;
+  object-fit: cover;
+  border-radius: 50%;
 }
-body .evo-profile-avatar-emoji { font-size: 36px; }
 
-/* Action row */
+/* 3. One muted-green primary action, 50px circular share action. */
 body .evo-profile-actions {
   display: grid !important;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 9px;
+  grid-template-columns: minmax(0, 1fr) 50px;
+  gap: 12px;
   width: 100%;
-  margin: 22px 0 0;
-}
-body .evo-profile-edit,
-body .evo-profile-share {
-  display: flex !important;
-  width: 100% !important;
-  min-width: 0;
-  height: 52px !important;
-  min-height: 52px !important;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 0 8px !important;
-  border-radius: 999px !important;
-  font-size: clamp(12px, 3.25vw, 15px) !important;
-  font-weight: 780 !important;
-  letter-spacing: -.02em;
-  white-space: nowrap;
+  margin: 24px 0 0 !important;
 }
 body .evo-profile-edit {
-  border: 1px solid #ff7a00 !important;
-  background: #ff7a00 !important;
-  color: #fff !important;
-  box-shadow: 0 8px 16px rgba(255, 122, 0, .13) !important;
-}
-body .evo-profile-share {
-  border: 1px solid #d9dde5 !important;
-  background: #fff !important;
-  color: #111827 !important;
-  box-shadow: 0 5px 16px rgba(18, 30, 49, .035) !important;
-}
-body .evo-profile-share svg { flex-shrink: 0; }
-body .evo-profile-edit:active,
-body .evo-profile-share:active { transform: scale(.985); }
-body .evo-profile-share-status {
-  margin: 7px 0 0 !important;
-  color: #657083;
-  font-size: 12px;
-  text-align: center;
-}
-
-/* Four equal, elevated stat tiles */
-body .evo-profile-stats {
-  display: grid !important;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 8px;
-  margin: 20px 0 0;
-}
-body .evo-profile-stat,
-body button.evo-profile-stat {
   display: flex !important;
-  height: 98px !important;
-  min-width: 0 !important;
-  min-height: 98px !important;
-  flex-direction: column;
+  width: 100% !important;
+  height: 50px !important;
+  min-height: 50px !important;
   align-items: center;
   justify-content: center;
-  gap: 5px;
-  margin: 0 !important;
-  padding: 10px 3px !important;
-  border: 1px solid #f0f1f3 !important;
-  border-radius: 19px !important;
-  background: #fff !important;
-  box-shadow: 0 7px 22px rgba(24, 31, 43, .055) !important;
-  text-align: center;
+  padding: 0 16px !important;
+  background: var(--accent) !important;
+  border: none !important;
+  border-radius: 999px !important;
+  box-shadow: none !important;
+  color: #FFFFFF !important;
+  font-size: 17px !important;
+  line-height: 22px !important;
+  font-weight: 600 !important;
+  letter-spacing: -.2px;
 }
-body .evo-profile-stat > svg { flex-shrink: 0; }
-body .evo-stat-flame { color: #ff7410 !important; }
-body .evo-stat-star { color: #ffb800 !important; }
-body .evo-stat-trophy { color: #ffae08 !important; }
-body .evo-stat-friends { color: #a4a9b4 !important; }
+body .evo-profile-share {
+  display: grid !important;
+  width: 50px !important;
+  height: 50px !important;
+  min-height: 50px !important;
+  padding: 0 !important;
+  place-items: center;
+  border: 0 !important;
+  border-radius: 999px !important;
+  color: var(--text) !important;
+  background: var(--card) !important;
+  box-shadow: var(--shadow) !important;
+}
+body .evo-profile-share-status {
+  margin-top: 8px !important;
+  color: var(--muted-readable) !important;
+  font-size: 13px;
+  line-height: 18px;
+}
+
+/* 4. Four compact cards, left aligned. */
+body .evo-profile-stats {
+  display: grid !important;
+  grid-template-columns: repeat(4, minmax(0,1fr));
+  gap: 12px !important;
+  margin: 32px 0 0 !important;
+}
+body .evo-profile-stat {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  justify-content: flex-start !important;
+  gap: 8px !important;
+  min-width: 0 !important;
+  min-height: 116px !important;
+  margin: 0 !important;
+  padding: 14px 12px !important;
+  background: var(--card) !important;
+  color: var(--text) !important;
+  border: none !important;
+  border-radius: 18px !important;
+  box-shadow: var(--shadow) !important;
+  text-align: left !important;
+}
+body .evo-profile-stat > svg { flex: 0 0 18px; color: var(--muted) !important; }
+body .evo-profile-stat:nth-child(2) > svg { color: var(--star) !important; }
+body .evo-profile-stat > svg.is-active { color: var(--accent) !important; }
 body .evo-profile-stat strong {
   display: block;
   width: 100%;
-  overflow: hidden;
-  color: #111827 !important;
-  font-size: clamp(16px, 4.4vw, 21px) !important;
-  font-weight: 850 !important;
-  line-height: 1.1 !important;
-  letter-spacing: -.03em;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  color: var(--text) !important;
+  font-size: clamp(17px, 5vw, 22px) !important;
+  line-height: 28px !important;
+  font-weight: 600 !important;
+  letter-spacing: -.4px !important;
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
 }
 body .evo-profile-stat > span {
   display: block;
-  color: #747c8b !important;
-  font-size: clamp(9px, 2.6vw, 11px) !important;
-  line-height: 1.1;
-  white-space: nowrap;
+  width: 100%;
+  color: var(--muted-readable) !important;
+  font-size: 13px !important;
+  line-height: 18px !important;
+  font-weight: 500 !important;
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
-body button.evo-profile-stat:active { transform: translateY(2px); }
 
-/* Badges — separate single-line labels below 72px round medallions */
-body .evo-profile-badges { margin: 26px 0 0; }
-body .evo-profile-section-heading {
+/* 5. Squircle badges with captions underneath; no metallic art. */
+body .evo-profile-badges { margin: 32px 0 0 !important; }
+body .evo-profile-section-heading,
+body .evo-profile-badges-heading {
   display: flex !important;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 0 1px;
+  align-items: baseline !important;
+  gap: 8px !important;
 }
+body .evo-profile-section-heading { justify-content: space-between !important; gap: 12px !important; }
 body .evo-profile-section-heading h2 {
-  margin: 0 !important;
-  color: #121a29 !important;
-  font-size: 20px !important;
-  font-weight: 850 !important;
-  line-height: 1.2 !important;
-  letter-spacing: -.035em;
-  white-space: nowrap;
+  color: var(--text) !important;
+  font-size: 17px !important;
+  line-height: 22px !important;
+  font-weight: 600 !important;
+  letter-spacing: -.2px !important;
 }
-body .evo-profile-section-heading h2 span {
-  color: #646c7a !important;
-  font-size: 17px;
-  font-weight: 600;
+body .evo-profile-badges-heading > span {
+  color: var(--muted-readable) !important;
+  font-size: 15px !important;
+  line-height: 20px !important;
+  font-weight: 400 !important;
+  font-variant-numeric: tabular-nums;
 }
 body .evo-profile-see-all {
-  min-width: 0;
-  flex-shrink: 0;
-  padding: 0 !important;
-  border: 0 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center;
+  gap: 4px !important;
+  min-height: 44px !important;
+  margin: -12px 0 !important;
+  padding: 8px 0 8px 12px !important;
+  color: var(--accent) !important;
   background: transparent !important;
-  color: #ff7100 !important;
-  font-size: 14px !important;
-  font-weight: 800 !important;
+  border: none !important;
+  border-radius: 999px !important;
+  font-size: 13px !important;
+  line-height: 18px !important;
+  font-weight: 600 !important;
   white-space: nowrap;
 }
-body .evo-profile-see-all > span { padding-left: 1px; font-size: 20px; }
-body .evo-profile-badges-viewport { position: relative; margin: 14px -24px 0; }
-body .evo-profile-badges-viewport::after {
-  position: absolute;
-  z-index: 2;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  width: 27px;
-  background: linear-gradient(90deg, transparent, #fff 92%);
-  pointer-events: none;
-  content: "";
+body .evo-profile-badges-viewport {
+  margin: 16px -20px 0 0 !important;
+  overflow: hidden;
 }
 body .evo-profile-badges-rail {
   display: flex !important;
+  align-items: flex-start;
+  gap: 12px !important;
   width: 100%;
-  gap: 12px;
-  padding: 0 24px 10px !important;
   margin: 0 !important;
+  padding: 0 20px 8px 0 !important;
   overflow-x: auto !important;
   overflow-y: hidden !important;
   overscroll-behavior-x: contain;
-  scroll-snap-type: x proximity;
   scrollbar-width: none;
+  scroll-snap-type: x mandatory;
   -webkit-overflow-scrolling: touch;
 }
 body .evo-profile-badges-rail::-webkit-scrollbar { display: none; }
 body .evo-profile-badge {
   display: flex !important;
-  width: 72px;
-  min-width: 72px;
-  flex: 0 0 72px;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  padding: 0;
+  flex: 0 0 80px;
+  width: 80px !important;
+  min-width: 80px !important;
+  min-height: 104px;
+  flex-direction: column !important;
+  align-items: center !important;
+  gap: 8px !important;
+  margin: 0 !important;
+  padding: 0 4px !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  color: var(--text) !important;
   scroll-snap-align: start;
+  text-align: center !important;
 }
 body .evo-badge-art {
   position: relative;
-  display: grid;
-  flex: 0 0 72px;
+  display: grid !important;
+  flex: 0 0 72px !important;
+  width: 72px !important;
+  height: 72px !important;
+  place-items: center;
+  border-radius: 24px !important;
+  color: var(--muted) !important;
+  background: var(--fill) !important;
+  box-shadow: none !important;
+}
+body .evo-badge-art > svg:not(.evo-badge-ring):not(.evo-badge-mini-lock) { z-index: 1; }
+body .evo-badge-art.is-earned {
+  color: #FFFFFF !important;
+  background: var(--accent) !important;
+}
+body .evo-badge-art.is-progress {
+  color: var(--accent) !important;
+  background: var(--card) !important;
+  box-shadow: var(--shadow) !important;
+}
+body .evo-badge-art.is-locked {
+  color: #AEAEB2 !important;
+  background: var(--fill) !important;
+  box-shadow: none !important;
+}
+body .evo-badge-mini-lock {
+  position: absolute;
+  right: 6px;
+  bottom: 6px;
+  z-index: 2;
+  color: #AEAEB2;
+}
+body .evo-badge-ring {
+  position: absolute;
+  inset: 0;
   width: 72px;
   height: 72px;
-  place-items: center;
-  border-radius: 50%;
+  transform: rotate(-90deg);
+  pointer-events: none;
+  overflow: visible;
 }
-body .evo-badge-art.is-earned {
-  border: 3px solid #ffae29;
-  background: radial-gradient(circle at 34% 23%, #ffc26a 0%, #ff8c19 25%, #ff6a00 69%, #ce4700 100%);
-  box-shadow: inset 0 3px 0 rgba(255, 255, 255, .40), inset 0 -4px 0 rgba(121, 51, 0, .2), 0 3px 6px rgba(255, 121, 0, .11);
+body .evo-badge-ring circle {
+  fill: none;
+  stroke: var(--line);
+  stroke-width: 3px;
 }
-body .evo-badge-art--complete.is-earned {
-  border-color: #ffd54a;
-  background: radial-gradient(circle at 35% 23%, #fff3b8 0%, #fcca35 30%, #efa211 75%, #b36c00 100%);
-}
-body .evo-badge-art.is-earned::before {
-  position: absolute;
-  inset: 4px;
-  border: 1px solid rgba(255, 255, 255, .32);
-  border-radius: 50%;
-  content: "";
-}
-body .evo-badge-symbol {
-  position: relative;
-  display: grid;
-  place-items: center;
-  color: #ffe379;
-  filter: drop-shadow(0 2px 1px rgba(155, 56, 0, .35));
-}
-body .evo-badge-art--complete .evo-badge-symbol { color: #fff1a7; }
-body .evo-badge-art.is-locked {
-  padding: 6px;
-  background: conic-gradient(from -12deg, #ff7a00 0 var(--badge-progress, 0%), #e9ebef var(--badge-progress, 0%) 100%);
-}
-body .evo-badge-art.is-locked::before {
-  position: absolute;
-  inset: 6px;
-  border-radius: 50%;
-  background: radial-gradient(circle at 40% 24%, #f8f9fa 0%, #e9ebee 82%);
-  box-shadow: inset 0 3px 6px rgba(28, 36, 52, .035);
-  content: "";
-}
-body .evo-badge-lock {
-  position: relative;
-  z-index: 1;
-  display: grid;
-  color: #a2a8b4;
-  place-items: center;
+body .evo-badge-ring circle.evo-badge-ring-progress {
+  stroke: var(--accent);
+  stroke-width: 3px;
+  stroke-linecap: round;
 }
 body .evo-profile-badge-label {
   display: block;
-  width: 92px;
-  max-width: 92px;
-  color: #656e7e;
-  font-size: 11px;
-  font-weight: 560;
-  line-height: 1.15;
-  letter-spacing: -.025em;
-  text-align: center;
-  white-space: nowrap;
+  width: 80px !important;
+  max-width: 80px !important;
+  overflow: hidden !important;
+  color: var(--muted-readable) !important;
+  font-size: 12px !important;
+  line-height: 16px !important;
+  font-weight: 500 !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
 }
+body .evo-profile-badge:has(.is-earned) .evo-profile-badge-label,
+body .evo-profile-badge:has(.is-progress) .evo-profile-badge-label { color: var(--text) !important; }
+@keyframes evo-badge-earned {
+  0% { transform: scale(.9); opacity: .55; }
+  100% { transform: scale(1); opacity: 1; }
+}
+body .evo-profile-badge.is-newly-earned .evo-badge-art { animation: evo-badge-earned 220ms cubic-bezier(.2,.8,.2,1) both; }
 
-/* Compact real-time weekly study chart */
+/* 6. One calm chart card — bars have no axes or gradients. */
 body .evo-profile-weekly {
-  min-width: 0;
-  margin: 22px 0 0;
-  padding: 18px 17px 15px;
-  border: 1px solid #eff0f3;
-  border-radius: 22px;
-  background: #fff;
-  box-shadow: 0 9px 27px rgba(22, 30, 45, .045);
+  margin: 32px 0 0 !important;
+  padding: 16px !important;
+  color: var(--text) !important;
+  background: var(--card) !important;
+  border: 0 !important;
+  border-radius: 22px !important;
+  box-shadow: var(--shadow) !important;
 }
 body .evo-profile-weekly-heading {
   display: flex !important;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 8px;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 12px !important;
 }
 body .evo-profile-weekly-heading h2 {
-  margin: 0 !important;
-  color: #121a29 !important;
-  font-size: 18px !important;
-  font-weight: 850 !important;
-  letter-spacing: -.035em;
-  line-height: 1.2;
-  white-space: nowrap;
+  color: var(--text) !important;
+  font-size: 17px !important;
+  line-height: 22px !important;
+  font-weight: 600 !important;
+  letter-spacing: -.2px !important;
 }
 body .evo-profile-weekly-heading > span {
-  color: #646d7c !important;
-  font-size: clamp(10px, 2.7vw, 12px);
-  line-height: 1.2;
-  text-align: right;
+  color: var(--muted-readable) !important;
+  font-size: 15px !important;
+  line-height: 20px !important;
+  font-weight: 400 !important;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
 }
 body .evo-profile-week-chart {
   display: grid !important;
-  grid-template-columns: repeat(7, minmax(0, 1fr));
-  gap: clamp(8px, 3vw, 14px);
-  margin: 15px 0 0;
-  align-items: end;
+  grid-template-columns: repeat(7,minmax(0,1fr));
+  gap: 8px !important;
+  margin-top: 16px;
 }
 body .evo-profile-day {
-  display: flex;
+  display: flex !important;
   min-width: 0;
   flex-direction: column;
   align-items: center;
-  gap: 7px;
+  justify-content: flex-end;
+  gap: 8px !important;
 }
 body .evo-profile-bar-track {
-  display: flex;
+  display: flex !important;
+  height: 64px;
   width: 100%;
-  height: 68px;
   align-items: flex-end;
   justify-content: center;
 }
 body .evo-profile-bar {
   display: block;
-  width: 100%;
-  max-width: 30px;
-  min-width: 12px;
-  border-radius: 8px 8px 5px 5px;
-  background: #dfe2e7;
-  transition: height 180ms ease;
+  flex: 0 0 8px;
+  width: 8px;
+  max-height: 64px;
+  border-radius: 4px !important;
+  background: var(--line) !important;
+  transition: height 220ms cubic-bezier(.2,.8,.2,1);
 }
-body .evo-profile-day.is-today .evo-profile-bar {
-  background: linear-gradient(180deg, #ff8412 0%, #ff6a00 100%);
-}
+body .evo-profile-day.is-today .evo-profile-bar { background: var(--accent) !important; }
 body .evo-profile-day-name {
-  display: block;
-  color: #757d8a;
-  font-size: 11px;
-  font-weight: 540;
-  line-height: 1.2;
+  color: var(--muted-readable) !important;
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 500;
 }
-body .evo-profile-day.is-today .evo-profile-day-name { color: #ff7900; font-weight: 760; }
+body .evo-profile-day.is-today .evo-profile-day-name { color: var(--text) !important; font-weight: 600; }
 
-/* Friend avatars + count. Placeholders are not fake accounts. */
+/* 7. Friends card — only genuine friend avatars, up to four. */
 body .evo-profile-friends-preview {
   display: flex !important;
-  width: 100%;
-  min-height: 72px !important;
-  align-items: center;
-  gap: 12px;
-  margin: 17px 0 0;
-  padding: 11px 16px !important;
-  border: 1px solid #eff0f3 !important;
+  width: 100% !important;
+  height: auto !important;
+  min-height: 64px !important;
+  align-items: center !important;
+  gap: 16px !important;
+  margin: 32px 0 0 !important;
+  padding: 14px 16px !important;
+  color: var(--text) !important;
+  background: var(--card) !important;
+  border: 0 !important;
   border-radius: 22px !important;
-  background: #fff !important;
-  box-shadow: 0 7px 22px rgba(25, 31, 44, .045) !important;
-  color: #111827 !important;
+  box-shadow: var(--shadow) !important;
 }
 body .evo-profile-friends-avatars {
-  display: flex;
-  flex: 1 1 auto;
+  display: flex !important;
   align-items: center;
-  min-width: 0;
-  padding-left: 2px;
+  flex: 0 0 auto;
+  padding-left: 8px;
 }
 body .evo-friend-avatar {
-  position: relative;
   display: grid;
-  flex: 0 0 35px;
-  width: 35px;
-  height: 35px;
-  place-items: center;
-  margin-left: -7px;
-  overflow: hidden;
-  border: 2px solid #fff;
+  position: relative;
+  flex: 0 0 32px;
+  width: 32px;
+  height: 32px;
+  margin-left: -8px;
+  border: 2px solid var(--card);
   border-radius: 50%;
-  background: #edf0f4;
-  color: #a2a9b3;
-  box-shadow: 0 1px 4px rgba(24, 34, 48, .10);
+  overflow: hidden;
+  background: var(--fill);
+  place-items: center;
+  color: var(--muted);
 }
-body .evo-friend-avatar:first-child { margin-left: 0; }
-body .evo-friend-avatar-1 { background: #f5f0e9; }
-body .evo-friend-avatar-2 { background: #e8ecf0; }
-body .evo-friend-avatar-3 { background: #f3eceb; }
-body .evo-friend-avatar-4 { background: #e6e9eb; }
-body .evo-friend-avatar > img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-body .evo-friend-avatar > span { font-size: 18px; }
-body .evo-profile-friends-preview > strong {
-  flex: 0 0 auto;
-  color: #111827 !important;
-  font-size: clamp(14px, 4vw, 17px);
-  font-weight: 840;
+body .evo-friend-avatar img { width: 100%; height: 100%; object-fit: cover; }
+body .evo-profile-friends-preview strong {
+  flex: 1 1 auto;
+  text-align: left;
+  color: var(--text) !important;
+  font-size: 17px !important;
+  line-height: 22px !important;
+  font-weight: 600 !important;
+  letter-spacing: -.2px;
   white-space: nowrap;
 }
-body .evo-profile-friends-preview > svg { flex: 0 0 auto; }
-body .evo-profile-friends-preview:active { transform: translateY(1px); }
+body .evo-profile-friends-preview > svg { flex: 0 0 auto; color: var(--muted); }
 
-/* Profile-only floating navigation; preserve actual Nav behaviour. */
-body .app-shell:has(.profile-page) .bottom-nav {
-  display: flex !important;
+/* 8. Unified Home + Profile floating glass navigation.
+ * This is a global override deliberately shared by every screen, not a second bar.
+ */
+body .bottom-nav {
   position: fixed !important;
-  z-index: 35 !important;
-  left: 50% !important;
-  bottom: max(10px, env(safe-area-inset-bottom, 0px)) !important;
-  transform: translateX(-50%) !important;
-  width: min(448px, calc(100vw - 26px)) !important;
-  height: 70px !important;
-  min-height: 70px !important;
-  gap: 2px !important;
+  z-index: 40 !important;
+  left: 16px !important;
+  right: 16px !important;
+  bottom: max(16px, env(safe-area-inset-bottom, 0px)) !important;
+  width: auto !important;
+  max-width: 448px !important;
+  height: 72px !important;
+  min-height: 72px !important;
+  margin: 0 auto !important;
   padding: 6px !important;
-  border: 1px solid #e9ebef !important;
-  border-radius: 999px !important;
-  background: #f0f1f4 !important;
-  box-shadow: 0 5px 24px rgba(22, 30, 46, .08) !important;
+  gap: 0 !important;
+  border: 1px solid rgba(0,0,0,.05) !important;
+  border-radius: 30px !important;
+  background: rgba(255,255,255,.75) !important;
+  box-shadow: none !important;
+  -webkit-backdrop-filter: saturate(180%) blur(24px) !important;
+  backdrop-filter: saturate(180%) blur(24px) !important;
 }
-body .app-shell:has(.profile-page) .bottom-nav button {
-  display: flex !important;
-  flex: 1 1 0 !important;
+body .bottom-nav::before,
+body .bottom-nav::after {
+  display: none !important;
+  content: none !important;
+  background: none !important;
+}
+body .bottom-nav .nav-selection-indicator {
+  z-index: 1 !important;
+  height: calc(100% - 12px) !important;
+  border: none !important;
+  border-radius: 999px !important;
+  background: rgba(0,0,0,.05) !important;
+  box-shadow: none !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+body .bottom-nav button {
+  position: relative !important;
+  z-index: 2 !important;
   min-width: 0 !important;
-  height: 57px !important;
-  min-height: 57px !important;
-  align-items: center !important;
-  justify-content: center !important;
-  flex-direction: column !important;
-  gap: 3px !important;
-  padding: 5px 0 !important;
+  min-height: 56px !important;
+  padding: 6px 4px !important;
+  gap: 4px !important;
   border: 0 !important;
   border-radius: 999px !important;
   background: transparent !important;
   box-shadow: none !important;
-  color: #757c89 !important;
-  font-size: 11px !important;
+  color: #86868B !important;
+  font-size: 12px !important;
+  line-height: 16px !important;
+  font-weight: 500 !important;
+}
+body .bottom-nav button svg {
+  width: 22px !important;
+  height: 22px !important;
+  color: inherit !important;
+  stroke-width: 1.7 !important;
+  opacity: 1 !important;
+}
+body .bottom-nav button span { opacity: 1 !important; font-weight: inherit !important; }
+body .bottom-nav button.active,
+body .bottom-nav button.active span,
+body .bottom-nav button.active svg {
+  color: #1D1D1F !important;
+  background: transparent !important;
+  box-shadow: none !important;
   font-weight: 600 !important;
 }
-body .app-shell:has(.profile-page) .bottom-nav button.active {
-  background: #fff !important;
-  color: #111827 !important;
-  box-shadow: 0 4px 14px rgba(22, 32, 46, .07) !important;
-  font-weight: 820 !important;
-}
-body .app-shell:has(.profile-page) .bottom-nav button > svg {
-  width: 23px !important;
-  height: 23px !important;
-  stroke-width: 2.1 !important;
-}
-body .app-shell:has(.profile-page) .bottom-nav button .learn-user-avatar {
-  width: 26px !important;
-  height: 26px !important;
-}
-body .app-shell:has(.profile-page) .nav-selection-indicator {
-  background: #fff !important;
-  border-radius: 999px !important;
-  box-shadow: 0 4px 14px rgba(22, 32, 46, .04) !important;
-}
+body .bottom-nav button > .learn-user-avatar { width: 24px !important; height: 24px !important; }
+body .bottom-nav button:focus-visible { outline: 2px solid #5B8C6A !important; outline-offset: 2px !important; }
+body .bottom-nav button:active { transform: scale(.97); opacity: .9; }
 
-/* "Összes" drawer */
-body .evo-badge-modal-backdrop {
-  display: flex !important;
+/* Bottom sheets shared by course switching, badge overview and badge details. */
+body .evo-sheet-backdrop {
   position: fixed !important;
   z-index: 10010 !important;
   inset: 0;
+  display: flex !important;
   align-items: flex-end;
   justify-content: center;
-  background: rgba(14, 22, 34, .25);
+  background: rgba(0,0,0,.25) !important;
 }
-body .evo-badge-modal {
+body .evo-sheet {
   width: min(100%, 500px);
-  max-height: 78dvh;
-  padding: 22px 24px calc(26px + env(safe-area-inset-bottom, 0px));
+  max-height: min(80dvh, 760px);
   overflow-y: auto;
-  border-radius: 28px 28px 0 0;
-  background: #fff;
-  box-shadow: 0 -15px 50px rgba(15, 23, 42, .10);
+  padding: 12px 24px calc(32px + env(safe-area-inset-bottom, 0px));
+  border: none;
+  border-radius: 22px 22px 0 0;
+  color: var(--text);
+  background: var(--card);
+  box-shadow: none;
+  animation: evo-sheet-enter 260ms cubic-bezier(.2,.8,.2,1) both;
 }
-body .evo-badge-modal > header {
-  display: flex;
-  align-items: start;
+body .evo-sheet-grabber {
+  display: block;
+  width: 36px;
+  height: 5px;
+  margin: 0 auto 24px;
+  border-radius: 999px;
+  background: var(--line);
+}
+body .evo-sheet-head {
+  display: flex !important;
+  align-items: center;
   justify-content: space-between;
   gap: 12px;
+  margin-bottom: 24px;
 }
-body .evo-badge-modal > header h2 {
-  margin: 0;
-  color: #111827;
-  font-size: 23px;
-  font-weight: 820;
-}
-body .evo-badge-modal > header p { margin: 3px 0 0; color: #7a8190; font-size: 13px; }
-body .evo-badge-modal > header button {
-  display: grid;
-  width: 36px;
-  height: 36px;
+body .evo-sheet-head h2 { color: var(--text); font-size: 22px; line-height: 28px; font-weight: 600; }
+body .evo-sheet-head button {
+  display: grid !important;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  place-items: center;
+  color: var(--muted-readable);
+  background: var(--fill);
   border: 0;
   border-radius: 50%;
-  place-items: center;
-  color: #5b6472;
-  background: #f1f2f4;
 }
+body .evo-course-option {
+  display: flex !important;
+  width: 100%;
+  min-height: 64px;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px !important;
+  border: 0;
+  border-radius: 18px;
+  background: var(--fill);
+}
+body .evo-course-option > img { width: 24px; height: 24px; border-radius: 50%; object-fit: cover; }
+body .evo-course-option > span { display: grid; flex: 1 1 auto; gap: 4px; text-align: left; }
+body .evo-course-option strong { font-size: 17px; font-weight: 600; }
+body .evo-course-option small { font-size: 13px; line-height: 18px; color: var(--muted-readable); }
+body .evo-course-option > svg { color: var(--accent); }
+body .evo-sheet-summary { color: var(--muted-readable); font-size: 15px; margin: 0 0 24px !important; }
 body .evo-badge-modal-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  display: grid !important;
+  grid-template-columns: repeat(3,minmax(0,1fr));
   justify-items: center;
-  gap: 20px 9px;
-  margin-top: 24px;
+  gap: 24px 12px !important;
 }
-@media (max-width: 360px) {
-  body .screen-content:has(.profile-page) { padding-left: 16px !important; padding-right: 16px !important; }
-  body .evo-profile-badges-viewport { margin-inline: -16px; }
-  body .evo-profile-badges-rail { padding-inline: 16px !important; gap: 10px; }
-  body .evo-profile-intro { gap: 8px; }
-  body .evo-profile-avatar-ring { flex-basis: 90px; width: 90px; height: 90px; }
-  body .evo-profile-identity h1 { font-size: 28px !important; }
-  body .evo-profile-joined { font-size: 11px !important; }
-  body .evo-profile-weekly { padding-inline: 13px; }
-  body .evo-profile-week-chart { gap: 8px; }
-  body .evo-profile-badges { margin-top: 22px; }
+body .evo-badge-detail {
+  display: flex !important;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 8px 0 24px;
+  text-align: center;
 }
-@media (max-height: 720px) {
-  body .evo-profile-intro { margin-top: 15px; min-height: 100px; }
-  body .evo-profile-actions { margin-top: 16px; }
-  body .evo-profile-stats { margin-top: 16px; }
-  body .evo-profile-badges { margin-top: 20px; }
-  body .evo-profile-weekly { margin-top: 17px; }
+body .evo-badge-detail > .evo-profile-badge { flex: 0 0 auto; }
+body .evo-badge-detail h3 { font-size: 22px; line-height: 28px; font-weight: 600; color: var(--text); }
+body .evo-badge-detail p { color: var(--muted-readable); font-size: 15px; line-height: 20px; max-width: 280px; }
+body .evo-badge-detail strong { color: var(--text); font-size: 17px; font-weight: 600; }
+body .evo-badge-date { color: var(--muted-readable); font-size: 13px; line-height: 18px; }
+body .evo-badge-detail-track {
+  width: 100%;
+  max-width: 280px;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--fill);
+  overflow: hidden;
+}
+body .evo-badge-detail-track > span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--accent);
+}
+@keyframes evo-sheet-enter {
+  from { transform: translateY(24px); opacity: .4; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+/* Compact phones and larger accessibility text: let the stat grid breathe. */
+/* Small screens and increased type sizes can switch to a 2 × 2 grid. */
+@media (max-width: 375px) {
+  body .evo-profile-stats { grid-template-columns: repeat(2,minmax(0,1fr)); }
+}
+@media (max-width: 350px) {
+  body .evo-profile-stats { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  body .evo-profile-identity h1 { font-size: 30px !important; }
+  body .evo-profile-meta { font-size: 13px !important; }
+  body .evo-profile-course > span { max-width: 86px; }
+}
+@media (prefers-contrast: more) {
+  body .evo-profile-dashboard { --muted-readable: #55555A; }
+}
+@media (prefers-reduced-transparency: reduce) {
+  body .evo-profile-topbar,
+  body .bottom-nav { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; background: #FFFFFF !important; }
 }
 @media (prefers-reduced-motion: reduce) {
-  body .evo-profile-dashboard button,
-  body .evo-profile-bar { transition: none !important; }
+  body .evo-profile-dashboard *,
+  body .bottom-nav button { animation: none !important; transition: opacity 120ms linear !important; }
+  body .evo-sheet { animation: none !important; }
+}
+@media (prefers-color-scheme: dark) {
+  body .evo-profile-dashboard {
+    --bg: #000000;
+    --card: #1C1C1E;
+    --text: #F5F5F7;
+    --muted: #98989D;
+    --muted-readable: #BABAC0;
+    --line: #38383A;
+    --fill: #2C2C2E;
+    --accent: #6FA07E;
+    --accent-soft: #1F2E24;
+    --star: #C9A24B;
+    --shadow: none;
+    --glass: rgba(28,28,30,.75);
+  }
+  body .app-shell:has(.profile-page),
+  body .screen-content:has(.profile-page),
+  body .profile-page { background: #000000 !important; color: #F5F5F7 !important; }
+  body .evo-profile-topbar { border-color: rgba(255,255,255,.05) !important; }
+  body .evo-badge-art.is-locked { color: #98989D !important; }
+  body .evo-badge-mini-lock { color: #98989D; }
+  body .evo-profile-edit { color: #FFFFFF !important; }
+  body .app-shell:has(.profile-page) .bottom-nav {
+    background: rgba(28,28,30,.75) !important;
+    border-color: rgba(255,255,255,.08) !important;
+    box-shadow: none !important;
+  }
+  body .app-shell:has(.profile-page) .bottom-nav .nav-selection-indicator { background: rgba(255,255,255,.09) !important; }
+  body .app-shell:has(.profile-page) .bottom-nav button,
+  body .app-shell:has(.profile-page) .bottom-nav button span { color: #98989D !important; }
+  body .app-shell:has(.profile-page) .bottom-nav button.active,
+  body .app-shell:has(.profile-page) .bottom-nav button.active span,
+  body .app-shell:has(.profile-page) .bottom-nav button.active svg { color: #F5F5F7 !important; }
 }

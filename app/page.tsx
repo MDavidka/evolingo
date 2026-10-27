@@ -1869,6 +1869,7 @@ function Profile({ completedCount, readCount, completedTaskCount, xp, stars, use
   const [profileStorageReady, setProfileStorageReady] = useState(false)
   const [remoteProfileReady, setRemoteProfileReady] = useState(false)
   const [profileTheme, setProfileTheme] = useState<"mist" | "sage">("mist")
+  const [joinedAt, setJoinedAt] = useState<string | null>(null)
   const [imageError, setImageError] = useState("")
   const avatarInputRef = useRef<HTMLInputElement>(null)
   const bannerInputRef = useRef<HTMLInputElement>(null)
@@ -1882,6 +1883,7 @@ function Profile({ completedCount, readCount, completedTaskCount, xp, stars, use
         const data = result.state || {}
         if (cancelled) return
         if (data.theme === "mist" || data.theme === "sage") setProfileTheme(data.theme)
+        if (typeof data.createdAt === "string") setJoinedAt(data.createdAt)
         if (typeof data.avatarImage === "string" && data.avatarImage.startsWith("data:image/")) setAvatarImage(data.avatarImage)
         if (typeof data.bannerImage === "string" && data.bannerImage.startsWith("data:image/")) setBannerImage(data.bannerImage)
       })
@@ -1988,7 +1990,13 @@ function Profile({ completedCount, readCount, completedTaskCount, xp, stars, use
       avatarImage={avatarImage}
       fallbackAvatar={foxIcon}
       xp={xp}
+      stars={stars}
       streak={visibleStreak}
+      lastStudyDate={dailyStudy.lastStudyDate}
+      joinedAt={joinedAt}
+      readCount={readCount}
+      completedCount={completedCount}
+      completedTaskCount={completedTaskCount}
       weeklyStudySeconds={weeklyStudySeconds}
       onEdit={openSettings}
       onStreakSettings={() => setShowStreakSettings(true)}
