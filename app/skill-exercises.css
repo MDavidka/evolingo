@@ -375,3 +375,52 @@ body .learn-path-track .learn-path-skill-node .learn-skill-button > .evo-skill-c
 body .learn-path-track .learn-path-skill-node > .learn-pack-caption {
   margin-top: 6px !important;
 }
+
+
+/* Vocabulary reference: generous white layout, fine outline, no decorative tiles. */
+body .skill-vocabulary { padding: max(16px,env(safe-area-inset-top,0px)) 22px 0; background: #fdfdfd; }
+body .skill-vocabulary .skill-header-top { min-height: 70px; }
+body .skill-vocabulary .skill-close { background: transparent; border: 0; color: #606060; }
+body .skill-vocabulary .skill-header-title { gap: 4px; }
+body .skill-vocabulary .skill-header-title > span { font-size: 13px; font-weight: 500; letter-spacing: .04em; color: #696969; text-transform: uppercase; }
+body .skill-vocabulary .skill-header-title > strong { font-size: 22px; line-height: 1.15; letter-spacing: -.035em; color: #111; }
+body .skill-vocabulary .skill-header-level { width: auto; min-width: 68px; background: transparent; font-size: 16px; font-weight: 500; color: #666; white-space: nowrap; }
+body .skill-vocabulary .skill-progress { height: 4px; margin-top: 20px; background: #ededed; }
+body .skill-vocabulary .skill-body { padding-top: 34px; }
+body .skill-vocabulary .skill-vocab-title { margin: 0 !important; font-size: clamp(25px,6.5vw,31px); font-weight: 750; letter-spacing: -.04em; color: #111; }
+body .skill-vocabulary .skill-helper { margin: 10px 0 22px; font-size: 15px; line-height: 1.45; color: #676767; }
+body .skill-vocabulary .skill-flashcard {
+  flex: 1 1 auto; min-height: 300px; max-height: none; gap: 18px;
+  border: 1px solid #dedede; border-radius: 30px;
+  background: #fdfdfd; box-shadow: none;
+  padding: 76px 20px 70px;
+}
+body .skill-vocabulary .skill-flashcard.is-revealed { background: #f8faf8; }
+body .skill-vocabulary .skill-flashcard-symbol {
+  position: static; transform: none; width: 44px; height: 44px;
+  color: #7a9380; flex: 0 0 auto;
+}
+body .skill-vocabulary .skill-flashcard-sound {
+  position: absolute; right: 20px; top: 20px; color: #626262;
+}
+body .skill-vocabulary .skill-flashcard-language { font-size: 13px; font-weight: 500; letter-spacing: .025em; color: #666; }
+body .skill-vocabulary .skill-flashcard > strong { font-size: clamp(37px,10vw,48px); font-weight: 750; color: #0d0d0d; }
+body .skill-vocabulary .skill-flashcard > small { font-size: 15px; }
+body .skill-vocabulary .skill-flashcard-hint { bottom: 20px; font-size: 13px; color: #666; }
+body .skill-vocabulary .skill-vocab-score { min-height: 35px; margin: 10px 0 0; font-size: 13px; color: #676767; }
+body .skill-vocabulary .skill-footer.skill-vocab-buttons {
+  position: static; flex: 0 0 auto; width: 100%; margin: 0;
+  padding: 0 0 calc(20px + env(safe-area-inset-bottom,0px));
+  border: 0; background: transparent;
+}
+body .skill-vocabulary .skill-vocab-buttons > button {
+  border: 0; border-radius: 14px; min-height: 48px; background: transparent;
+  box-shadow: none; font-size: 16px; font-weight: 550; color: #626262;
+}
+body .skill-vocabulary .skill-vocab-buttons > button:first-child { justify-content: flex-start; }
+body .skill-vocabulary .skill-vocab-buttons > button:last-child { justify-content: flex-end; }
+@media (max-height: 690px) {
+  body .skill-vocabulary .skill-body { padding-top: 18px; }
+  body .skill-vocabulary .skill-helper { margin-bottom: 12px; }
+  body .skill-vocabulary .skill-flashcard { min-height: 240px; padding-top: 55px; padding-bottom: 55px; }
+}
