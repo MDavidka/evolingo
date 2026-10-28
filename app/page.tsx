@@ -1010,7 +1010,7 @@ function Home({ completedLessons, answeredTasks, readLessons, notice, clearNotic
     return items
   })
   let routeHeight = 0
-  const routeTops = routeItems.map(item => { const top = routeHeight; routeHeight += item.skill ? 106 : item.chest || item.packIndex !== null ? 108 : 164; return top })
+  const routeTops = routeItems.map(item => { const top = routeHeight; routeHeight += item.skill ? 146 : item.chest || item.packIndex !== null ? 108 : 164; return top })
   const nodeRefs = useRef<Map<number, HTMLButtonElement>>(new Map())
   useEffect(() => {
     if (currentLessonId === null || !readLessons.length && !completedLessons.length) return
@@ -1077,7 +1077,7 @@ function Home({ completedLessons, answeredTasks, readLessons, notice, clearNotic
                 onClick={() => onOpenSkill(lesson.id, skill)}
                 aria-label={lesson.title + ": " + skillLabels[skill] + (skillDone ? ", kész, újra gyakorolható" : unlocked ? "" : ", zárolva")}
               >
-                <SkillIcon kind={skill === "vocabulary" ? "vocabulary" : skill === "conversation" ? "conversation" : "essay"} color={skillDone ? "green" : !unlocked ? "gray" : skill === "vocabulary" ? "blue" : skill === "conversation" ? "purple" : "orange"} size={74} />
+                <SkillIcon kind={skill === "vocabulary" ? "vocabulary" : skill === "conversation" ? "conversation" : "essay"} color={skillDone ? "green" : !unlocked ? "gray" : skill === "vocabulary" ? "blue" : skill === "conversation" ? "purple" : "orange"} size={84} />
                 {skillDone && <span className="learn-skill-check" aria-hidden="true"><Check size={11} /></span>}
               </button>
               <span className="learn-pack-caption">{skillLabels[skill]}</span>

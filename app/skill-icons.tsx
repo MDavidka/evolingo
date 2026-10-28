@@ -1,48 +1,56 @@
 "use client"
 
 /**
- * These are NOT SVG recreations.
- * The sprite was cut out from the user's uploaded 3 x 3 icon sheet,
- * with transparent backgrounds; columns = task types, rows = states.
- * Original artwork occupies 9 equally sized cells in one WebP sprite.
+ * Exact icon artwork cropped from the user's supplied 3×3 image.
+ * Each file is an independent, transparent, LOSSLESS WebP.
+ * This component never draws an approximation or slices a sprite.
  */
 export type SkillIconKind = "vocabulary" | "conversation" | "essay"
 export type SkillIconColor = "gray" | "green" | "blue" | "purple" | "orange"
 
-const columns: Record<SkillIconKind, number> = {
-  vocabulary: 0,
-  conversation: 50,
-  essay: 100,
-}
-const rows: Record<SkillIconColor, number> = {
-  gray: 0,
-  green: 50,
-  blue: 100,
-  purple: 100,
-  orange: 100,
-}
-const labels: Record<SkillIconKind, string> = {
+const iconLabels: Record<SkillIconKind, string> = {
   vocabulary: "Szókártyák",
   conversation: "Beszélgetés",
   essay: "Fogalmazás",
 }
 
-export default function SkillIcon({ kind, color, size = 90 }: { kind: SkillIconKind; color: SkillIconColor; size?: number }) {
-  return <span
+export default function SkillIcon({
+  kind, color, size = 84,
+}: {
+  kind: SkillIconKind
+  color: SkillIconColor
+  size?: number
+}) {
+  const state = color === "gray" ? "gray" : color === "green" ? "green" : "color"
+  // Filenames are static mappings, not remote sources or dynamically generated images.
+  const paths: Record<SkillIconKind, Record<"gray" | "green" | "color", string>> = {
+    vocabulary: {
+      gray: "/images/evoskill-cutouts-v3/vocabulary-gray.webp",
+      green: "/images/evoskill-cutouts-v3/vocabulary-green.webp",
+      color: "/images/evoskill-cutouts-v3/vocabulary-color.webp",
+    },
+    conversation: {
+      gray: "/images/evoskill-cutouts-v3/conversation-gray.webp",
+      green: "/images/evoskill-cutouts-v3/conversation-green.webp",
+      color: "/images/evoskill-cutouts-v3/conversation-color.webp",
+    },
+    essay: {
+      gray: "/images/evoskill-cutouts-v3/essay-gray.webp",
+      green: "/images/evoskill-cutouts-v3/essay-green.webp",
+      color: "/images/evoskill-cutouts-v3/essay-color.webp",
+    },
+  }
+  return <img
     className="evo-skill-cutout"
-    role="img"
-    aria-label={labels[kind]}
-    style={{
-      display: "inline-block",
-      flex: "0 0 auto",
-      width: size,
-      height: size,
-      backgroundColor: "transparent",
-      backgroundImage: 'url("/images/evoskill-original-cutouts.webp")',
-      backgroundSize: "300% 300%",
-      backgroundPosition: columns[kind] + "% " + rows[color] + "%",
-      backgroundRepeat: "no-repeat",
-      imageRendering: "auto",
-    }}
+    src={paths[kind][state]}
+    width={size}
+    height={size}
+    alt=""
+    title={iconLabels[kind]}
+    aria-hidden="true"
+    loading="lazy"
+    decoding="async"
+    draggable={false}
+    style={{ display: "block", width: size, height: size, objectFit: "contain", background: "transparent" }}
   />
 }

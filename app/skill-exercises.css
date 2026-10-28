@@ -253,3 +253,94 @@ body .skill-flashcard-symbol > .evo-skill-cutout {
 body .learn-path-skill-node .learn-skill-button.is-locked .evo-skill-cutout {
   opacity: 1;
 }
+
+
+/* Real transparent cutouts v3: override legacy 'redesign.css' global task captions.
+   That stylesheet positioned ALL captions at top:68px !important, over the skill art. */
+body .learn-path-track .learn-path-node.learn-path-skill-node {
+  position: absolute !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  gap: 0 !important;
+  width: 124px !important;
+  max-width: none !important;
+  height: 132px !important;
+  min-height: 132px !important;
+  padding: 0 !important;
+  overflow: visible !important;
+  z-index: 3 !important;
+  transform: translateX(-50%) !important;
+}
+body .learn-path-track .learn-path-skill-node .learn-skill-button {
+  position: relative !important;
+  display: grid !important;
+  place-items: center !important;
+  flex: 0 0 88px !important;
+  width: 88px !important;
+  height: 88px !important;
+  min-width: 88px !important;
+  min-height: 88px !important;
+  margin: 0 !important;
+  padding: 2px !important;
+  border: none !important;
+  border-radius: 18px !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+body .learn-path-track .learn-path-skill-node .learn-skill-button > .evo-skill-cutout {
+  display: block !important;
+  flex: 0 0 84px !important;
+  width: 84px !important;
+  height: 84px !important;
+  min-width: 84px !important;
+  min-height: 84px !important;
+  max-width: none !important;
+  max-height: none !important;
+  object-fit: contain !important;
+  background: transparent !important;
+  filter: none !important;
+  box-shadow: none !important;
+  pointer-events: none !important;
+}
+body .learn-path-track .learn-path-skill-node > .learn-pack-caption {
+  position: static !important;
+  display: block !important;
+  inset: auto !important;
+  top: auto !important;
+  left: auto !important;
+  right: auto !important;
+  bottom: auto !important;
+  transform: none !important;
+  flex: 0 0 auto !important;
+  width: 124px !important;
+  max-width: 124px !important;
+  min-height: 19px !important;
+  margin: 7px 0 0 !important;
+  padding: 0 !important;
+  color: #565661 !important;
+  font-size: 12px !important;
+  line-height: 19px !important;
+  font-weight: 700 !important;
+  text-align: center !important;
+  white-space: normal !important;
+  pointer-events: none;
+}
+body .learn-path-track .learn-path-skill-node .learn-skill-check {
+  position: absolute !important;
+  top: -3px !important;
+  right: -9px !important;
+  z-index: 2 !important;
+}
+body .skill-flashcard-symbol > .evo-skill-cutout {
+  width: 88px !important;
+  height: 88px !important;
+  max-width: none !important;
+  object-fit: contain !important;
+  background: transparent !important;
+}
+@media (max-width: 360px) {
+  body .learn-path-track .learn-path-node.learn-path-skill-node { width: 116px !important; }
+  body .learn-path-track .learn-path-skill-node > .learn-pack-caption { width: 116px !important; max-width: 116px !important; }
+}
