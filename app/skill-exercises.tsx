@@ -24,6 +24,7 @@ type Props = {
   alreadyCompleted: boolean
   onExit: () => void
   onComplete: () => void
+  debugForDavid?: boolean
 }
 type VocabularyCard = { english: string; hungarian: string; example: string }
 type EssayTopic = { title: string; prompt: string; tips: string[]; minWords: number; recommendedWords: number }
@@ -110,9 +111,10 @@ function CompletePanel({ mode, onExit, alreadyCompleted }: { mode: SkillMode; on
   </div>
 }
 
-export default function SkillExercise({ mode, lesson, alreadyCompleted, onExit, onComplete }: Props) {
+export default function SkillExercise({ mode, lesson, alreadyCompleted, onExit, onComplete, debugForDavid = false }: Props) {
   const [loading, setLoading] = useState(true)
   const [loadError, setLoadError] = useState("")
+  const [debugStage, setDebugStage] = useState("idle")
   const [questions, setQuestions] = useState<string[]>([])
   const [cards, setCards] = useState<VocabularyCard[]>([])
   const [topic, setTopic] = useState<EssayTopic | null>(null)
@@ -150,10 +152,11 @@ export default function SkillExercise({ mode, lesson, alreadyCompleted, onExit, 
     const controller = new AbortController()
     setLoading(true)
     setLoadError("")
+    setDebugStage(mode === "vocabulary" ? "offline: ready" : "POST /api/skill-ai · " + (mode === "conversation" ? "conversation-pack" : "essay-topic"))
     if (mode === "conversation") {
       void askAI<{ questions: string[] }>("conversation-pack", { lesson }, controller.signal)
-        .then(result => { if (!controller.signal.aborted) { setQuestions(result.questions.slice(0, 3)); setQuestionIndex(0) } })
-        .catch(error => { if (!controller.signal.aborted) setLoadError(error instanceof Error ? error.message : "Nincs válasz.") })
+        .then(result => { if (!controller.signal.aborted) { setQuestions(result.questions.slice(0, 3)); setQuestionIndex(0); setDebugStage("conversation-pack: OK") } })
+        .catch(error => { if (!controller.signal.aborted) setLoadError(error instanceof Error ? error.message : "Nincs válasz."); setDebugStage("conversation-pack: ERROR") })
         .finally(() => { if (!controller.signal.aborted) setLoading(false) })
     } else if (mode === "vocabulary") {
       // Fully offline: the vocabulary deck never depends on the AI endpoint.
@@ -164,8 +167,8 @@ export default function SkillExercise({ mode, lesson, alreadyCompleted, onExit, 
       setLoading(false)
     } else {
       void askAI<EssayTopic>("essay-topic", { lesson }, controller.signal)
-        .then(result => { if (!controller.signal.aborted) setTopic(result) })
-        .catch(error => { if (!controller.signal.aborted) setLoadError(error instanceof Error ? error.message : "Nincs téma.") })
+        .then(result => { if (!controller.signal.aborted) setTopic(result); setDebugStage("essay-topic: OK") })
+        .catch(error => { if (!controller.signal.aborted) setLoadError(error instanceof Error ? error.message : "Nincs téma."); setDebugStage("essay-topic: ERROR") })
         .finally(() => { if (!controller.signal.aborted) setLoading(false) })
     }
     return () => controller.abort()
@@ -219,14 +222,17 @@ export default function SkillExercise({ mode, lesson, alreadyCompleted, onExit, 
   const gradeConversation = async () => {
     if (!answer.trim() || grading || answerFeedback?.accepted) return
     setGrading(true)
+    setDebugStage("POST /api/skill-ai · conversation-check")
     setSpeechError("")
     try {
       const result = await askAI<ConversationFeedback>("conversation-check", {
         question: questions[questionIndex], answer, lessonTitle: lesson.title,
       })
       setAnswerFeedback(result)
+      setDebugStage("conversation-check: OK")
     } catch (error) {
       setSpeechError(error instanceof Error ? error.message : "Nem sikerült az értékelés.")
+      setDebugStage("conversation-check: ERROR · " + (error instanceof Error ? error.message : "unknown"))
     } finally { setGrading(false) }
   }
 
@@ -274,13 +280,16 @@ export default function SkillExercise({ mode, lesson, alreadyCompleted, onExit, 
   const gradeEssay = async () => {
     if (!topic || grading || wordsIn(essay) < 120) return
     setGrading(true)
+    setDebugStage("POST /api/skill-ai · essay-check")
     setEssayError("")
     setEssayFeedback(null)
     try {
       const result = await askAI<EssayFeedback>("essay-check", { title: topic.title, prompt: topic.prompt, essay })
       setEssayFeedback(result)
+      setDebugStage("essay-check: OK")
     } catch (error) {
       setEssayError(error instanceof Error ? error.message : "Az esszé nem értékelhető.")
+      setDebugStage("essay-check: ERROR · " + (error instanceof Error ? error.message : "unknown"))
     } finally { setGrading(false) }
   }
 
@@ -291,6 +300,7 @@ export default function SkillExercise({ mode, lesson, alreadyCompleted, onExit, 
 
   return <div className={"skill-exercise skill-" + mode}>
     <SkillHeader lesson={lesson} mode={mode} progress={progress} onExit={onExit} />
+    {debugForDavid && mode !== "vocabulary" && <div className="skill-debug" role="status" aria-live="polite"><strong>AI DEBUG · DAVID</strong><span>{"<error:>"} {loadError || speechError || essayError || (loading || grading ? "loading" : "none")}</span><small>{debugStage}</small></div>}
     {finished ? <CompletePanel mode={mode} onExit={onExit} alreadyCompleted={alreadyCompleted} />
       : loading ? <LoadingPanel caption={mode === "conversation" ? "Kérdéseket készítünk…" : mode === "vocabulary" ? "Szavakat válogatunk…" : "B2 témát keresünk…"} />
       : loadError ? <ErrorPanel message={loadError} retry={() => setGeneration(value => value + 1)} onExit={onExit} />
