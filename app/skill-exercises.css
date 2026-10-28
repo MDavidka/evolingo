@@ -355,3 +355,23 @@ body .learn-path-skill-node .learn-pack-caption { top: 66px !important; width: 1
 .skill-helper { font-size: 12px; }
 .skill-essay-topic { padding: 16px !important; }
 .skill-microphone-area { gap: 8px !important; }
+
+/* Final high-specificity sizing: slightly smaller than the previous 84px path icons.
+   Keep the full original artwork and its caption on separate lines. */
+body .learn-path-track .learn-path-skill-node .learn-skill-button {
+  flex-basis: 76px !important;
+  width: 76px !important;
+  height: 76px !important;
+  min-width: 76px !important;
+  min-height: 76px !important;
+}
+body .learn-path-track .learn-path-skill-node .learn-skill-button > .evo-skill-cutout {
+  flex-basis: 72px !important;
+  width: 72px !important;
+  height: 72px !important;
+  min-width: 72px !important;
+  min-height: 72px !important;
+}
+body .learn-path-track .learn-path-skill-node > .learn-pack-caption {
+  margin-top: 6px !important;
+}
