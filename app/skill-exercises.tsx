@@ -129,6 +129,36 @@ export default function SkillExercise({ mode, lesson, alreadyCompleted, onExit, 
   const recognizerRef = useRef<SpeechRecognitionClient | null>(null)
   const [wordIndex, setWordIndex] = useState(0)
   const [revealed, setRevealed] = useState(false)
+  const [wordIntro, setWordIntro] = useState(true)
+  const introTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const playCardSound = () => {
+    try {
+      const AudioContextCtor = window.AudioContext
+      if (!AudioContextCtor) return
+      const context = new AudioContextCtor()
+      void context.resume().then(() => {
+        const oscillator = context.createOscillator()
+        const gain = context.createGain()
+        oscillator.type = "sine"
+        oscillator.frequency.setValueAtTime(520, context.currentTime)
+        oscillator.frequency.exponentialRampToValueAtTime(780, context.currentTime + 0.13)
+        gain.gain.setValueAtTime(0.0001, context.currentTime)
+        gain.gain.exponentialRampToValueAtTime(0.065, context.currentTime + 0.018)
+        gain.gain.exponentialRampToValueAtTime(0.0001, context.currentTime + 0.25)
+        oscillator.connect(gain).connect(context.destination)
+        oscillator.start()
+        oscillator.stop(context.currentTime + 0.26)
+        oscillator.onended = () => { void context.close() }
+      }).catch(() => { void context.close() })
+    } catch { /* Sound is optional on unsupported browsers. */ }
+  }
+  const dismissWordIntro = () => {
+    if (introTimer.current) clearTimeout(introTimer.current)
+    setWordIntro(false)
+    playCardSound()
+  }
+  useEffect(() => () => { if (introTimer.current) clearTimeout(introTimer.current) }, [])
+
   const [knownCount, setKnownCount] = useState(0)
   const [swipeDelta, setSwipeDelta] = useState(0)
   const startPointer = useRef<number | null>(null)
@@ -248,13 +278,18 @@ export default function SkillExercise({ mode, lesson, alreadyCompleted, onExit, 
     setSpeechError("")
   }
 
+  const showNextCard = () => {
+    setWordIntro(true)
+    if (introTimer.current) clearTimeout(introTimer.current)
+    introTimer.current = setTimeout(() => setWordIntro(false), 1150)
+  }
   const chooseWord = (known: boolean) => {
     if (!cards.length || wordIndex >= cards.length || finishedRef.current) return
     if (known) setKnownCount(prev => prev + 1)
     setSwipeDelta(0)
     setRevealed(false)
     if (wordIndex === cards.length - 1) finish()
-    else setWordIndex(prev => prev + 1)
+    else { setWordIndex(prev => prev + 1); showNextCard() }
   }
   const pointerDown = (event: ReactPointerEvent<HTMLButtonElement>) => {
     startPointer.current = event.clientX
@@ -331,6 +366,15 @@ export default function SkillExercise({ mode, lesson, alreadyCompleted, onExit, 
         </div>
       </div>
       : mode === "vocabulary" ? <div className="skill-body">
+        {wordIntro && <div className="skill-word-intro" role="button" tabIndex={0} aria-label="Szókártyák megnyitása" onClick={dismissWordIntro} onKeyDown={event => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); dismissWordIntro() } }}>
+          <div className="skill-word-intro-card" aria-hidden="true">
+            <span>ANGOL</span>
+            <strong>{cards[wordIndex]?.english}</strong>
+            <small>{cards[wordIndex]?.pronunciation || ""}</small>
+          </div>
+          <p>Koppints a fordításhoz, vagy húzd oldalra a kártyát.</p>
+          <button type="button" onClick={event => { event.stopPropagation(); dismissWordIntro() }}>Kezdés <ArrowRight size={16}/></button>
+        </div>
         
         <h1 className="skill-vocab-title">Ismered ezt a szót?</h1>
         <p className="skill-helper">Koppints a kártyára a fordításhoz. Húzd balra, ha még nem tudtad, jobbra, ha igen.</p>
