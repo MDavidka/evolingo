@@ -835,7 +835,7 @@ export default function App() {
       />}
       {screen === "shop" && <Shop stars={stars} purchasedItems={purchasedItems} onPurchase={(id, cost) => { if (stars >= cost && !purchasedItems.includes(id)) { setStars((value) => value - cost); setPurchasedItems((items) => [...items, id]); setNotice("Sikeres vásárlás!"); } }} />}
       {screen === "leaderboard" && <Leaderboard />}
-      {screen === "friends" && <Friends userName={userName} avatar={avatar} avatarImage={avatarImage} xp={xp} dailyStudy={dailyStudy} saveStatus={saveStatus} onRetryCloudSave={retryCloudSave} onNewFriendRequest={() => setSystemNotice("friend")} />}
+      {screen === "friends" && <Friends userName={userName} avatar={avatar} avatarImage={avatarImage} xp={xp} dailyStudy={dailyStudy} saveStatus={saveStatus} onRetryCloudSave={retryCloudSave} />}
       {screen === "profile" && <Profile completedCount={completedLessons.length} readCount={readLessons.length} completedTaskCount={answeredTasks.filter(key => !key.startsWith("skill:")).length} xp={xp} stars={stars} userName={userName} setUserName={setUserName} avatar={avatar} setAvatar={setAvatar} avatarImage={avatarImage} setAvatarImage={setAvatarImage} bannerImage={bannerImage} setBannerImage={setBannerImage} dailyStudy={dailyStudy} onDailyGoalChange={(dailyGoal) => setDailyStudy(previous => ({ ...previous, dailyGoal }))} saveStatus={saveStatus} onRetryCloudSave={retryCloudSave} notifications={notifications} setNotifications={setNotifications} compactMode={compactMode} setCompactMode={setCompactMode} showSettings={showSettings} setShowSettings={setShowSettings} weeklyStudySeconds={weeklyStudySeconds} onOpenFriends={() => setScreen("friends")} />}
     </section>
     {screen !== "lessonIntro" && screen !== "task" && screen !== "skill" && screen !== "chestOpen" && <Nav screen={screen} setScreen={setScreen} userName={userName} avatar={avatar} avatarImage={avatarImage} />}
@@ -1569,9 +1569,9 @@ type FriendProfile = {
 
 type FriendsTab = "friends" | "requests" | "suggested"
 
-function Friends({ userName, avatar, avatarImage, xp, dailyStudy, saveStatus, onRetryCloudSave, onNewFriendRequest }: {
+function Friends({ userName, avatar, avatarImage, xp, dailyStudy, saveStatus, onRetryCloudSave }: {
   userName: string; avatar: string; avatarImage: string; xp: number; dailyStudy: DailyStudyState
-  saveStatus: CloudSaveStatus; onRetryCloudSave: () => void; onNewFriendRequest: () => void
+  saveStatus: CloudSaveStatus; onRetryCloudSave: () => void;
 }) {
   const [tab, setTab] = useState<FriendsTab>("friends")
   const [query, setQuery] = useState("")
@@ -1694,13 +1694,9 @@ function Friends({ userName, avatar, avatarImage, xp, dailyStudy, saveStatus, on
       if (sessionStorage.getItem(key)) return
       sessionStorage.setItem(key, "1")
     } catch {}
+    // Show one in-app surface: the friend-request sheet. Background Web Push is separate.
     setRequestPopup(next)
-    onNewFriendRequest()
-    // Foreground notification only; background push needs a VAPID subscription service.
-    if (typeof Notification !== "undefined" && Notification.permission === "granted") {
-      try { new Notification("Evölingo · Új barátkérés", { body: next.name + " ismerősnek jelölt.", icon: "/icon.svg" }) } catch {}
-    }
-  }, [stateReady, incomingProfiles.length, onNewFriendRequest])
+  }, [stateReady, incomingProfiles.length])
   // Show real registered accounts on the Friends tab, not just followed friends or demo recommendations.
   const registeredUsers = profiles
     .filter(friend => friend.handle.replace(/^@/, "").toLocaleLowerCase("hu") !== userName.toLocaleLowerCase("hu"))
