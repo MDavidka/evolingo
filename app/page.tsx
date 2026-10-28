@@ -818,6 +818,7 @@ export default function App() {
         lesson={{ id: activeLesson.id, title: activeLesson.title, summary: activeLesson.summary, level: activeLesson.level,
           examples: activeLesson.sections.flatMap(section => (section.examples ?? []).map(example => example.sentence)).slice(0, 8) }}
         mode={activeSkill}
+        debugForDavid={/d[aá]vid/i.test(userName)}
         alreadyCompleted={answeredTasks.includes(skillKey(activeLessonId, activeSkill))}
         onExit={() => setScreen("home")}
         onComplete={completeSkill}
