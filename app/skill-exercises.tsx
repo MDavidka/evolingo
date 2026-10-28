@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState, type PointerEvent as ReactPointerEvent } from "react"
 import {
   ArrowLeft, ArrowRight, BookOpen, Check, CheckCircle2, ChevronLeft, ChevronRight,
-  FilePenLine, Lightbulb, LoaderCircle, Mic, MicOff, MessageCircle, RotateCcw,
+  FilePenLine, Lightbulb, LoaderCircle, Mic, MicOff, MessageCircle, RotateCcw, Clock3,
   Sparkles, Star, Volume2, X,
 } from "lucide-react"
 import "./skill-exercises.css"
@@ -70,14 +70,14 @@ function wordsIn(text: string) {
   return text.trim() ? text.trim().split(/\s+/u).filter(Boolean).length : 0
 }
 
-function SkillHeader({ mode, lesson, progress, onExit }: { mode: SkillMode; lesson: SkillLesson; progress: number; onExit: () => void }) {
+function SkillHeader({ mode, lesson, progress, onExit, wordPosition, wordTotal }: { mode: SkillMode; lesson: SkillLesson; progress: number; onExit: () => void; wordPosition?: number; wordTotal?: number }) {
   return <header className="skill-header">
     <div className="skill-header-top">
       <button type="button" className="skill-close" onClick={onExit} aria-label="Kilépés a gyakorlásból">
         <X size={22} strokeWidth={1.8} />
       </button>
       <div className="skill-header-title"><span>{labels[mode].subtitle}</span><strong>{labels[mode].title}</strong></div>
-      <span className="skill-header-level">{mode === "essay" ? "B2" : lesson.level}</span>
+      <span className="skill-header-level">{mode === "vocabulary" ? `${wordPosition ?? 1} / ${wordTotal ?? 0}` : mode === "essay" ? "B2" : lesson.level}</span>
     </div>
     <div className="skill-progress" role="progressbar" aria-label="Feladat előrehaladás" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(progress)}>
       <span style={{ width: Math.max(0, Math.min(100, progress)) + "%" }} />
@@ -298,7 +298,7 @@ export default function SkillExercise({ mode, lesson, alreadyCompleted, onExit, 
     : essayFeedback ? Math.max(0, essayFeedback.score) : 0
 
   return <div className={"skill-exercise skill-" + mode}>
-    <SkillHeader lesson={lesson} mode={mode} progress={progress} onExit={onExit} />
+    <SkillHeader lesson={lesson} mode={mode} progress={progress} onExit={onExit} wordPosition={wordIndex + 1} wordTotal={cards.length} />
     {finished ? <CompletePanel mode={mode} onExit={onExit} alreadyCompleted={alreadyCompleted} />
       : loading ? <LoadingPanel caption={mode === "conversation" ? "Kérdéseket készítünk…" : mode === "vocabulary" ? "Szavakat válogatunk…" : "B2 témát keresünk…"} />
       : loadError ? <ErrorPanel message={loadError} retry={() => setGeneration(value => value + 1)} onExit={onExit} />
@@ -330,10 +330,10 @@ export default function SkillExercise({ mode, lesson, alreadyCompleted, onExit, 
         </div>
       </div>
       : mode === "vocabulary" ? <div className="skill-body">
-        <div className="skill-eyebrow"><BookOpen size={17} /><span>SZÓKÁRTYA {wordIndex + 1} / {cards.length} · OFFLINE</span></div>
+        
         <h1 className="skill-vocab-title">Ismered ezt a szót?</h1>
         <p className="skill-helper">Koppints a kártyára a fordításhoz. Húzd balra, ha még nem tudtad, jobbra, ha igen.</p>
-        <div className="skill-swipe-rail"><span><ArrowLeft size={17} /> Nem tudtam</span><span>Tudtam <ArrowRight size={17} /></span></div>
+        
         <button
           type="button"
           className={"skill-flashcard " + (revealed ? "is-revealed" : "")}
@@ -346,16 +346,16 @@ export default function SkillExercise({ mode, lesson, alreadyCompleted, onExit, 
           onKeyDown={event => { if (event.key === "ArrowLeft") { event.preventDefault(); chooseWord(false) } else if (event.key === "ArrowRight") { event.preventDefault(); chooseWord(true) } }}
           aria-label={revealed ? "Magyarul: " + cards[wordIndex]?.hungarian + ". Koppints a visszafordításhoz." : cards[wordIndex]?.english + ". Koppints a fordításhoz; balra nem tudtam, jobbra tudtam."}
         >
-          <span className="skill-flashcard-symbol"><SkillIcon kind="vocabulary" color={revealed ? "green" : "blue"} size={95} /></span>
+          <span className="skill-flashcard-symbol"><Clock3 size={37} strokeWidth={1.8} /></span><span className="skill-flashcard-sound" role="presentation" aria-hidden="true"><Volume2 size={23} strokeWidth={1.8} /></span>
           <span className="skill-flashcard-language">{revealed ? "MAGYARUL" : "ANGOLUL"}</span>
           <strong>{revealed ? cards[wordIndex]?.hungarian : cards[wordIndex]?.english}</strong>
           {revealed && cards[wordIndex]?.example && <small>{cards[wordIndex].example}</small>}
           <span className="skill-flashcard-hint">{revealed ? "Koppints a visszafordításhoz" : "Koppints a fordításhoz"}</span>
         </button>
-        <div className="skill-vocab-score"><CheckCircle2 size={16} /> Ismert: {knownCount} · Hátralévő: {cards.length - wordIndex}</div>
+        <div className="skill-vocab-score">{knownCount} ismert · {cards.length - wordIndex} hátralévő</div>
         <div className="skill-footer skill-vocab-buttons">
-          <button type="button" className="skill-button-outline" onClick={() => chooseWord(false)}><X size={18} /> Még nem</button>
-          <button type="button" className="skill-button-primary" onClick={() => chooseWord(true)}><Check size={18} /> Tudtam</button>
+          <button type="button" className="skill-button-outline" onClick={() => chooseWord(false)}><ArrowLeft size={19} /> Még nem</button>
+          <button type="button" className="skill-button-primary" onClick={() => chooseWord(true)}>Tudtam <ArrowRight size={19} /></button>
         </div>
       </div>
       : <div className="skill-body skill-essay-body">
