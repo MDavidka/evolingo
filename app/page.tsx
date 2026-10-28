@@ -4,6 +4,7 @@ import { memo, useCallback, useEffect, useMemo, useRef, useState, type FormEvent
 import NextImage from "next/image"
 import ProfileDashboard from "./profile-dashboard"
 import SkillExercise, { type SkillMode } from "./skill-exercises"
+import SkillIcon from "./skill-icons"
 import { Button } from "../components/ui/button"
 import { Input } from "../components/ui/input"
 import { Separator } from "../components/ui/separator"
@@ -1063,7 +1064,6 @@ function Home({ completedLessons, answeredTasks, readLessons, notice, clearNotic
           if (skill) {
             const skillDone = answeredTasks.includes(skillKey(lesson.id, skill))
             const unlocked = lessonDone || (lessonCurrent && chestGateOpen)
-            const Icon = skill === "conversation" ? MessageCircle : skill === "vocabulary" ? BookOpen : FilePenLine
             return <div
               key={lesson.id + "-skill-" + skill}
               className={"learn-path-node learn-path-skill-node " + (leftSide ? "tasks-left" : "tasks-right")}
@@ -1076,7 +1076,7 @@ function Home({ completedLessons, answeredTasks, readLessons, notice, clearNotic
                 onClick={() => onOpenSkill(lesson.id, skill)}
                 aria-label={lesson.title + ": " + skillLabels[skill] + (skillDone ? ", kész, újra gyakorolható" : unlocked ? "" : ", zárolva")}
               >
-                <Icon size={29} strokeWidth={1.85} aria-hidden="true" />
+                <SkillIcon kind={skill === "vocabulary" ? "vocabulary" : skill === "conversation" ? "conversation" : "essay"} color={skillDone ? "green" : !unlocked ? "gray" : skill === "vocabulary" ? "blue" : skill === "conversation" ? "purple" : "orange"} size={74} />
                 {skillDone && <span className="learn-skill-check" aria-hidden="true"><Check size={11} /></span>}
               </button>
               <span className="learn-pack-caption">{skillLabels[skill]}</span>
