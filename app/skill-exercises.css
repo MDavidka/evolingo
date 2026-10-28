@@ -232,3 +232,7 @@ body .learn-path-skill-node .learn-skill-button.is-locked { opacity: .85; }
 body .learn-path-skill-node .learn-skill-button:focus-visible { border-radius: 18px; }
 .skill-flashcard { padding-top: 98px; }
 .skill-flashcard.is-revealed { background: #f4f7f4; }
+
+.skill-debug { margin: 8px 20px 0; padding: 9px 12px; border: 1px solid #f4c5a2; background: #fff9f2; border-radius: 10px; display: flex; flex-direction: column; gap: 3px; font: 12px/1.4 ui-monospace, SFMono-Regular, Menlo, monospace; color: #85480f; overflow-wrap: anywhere; }
+.skill-debug strong { font-size: 10px; letter-spacing: .06em; }
+.skill-debug small { font-size: 11px; opacity: .8; }
