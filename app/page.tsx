@@ -1696,6 +1696,10 @@ function Friends({ userName, avatar, avatarImage, xp, dailyStudy, saveStatus, on
     } catch {}
     setRequestPopup(next)
     onNewFriendRequest()
+    // Foreground notification only; background push needs a VAPID subscription service.
+    if (typeof Notification !== "undefined" && Notification.permission === "granted") {
+      try { new Notification("Evölingo · Új barátkérés", { body: next.name + " ismerősnek jelölt.", icon: "/icon.svg" }) } catch {}
+    }
   }, [stateReady, incomingProfiles.length, onNewFriendRequest])
   // Show real registered accounts on the Friends tab, not just followed friends or demo recommendations.
   const registeredUsers = profiles
