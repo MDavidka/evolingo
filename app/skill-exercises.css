@@ -424,3 +424,43 @@ body .skill-vocabulary .skill-vocab-buttons > button:last-child { justify-conten
   body .skill-vocabulary .skill-helper { margin-bottom: 12px; }
   body .skill-vocabulary .skill-flashcard { min-height: 240px; padding-top: 55px; padding-bottom: 55px; }
 }
+
+
+/* B2 essay: responsive, reference-aligned editorial writing screen. */
+body .skill-essay { background: #fcfcfc; padding-inline: clamp(16px,4.5vw,24px); }
+body .skill-essay .skill-header-top { min-height: 72px; }
+body .skill-essay .skill-header-title > span { font-size: 13px; letter-spacing: .055em; font-weight: 500; color: #666; text-transform: uppercase; }
+body .skill-essay .skill-header-title > strong { font-size: 23px; font-weight: 740; color: #101010; }
+body .skill-essay .skill-header-level { width: 45px; height: 45px; flex-basis: 45px; background: #f1f1f1; color: #111; font-size: 17px; }
+body .skill-essay .skill-close { background: #f2f2f2; color: #151515; }
+body .skill-essay .skill-progress { background: #ececec; height: 4px; margin-top: 15px; }
+body .skill-essay .skill-progress > span { background: #222; }
+body .skill-essay .skill-essay-body { padding-top: 25px; }
+body .skill-essay .skill-essay-task-meta { display: flex; justify-content: space-between; align-items: center; gap: 12px; color: #676767; font-size: 13px; font-weight: 500; letter-spacing: .035em; }
+body .skill-essay .skill-essay-task-meta > span:last-child { display: inline-flex; align-items: center; gap: 5px; letter-spacing: 0; white-space: nowrap; }
+body .skill-essay .skill-essay-heading { margin: 18px 0 0 !important; font-size: clamp(25px,7vw,33px); line-height: 1.2; font-weight: 760; letter-spacing: -.045em; }
+body .skill-essay .skill-essay-prompt { margin: 15px 0 0; color: #666; font-size: clamp(15px,4.3vw,18px); line-height: 1.55; }
+body .skill-essay .skill-essay-details-toggle { display: inline-flex; align-items: center; gap: 8px; align-self: flex-start; margin: 17px 0 0; padding: 6px 0; border: 0; background: none; color: #181818; font-size: 15px; font-weight: 650; text-align: left; }
+body .skill-essay .skill-essay-details-toggle svg { transform: rotate(90deg); transition: transform .18s ease; }
+body .skill-essay .skill-essay-details-toggle svg.is-open { transform: rotate(-90deg); }
+body .skill-essay .skill-essay-details { margin-top: 8px; padding: 14px 16px; background: #f5f5f5; border-radius: 12px; color: #5b5b5b; font-size: 13px; line-height: 1.5; }
+body .skill-essay .skill-essay-details p { margin: 0; }
+body .skill-essay .skill-essay-details ul { padding-left: 20px; margin: 9px 0 0; }
+body .skill-essay .skill-essay-label { margin: 27px 0 15px; padding-top: 24px; border-top: 1px solid #e8e8e8; }
+body .skill-essay .skill-essay-label label { font-size: clamp(19px,5.2vw,23px); font-weight: 730; color: #121212; letter-spacing: -.03em; }
+body .skill-essay .skill-essay-label > span { font-size: clamp(12px,3.6vw,15px); font-weight: 400; color: #6d6d6d; white-space: nowrap; }
+body .skill-essay .skill-essay-input { display: block; width: 100%; min-height: clamp(230px,35dvh,470px); resize: vertical; padding: 17px; border: 1px solid #d5d5d5; border-radius: 15px; background: #fcfcfc; color: #111; font-size: 16px; line-height: 1.6; box-shadow: none; }
+body .skill-essay .skill-essay-input::placeholder { color: #999; }
+body .skill-essay .skill-essay-count { display: flex; justify-content: space-between; gap: 12px; margin-top: 15px; font-size: 13px; color: #666; }
+body .skill-essay .skill-essay-progress { height: 4px; margin: 16px 0 20px; background: #ececec; border-radius: 99px; overflow: hidden; }
+body .skill-essay .skill-essay-progress > span { display: block; height: 100%; background: #718e75; }
+body .skill-essay .skill-footer { width: calc(100% + 2 * clamp(16px,4.5vw,24px)); margin-inline: calc(-1 * clamp(16px,4.5vw,24px)); padding-inline: clamp(16px,4.5vw,24px); }
+@media (max-width: 360px) {
+  body .skill-essay .skill-header-title > strong { font-size: 20px; }
+  body .skill-essay .skill-essay-label { align-items: flex-start; flex-wrap: wrap; }
+}
+@media (max-height: 680px) {
+  body .skill-essay .skill-essay-body { padding-top: 16px; }
+  body .skill-essay .skill-essay-input { min-height: 200px; }
+}
+@media (prefers-reduced-motion: reduce) { body .skill-essay .skill-essay-details-toggle svg { transition: none; } }
