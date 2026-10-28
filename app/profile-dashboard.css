@@ -826,3 +826,361 @@ body .evo-badge-detail-track > span { display: block; height: 100%; border-radiu
     scroll-behavior: auto !important;
   }
 }
+
+
+/* Profile alignment refinements: shared leading edge, compact section rhythm. */
+body .evo-profile-dashboard { max-width: 440px; }
+body .evo-profile-heading { padding-top: 19px !important; gap: 5px !important; }
+body .evo-profile-intro { margin-top: 22px !important; }
+body .evo-profile-actions { margin-top: 19px !important; }
+body .evo-profile-stats { margin-top: 26px !important; }
+body .evo-profile-stat { padding-inline: 12px !important; }
+body .evo-profile-stat:first-child { padding-left: 0 !important; }
+body .evo-profile-stat:last-child { padding-right: 0 !important; }
+body .evo-profile-stat > span { white-space: normal !important; line-height: 16px !important; }
+body .evo-profile-stat > span svg { flex-shrink: 0; }
+body .evo-profile-learning,
+body .evo-profile-badges,
+body .evo-profile-weekly { margin-top: 28px !important; }
+body .evo-profile-badges-viewport { margin-right: 0 !important; }
+body .evo-profile-badges-rail { padding-right: 0 !important; }
+body .evo-profile-secondary-stats { margin-top: 8px !important; }
+body .evo-profile-avatar-ring,
+body .evo-profile-avatar-inner { flex-shrink: 0; }
+@media (max-width: 360px) {
+  body .evo-profile-stat { padding-inline: 7px !important; }
+  body .evo-profile-stat:first-child { padding-left: 0 !important; }
+  body .evo-profile-stat:last-child { padding-right: 0 !important; }
+  body .evo-profile-stat > span { font-size: 10.5px !important; }
+}
+
+/* Profile editor: restrained iOS sheet, no floating glass or neon. */
+body .profile-edit-backdrop {
+  position: fixed !important;
+  z-index: 10020 !important;
+  inset: 0 !important;
+  display: flex !important;
+  align-items: flex-end !important;
+  justify-content: center !important;
+  padding: 0 !important;
+  background: rgba(0, 0, 0, .35) !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+body .profile-edit-sheet {
+  color-scheme: light;
+  display: flex !important;
+  flex-direction: column !important;
+  width: min(100%, 520px) !important;
+  max-height: min(94dvh, 860px) !important;
+  min-height: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  overscroll-behavior: contain;
+  border: 0 !important;
+  border-radius: 24px 24px 0 0 !important;
+  color: #1c1c1e !important;
+  background: #fff !important;
+  box-shadow: 0 -10px 34px rgba(0,0,0,.1) !important;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif !important;
+}
+body .profile-edit-sheet * { box-sizing: border-box; }
+body .profile-edit-sheet button {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  font-family: inherit;
+}
+body .profile-edit-sheet button:focus-visible,
+body .profile-edit-sheet input:focus-visible {
+  outline: 2px solid #5b7963 !important;
+  outline-offset: 2px !important;
+}
+body .profile-edit-heading {
+  position: relative;
+  display: grid !important;
+  grid-template-columns: 44px minmax(0, 1fr) 44px !important;
+  align-items: center !important;
+  gap: 10px !important;
+  flex: 0 0 auto;
+  min-height: 66px !important;
+  margin: 0 !important;
+  padding: 10px 18px !important;
+  border-bottom: 1px solid #ededed !important;
+  background: #fff !important;
+}
+body .profile-edit-heading h2 {
+  margin: 0 !important;
+  color: #202020 !important;
+  font-size: 17px !important;
+  font-weight: 650 !important;
+  line-height: 22px !important;
+  letter-spacing: -.025em !important;
+  text-align: center !important;
+}
+body .profile-edit-heading .profile-edit-close {
+  display: grid !important;
+  place-items: center;
+  width: 44px !important;
+  height: 44px !important;
+  min-width: 44px !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 50% !important;
+  color: #4b4b4b !important;
+  background: #f5f5f5 !important;
+  box-shadow: none !important;
+}
+body .profile-edit-heading-spacer { display: block; width: 44px; }
+body .profile-edit-content {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior-y: contain;
+  padding: 22px 22px 28px;
+  -webkit-overflow-scrolling: touch;
+}
+body .profile-edit-preview {
+  position: relative;
+  height: 157px;
+  margin-bottom: 48px;
+}
+body .profile-edit-preview-cover {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 157px;
+  width: 100%;
+  overflow: hidden;
+  border-radius: 18px;
+  background: #f1f3f1;
+}
+body .profile-edit-preview-cover > img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+body .profile-edit-preview-cover > span {
+  color: #a0a9a1;
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -.055em;
+}
+body .profile-edit-preview-cover > button {
+  position: absolute;
+  right: 11px;
+  bottom: 11px;
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  border: 1px solid #e9e9e9;
+  border-radius: 50%;
+  background: #fff;
+  color: #333;
+  box-shadow: 0 2px 8px rgba(0,0,0,.05);
+}
+body .profile-edit-preview-avatar {
+  position: absolute;
+  left: 18px;
+  bottom: -35px;
+  display: grid;
+  place-items: center;
+  width: 84px;
+  height: 84px;
+  padding: 0;
+  border: 4px solid #fff;
+  border-radius: 50%;
+  color: #5d685f;
+  background: #e9eeea;
+  box-shadow: none;
+}
+body .profile-edit-preview-avatar > img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+body .profile-edit-preview-avatar > span:first-child { font-size: 35px; }
+body .profile-edit-preview-camera {
+  position: absolute;
+  right: -3px;
+  bottom: -3px;
+  display: grid;
+  place-items: center;
+  width: 27px;
+  height: 27px;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  color: #333;
+  background: #eaeaea;
+}
+body .profile-edit-preview-hint {
+  margin: 0 0 23px !important;
+  color: #888 !important;
+  font-size: 12px !important;
+  line-height: 18px !important;
+}
+body .profile-edit-field { display: flex; flex-direction: column; gap: 9px; }
+body .profile-edit-field label {
+  color: #2d2d2d;
+  font-size: 14px;
+  font-weight: 600;
+}
+body .profile-edit-field input {
+  display: block;
+  width: 100%;
+  min-height: 52px;
+  padding: 0 15px;
+  border: 1px solid #e6e6e6;
+  border-radius: 13px;
+  color: #242424;
+  background: #f8f8f8;
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 450;
+  outline: none;
+}
+body .profile-edit-field input:focus { border-color: #8aa091; background: #fff; }
+body .profile-edit-field > span {
+  align-self: flex-end;
+  color: #999;
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+body .profile-edit-divider {
+  height: 1px;
+  margin: 22px 0;
+  background: #ededed;
+}
+body .profile-edit-section-heading h3 {
+  margin: 0;
+  color: #242424;
+  font-size: 17px;
+  font-weight: 650;
+  letter-spacing: -.02em;
+}
+body .profile-edit-section-heading p {
+  margin: 5px 0 0;
+  color: #888;
+  font-size: 13px;
+  line-height: 19px;
+}
+body .profile-edit-sheet .avatar-options {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin: 16px 0 22px;
+}
+body .profile-edit-sheet .avatar-option {
+  display: grid;
+  place-items: center;
+  width: 56px !important;
+  height: 56px !important;
+  padding: 0;
+  border: 1px solid #ebebeb !important;
+  border-radius: 16px !important;
+  background: #f7f7f7 !important;
+  box-shadow: none !important;
+  font-size: 26px;
+}
+body .profile-edit-sheet .avatar-option.selected {
+  border: 2px solid #667f6d !important;
+  background: #eff3ef !important;
+}
+body .profile-edit-sheet .profile-gallery-actions {
+  display: grid;
+  gap: 0;
+  margin: 0;
+  border-top: 1px solid #ededed;
+  border-bottom: 1px solid #ededed;
+}
+body .profile-edit-sheet .profile-gallery-actions button {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  width: 100%;
+  min-height: 66px;
+  padding: 12px 0;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: #fff !important;
+  box-shadow: none !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+  text-align: left;
+}
+body .profile-edit-sheet .profile-gallery-actions button + button { border-top: 1px solid #f0f0f0 !important; }
+body .profile-edit-sheet .profile-gallery-actions button > svg:first-child {
+  flex: 0 0 20px;
+  color: #696969 !important;
+}
+body .profile-edit-sheet .profile-gallery-actions button > span {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+body .profile-edit-sheet .profile-gallery-actions strong {
+  color: #242424;
+  font-size: 14px;
+  font-weight: 600;
+}
+body .profile-edit-sheet .profile-gallery-actions small {
+  color: #888;
+  font-size: 12px;
+}
+body .profile-edit-sheet .profile-gallery-actions button > svg:last-child { color: #a1a1a1 !important; }
+body .profile-edit-sheet .profile-remove-banner {
+  display: block;
+  min-height: 44px;
+  margin-top: 10px;
+  padding: 10px 0;
+  color: #7d5555;
+  font-size: 13px;
+  text-decoration: none;
+}
+body .profile-edit-sheet .setting-success {
+  margin: 10px 0 0;
+  color: #477e56;
+  font-size: 13px;
+}
+body .profile-edit-footer {
+  flex: 0 0 auto;
+  padding: 12px 22px calc(14px + env(safe-area-inset-bottom, 0px));
+  border-top: 1px solid #ededed;
+  background: #fff;
+}
+body .profile-edit-save {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  min-height: 50px;
+  padding: 0 18px;
+  border: 0;
+  border-radius: 14px;
+  color: #fff;
+  background: #242424;
+  font-size: 15px;
+  font-weight: 650;
+}
+body .profile-edit-save:disabled { opacity: .4; cursor: not-allowed; }
+@media (min-width: 700px) {
+  body .profile-edit-backdrop { align-items: center !important; padding: 24px !important; }
+  body .profile-edit-sheet { max-height: min(85dvh, 860px) !important; border-radius: 24px !important; }
+}
+@media (max-width: 350px) {
+  body .profile-edit-content { padding-inline: 16px; }
+  body .profile-edit-footer { padding-inline: 16px; }
+  body .profile-edit-heading { padding-inline: 12px !important; }
+}
+@media (prefers-reduced-motion: reduce) {
+  body .profile-edit-sheet *,
+  body .profile-edit-sheet *::before,
+  body .profile-edit-sheet *::after { animation: none !important; transition: none !important; }
+}
