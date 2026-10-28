@@ -136,6 +136,7 @@ export default function SkillExercise({ mode, lesson, alreadyCompleted, onExit, 
   const [essay, setEssay] = useState("")
   const [essayFeedback, setEssayFeedback] = useState<EssayFeedback | null>(null)
   const [essayError, setEssayError] = useState("")
+  const [essayDetailsOpen, setEssayDetailsOpen] = useState(false)
   const cardCount = useRef(10 + Math.floor(Math.random() * 21))
   const completion = useRef(onComplete)
   completion.current = onComplete
@@ -359,18 +360,21 @@ export default function SkillExercise({ mode, lesson, alreadyCompleted, onExit, 
         </div>
       </div>
       : <div className="skill-body skill-essay-body">
-        <div className="skill-eyebrow"><FilePenLine size={17} /><span>B2 SZINT · 120–220 SZÓ</span></div>
-
-        <div className="skill-essay-topic">
-
-          <h2>{topic?.title}</h2>
-          <p>{topic?.prompt}</p>
-
-        </div>
-        <div className="skill-essay-label"><label htmlFor="skill-essay-input">A fogalmazásod</label><span>{wordsIn(essay)} szó</span></div>
+        <div className="skill-essay-task-meta"><span>WRITING TASK</span><span><FilePenLine size={16} /> 120–220 szó</span></div>
+        <h1 className="skill-essay-heading">{topic?.title}</h1>
+        <p className="skill-essay-prompt">{topic?.prompt}</p>
+        <button type="button" className="skill-essay-details-toggle" aria-expanded={essayDetailsOpen} onClick={() => setEssayDetailsOpen(value => !value)}>
+          <ChevronRight size={19} className={essayDetailsOpen ? "is-open" : ""} />
+          Teljes feladat megtekintése
+        </button>
+        {essayDetailsOpen && <div className="skill-essay-details">
+          <p>Írj angol nyelvű, B2 szintű fogalmazást a megadott témáról. Érvelj, és példákkal támaszd alá a véleményed.</p>
+          {topic?.tips?.length ? <ul>{topic.tips.map((tip, index) => <li key={index}>{tip}</li>)}</ul> : null}
+        </div>}
+        <div className="skill-essay-label"><label htmlFor="skill-essay-input">A fogalmazásod</label><span>{wordsIn(essay)} / 120–220 szó</span></div>
         <textarea id="skill-essay-input" className="skill-essay-input" rows={10} maxLength={8500} spellCheck lang="en" placeholder="Start writing your essay in English…" value={essay} onChange={event => { setEssay(event.target.value); setEssayFeedback(null); setEssayError("") }} />
+        <div className="skill-essay-count"><span>{wordsIn(essay)} szó</span><span>{wordsIn(essay) < 120 ? `${120 - wordsIn(essay)} szó a minimumig` : wordsIn(essay) <= 220 ? "Megfelelő hosszúság" : `${wordsIn(essay) - 220} szóval több az ajánlottnál`}</span></div>
         <div className="skill-essay-progress"><span style={{ width: Math.min(100, wordsIn(essay) / 120 * 100) + "%" }} /></div>
-        {wordsIn(essay) < 120 && <p className="skill-helper">Még {120 - wordsIn(essay)} szó kell a minimumhoz.</p>}
         {essayError && <p className="skill-inline-error" role="alert">{essayError}</p>}
         {essayFeedback && <div className={"skill-feedback skill-essay-feedback " + (essayFeedback.accepted ? "is-pass" : "is-retry")} role="status">
           <div className="skill-score">{essayFeedback.score}<small>/100</small></div>
