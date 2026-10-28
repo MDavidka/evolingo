@@ -117,7 +117,7 @@ body .app-shell.skill-open .screen-content.skill-page {
   transition: background-color 160ms ease;
 }
 .skill-flashcard.is-revealed { background: #f0f3f0; }
-.skill-flashcard-symbol { position: absolute; top: 21px; left: 21px; display: grid; place-items: center; width: 34px; height: 34px; border-radius: 10px; background: #fff; color: #757c78; }
+.skill-flashcard-symbol { position: absolute; top: 4px; left: 50%; transform: translateX(-50%); display: grid; place-items: center; width: 112px; height: 112px; background: transparent; color: #757c78; pointer-events: none; }
 .skill-flashcard-language { color: #89898e; font-size: 11px; font-weight: 800; letter-spacing: .12em; }
 .skill-flashcard > strong { max-width: 100%; overflow-wrap: anywhere; color: #28282d; font-size: clamp(29px,8.5vw,42px); line-height: 1.16; font-weight: 700; letter-spacing: -.04em; }
 .skill-flashcard > small { max-width: 250px; color: #77777d; font-size: 13px; line-height: 1.45; }
@@ -210,3 +210,25 @@ body .learn-path-skill-node .learn-pack-caption {
 @media (prefers-reduced-motion: reduce) {
   body .learn-skill-button { transition: none !important; }
 }
+
+/* Match the supplied transparent, layered game icon artwork. */
+body .learn-path-skill-node .learn-skill-button {
+  width: 90px;
+  height: 88px;
+  border: 0;
+  border-radius: 0;
+  background: transparent !important;
+  box-shadow: none !important;
+  overflow: visible;
+}
+body .learn-path-skill-node .learn-skill-button > svg {
+  width: 84px;
+  height: 84px;
+  display: block;
+  overflow: visible;
+  filter: drop-shadow(0 2px 1px rgba(20,20,20,.08));
+}
+body .learn-path-skill-node .learn-skill-button.is-locked { opacity: .85; }
+body .learn-path-skill-node .learn-skill-button:focus-visible { border-radius: 18px; }
+.skill-flashcard { padding-top: 98px; }
+.skill-flashcard.is-revealed { background: #f4f7f4; }
