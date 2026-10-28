@@ -7,6 +7,8 @@ import {
   Sparkles, Star, Volume2, X,
 } from "lucide-react"
 import "./skill-exercises.css"
+import { lessonVocabulary } from "./skill-vocabulary"
+import SkillIcon from "./skill-icons"
 
 export type SkillMode = "conversation" | "vocabulary" | "essay"
 export type SkillLesson = {
@@ -154,10 +156,12 @@ export default function SkillExercise({ mode, lesson, alreadyCompleted, onExit, 
         .catch(error => { if (!controller.signal.aborted) setLoadError(error instanceof Error ? error.message : "Nincs válasz.") })
         .finally(() => { if (!controller.signal.aborted) setLoading(false) })
     } else if (mode === "vocabulary") {
-      void askAI<{ cards: VocabularyCard[] }>("vocabulary-pack", { lesson, count: cardCount.current }, controller.signal)
-        .then(result => { if (!controller.signal.aborted) { setCards(result.cards.slice(0, 30)); setWordIndex(0) } })
-        .catch(error => { if (!controller.signal.aborted) setLoadError(error instanceof Error ? error.message : "Nincs szókártya.") })
-        .finally(() => { if (!controller.signal.aborted) setLoading(false) })
+      // Fully offline: the vocabulary deck never depends on the AI endpoint.
+      setCards(lessonVocabulary(lesson, cardCount.current, Date.now()))
+      setWordIndex(0)
+      setKnownCount(0)
+      setRevealed(false)
+      setLoading(false)
     } else {
       void askAI<EssayTopic>("essay-topic", { lesson }, controller.signal)
         .then(result => { if (!controller.signal.aborted) setTopic(result) })
@@ -318,7 +322,7 @@ export default function SkillExercise({ mode, lesson, alreadyCompleted, onExit, 
         </div>
       </div>
       : mode === "vocabulary" ? <div className="skill-body">
-        <div className="skill-eyebrow"><BookOpen size={17} /><span>SZÓKÁRTYA {wordIndex + 1} / {cards.length}</span></div>
+        <div className="skill-eyebrow"><BookOpen size={17} /><span>SZÓKÁRTYA {wordIndex + 1} / {cards.length} · OFFLINE</span></div>
         <h1 className="skill-vocab-title">Ismered ezt a szót?</h1>
         <p className="skill-helper">Koppints a kártyára a fordításhoz. Húzd balra, ha még nem tudtad, jobbra, ha igen.</p>
         <div className="skill-swipe-rail"><span><ArrowLeft size={17} /> Nem tudtam</span><span>Tudtam <ArrowRight size={17} /></span></div>
@@ -334,7 +338,7 @@ export default function SkillExercise({ mode, lesson, alreadyCompleted, onExit, 
           onKeyDown={event => { if (event.key === "ArrowLeft") { event.preventDefault(); chooseWord(false) } else if (event.key === "ArrowRight") { event.preventDefault(); chooseWord(true) } }}
           aria-label={revealed ? "Magyarul: " + cards[wordIndex]?.hungarian + ". Koppints a visszafordításhoz." : cards[wordIndex]?.english + ". Koppints a fordításhoz; balra nem tudtam, jobbra tudtam."}
         >
-          <span className="skill-flashcard-symbol"><Sparkles size={21} strokeWidth={1.8} /></span>
+          <span className="skill-flashcard-symbol"><SkillIcon kind="vocabulary" color={revealed ? "green" : "blue"} size={95} /></span>
           <span className="skill-flashcard-language">{revealed ? "MAGYARUL" : "ANGOLUL"}</span>
           <strong>{revealed ? cards[wordIndex]?.hungarian : cards[wordIndex]?.english}</strong>
           {revealed && cards[wordIndex]?.example && <small>{cards[wordIndex].example}</small>}
