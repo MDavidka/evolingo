@@ -249,6 +249,7 @@ export default function SkillExercise({ mode, lesson, alreadyCompleted, onExit, 
   const pointerDown = (event: ReactPointerEvent<HTMLButtonElement>) => {
     startPointer.current = event.clientX
     swallowClick.current = false
+    try { event.currentTarget.setPointerCapture(event.pointerId) } catch { /* Older WebKit may not support capture. */ }
   }
   const pointerMove = (event: ReactPointerEvent<HTMLButtonElement>) => {
     if (startPointer.current !== null) setSwipeDelta(Math.max(-120, Math.min(120, event.clientX - startPointer.current)))
@@ -257,6 +258,9 @@ export default function SkillExercise({ mode, lesson, alreadyCompleted, onExit, 
     if (startPointer.current === null) return
     const moved = event.clientX - startPointer.current
     startPointer.current = null
+    try {
+      if (event.currentTarget.hasPointerCapture(event.pointerId)) event.currentTarget.releasePointerCapture(event.pointerId)
+    } catch { /* Pointer capture can end when the browser begins scrolling. */ }
     if (Math.abs(moved) > 65) {
       swallowClick.current = true
       chooseWord(moved > 0)
