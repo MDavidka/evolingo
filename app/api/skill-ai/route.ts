@@ -63,6 +63,7 @@ async function infer(messages: ChatMessage[], maxTokens = 1200): Promise<Record<
     ? [configured]
     : ["meta/llama-3.3-70b-instruct", "meta/llama-3.1-8b-instruct"]
   let lastError = "upstream"
+  let lastStatus = 0
   for (const model of candidates) {
     let response: Response
     try {
@@ -78,6 +79,7 @@ async function infer(messages: ChatMessage[], maxTokens = 1200): Promise<Record<
       continue
     }
     if (!response.ok) {
+      lastStatus = response.status
       // Never log credentials or upstream response bodies.
       console.error("[skill-ai] NVIDIA status", response.status, "model", model)
       if (response.status === 401 || response.status === 403) throw new Error("auth")
@@ -98,7 +100,7 @@ async function infer(messages: ChatMessage[], maxTokens = 1200): Promise<Record<
       console.error("[skill-ai] Invalid model JSON", model)
     }
   }
-  throw new Error(lastError)
+  throw new Error(lastError === "upstream" && lastStatus ? "upstream_" + lastStatus : lastError)
 }
 function system(content: string): ChatMessage {
   return {
@@ -231,6 +233,8 @@ export async function POST(request: NextRequest) {
     if (message === "timeout") return error("Az NVIDIA válasza túl sokáig tartott. Próbáld újra.", 504)
     if (message === "missing_key") return error("Az AI szolgáltatás nincs beállítva.", 503)
     if (message === "bad_response") return error("A modell nem adott megfelelő választ. Próbáld újra.", 502)
-    return error("Az AI értékelés most nem érhető el. Próbáld újra később.", 502)
+    if (message.startsWith("upstream_")) return error("Az NVIDIA API hibát adott (HTTP " + message.slice(9) + "). Próbáld újra, vagy ellenőrizd az NVIDIA API-hozzáférést.", 502)
+    console.error("[skill-ai] Unhandled error code:", message.slice(0, 100))
+    return error("Az AI értékelés most nem érhető el (" + (["upstream", "bad_response", "invalid_json"].includes(message) ? message : "internal") + ").", 502)
   }
 }
