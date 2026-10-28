@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react"
 import {
   BookOpen, Check, ChevronDown, ChevronRight, Clock3, Compass, Crown, Flame,
-  Flag, Gem, Heart, LockKeyhole, Settings, Share, Sparkles, Star, Target,
+  Flag, Gem, Heart, LockKeyhole, Pencil, Settings, Share, Sparkles, Star, Target,
   Trophy, Users, X, Zap, type LucideIcon,
 } from "lucide-react"
 
@@ -251,54 +251,83 @@ export default function ProfileDashboard({
   }
 
   return <div className="evo-profile-dashboard">
-    <header className="evo-profile-topbar">
-      <button type="button" className="evo-profile-course" aria-label="Tanfolyamválasztás" onClick={() => setCourseOpen(true)}>
-        <img src="https://flagcdn.com/w80/gb.png" alt="" width={24} height={24} />
-        <span>erasmus</span><ChevronDown size={14} strokeWidth={1.7} aria-hidden="true" />
-      </button>
-      <span className={"evo-profile-collapsed-title" + (collapsed ? " is-visible" : "")} aria-hidden="true">{name}</span>
-      <button type="button" className="evo-profile-settings" aria-label="Beállítások" onClick={onEdit}>
-        <Settings size={22} strokeWidth={1.7} aria-hidden="true" />
+    <header className="evo-profile-topbar" aria-label="Profil navigáció">
+      <span className="evo-profile-wordmark" aria-label="Evölingo">evölingo</span>
+      <span className={"evo-profile-collapsed-title" + (collapsed ? " is-visible" : "")} aria-hidden="true">Profil</span>
+      <button type="button" className="evo-profile-settings" aria-label="Profilbeállítások" onClick={onEdit}>
+        <Settings size={20} strokeWidth={1.8} aria-hidden="true" />
       </button>
     </header>
 
+    <div className="evo-profile-heading">
+      <h1>Profil</h1>
+      <button type="button" className="evo-profile-course" aria-label="Tanfolyamválasztás: erasmus" onClick={() => setCourseOpen(true)}>
+        <img src="https://flagcdn.com/w80/gb.png" alt="" width={21} height={21} />
+        <span>erasmus</span><ChevronDown size={14} strokeWidth={1.7} aria-hidden="true" />
+      </button>
+    </div>
+
     <section className="evo-profile-intro" aria-label="Saját profil">
       <div className="evo-profile-identity">
-        <h1>{name}</h1>
+        <h2>{name}</h2>
         <p className="evo-profile-meta">
           <span>@{handle}</span>
-          {joinDate && <><span className="evo-profile-meta-dot" aria-hidden="true">·</span><span>Csatlakozott {joinDate}</span></>}
+          {joinDate && <span className="evo-profile-joined">Csatlakozott: {joinDate}</span>}
         </p>
       </div>
       <div className="evo-profile-avatar-ring" aria-label="Profilkép">
         <span className="evo-profile-avatar-inner">
-          {avatarImageSrc ? <img src={avatarImageSrc} alt="" /> : avatar === "book" ? <BookOpen size={32} strokeWidth={1.7} /> : avatar === "star" ? <Star size={32} strokeWidth={1.7} /> : <Sparkles size={32} strokeWidth={1.7} />}
+          {avatarImageSrc ? <img src={avatarImageSrc} alt="" /> : avatar === "book" ? <BookOpen size={29} strokeWidth={1.7} /> : avatar === "star" ? <Star size={29} strokeWidth={1.7} /> : <Sparkles size={29} strokeWidth={1.7} />}
         </span>
       </div>
     </section>
+
     <div className="evo-profile-actions">
-      <button type="button" className="evo-profile-edit" onClick={onEdit}>Profil szerkesztése</button>
+      <button type="button" className="evo-profile-edit" onClick={onEdit}>
+        <Pencil size={17} strokeWidth={1.8} aria-hidden="true" />
+        <span>Profil szerkesztése</span>
+      </button>
       <button type="button" className="evo-profile-share" onClick={() => { void shareProfile() }} aria-label="Profil megosztása" title="Profil megosztása">
-        <Share size={20} strokeWidth={1.7} aria-hidden="true" />
+        <Share size={20} strokeWidth={1.8} aria-hidden="true" />
       </button>
     </div>
     {shareNotice && <p className="evo-profile-share-status" role="status">{shareNotice}</p>}
 
     <section className="evo-profile-stats" aria-label="Profilstatisztikák">
       <button type="button" className={"evo-profile-stat" + (hasStudiedToday && streak > 0 ? " is-active" : "")} onClick={onStreakSettings} aria-label={streak + " nap sorozat. Napi cél beállításai."}>
-        <Flame className="evo-stat-icon is-streak" size={20} strokeWidth={1.8} aria-hidden="true" />
-        <strong>{formatNumber(streak)}</strong><span>nap sorozat</span>
+        <strong>{formatNumber(streak)}</strong>
+        <span><Flame size={14} strokeWidth={1.7} aria-hidden="true" /> Nap sorozat</span>
       </button>
-      <div className="evo-profile-stat"><Star className="evo-stat-icon is-points" size={20} strokeWidth={1.8} aria-hidden="true" /><strong>{formatNumber(xp)}</strong><span>pont</span></div>
-      <div className="evo-profile-stat"><Trophy className="evo-stat-icon is-league" size={20} strokeWidth={1.8} aria-hidden="true" /><strong>Arany</strong><span>liga</span></div>
-      <button type="button" className="evo-profile-stat" onClick={onFriendsClick} aria-label={friendCount + " barát. Barátok megnyitása."}>
-        <Users className="evo-stat-icon is-friends" size={20} strokeWidth={1.8} aria-hidden="true" /><strong>{formatNumber(friendCount)}</strong><span>barát</span>
+      <div className="evo-profile-stat">
+        <strong>{formatNumber(stars)}</strong>
+        <span><Star size={14} strokeWidth={1.7} aria-hidden="true" /> Csillag</span>
+      </div>
+      <div className="evo-profile-stat">
+        <strong>{formatNumber(completedCount)}</strong>
+        <span><BookOpen size={14} strokeWidth={1.7} aria-hidden="true" /> Lecke</span>
+      </div>
+    </section>
+
+    <div className="evo-profile-secondary-stats">
+      <span>{formatNumber(xp)} XP összesen</span>
+      <button type="button" onClick={onFriendsClick} aria-label={friendCount + " barát. Barátok megnyitása."}>
+        <Users size={16} strokeWidth={1.7} aria-hidden="true" />
+        {formatNumber(friendCount)} barát
+        <ChevronRight size={15} strokeWidth={1.7} aria-hidden="true" />
       </button>
+    </div>
+
+    <section className="evo-profile-learning" aria-labelledby="evo-profile-learning-heading">
+      <h2 id="evo-profile-learning-heading">Tanulási haladás</h2>
+      <div className="evo-profile-learning-rows">
+        <div><span>Elolvasott leckék</span><strong>{formatNumber(readCount)}</strong></div>
+        <div><span>Megoldott feladatok</span><strong>{formatNumber(completedTaskCount)}</strong></div>
+      </div>
     </section>
 
     <section className="evo-profile-badges" aria-labelledby="evo-profile-badges-heading">
       <div className="evo-profile-section-heading">
-        <div className="evo-profile-badges-heading"><h2 id="evo-profile-badges-heading">Jelvények</h2><span>{earnedCount}/12</span></div>
+        <div className="evo-profile-badges-heading"><h2 id="evo-profile-badges-heading">Eredmények</h2><span>{earnedCount}/12</span></div>
         <button type="button" className="evo-profile-see-all" onClick={() => setAllBadgesOpen(true)}>Összes <ChevronRight size={16} strokeWidth={1.7} aria-hidden="true" /></button>
       </div>
       <div className="evo-profile-badges-viewport">
