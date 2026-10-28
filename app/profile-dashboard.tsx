@@ -7,7 +7,7 @@ import { Separator } from "../components/ui/separator"
 import {
   BookOpen, Check, ChevronDown, ChevronRight, Clock3, Compass, Crown, Flame,
   Flag, Gem, Heart, LayoutGrid, LockKeyhole, Medal, Pencil, Settings, Share, Sparkles, Star, Target,
-  Trophy, Users, X, Zap, type LucideIcon,
+  Trophy, Users, X, Zap, Bell, type LucideIcon,
 } from "lucide-react"
 
 type BadgeDefinition = {
@@ -253,6 +253,32 @@ export default function ProfileDashboard({
     }
   }
 
+  const [testAudience, setTestAudience] = useState<"me" | "all">("me")
+  const [testNotice, setTestNotice] = useState("")
+  const [testPending, setTestPending] = useState(false)
+  const sendTestNotification = async () => {
+    if (testPending) return
+    if (testAudience === "all") {
+      setTestNotice("A mindenki számára küldéshez szerveroldali push-feliratkozás szükséges. Nem lett kiküldve.")
+      return
+    }
+    if (!("Notification" in window)) { setTestNotice("Ez a böngésző nem támogatja az értesítéseket."); return }
+    let permission = Notification.permission
+    if (permission === "default") permission = await Notification.requestPermission()
+    if (permission !== "granted") { setTestNotice("Engedélyezd az értesítéseket a teszthez."); return }
+    setTestPending(true)
+    setTestNotice("Tesztértesítés 10 másodperc múlva, ezen az eszközön.")
+    window.setTimeout(async () => {
+      try {
+        const registration = "serviceWorker" in navigator ? await navigator.serviceWorker.getRegistration() : null
+        if (registration) await registration.showNotification("Evölingo · teszt", { body: "A tesztértesítés megérkezett." })
+        else new Notification("Evölingo · teszt", { body: "A tesztértesítés megérkezett." })
+        setTestNotice("A tesztértesítés elküldve erre az eszközre.")
+      } catch { setTestNotice("Nem sikerült megjeleníteni az értesítést. iOS-en telepített PWA szükséges lehet.") }
+      finally { setTestPending(false) }
+    }, 10000)
+  }
+
   return <div className="evo-profile-dashboard">
     <header className="evo-profile-topbar" aria-label="Profil navigáció">
       <span className="evo-profile-wordmark" aria-label="Evölingo">evölingo</span>
@@ -349,6 +375,16 @@ export default function ProfileDashboard({
           {(badgeView === "all" ? orderedBadges : orderedBadges.slice(0, 5)).map(badge => <BadgeTile key={badge.id} badge={badge} fresh={badge.id === justEarnedId} onClick={() => setSelectedBadgeId(badge.id)} />)}
         </div>
       </div>
+    </section>
+
+    <section className="evo-profile-notification-test" aria-label="Értesítések tesztelése" style={{padding:"20px 0",borderTop:"1px solid #ededed",display:"grid",gap:12}}>
+      <div style={{display:"flex",alignItems:"center",gap:8}}><Bell size={18}/><strong>Értesítés tesztelése</strong></div>
+      <div style={{display:"flex",gap:8}}>
+        <button type="button" onClick={() => {setTestAudience("me");setTestNotice("")}} aria-pressed={testAudience==="me"} style={{padding:"10px 16px",borderRadius:12,border:"1px solid #ddd",background:testAudience==="me"?"#222":"#fff",color:testAudience==="me"?"#fff":"#222"}}>Csak nekem</button>
+        <button type="button" onClick={() => {setTestAudience("all");setTestNotice("")}} aria-pressed={testAudience==="all"} style={{padding:"10px 16px",borderRadius:12,border:"1px solid #ddd",background:testAudience==="all"?"#222":"#fff",color:testAudience==="all"?"#fff":"#222"}}>Mindenkinek</button>
+      </div>
+      <Button type="button" disabled={testPending} onClick={() => {void sendTestNotification()}}><Bell size={16}/>{testPending?"Küldés folyamatban…":"Küldés 10 mp múlva"}</Button>
+      {testNotice && <p role="status" style={{fontSize:12,color:"#666",margin:0}}>{testNotice}</p>}
     </section>
 
     <section className="evo-profile-weekly" aria-labelledby="evo-profile-weekly-heading">
