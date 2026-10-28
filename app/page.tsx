@@ -2053,18 +2053,53 @@ function Profile({ completedCount, readCount, completedTaskCount, xp, stars, use
 
     {showSettings && <div className="profile-edit-backdrop" role="presentation" onMouseDown={event => { if (event.target === event.currentTarget) setShowSettings(false) }}>
       <section className="profile-edit-sheet" role="dialog" aria-modal="true" aria-labelledby="profile-edit-title">
-        <div className="profile-edit-heading"><div><h2 id="profile-edit-title">Profil szerkesztése</h2><p>Állítsd be a képeidet és a neved.</p></div><button type="button" onClick={() => setShowSettings(false)} aria-label="Bezárás"><X size={21} /></button></div>
-        <label className="setting-label" htmlFor="profile-name">Megjelenített név</label>
-        <div className="profile-name-form"><input id="profile-name" maxLength={32} value={draftName} onChange={event => { setDraftName(event.target.value); setSaved(false) }} placeholder="Írd be a neved" /><button type="button" onClick={() => { const value = draftName.trim(); if (value) { setUserName(value); setSaved(true) } }}>Mentés</button></div>
-        {saved && <p className="setting-success" role="status">A profilnév frissítve.</p>}
-        <div className="profile-gallery-actions">
-          <button type="button" onClick={() => avatarInputRef.current?.click()}><UserRound size={19} /><span><strong>Profilkép cseréje</strong><small>Válassz képet a galériából</small></span><ChevronRight size={18} /></button>
-          <button type="button" onClick={() => bannerInputRef.current?.click()}><Palette size={19} /><span><strong>Borítókép cseréje</strong><small>Válassz egy széles képet</small></span><ChevronRight size={18} /></button>
+        <header className="profile-edit-heading">
+          <button type="button" className="profile-edit-close" onClick={() => setShowSettings(false)} aria-label="Bezárás"><X size={20} strokeWidth={1.8} /></button>
+          <h2 id="profile-edit-title">Profil szerkesztése</h2>
+          <span className="profile-edit-heading-spacer" aria-hidden="true" />
+        </header>
+
+        <div className="profile-edit-content">
+          <div className="profile-edit-preview">
+            <div className="profile-edit-preview-cover">
+              {bannerImage ? <img src={bannerImage} alt="Jelenlegi borítókép" /> : <span>evölingo</span>}
+              <button type="button" onClick={() => bannerInputRef.current?.click()} aria-label="Borítókép módosítása"><Palette size={17} strokeWidth={1.8} /></button>
+            </div>
+            <button type="button" className="profile-edit-preview-avatar" onClick={() => avatarInputRef.current?.click()} aria-label="Profilkép módosítása">
+              {avatarImage ? <img src={avatarImage} alt="Jelenlegi profilkép" /> : <span aria-hidden="true">{avatar === "fox" ? "🦊" : avatar === "book" ? "📚" : avatar === "star" ? "⭐" : "✨"}</span>}
+              <span className="profile-edit-preview-camera"><UserRound size={15} strokeWidth={1.8} /></span>
+            </button>
+          </div>
+          <p className="profile-edit-preview-hint">Koppints a képekre a módosításhoz.</p>
+
+          <div className="profile-edit-field">
+            <label htmlFor="profile-name">Megjelenített név</label>
+            <input id="profile-name" maxLength={32} autoComplete="nickname" value={draftName} onChange={event => { setDraftName(event.target.value); setSaved(false) }} placeholder="Írd be a neved" />
+            <span>{draftName.length}/32 karakter</span>
+          </div>
+
+          <div className="profile-edit-divider" />
+          <div className="profile-edit-section-heading"><h3>Profilképek</h3><p>Válassz egy ikont, vagy tölts fel saját képet.</p></div>
+          <div className="avatar-options">{avatarOptions.map(id => <button key={id} type="button" className={"avatar-option " + (!avatarImage && avatar === id ? "selected" : "")} onClick={() => { setAvatar(id); setAvatarImage("") }} aria-label={"Profilkép: " + id} aria-pressed={!avatarImage && avatar === id}>{id === "fox" ? "🦊" : id === "book" ? "📚" : id === "star" ? "⭐" : "✨"}</button>)}</div>
+
+          <div className="profile-gallery-actions">
+            <button type="button" onClick={() => avatarInputRef.current?.click()}><UserRound size={19} strokeWidth={1.8} /><span><strong>Saját profilkép</strong><small>Kép kiválasztása a galériából</small></span><ChevronRight size={17} /></button>
+            <button type="button" onClick={() => bannerInputRef.current?.click()}><Palette size={19} strokeWidth={1.8} /><span><strong>Borítókép</strong><small>Széles kép feltöltése</small></span><ChevronRight size={17} /></button>
+          </div>
+          {bannerImage && <button className="profile-remove-banner" type="button" onClick={() => setBannerImage("")}>Borítókép visszaállítása</button>}
+          {imageError && <p className="profile-image-error" role="alert">{imageError}</p>}
+          {saved && <p className="setting-success" role="status">A profilnév frissítve.</p>}
         </div>
-        <span className="setting-label">Gyors profilképek</span>
-        <div className="avatar-options">{avatarOptions.map(id => <button key={id} type="button" className={"avatar-option " + (!avatarImage && avatar === id ? "selected" : "")} onClick={() => { setAvatar(id); setAvatarImage("") }} aria-label={"Profilkép: " + id} aria-pressed={!avatarImage && avatar === id}>{id === "fox" ? "🦊" : id === "book" ? "📚" : id === "star" ? "⭐" : "✨"}</button>)}</div>
-        {bannerImage && <button className="profile-remove-banner" type="button" onClick={() => setBannerImage("")}>Borítókép visszaállítása</button>}
-        {imageError && <p className="profile-image-error" role="alert">{imageError}</p>}
+
+        <footer className="profile-edit-footer">
+          <button type="button" className="profile-edit-save" disabled={!draftName.trim()} onClick={() => {
+            const value = draftName.trim()
+            if (!value) return
+            setUserName(value)
+            setSaved(true)
+            setShowSettings(false)
+          }}>Kész</button>
+        </footer>
       </section>
     </div>}
   </div>
