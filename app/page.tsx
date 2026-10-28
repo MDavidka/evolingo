@@ -1586,6 +1586,7 @@ function Friends({ userName, avatar, avatarImage, xp, dailyStudy, saveStatus, on
   const [addQuery, setAddQuery] = useState("")
   const [addNotice, setAddNotice] = useState("")
   const [profileOpen, setProfileOpen] = useState<FriendProfile | null>(null)
+  const [requestPopup, setRequestPopup] = useState<FriendProfile | null>(null)
 
   const ownTag = "EVO-" + userName.normalize("NFKD").replace(/[\u0300-\u036f]/g, "").toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 8).padEnd(4, "X") + "-0001"
 
@@ -1631,23 +1632,25 @@ function Friends({ userName, avatar, avatarImage, xp, dailyStudy, saveStatus, on
     return () => { cancelled = true }
   }, [])
 
+  // The MongoDB request collection is authoritative; never overwrite it with local state.
   useEffect(() => {
     if (!stateReady) return
-    try {
-      localStorage.setItem("evolingo.friends.v1", JSON.stringify({ version: 5, friends, requests, incomingRequests }))
-    } catch {
-      // Local persistence is best-effort.
+    let cancelled = false
+    const refresh = async () => {
+      try {
+        const response = await fetch("/api/friends/requests", { credentials: "same-origin", cache: "no-store" })
+        if (!response.ok) return
+        const data = await response.json() as { incoming?: string[]; outgoing?: string[]; friends?: string[] }
+        if (cancelled) return
+        setIncomingRequests(Array.isArray(data.incoming) ? data.incoming : [])
+        setRequests(Array.isArray(data.outgoing) ? data.outgoing : [])
+        setFriends(Array.isArray(data.friends) ? data.friends : [])
+      } catch { /* Retry at next poll. */ }
     }
-    const timer = window.setTimeout(() => {
-      fetch("/api/state", {
-        method: "PATCH",
-        credentials: "same-origin",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ friends, friendRequests: requests }),
-      }).catch(() => setNotice("A módosítást nem sikerült a felhőbe menteni."))
-    }, 450)
-    return () => window.clearTimeout(timer)
-  }, [stateReady, friends, requests, incomingRequests])
+    void refresh()
+    const timer = window.setInterval(() => { void refresh() }, 12000)
+    return () => { cancelled = true; window.clearInterval(timer) }
+  }, [stateReady])
 
   useEffect(() => {
     if (!showAdd && !profileOpen) return
@@ -1685,10 +1688,13 @@ function Friends({ userName, avatar, avatarImage, xp, dailyStudy, saveStatus, on
   const visibleIncoming = incomingProfiles.filter(friend => matchesQuery(friend, normalizedQuery))
   useEffect(() => {
     if (!stateReady || incomingProfiles.length === 0) return
+    const next = incomingProfiles[0]
+    const key = "evolingo.friend-popup." + next.id
     try {
-      if (localStorage.getItem("evolingo.friend-request-notice.v1")) return
-      localStorage.setItem("evolingo.friend-request-notice.v1", "1")
-    } catch { /* Displaying the request is still useful without local storage. */ }
+      if (sessionStorage.getItem(key)) return
+      sessionStorage.setItem(key, "1")
+    } catch {}
+    setRequestPopup(next)
     onNewFriendRequest()
   }, [stateReady, incomingProfiles.length, onNewFriendRequest])
   // Show real registered accounts on the Friends tab, not just followed friends or demo recommendations.
@@ -1737,22 +1743,27 @@ function Friends({ userName, avatar, avatarImage, xp, dailyStudy, saveStatus, on
     setNotice(alreadyFollowing ? "Már nem követed: " + friend.name : "Mostantól követed: " + friend.name + (friend.id.startsWith("demo-") ? " (helyi prototípus)." : "."))
   }
 
-  const sendRequest = (friend: FriendProfile) => {
-    if (requests.includes(friend.id) || friends.includes(friend.id)) return
-    if (friend.id.startsWith("demo-")) {
-      setRequests(current => [...current, friend.id])
-      setNotice("A kérés helyben, prototípusként lett elmentve.")
-      return
-    }
-    setRequests(current => [...current, friend.id])
-    setNotice("A kérés helyi állapotként lett elmentve; valódi kérésekhez szerveroldali támogatás szükséges.")
+  const requestAction = async (friend: FriendProfile, action: "send" | "accept" | "decline") => {
+    if (friend.id.startsWith("demo-")) { setNotice("Demóprofilnak nem küldhető valódi barátkérés."); return }
+    try {
+      const response = await fetch("/api/friends/requests", {
+        method: "POST", credentials: "same-origin",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ target: friend.id, action }),
+      })
+      const result = await response.json().catch(() => ({})) as { error?: string }
+      if (!response.ok) { setNotice(result.error || "A kérés nem sikerült."); return }
+      if (action === "send") setRequests(current => current.includes(friend.id) ? current : [...current, friend.id])
+      else {
+        setIncomingRequests(current => current.filter(id => id !== friend.id))
+        if (action === "accept") setFriends(current => current.includes(friend.id) ? current : [...current, friend.id])
+        setRequestPopup(null)
+      }
+      setNotice(action === "send" ? "Barátkérés elküldve." : action === "accept" ? "Barátkérés elfogadva." : "Barátkérés elutasítva.")
+    } catch { setNotice("Kapcsolati hiba. Próbáld újra.") }
   }
-
-  const respondToRequest = (friend: FriendProfile, accept: boolean) => {
-    setIncomingRequests(current => current.filter(id => id !== friend.id))
-    if (accept) setFriends(current => current.includes(friend.id) ? current : [...current, friend.id])
-    setNotice(accept ? friend.name + " mostantól a barátaid között van (helyi prototípus)." : "A kérés elutasítva (helyi prototípus).")
-  }
+  const sendRequest = (friend: FriendProfile) => { void requestAction(friend, "send") }
+  const respondToRequest = (friend: FriendProfile, accept: boolean) => { void requestAction(friend, accept ? "accept" : "decline") }
 
   const openAddDialog = () => { setAddNotice(""); setAddQuery(""); setShowAdd(true) }
   const addFromSearch = (event: FormEvent<HTMLFormElement>) => {
@@ -1789,6 +1800,21 @@ function Friends({ userName, avatar, avatarImage, xp, dailyStudy, saveStatus, on
   )
 
   return <div className="friends-screen">
+    {requestPopup && <div role="presentation" onClick={() => setRequestPopup(null)} style={{position:"fixed",inset:0,background:"rgba(0,0,0,.45)",zIndex:2000,display:"flex",alignItems:"flex-end",justifyContent:"center"}}>
+      <section role="dialog" aria-modal="true" aria-label="Ismerősnek jelölt" onClick={event => event.stopPropagation()} style={{width:"100%",maxWidth:480,background:"#fff",borderRadius:"30px 30px 0 0",padding:"18px 24px max(28px,env(safe-area-inset-bottom))",boxShadow:"0 -6px 28px #00000012",display:"grid",gap:20}}>
+        <div aria-hidden="true" style={{width:38,height:5,borderRadius:9,background:"#e2e2e2",margin:"0 auto 2px"}} />
+        <div style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}><h2 style={{fontSize:23,fontWeight:700,letterSpacing:"-.035em",margin:0}}>Ismerősnek jelölt</h2><button type="button" onClick={() => setRequestPopup(null)} aria-label="Bezárás" style={{border:0,background:"transparent",padding:8}}><X size={20}/></button></div>
+        <div style={{display:"flex",alignItems:"center",gap:14}}>
+          <span style={{width:62,height:62,borderRadius:"50%",background:"#f1f1f1",display:"grid",placeItems:"center",overflow:"hidden",fontSize:24}}>{requestPopup.avatarImage ? <img src={requestPopup.avatarImage} alt="" style={{width:"100%",height:"100%",objectFit:"cover"}}/> : requestPopup.avatar}</span>
+          <div style={{flex:1,minWidth:0}}><strong style={{fontSize:20,display:"block"}}>{requestPopup.name}</strong><span style={{color:"#777"}}>{requestPopup.handle}</span></div>
+          <span style={{background:"#f5f5f5",borderRadius:30,padding:"9px 12px",fontWeight:650}}>⭐ {requestPopup.xp} XP</span>
+        </div>
+        <div style={{display:"grid",gap:10}}>
+          <button type="button" onClick={() => respondToRequest(requestPopup,true)} style={{border:0,borderRadius:16,padding:16,background:"#53b91d",color:"#fff",fontWeight:700,fontSize:17}}>Elfogadás</button>
+          <button type="button" onClick={() => respondToRequest(requestPopup,false)} style={{border:"1px solid #e3e3e3",borderRadius:16,padding:16,background:"#fff",fontWeight:650,fontSize:17}}>Elutasítás</button>
+        </div>
+      </section>
+    </div>}
     <header className="friends-header">
       <div className="friends-title-group"><span>KÖZÖSSÉG</span><h1>Barátok</h1></div>
     </header>
@@ -1888,7 +1914,7 @@ function Friends({ userName, avatar, avatarImage, xp, dailyStudy, saveStatus, on
           {visibleIncoming.length === 0 && visibleOutgoing.length === 0 && <div className="friends-empty"><strong>Nincsenek új kérések</strong><p>Ha valaki felveszi veled a kapcsolatot, itt fog megjelenni.</p><button type="button" onClick={() => setTab("suggested")}>Tanulótársak felfedezése</button></div>}
         </>}
       </div>
-      {(visibleIncoming.length > 0 || visibleOutgoing.length > 0) && <p className="friends-demo-note">A helyi prototípusban a kérések csak ezen az eszközön tárolódnak.</p>}
+
     </section>}
 
     {tab === "suggested" && <section className="friends-section" aria-labelledby="friends-all-heading">
