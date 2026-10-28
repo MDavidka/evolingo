@@ -24,7 +24,6 @@ type Props = {
   alreadyCompleted: boolean
   onExit: () => void
   onComplete: () => void
-  debugForDavid?: boolean
 }
 type VocabularyCard = { english: string; hungarian: string; example: string }
 type EssayTopic = { title: string; prompt: string; tips: string[]; minWords: number; recommendedWords: number }
@@ -89,7 +88,7 @@ function LoadingPanel({ caption }: { caption: string }) {
   return <div className="skill-loading" role="status">
     <LoaderCircle size={30} className="skill-spin" aria-hidden="true" />
     <strong>{caption}</strong>
-    <p>Az aktuális lecke alapján készül a gyakorlás.</p>
+
   </div>
 }
 function ErrorPanel({ message, retry, onExit }: { message: string; retry: () => void; onExit: () => void }) {
@@ -111,7 +110,7 @@ function CompletePanel({ mode, onExit, alreadyCompleted }: { mode: SkillMode; on
   </div>
 }
 
-export default function SkillExercise({ mode, lesson, alreadyCompleted, onExit, onComplete, debugForDavid = false }: Props) {
+export default function SkillExercise({ mode, lesson, alreadyCompleted, onExit, onComplete, }: Props) {
   const [loading, setLoading] = useState(true)
   const [loadError, setLoadError] = useState("")
   const [debugStage, setDebugStage] = useState("idle")
@@ -300,21 +299,20 @@ export default function SkillExercise({ mode, lesson, alreadyCompleted, onExit, 
 
   return <div className={"skill-exercise skill-" + mode}>
     <SkillHeader lesson={lesson} mode={mode} progress={progress} onExit={onExit} />
-    {debugForDavid && mode !== "vocabulary" && <div className="skill-debug" role="status" aria-live="polite"><strong>AI DEBUG · DAVID</strong><span>{"<error:>"} {loadError || speechError || essayError || (loading || grading ? "loading" : "none")}</span><small>{debugStage}</small></div>}
     {finished ? <CompletePanel mode={mode} onExit={onExit} alreadyCompleted={alreadyCompleted} />
       : loading ? <LoadingPanel caption={mode === "conversation" ? "Kérdéseket készítünk…" : mode === "vocabulary" ? "Szavakat válogatunk…" : "B2 témát keresünk…"} />
       : loadError ? <ErrorPanel message={loadError} retry={() => setGeneration(value => value + 1)} onExit={onExit} />
       : mode === "conversation" ? <div className="skill-body">
         <div className="skill-eyebrow"><MessageCircle size={17} /><span>KÉRDÉS {questionIndex + 1} / {questions.length}</span></div>
         <h1 className="skill-conversation-question">{questions[questionIndex]}</h1>
-        <p className="skill-helper">Válaszolj angolul. A kisebb nyelvtani hibák nem számítanak, ha érthető a válaszod.</p>
+
 
         <div className="skill-microphone-area">
           <button type="button" className={"skill-mic " + (listening ? "is-listening" : "")} onClick={toggleMic} aria-pressed={listening} aria-label={listening ? "Felvétel leállítása" : "Beszédfelismerés indítása"}>
             {listening ? <MicOff size={32} strokeWidth={1.9} /> : <Mic size={32} strokeWidth={1.9} />}
           </button>
           <strong>{listening ? "Beszélj most…" : "Koppints, majd beszélj"}</strong>
-          <small>A hangot a böngésző alakítja szöveggé.</small>
+
         </div>
 
         <label className="skill-field-label" htmlFor="skill-answer">Felismert vagy beírt válasz</label>
@@ -362,12 +360,12 @@ export default function SkillExercise({ mode, lesson, alreadyCompleted, onExit, 
       </div>
       : <div className="skill-body skill-essay-body">
         <div className="skill-eyebrow"><FilePenLine size={17} /><span>B2 SZINT · 120–220 SZÓ</span></div>
-        <h1 className="skill-essay-heading">Írj egy esszét!</h1>
+
         <div className="skill-essay-topic">
-          <span>AZ ESSZÉ TÉMÁJA</span>
+
           <h2>{topic?.title}</h2>
           <p>{topic?.prompt}</p>
-          {!!topic?.tips?.length && <div className="skill-essay-tips"><Lightbulb size={17} /><div>{topic.tips.map((tip,i) => <p key={i}>{tip}</p>)}</div></div>}
+
         </div>
         <div className="skill-essay-label"><label htmlFor="skill-essay-input">A fogalmazásod</label><span>{wordsIn(essay)} szó</span></div>
         <textarea id="skill-essay-input" className="skill-essay-input" rows={10} maxLength={8500} spellCheck lang="en" placeholder="Start writing your essay in English…" value={essay} onChange={event => { setEssay(event.target.value); setEssayFeedback(null); setEssayError("") }} />
