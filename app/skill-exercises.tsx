@@ -130,6 +130,9 @@ export default function SkillExercise({ mode, lesson, alreadyCompleted, onExit, 
   const [wordIndex, setWordIndex] = useState(0)
   const [revealed, setRevealed] = useState(false)
   const [wordIntro, setWordIntro] = useState(true)
+  const [introVideoFailed, setIntroVideoFailed] = useState(false)
+  const [introPlaying, setIntroPlaying] = useState(false)
+  const introVideoRef = useRef<HTMLVideoElement | null>(null)
   const introTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const playCardSound = () => {
     try {
@@ -155,7 +158,14 @@ export default function SkillExercise({ mode, lesson, alreadyCompleted, onExit, 
   const dismissWordIntro = () => {
     if (introTimer.current) clearTimeout(introTimer.current)
     setWordIntro(false)
-    playCardSound()
+    setIntroPlaying(false)
+  }
+  const startWordIntro = () => {
+    const video = introVideoRef.current
+    if (!video || introVideoFailed) { dismissWordIntro(); return }
+    video.currentTime = 0
+    video.muted = false
+    void video.play().then(() => setIntroPlaying(true)).catch(() => dismissWordIntro())
   }
   useEffect(() => () => { if (introTimer.current) clearTimeout(introTimer.current) }, [])
 
@@ -280,8 +290,8 @@ export default function SkillExercise({ mode, lesson, alreadyCompleted, onExit, 
 
   const showNextCard = () => {
     setWordIntro(true)
+    setIntroPlaying(false)
     if (introTimer.current) clearTimeout(introTimer.current)
-    introTimer.current = setTimeout(() => setWordIntro(false), 1150)
   }
   const chooseWord = (known: boolean) => {
     if (!cards.length || wordIndex >= cards.length || finishedRef.current) return
@@ -366,16 +376,21 @@ export default function SkillExercise({ mode, lesson, alreadyCompleted, onExit, 
         </div>
       </div>
       : mode === "vocabulary" ? <div className="skill-body">
-        {wordIntro && <div className="skill-word-intro" role="button" tabIndex={0} aria-label="Szókártyák megnyitása" onClick={dismissWordIntro} onKeyDown={event => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); dismissWordIntro() } }}>
-          <div className="skill-word-intro-card" aria-hidden="true">
-            <span>ANGOL</span>
-            <strong>{cards[wordIndex]?.english}</strong>
-            <small>{cards[wordIndex]?.pronunciation || ""}</small>
-          </div>
-          <p>Koppints a fordításhoz, vagy húzd oldalra a kártyát.</p>
-          <button type="button" onClick={event => { event.stopPropagation(); dismissWordIntro() }}>Kezdés <ArrowRight size={16}/></button>
-        </div>
-        
+        {wordIntro && <div className="skill-word-intro skill-word-video-intro">
+          {!introVideoFailed && <video
+            ref={introVideoRef}
+            className="skill-word-intro-video"
+            src="/Orb.mp4"
+            preload="auto"
+            playsInline
+            onEnded={dismissWordIntro}
+            onError={() => setIntroVideoFailed(true)}
+            aria-label="Szókártyák nyitóvideó"
+          />}
+          {introVideoFailed && <div className="skill-word-intro-fallback"><strong>{cards[wordIndex]?.english}</strong><small>Szókártyák</small></div>}
+          {!introPlaying && <button type="button" className="skill-word-intro-play" onClick={startWordIntro}>{introVideoFailed ? "Folytatás" : "Videó indítása"} <ArrowRight size={17}/></button>}
+        </div>}
+
         <h1 className="skill-vocab-title">Ismered ezt a szót?</h1>
         <p className="skill-helper">Koppints a kártyára a fordításhoz. Húzd balra, ha még nem tudtad, jobbra, ha igen.</p>
         
