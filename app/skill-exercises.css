@@ -499,3 +499,12 @@ body .skill-vocabulary .skill-word-intro > button {
 @media (prefers-reduced-motion: reduce) {
   body .skill-vocabulary .skill-word-intro-card { animation: none; }
 }
+
+
+/* Original Orb.mp4 video, shown before vocabulary cards. */
+body .skill-vocabulary .skill-word-video-intro { background: #fff; gap: 20px; }
+body .skill-vocabulary .skill-word-intro-video { width: min(100%, 380px); max-height: min(60dvh,500px); object-fit: contain; border-radius: 18px; }
+body .skill-vocabulary .skill-word-intro-play { display: inline-flex; align-items: center; gap: 9px; min-height: 48px; padding: 12px 22px; border: 0; border-radius: 999px; background: #202020; color: #fff; font-size: 15px; font-weight: 650; }
+body .skill-vocabulary .skill-word-intro-fallback { display: flex; flex-direction: column; gap: 12px; align-items: center; padding: 45px 20px; }
+body .skill-vocabulary .skill-word-intro-fallback strong { font-size: 32px; }
+body .skill-vocabulary .skill-word-intro-fallback small { color: #777; }
