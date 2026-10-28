@@ -3,11 +3,12 @@
 import { memo, useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from "react"
 import NextImage from "next/image"
 import ProfileDashboard from "./profile-dashboard"
+import SkillExercise, { type SkillMode } from "./skill-exercises"
 import { Button } from "../components/ui/button"
 import { Input } from "../components/ui/input"
 import { Separator } from "../components/ui/separator"
 import {
-  ArrowRight, Book, BookOpen, Check, CheckCircle2, Headphones, MessageCircle, CircleHelp, Puzzle,
+  ArrowRight, Book, BookOpen, Check, CheckCircle2, Headphones, MessageCircle, CircleHelp, Puzzle, FilePenLine,
   Flame, Heart, Lightbulb, Medal, RotateCcw, Trophy, UserRound, Dumbbell, Timer, Languages, Volume2,
   X, Zap, LockKeyhole, ClipboardCheck, Star, ShoppingBag, Gift, Palette, Pencil, Settings, ChevronRight, CalendarDays, Sparkles, Target, Search, UserPlus, Users, Link2, Bell, Share2, Contact2, Cloud, BarChart3,
 } from "lucide-react"
@@ -26,7 +27,7 @@ const lessonIllustrations: Record<number, { src: string; alt: string }> = {
   9: { src: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1200&q=85", alt: "Különböző magasságú hegycsúcsok" },
   10: { src: "https://images.unsplash.com/photo-1649843787933-a4e0d5313391?auto=format&fit=crop&w=1200&q=85", alt: "Sötét esőfelhők a feltételes mondatok példáihoz" },
 }
-type Screen = "home" | "lessonIntro" | "task" | "chestOpen" | "shop" | "leaderboard" | "profile" | "friends"
+type Screen = "home" | "lessonIntro" | "task" | "skill" | "chestOpen" | "shop" | "leaderboard" | "profile" | "friends"
 type DailyStudyState = { streak: number; lastStudyDate: string; todayActivityCount: number; activityDate: string; dailyGoal: number }
 type CloudSaveStatus = "loading" | "saving" | "saved" | "local" | "error"
 type LocalProgressSnapshot = { version: 1; sessionKey: string; savedAt: number; state: Record<string, unknown> }
@@ -334,6 +335,9 @@ function practicePacks(lesson: LessonUnit): Question[][] {
     : Math.ceil(lesson.questions.length / 2)
   return [lesson.questions.slice(0, firstPackSize), lesson.questions.slice(firstPackSize)].filter(pack => pack.length > 0)
 }
+const skillKey = (lessonId: number, mode: SkillMode) => "skill:" + lessonId + ":" + mode
+const skillTypes: SkillMode[] = ["conversation", "vocabulary", "essay"]
+const skillLabels: Record<SkillMode, string> = { conversation: "Beszélgetés", vocabulary: "Szókártyák", essay: "Fogalmazás" }
 const practiceKey = (lessonId: number, packIndex: number, questionIndex: number) => {
   const lesson = fullLessons.find(item => item.id === lessonId)
   if (!lesson || lesson.specialType) return lessonId + "-p" + packIndex + "-" + questionIndex
@@ -357,6 +361,8 @@ const normalizeAnswer = (value: string) => value.toLowerCase().trim().replace(/[
 export default function App() {
   const [screen, setScreen] = useState<Screen>("home")
   const [activeLessonId, setActiveLessonId] = useState(1)
+  const [activeSkill, setActiveSkill] = useState<SkillMode>("conversation")
+  const skillClaimsRef = useRef(new Set<string>())
   const [activeTaskIndex, setActiveTaskIndex] = useState(0)
   const [activePackIndex, setActivePackIndex] = useState<number | null>(null)
   const [activeChestLevel, setActiveChestLevel] = useState<number | null>(null)
@@ -705,6 +711,27 @@ export default function App() {
     playTaskSound("open")
     setScreen("task")
   }
+  const openSkill = (lessonId: number, mode: SkillMode) => {
+    const lesson = fullLessons.find(item => item.id === lessonId)
+    if (!lesson || !skillTypes.includes(mode)) return
+    const unlocked = (lessonId === 1 || completedLessons.includes(lessonId - 1)) && chestGateIsOpen(lessonId)
+    if (!unlocked) { setNotice("Ez a gyakorlás még nem érhető el."); return }
+    setActiveLessonId(lessonId)
+    setActiveSkill(mode)
+    playTaskSound("open")
+    setScreen("skill")
+  }
+  const completeSkill = () => {
+    const key = skillKey(activeLessonId, activeSkill)
+    if (answeredTasks.includes(key) || skillClaimsRef.current.has(key)) return
+    skillClaimsRef.current.add(key)
+    setAnsweredTasks(previous => previous.includes(key) ? previous : [...previous, key])
+    setStars(previous => previous + 2)
+    setXp(previous => previous + 10)
+    recordDailyActivity()
+    playTaskSound("complete")
+    setNotice(skillLabels[activeSkill] + " kész! +2 csillag, +10 XP.")
+  }
   const completeTask = (lessonId: number, taskIndex: number) => {
     const taskKey = activePackIndex === null ? lessonId + "-" + taskIndex : practiceKey(lessonId, activePackIndex, taskIndex)
     const nextAnswered = answeredTasks.includes(taskKey) ? answeredTasks : [...answeredTasks, taskKey]
@@ -756,8 +783,8 @@ export default function App() {
     setLives(5)
     setScreen("task")
   }
-  return <><main className={"app-shell " + ((screen === "lessonIntro" || screen === "task" || screen === "chestOpen") ? "lesson-open" : "") + (screen === "leaderboard" ? " leaderboard-app" : "")}>
-    <section className={"screen-content " + (screen === "home" ? "learn-home-content " : "") + ((screen === "lessonIntro" || screen === "task" || screen === "chestOpen") ? "lesson-page" : "") + (screen === "leaderboard" ? " leaderboard-screen-content" : "")}>
+  return <><main className={"app-shell " + ((screen === "lessonIntro" || screen === "task" || screen === "chestOpen") ? "lesson-open" : "") + (screen === "skill" ? " skill-open" : "") + (screen === "leaderboard" ? " leaderboard-app" : "")}>
+    <section className={"screen-content " + (screen === "home" ? "learn-home-content " : "") + ((screen === "lessonIntro" || screen === "task" || screen === "chestOpen") ? "lesson-page" : "") + (screen === "skill" ? " skill-page" : "") + (screen === "leaderboard" ? " leaderboard-screen-content" : "")}>
       {screen === "home" && <Home
         completedLessons={completedLessons}
         answeredTasks={answeredTasks}
@@ -766,6 +793,7 @@ export default function App() {
         clearNotice={() => setNotice("")}
         onOpenLesson={openLesson}
         onOpenTask={openTask}
+        onOpenSkill={openSkill}
         onOpenProfile={() => setScreen("profile")}
         stars={stars}
         completedLessonCount={completedLessonCount}
@@ -784,6 +812,15 @@ export default function App() {
         onReadComplete={() => handleReadComplete(activeLesson.id)}
         onPractice={() => { setScreen("home"); setNotice("A feladatok megnyíltak — válassz egy narancssárga pontot!") }}
       />}
+      {screen === "skill" && <SkillExercise
+        key={activeLessonId + ":" + activeSkill}
+        lesson={{ id: activeLesson.id, title: activeLesson.title, summary: activeLesson.summary, level: activeLesson.level,
+          examples: activeLesson.sections.flatMap(section => (section.examples ?? []).map(example => example.sentence)).slice(0, 8) }}
+        mode={activeSkill}
+        alreadyCompleted={answeredTasks.includes(skillKey(activeLessonId, activeSkill))}
+        onExit={() => setScreen("home")}
+        onComplete={completeSkill}
+      />}
       {screen === "chestOpen" && <ChestOpeningScreen reward={chestReward} onOpen={openChestReward} onContinue={continueFromChest} onExit={() => { setActiveChestLevel(null); setChestReward(null); setScreen("home") }} />}
       {screen === "task" && <TaskExercise
         lesson={activePracticeLesson}
@@ -798,9 +835,9 @@ export default function App() {
       {screen === "shop" && <Shop stars={stars} purchasedItems={purchasedItems} onPurchase={(id, cost) => { if (stars >= cost && !purchasedItems.includes(id)) { setStars((value) => value - cost); setPurchasedItems((items) => [...items, id]); setNotice("Sikeres vásárlás!"); } }} />}
       {screen === "leaderboard" && <Leaderboard />}
       {screen === "friends" && <Friends userName={userName} avatar={avatar} avatarImage={avatarImage} xp={xp} dailyStudy={dailyStudy} saveStatus={saveStatus} onRetryCloudSave={retryCloudSave} onNewFriendRequest={() => setSystemNotice("friend")} />}
-      {screen === "profile" && <Profile completedCount={completedLessons.length} readCount={readLessons.length} completedTaskCount={answeredTasks.length} xp={xp} stars={stars} userName={userName} setUserName={setUserName} avatar={avatar} setAvatar={setAvatar} avatarImage={avatarImage} setAvatarImage={setAvatarImage} bannerImage={bannerImage} setBannerImage={setBannerImage} dailyStudy={dailyStudy} onDailyGoalChange={(dailyGoal) => setDailyStudy(previous => ({ ...previous, dailyGoal }))} saveStatus={saveStatus} onRetryCloudSave={retryCloudSave} notifications={notifications} setNotifications={setNotifications} compactMode={compactMode} setCompactMode={setCompactMode} showSettings={showSettings} setShowSettings={setShowSettings} weeklyStudySeconds={weeklyStudySeconds} onOpenFriends={() => setScreen("friends")} />}
+      {screen === "profile" && <Profile completedCount={completedLessons.length} readCount={readLessons.length} completedTaskCount={answeredTasks.filter(key => !key.startsWith("skill:")).length} xp={xp} stars={stars} userName={userName} setUserName={setUserName} avatar={avatar} setAvatar={setAvatar} avatarImage={avatarImage} setAvatarImage={setAvatarImage} bannerImage={bannerImage} setBannerImage={setBannerImage} dailyStudy={dailyStudy} onDailyGoalChange={(dailyGoal) => setDailyStudy(previous => ({ ...previous, dailyGoal }))} saveStatus={saveStatus} onRetryCloudSave={retryCloudSave} notifications={notifications} setNotifications={setNotifications} compactMode={compactMode} setCompactMode={setCompactMode} showSettings={showSettings} setShowSettings={setShowSettings} weeklyStudySeconds={weeklyStudySeconds} onOpenFriends={() => setScreen("friends")} />}
     </section>
-    {screen !== "lessonIntro" && screen !== "task" && screen !== "chestOpen" && <Nav screen={screen} setScreen={setScreen} userName={userName} avatar={avatar} avatarImage={avatarImage} />}
+    {screen !== "lessonIntro" && screen !== "task" && screen !== "skill" && screen !== "chestOpen" && <Nav screen={screen} setScreen={setScreen} userName={userName} avatar={avatar} avatarImage={avatarImage} />}
   </main>
   {systemNotice && <SystemNotificationSheet
     kind={systemNotice}
@@ -924,7 +961,7 @@ function UserAvatar({ userName, avatar, avatarImage, variant }: {
   </span>
 }
 
-function Home({ completedLessons, answeredTasks, readLessons, notice, clearNotice, onOpenLesson, onOpenTask, onOpenProfile, userName, avatar, avatarImage, stars, completedLessonCount, nextChestAt, chestReady, openedChests, onClaimChest }: {
+function Home({ completedLessons, answeredTasks, readLessons, notice, clearNotice, onOpenLesson, onOpenTask, onOpenSkill, onOpenProfile, userName, avatar, avatarImage, stars, completedLessonCount, nextChestAt, chestReady, openedChests, onClaimChest }: {
   completedLessons: number[]
   answeredTasks: string[]
   readLessons: number[]
@@ -932,6 +969,7 @@ function Home({ completedLessons, answeredTasks, readLessons, notice, clearNotic
   clearNotice: () => void
   onOpenLesson: (id: number) => void
   onOpenTask: (lessonId: number, packIndex: number) => void
+  onOpenSkill: (lessonId: number, mode: SkillMode) => void
   onOpenProfile: () => void
   userName: string
   avatar: string
@@ -962,14 +1000,15 @@ function Home({ completedLessons, answeredTasks, readLessons, notice, clearNotic
     return () => window.clearInterval(timer)
   }, [completedLessons, currentLesson.id])
   const formatCountdown = (seconds: number) => String(Math.floor(seconds / 60)) + ":" + String(seconds % 60).padStart(2, "0")
-  const routeItems: { lesson: LessonUnit; packIndex: number | null; chest?: boolean }[] = fullLessons.flatMap((lesson, lessonIndex) => {
-    const items: { lesson: LessonUnit; packIndex: number | null; chest?: boolean }[] = [{ lesson, packIndex: null }]
+  const routeItems: { lesson: LessonUnit; packIndex: number | null; skill?: SkillMode; chest?: boolean }[] = fullLessons.flatMap((lesson, lessonIndex) => {
+    const items: { lesson: LessonUnit; packIndex: number | null; skill?: SkillMode; chest?: boolean }[] = [{ lesson, packIndex: null }]
     practicePacks(lesson).forEach((_, packIndex) => items.push({ lesson, packIndex }))
+    skillTypes.forEach(skill => items.push({ lesson, packIndex: null, skill }))
     if ((lessonIndex + 1) % 5 === 0) items.push({ lesson, packIndex: null, chest: true })
     return items
   })
   let routeHeight = 0
-  const routeTops = routeItems.map(item => { const top = routeHeight; routeHeight += item.chest || item.packIndex !== null ? 108 : 164; return top })
+  const routeTops = routeItems.map(item => { const top = routeHeight; routeHeight += item.skill ? 106 : item.chest || item.packIndex !== null ? 108 : 164; return top })
   const nodeRefs = useRef<Map<number, HTMLButtonElement>>(new Map())
   useEffect(() => {
     if (currentLessonId === null || !readLessons.length && !completedLessons.length) return
@@ -1007,7 +1046,7 @@ function Home({ completedLessons, answeredTasks, readLessons, notice, clearNotic
         </aside>
       </div>
       <div className="learn-path-track" style={{ height: routeHeight + 100 + "px" }}>
-        {routeItems.map(({ lesson, packIndex, chest }, index) => {
+        {routeItems.map(({ lesson, packIndex, skill, chest }, index) => {
           const position = [27, 53, 66, 47, 29, 55, 68, 41][index % 8]
           const leftSide = position > 50
           const lessonDone = completedLessons.includes(lesson.id)
@@ -1021,6 +1060,28 @@ function Home({ completedLessons, answeredTasks, readLessons, notice, clearNotic
           const lessonCurrent = lesson.id === currentLessonId
           const requiredChestLevel = Math.floor((lesson.id - 1) / 5)
           const chestGateOpen = requiredChestLevel === 0 || openedChests.includes("chest:" + requiredChestLevel)
+          if (skill) {
+            const skillDone = answeredTasks.includes(skillKey(lesson.id, skill))
+            const unlocked = lessonDone || (lessonCurrent && chestGateOpen)
+            const Icon = skill === "conversation" ? MessageCircle : skill === "vocabulary" ? BookOpen : FilePenLine
+            return <div
+              key={lesson.id + "-skill-" + skill}
+              className={"learn-path-node learn-path-skill-node " + (leftSide ? "tasks-left" : "tasks-right")}
+              style={{ left: position + "%", top: routeTops[index] + "px" }}
+            >
+              <button
+                type="button"
+                className={"learn-skill-button is-" + skill + (skillDone ? " is-done" : unlocked ? " is-ready" : " is-locked")}
+                disabled={!unlocked}
+                onClick={() => onOpenSkill(lesson.id, skill)}
+                aria-label={lesson.title + ": " + skillLabels[skill] + (skillDone ? ", kész, újra gyakorolható" : unlocked ? "" : ", zárolva")}
+              >
+                <Icon size={29} strokeWidth={1.85} aria-hidden="true" />
+                {skillDone && <span className="learn-skill-check" aria-hidden="true"><Check size={11} /></span>}
+              </button>
+              <span className="learn-pack-caption">{skillLabels[skill]}</span>
+            </div>
+          }
           if (packIndex !== null) {
             const packs = practicePacks(lesson)
             const pack = packs[packIndex]
