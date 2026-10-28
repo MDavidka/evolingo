@@ -236,3 +236,20 @@ body .learn-path-skill-node .learn-skill-button:focus-visible { border-radius: 1
 .skill-debug { margin: 8px 20px 0; padding: 9px 12px; border: 1px solid #f4c5a2; background: #fff9f2; border-radius: 10px; display: flex; flex-direction: column; gap: 3px; font: 12px/1.4 ui-monospace, SFMono-Regular, Menlo, monospace; color: #85480f; overflow-wrap: anywhere; }
 .skill-debug strong { font-size: 10px; letter-spacing: .06em; }
 .skill-debug small { font-size: 11px; opacity: .8; }
+
+/* Genuine uploaded-image cutouts: no SVG fallback, no tinted tile. */
+body .learn-path-skill-node .learn-skill-button > .evo-skill-cutout {
+  width: 84px !important;
+  height: 84px !important;
+  display: block;
+  background-color: transparent !important;
+  filter: none;
+}
+body .skill-flashcard-symbol > .evo-skill-cutout {
+  width: 95px !important;
+  height: 95px !important;
+  background-color: transparent !important;
+}
+body .learn-path-skill-node .learn-skill-button.is-locked .evo-skill-cutout {
+  opacity: 1;
+}
