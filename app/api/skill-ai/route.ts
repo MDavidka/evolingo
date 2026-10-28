@@ -10,7 +10,7 @@ type ChatRole = "system" | "user"
 type ChatMessage = { role: ChatRole; content: string }
 
 const NVIDIA_URL = "https://integrate.api.nvidia.com/v1/chat/completions"
-const MODEL = process.env.EVO_AI_MODEL?.trim() || "meta/llama-3.3-70b-instruct"
+const MODEL = process.env.EVO_AI_MODEL?.trim() || "minimaxai/minimax-m3.1-flash"
 const WINDOW_MS = 10 * 60 * 1000
 const MAX_REQUESTS_PER_WINDOW = 28
 const throttle = new Map<string, { count: number; resetAt: number }>()
@@ -58,10 +58,7 @@ function wordCount(text: string) {
 async function infer(messages: ChatMessage[], maxTokens = 1200): Promise<Record<string, unknown>> {
   const key = process.env.EVO_Ai?.trim() || process.env.EVO_AI?.trim()
   if (!key) throw new Error("missing_key")
-  const configured = process.env.EVO_AI_MODEL?.trim()
-  const candidates = configured
-    ? [configured]
-    : ["meta/llama-3.3-70b-instruct", "meta/llama-3.1-8b-instruct"]
+  const candidates = [MODEL]
   let lastError = "upstream"
   let lastStatus = 0
   for (const model of candidates) {
@@ -70,7 +67,12 @@ async function infer(messages: ChatMessage[], maxTokens = 1200): Promise<Record<
       response = await fetch(NVIDIA_URL, {
         method: "POST",
         headers: { Authorization: "Bearer " + key, "Content-Type": "application/json" },
-        body: JSON.stringify({ model, messages, stream: false, temperature: .2, top_p: .9, max_tokens: maxTokens }),
+        body: JSON.stringify({
+          model, messages, stream: false,
+          temperature: 1, top_p: .95,
+          reasoning_effort: "low",
+          max_tokens: Math.max(maxTokens, 1500),
+        }),
         cache: "no-store",
         signal: AbortSignal.timeout(25000),
       })
@@ -83,6 +85,7 @@ async function infer(messages: ChatMessage[], maxTokens = 1200): Promise<Record<
       // Never log credentials or upstream response bodies.
       console.error("[skill-ai] NVIDIA status", response.status, "model", model)
       if (response.status === 401 || response.status === 403) throw new Error("auth")
+      if (response.status === 410) throw new Error("retired")
       if (response.status === 429) throw new Error("rate_limited")
       lastError = response.status === 404 || response.status === 400 ? "model" : "upstream"
       continue
@@ -229,7 +232,7 @@ export async function POST(request: NextRequest) {
     const message = cause instanceof Error ? cause.message : "upstream"
     if (message === "rate_limited") return error("Az NVIDIA modell túlterhelt. Próbáld újra.", 429)
     if (message === "auth") return error("Az NVIDIA API-kulcsot a szolgáltató elutasította. Ellenőrizd az EVO_Ai beállítást.", 502)
-    if (message === "model") return error("Az NVIDIA modell nem érhető el. Állíts be egy támogatott EVO_AI_MODEL értéket.", 502)
+    if (message === "model" || message === "retired") return error("A kiválasztott NVIDIA modell már nem érhető el. Ellenőrizd az EVO_AI_MODEL beállítást (minimaxai/minimax-m3.1-flash).", 502)
     if (message === "timeout") return error("Az NVIDIA válasza túl sokáig tartott. Próbáld újra.", 504)
     if (message === "missing_key") return error("Az AI szolgáltatás nincs beállítva.", 503)
     if (message === "bad_response") return error("A modell nem adott megfelelő választ. Próbáld újra.", 502)
