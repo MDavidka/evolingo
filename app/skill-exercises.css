@@ -464,3 +464,38 @@ body .skill-essay .skill-footer { width: calc(100% + 2 * clamp(16px,4.5vw,24px))
   body .skill-essay .skill-essay-input { min-height: 200px; }
 }
 @media (prefers-reduced-motion: reduce) { body .skill-essay .skill-essay-details-toggle svg { transition: none; } }
+
+
+/* Word-card opening inspired by the supplied Orb.mp4 reference. */
+body .skill-vocabulary .skill-body { position: relative; }
+body .skill-vocabulary .skill-word-intro {
+  position: absolute; inset: 0; z-index: 5;
+  display: flex; flex-direction: column; justify-content: center; align-items: center;
+  padding: 24px; background: #fdfdfd; border-radius: 20px; cursor: pointer;
+  text-align: center; overflow: hidden;
+}
+body .skill-vocabulary .skill-word-intro-card {
+  width: min(76%,240px); min-height: 180px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 12px; padding: 25px 18px;
+  background: #fff; border-radius: 22px;
+  box-shadow: 0 12px 28px #00000016, 0 2px 8px #0000000a;
+  animation: skill-orb-enter .65s cubic-bezier(.18,.8,.22,1) both;
+}
+body .skill-vocabulary .skill-word-intro-card > span { font-size: 12px; color: #898989; font-weight: 600; letter-spacing: .07em; }
+body .skill-vocabulary .skill-word-intro-card > strong { font-size: clamp(32px,9vw,46px); line-height: 1.05; letter-spacing: -.05em; color: #111; }
+body .skill-vocabulary .skill-word-intro-card > small { font-size: 16px; color: #888; }
+body .skill-vocabulary .skill-word-intro > p { margin: 25px 0 0; max-width: 270px; font-size: 13px; color: #666; }
+body .skill-vocabulary .skill-word-intro > button {
+  margin-top: 25px; display: inline-flex; align-items: center; gap: 8px;
+  background: #202020; color: #fff; border: 0; border-radius: 999px;
+  padding: 12px 20px; font-size: 14px; font-weight: 650;
+}
+@keyframes skill-orb-enter {
+  from { opacity: 0; transform: translateY(38px) scale(.87) rotate(-4deg); }
+  65% { opacity: 1; transform: translateY(-5px) scale(1.025) rotate(1deg); }
+  to { opacity: 1; transform: translateY(0) scale(1) rotate(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  body .skill-vocabulary .skill-word-intro-card { animation: none; }
+}
