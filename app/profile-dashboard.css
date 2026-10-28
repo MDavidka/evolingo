@@ -1184,3 +1184,123 @@ body .profile-edit-save:disabled { opacity: .4; cursor: not-allowed; }
   body .profile-edit-sheet *::before,
   body .profile-edit-sheet *::after { animation: none !important; transition: none !important; }
 }
+
+
+/*
+ * UI Arc × shadcn profile composition (white)
+ * - Action Swap owns the achievement view state.
+ * - Local shadcn-style controls keep 44pt+ touch targets.
+ * - Consistent readable ink and no translucent surfaces.
+ */
+body .evo-profile-dashboard {
+  --arc-profile-ink: #202020;
+  --arc-profile-muted: #606060;
+  --arc-profile-hairline: #e8e8e8;
+}
+body .evo-profile-dashboard .evo-profile-topbar { min-height: 46px !important; height: 46px !important; }
+body .evo-profile-dashboard .evo-profile-heading { padding-top: 13px !important; gap: 5px !important; }
+body .evo-profile-dashboard .evo-profile-heading h1 { font-size: 32px !important; line-height: 38px !important; }
+body .evo-profile-dashboard .evo-profile-course { height: 40px !important; min-height: 40px !important; }
+body .evo-profile-dashboard .evo-profile-course > span,
+body .evo-profile-dashboard .evo-profile-course > svg { color: #606060 !important; }
+body .evo-profile-dashboard .evo-profile-intro { margin-top: 12px !important; gap: 12px !important; }
+body .evo-profile-dashboard .evo-profile-meta { color: #666 !important; font-size: 14px !important; }
+body .evo-profile-dashboard .evo-profile-joined { color: #707070 !important; font-size: 12px !important; }
+body .evo-profile-dashboard .evo-profile-actions { margin-top: 17px !important; }
+body .evo-profile-dashboard .evo-profile-section-divider {
+  height: 1px;
+  margin-top: 24px;
+  background: #e6e6e6;
+}
+body .evo-profile-dashboard .evo-profile-stats {
+  margin-top: 0 !important;
+  border-top: 0 !important;
+  padding-block: 18px 17px !important;
+}
+body .evo-profile-dashboard .evo-profile-stat > span {
+  color: #606060 !important;
+  font-size: clamp(11.5px, 3.15vw, 13px) !important;
+  font-weight: 500 !important;
+}
+body .evo-profile-dashboard .evo-profile-secondary-stats,
+body .evo-profile-dashboard .evo-profile-secondary-stats button {
+  color: #606060 !important;
+  font-size: 13px !important;
+}
+body .evo-profile-dashboard .evo-profile-secondary-stats button svg { color: #666 !important; }
+body .evo-profile-dashboard .evo-profile-learning,
+body .evo-profile-dashboard .evo-profile-badges,
+body .evo-profile-dashboard .evo-profile-weekly { margin-top: 24px !important; }
+body .evo-profile-dashboard :is(.evo-profile-learning h2,.evo-profile-section-heading h2,.evo-profile-weekly-heading h2) {
+  font-size: 19px !important;
+  line-height: 26px !important;
+}
+body .evo-profile-dashboard .evo-profile-learning-rows > div {
+  min-height: 44px;
+  color: #666 !important;
+  font-size: 14px !important;
+}
+body .evo-profile-dashboard .evo-profile-badges-heading > span {
+  color: #686868 !important;
+  font-size: 13px !important;
+}
+body .evo-profile-dashboard .evo-profile-badge-swap {
+  flex: 0 0 auto;
+  min-height: 40px !important;
+  font-size: 12px !important;
+  border-radius: 999px !important;
+  box-shadow: none !important;
+}
+body .evo-profile-dashboard .evo-profile-section-heading {
+  align-items: center !important;
+  gap: 12px !important;
+}
+body .evo-profile-dashboard .evo-profile-badges-heading { min-width: 0; }
+body .evo-profile-dashboard .evo-profile-badges-viewport { margin: 12px 0 0 !important; overflow: visible; }
+body .evo-profile-dashboard .evo-profile-badges-rail {
+  scroll-padding-left: 2px;
+  padding-bottom: 6px !important;
+}
+body .evo-profile-dashboard .evo-profile-badges-all {
+  display: grid !important;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 17px 6px;
+  align-items: start;
+  justify-items: center;
+  width: 100%;
+}
+body .evo-profile-dashboard .evo-profile-badges-all .evo-profile-badge {
+  width: 100% !important;
+  min-width: 0 !important;
+  min-height: 112px !important;
+  flex: 0 0 auto !important;
+}
+body .evo-profile-dashboard .evo-profile-badges-all .evo-profile-badge-label {
+  max-width: 100% !important;
+  color: #666 !important;
+  font-size: 11.5px !important;
+}
+body .evo-profile-dashboard .evo-profile-day-name,
+body .evo-profile-dashboard .evo-profile-weekly-heading > span {
+  color: #686868 !important;
+}
+body:has(.evo-profile-dashboard) .bottom-nav button {
+  color: #737373 !important;
+  font-size: 11px !important;
+}
+body:has(.evo-profile-dashboard) .bottom-nav button.active,
+body:has(.evo-profile-dashboard) .bottom-nav button.active span,
+body:has(.evo-profile-dashboard) .bottom-nav button.active svg { color: #202020 !important; }
+body .evo-profile-dashboard button:focus-visible { outline-offset: 2px !important; }
+
+@media (max-width: 370px) {
+  body .evo-profile-dashboard .evo-profile-badges-all { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  body .evo-profile-dashboard .evo-profile-badges-heading h2 { font-size: 18px !important; }
+  body .evo-profile-dashboard .evo-profile-intro { grid-template-columns: minmax(0,1fr) 68px !important; }
+  body .evo-profile-dashboard .evo-profile-avatar-ring,
+  body .evo-profile-dashboard .evo-profile-avatar-inner { width: 68px !important; height: 68px !important; min-width: 68px !important; }
+  body .evo-profile-dashboard .evo-profile-stat > span { font-size: 11.5px !important; }
+}
+@media (prefers-reduced-motion: reduce) {
+  body .evo-profile-dashboard .evo-profile-badge-swap { animation: none !important; transition: none !important; }
+}
