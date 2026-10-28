@@ -344,3 +344,14 @@ body .skill-flashcard-symbol > .evo-skill-cutout {
   body .learn-path-track .learn-path-node.learn-path-skill-node { width: 116px !important; }
   body .learn-path-track .learn-path-skill-node > .learn-pack-caption { width: 116px !important; max-width: 116px !important; }
 }
+
+/* Smaller original artwork; compact, quiet exercise presentation. */
+body .learn-path-skill-node { width: 76px !important; height: 82px !important; }
+body .learn-path-skill-node .learn-skill-button { width: 62px !important; height: 62px !important; }
+body .learn-path-skill-node .learn-skill-button > .evo-skill-cutout { width: 60px !important; height: 60px !important; }
+body .learn-path-skill-node .learn-pack-caption { top: 66px !important; width: 106px !important; font-size: 11px !important; line-height: 14px !important; }
+.skill-debug { display:none !important; }
+.skill-eyebrow { margin-bottom: 10px; }
+.skill-helper { font-size: 12px; }
+.skill-essay-topic { padding: 16px !important; }
+.skill-microphone-area { gap: 8px !important; }
