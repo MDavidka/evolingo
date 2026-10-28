@@ -173,3 +173,40 @@ body .app-shell.skill-open .screen-content.skill-page {
 @media (prefers-reduced-motion: reduce) {
   .skill-exercise *, .skill-exercise *::before, .skill-exercise *::after { transition: none !important; animation: none !important; }
 }
+
+
+/* Small skill markers live in the existing learning path alongside ordinary packs. */
+body .learn-path-skill-node { display: flex; flex-direction: column; align-items: center; gap: 7px; width: 110px; }
+body .learn-skill-button {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 69px;
+  height: 69px;
+  padding: 0;
+  border: 2px solid rgba(0,0,0,.055);
+  border-bottom-width: 5px;
+  border-radius: 21px;
+  box-shadow: none;
+  transition: transform 160ms ease, background-color 160ms ease;
+}
+body .learn-skill-button.is-conversation { color: #7b63ba; background: #f1ecfa; border-bottom-color: #dbcef2; }
+body .learn-skill-button.is-vocabulary { color: #4f8969; background: #eaf5ee; border-bottom-color: #cfdfd3; }
+body .learn-skill-button.is-essay { color: #bb8b38; background: #faf2e1; border-bottom-color: #e9d6ae; }
+body .learn-skill-button.is-done { color: #46855b; background: #d8eddd; border-bottom-color: #b1d7bd; }
+body .learn-skill-button.is-locked { color: #a4a4a8; background: #f0f0f1; border-bottom-color: #dedee0; }
+body .learn-skill-button:disabled { cursor: not-allowed; }
+body .learn-skill-button:not(:disabled):active { transform: scale(.95); }
+body .learn-skill-button:focus-visible { outline: 3px solid #629c78; outline-offset: 3px; }
+body .learn-skill-check {
+  position: absolute; right: -8px; top: -8px;
+  display: grid; place-items: center; width: 22px; height: 22px;
+  border: 2px solid #fff; border-radius: 50%; background: #4a8d61; color: #fff;
+}
+body .learn-path-skill-node .learn-pack-caption {
+  display: block; width: 124px; max-width: none;
+  text-align: center; color: #727277; font-size: 11px; font-weight: 650; line-height: 15px;
+}
+@media (prefers-reduced-motion: reduce) {
+  body .learn-skill-button { transition: none !important; }
+}
