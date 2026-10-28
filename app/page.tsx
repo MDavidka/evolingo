@@ -3,6 +3,9 @@
 import { memo, useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from "react"
 import NextImage from "next/image"
 import ProfileDashboard from "./profile-dashboard"
+import { Button } from "../components/ui/button"
+import { Input } from "../components/ui/input"
+import { Separator } from "../components/ui/separator"
 import {
   ArrowRight, Book, BookOpen, Check, CheckCircle2, Headphones, MessageCircle, CircleHelp, Puzzle,
   Flame, Heart, Lightbulb, Medal, RotateCcw, Trophy, UserRound, Dumbbell, Timer, Languages, Volume2,
@@ -1939,6 +1942,39 @@ function Profile({ completedCount, readCount, completedTaskCount, xp, stars, use
     setImageError("")
     setShowSettings(true)
   }
+
+  // Keep the modal keyboard-accessible and protect background content on iOS.
+  useEffect(() => {
+    if (!showSettings) return
+    const previousFocus = document.activeElement as HTMLElement | null
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = "hidden"
+    const getFocusable = () => Array.from(
+      document.querySelectorAll<HTMLElement>(
+        ".profile-edit-sheet button:not(:disabled), .profile-edit-sheet input:not(:disabled)"
+      )
+    ).filter(element => element.getClientRects().length > 0)
+    const frame = requestAnimationFrame(() => document.querySelector<HTMLElement>(".profile-edit-close")?.focus())
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        event.preventDefault()
+        setShowSettings(false)
+      } else if (event.key === "Tab") {
+        const focusable = getFocusable()
+        if (!focusable.length) return
+        const index = focusable.indexOf(document.activeElement as HTMLElement)
+        if (event.shiftKey && index <= 0) { event.preventDefault(); focusable[focusable.length - 1].focus() }
+        else if (!event.shiftKey && (index === focusable.length - 1 || index < 0)) { event.preventDefault(); focusable[0].focus() }
+      }
+    }
+    document.addEventListener("keydown", onKeyDown)
+    return () => {
+      cancelAnimationFrame(frame)
+      document.removeEventListener("keydown", onKeyDown)
+      document.body.style.overflow = previousOverflow
+      previousFocus?.focus()
+    }
+  }, [showSettings])
   const handleGalleryImage = async (file: File | undefined, kind: "avatar" | "banner") => {
     if (!file) return
     if (!file.type.startsWith("image/")) {
@@ -2054,7 +2090,7 @@ function Profile({ completedCount, readCount, completedTaskCount, xp, stars, use
     {showSettings && <div className="profile-edit-backdrop" role="presentation" onMouseDown={event => { if (event.target === event.currentTarget) setShowSettings(false) }}>
       <section className="profile-edit-sheet" role="dialog" aria-modal="true" aria-labelledby="profile-edit-title">
         <header className="profile-edit-heading">
-          <button type="button" className="profile-edit-close" onClick={() => setShowSettings(false)} aria-label="Bezárás"><X size={20} strokeWidth={1.8} /></button>
+          <Button variant="ghost" size="icon" className="profile-edit-close" onClick={() => setShowSettings(false)} aria-label="Bezárás"><X size={20} strokeWidth={1.8} /></Button>
           <h2 id="profile-edit-title">Profil szerkesztése</h2>
           <span className="profile-edit-heading-spacer" aria-hidden="true" />
         </header>
@@ -2074,11 +2110,11 @@ function Profile({ completedCount, readCount, completedTaskCount, xp, stars, use
 
           <div className="profile-edit-field">
             <label htmlFor="profile-name">Megjelenített név</label>
-            <input id="profile-name" maxLength={32} autoComplete="nickname" value={draftName} onChange={event => { setDraftName(event.target.value); setSaved(false) }} placeholder="Írd be a neved" />
+            <Input id="profile-name" maxLength={32} autoComplete="nickname" value={draftName} onChange={event => { setDraftName(event.target.value); setSaved(false) }} placeholder="Írd be a neved" />
             <span>{draftName.length}/32 karakter</span>
           </div>
 
-          <div className="profile-edit-divider" />
+          <Separator className="profile-edit-divider" />
           <div className="profile-edit-section-heading"><h3>Profilképek</h3><p>Válassz egy ikont, vagy tölts fel saját képet.</p></div>
           <div className="avatar-options">{avatarOptions.map(id => <button key={id} type="button" className={"avatar-option " + (!avatarImage && avatar === id ? "selected" : "")} onClick={() => { setAvatar(id); setAvatarImage("") }} aria-label={"Profilkép: " + id} aria-pressed={!avatarImage && avatar === id}>{id === "fox" ? "🦊" : id === "book" ? "📚" : id === "star" ? "⭐" : "✨"}</button>)}</div>
 
@@ -2092,13 +2128,13 @@ function Profile({ completedCount, readCount, completedTaskCount, xp, stars, use
         </div>
 
         <footer className="profile-edit-footer">
-          <button type="button" className="profile-edit-save" disabled={!draftName.trim()} onClick={() => {
+          <Button variant="default" className="profile-edit-save" disabled={!draftName.trim()} onClick={() => {
             const value = draftName.trim()
             if (!value) return
             setUserName(value)
             setSaved(true)
             setShowSettings(false)
-          }}>Kész</button>
+          }}>Kész</Button>
         </footer>
       </section>
     </div>}
