@@ -56,24 +56,49 @@ function wordCount(text: string) {
   return text.trim().split(/\s+/u).filter(Boolean).length
 }
 async function infer(messages: ChatMessage[], maxTokens = 1200): Promise<Record<string, unknown>> {
-  // EVO_Ai is the exact server environment variable name used in this project.
-  const key = process.env.EVO_Ai?.trim()
+  const key = process.env.EVO_Ai?.trim() || process.env.EVO_AI?.trim()
   if (!key) throw new Error("missing_key")
-  const response = await fetch(NVIDIA_URL, {
-    method: "POST",
-    headers: { Authorization: "Bearer " + key, "Content-Type": "application/json" },
-    body: JSON.stringify({
-      model: MODEL, messages, stream: false, temperature: .35,
-      top_p: .9, max_tokens: maxTokens,
-    }),
-    cache: "no-store",
-    signal: AbortSignal.timeout(20000),
-  })
-  if (!response.ok) throw new Error(response.status === 429 ? "rate_limited" : "upstream")
-  const data = await response.json() as { choices?: Array<{ message?: { content?: unknown } }> }
-  const content = data.choices?.[0]?.message?.content
-  if (typeof content !== "string" || content.length > 30000) throw new Error("bad_response")
-  return parseModelJson(content)
+  const configured = process.env.EVO_AI_MODEL?.trim()
+  const candidates = configured
+    ? [configured]
+    : ["meta/llama-3.3-70b-instruct", "meta/llama-3.1-8b-instruct"]
+  let lastError = "upstream"
+  for (const model of candidates) {
+    let response: Response
+    try {
+      response = await fetch(NVIDIA_URL, {
+        method: "POST",
+        headers: { Authorization: "Bearer " + key, "Content-Type": "application/json" },
+        body: JSON.stringify({ model, messages, stream: false, temperature: .2, top_p: .9, max_tokens: maxTokens }),
+        cache: "no-store",
+        signal: AbortSignal.timeout(25000),
+      })
+    } catch (cause) {
+      lastError = cause instanceof Error && cause.name === "TimeoutError" ? "timeout" : "upstream"
+      continue
+    }
+    if (!response.ok) {
+      // Never log credentials or upstream response bodies.
+      console.error("[skill-ai] NVIDIA status", response.status, "model", model)
+      if (response.status === 401 || response.status === 403) throw new Error("auth")
+      if (response.status === 429) throw new Error("rate_limited")
+      lastError = response.status === 404 || response.status === 400 ? "model" : "upstream"
+      continue
+    }
+    try {
+      const data = await response.json() as { choices?: Array<{ message?: { content?: unknown } }> }
+      const value = data.choices?.[0]?.message?.content
+      const content = typeof value === "string"
+        ? value
+        : Array.isArray(value) ? value.map(part => part && typeof part === "object" && "text" in part ? String(part.text) : "").join("") : ""
+      if (!content || content.length > 30000) throw new Error("bad_response")
+      return parseModelJson(content)
+    } catch {
+      lastError = "bad_response"
+      console.error("[skill-ai] Invalid model JSON", model)
+    }
+  }
+  throw new Error(lastError)
 }
 function system(content: string): ChatMessage {
   return {
@@ -88,7 +113,7 @@ function asUser(data: unknown): ChatMessage {
 export async function POST(request: NextRequest) {
   const origin = request.headers.get("origin")
   if (origin && origin !== request.nextUrl.origin) return error("Érvénytelen kérés.", 403)
-  if (!process.env.EVO_Ai?.trim()) return error("Az AI gyakorlás jelenleg nincs beállítva (EVO_Ai).", 503)
+  if (!(process.env.EVO_Ai?.trim() || process.env.EVO_AI?.trim())) return error("Az AI gyakorlás jelenleg nincs beállítva (EVO_Ai).", 503)
 
   const address = request.headers.get("x-real-ip") || request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown"
   const now = Date.now()
@@ -201,6 +226,9 @@ export async function POST(request: NextRequest) {
   } catch (cause) {
     const message = cause instanceof Error ? cause.message : "upstream"
     if (message === "rate_limited") return error("Az NVIDIA modell túlterhelt. Próbáld újra.", 429)
+    if (message === "auth") return error("Az NVIDIA API-kulcsot a szolgáltató elutasította. Ellenőrizd az EVO_Ai beállítást.", 502)
+    if (message === "model") return error("Az NVIDIA modell nem érhető el. Állíts be egy támogatott EVO_AI_MODEL értéket.", 502)
+    if (message === "timeout") return error("Az NVIDIA válasza túl sokáig tartott. Próbáld újra.", 504)
     if (message === "missing_key") return error("Az AI szolgáltatás nincs beállítva.", 503)
     if (message === "bad_response") return error("A modell nem adott megfelelő választ. Próbáld újra.", 502)
     return error("Az AI értékelés most nem érhető el. Próbáld újra később.", 502)
