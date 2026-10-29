@@ -52,8 +52,8 @@ function Avatar({ name, src, fallback }: { name: string; src: string; fallback: 
   return <span className="ref-avatar">{src ? <img src={src} alt={name} /> : <span className="ref-avatar-fallback"><img src={fallback} alt="" /></span>}</span>
 }
 
-function Header({ name, avatarImage, avatarFallback, onProfile, onHome }: {
-  name: string; avatarImage: string; avatarFallback: string; onProfile: () => void; onHome: () => void
+function Header({ name, avatarImage, avatarFallback, onProfile, onHome, showCourse }: {
+  name: string; avatarImage: string; avatarFallback: string; onProfile: () => void; onHome: () => void; showCourse: boolean
 }) {
   const [courseOpen, setCourseOpen] = useState(false)
   const courseRef = useRef<HTMLDivElement>(null)
@@ -69,7 +69,7 @@ function Header({ name, avatarImage, avatarFallback, onProfile, onHome }: {
     return () => { document.removeEventListener("pointerdown", dismiss); document.removeEventListener("keydown", escape) }
   }, [])
   return <header className="ref-topbar">
-    <div className="ref-course-wrap" ref={courseRef}>
+    {showCourse && <div className="ref-course-wrap" ref={courseRef}>
       <button className="ref-course" type="button" aria-haspopup="menu" aria-expanded={courseOpen} onClick={() => setCourseOpen(value => !value)}>
         <GraduationCap size={20} strokeWidth={1.8} /><strong>Erasmus</strong><span className="ref-course-chevron"><ChevronsUpDown size={13} /></span>
       </button>
@@ -82,7 +82,7 @@ function Header({ name, avatarImage, avatarFallback, onProfile, onHome }: {
           <BookOpen size={17} /> Összes téma
         </button>
       </div>}
-    </div>
+    </div>}
     <button className="ref-profile-shortcut" type="button" onClick={() => { setCourseOpen(false); onProfile() }} aria-label="Profil megnyitása"><Avatar name={name} src={avatarImage} fallback={avatarFallback} /></button>
   </header>
 }
@@ -91,6 +91,7 @@ function Topics({ topics, onSelect, onChat }: { topics: TopicData[]; onSelect: (
   const [query, setQuery] = useState("")
   const filtered = topics.filter(topic => `${topic.title} ${topic.subtitle}`.toLocaleLowerCase("hu").includes(query.toLocaleLowerCase("hu")))
   return <div className="ref-topics">
+    <h1 className="ref-screen-heading">Tanulás</h1>
     <label className="ref-search"><Search size={19} /><input aria-label="Témák keresése" value={query} onChange={event => setQuery(event.target.value)} /></label>
     <div className="ref-topic-controls"><span>{topics.length} téma</span><button type="button" className="ref-dark-pill" onClick={() => onSelect(topics[0]?.id ?? 1)}><Plus size={17} /> Új lecke</button></div>
     <button type="button" className="evo-ai-shortcut" onClick={onChat}><span className="evo-ai-shortcut-icon"><img src="/images/evolingo-ai-orb.svg" alt="" style={{width:27,height:27,borderRadius:"50%"}} /></span><span><strong>Kérdezd az Evölingo AI-t</strong><small>Tanulás, gyakorlás, magyarázatok</small></span><ArrowRight size={17} className="evo-ai-shortcut-arrow" /></button>
@@ -243,7 +244,7 @@ function Space() {
 }
 
 function Utility({ onSpace, onUpload, onFriends, onLeaderboard }: { onSpace: () => void; onUpload: () => void; onFriends: () => void; onLeaderboard: () => void }) {
-  return <div className="ref-utility"><h2>ALKOTÁS ÉS SZERVEZÉS</h2><div className="ref-utility-grid">
+  return <div className="ref-utility"><h1 className="ref-screen-heading">Eszközök</h1><h2>ALKOTÁS ÉS SZERVEZÉS</h2><div className="ref-utility-grid">
     <button type="button" className="ref-utility-card" onClick={onUpload}><span className="ref-soft-icon"><Send size={21} /></span><strong>Fájlküldés</strong><small>Fájlok megosztása</small><ArrowUpRight className="ref-utility-arrow" size={15} /></button>
     <button type="button" className="ref-utility-card" onClick={() => {}} aria-disabled="true"><span className="ref-soft-icon"><CalendarDays size={21} /></span><strong>Tervező</strong><small>Tervek és időbeosztás</small><ArrowUpRight className="ref-utility-arrow" size={15} /></button>
   </div>
@@ -290,7 +291,7 @@ export default function ReferenceScreens(props: Props) {
 
   if (view === "auth") return <main className="ref-app ref-view-auth">{content}</main>
   return <main className={`ref-app ref-view-${view}`}>
-    <Header key={view} name={userName} avatarImage={avatarImage} avatarFallback={avatarFallback} onProfile={() => onView("profile")} onHome={() => onView("home")} />
+    <Header key={view} name={userName} avatarImage={avatarImage} avatarFallback={avatarFallback} onProfile={() => onView("profile")} onHome={() => onView("home")} showCourse={view === "home" || view === "topic"} />
     {content}
   </main>
 }
