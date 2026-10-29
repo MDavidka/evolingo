@@ -271,3 +271,64 @@ body:has(.ref-modal-backdrop) .evo-tabbar { opacity: 0; pointer-events: none; }
 @media (prefers-reduced-motion: reduce) {
   .evo-tabbar.evo-glass-rail { transition: none; }
 }
+
+/* Official LiquidGlass WebGL canvas + native backdrop-filter fallback. */
+.evo-liquid-root {
+  position: relative;
+  isolation: isolate;
+}
+.evo-liquid-root .evo-liquid-scene {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(155deg,rgba(255,255,255,.5),rgba(177,192,218,.25));
+  border-radius: inherit;
+}
+.evo-liquid-root .evo-liquid-surface {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  background: rgba(255,255,255,.14);
+  -webkit-backdrop-filter: blur(20px) saturate(145%);
+  backdrop-filter: blur(20px) saturate(145%);
+}
+.evo-tabbar.evo-glass-rail.evo-liquid-root {
+  background: rgba(218,225,239,.36) !important;
+  overflow: visible !important;
+}
+.evo-tabbar.evo-glass-rail .evo-liquid-surface {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  padding: 6px 3px;
+  box-sizing: border-box;
+}
+.evo-tabbar.evo-glass-rail .evo-liquid-surface > nav {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-around;
+  width: 100%;
+  height: 100%;
+  gap: 4px;
+}
+.evo-liquid-root--composer {
+  width: 100%;
+  border-radius: 999px;
+}
+.evo-liquid-root--composer .evo-liquid-surface {
+  display: block;
+  overflow: visible;
+}
+.evo-liquid-root--composer .evo-chat-composer {
+  position: relative;
+  z-index: 2;
+  background: rgba(255,255,255,.68) !important;
+  border-color: rgba(255,255,255,.72) !important;
+  box-shadow: inset 0 1px rgba(255,255,255,.82), 0 5px 22px rgba(31,51,81,.1) !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  .evo-liquid-root .evo-liquid-surface { transition: none; }
+}
