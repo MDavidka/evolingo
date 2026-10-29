@@ -1,5 +1,6 @@
 "use client"
 
+import { useEffect, useRef, useState } from "react"
 import { BookOpen, Folder, Grid2X2, UserRound, type LucideIcon } from "lucide-react"
 
 export type AppTab = "learn" | "ai" | "files" | "tools" | "profile"
@@ -20,13 +21,17 @@ type Props = {
 }
 
 export default function AppTabBar({ activeTab, onSelect, avatarImage, userName }: Props) {
+  const [expanded, setExpanded] = useState(false)
+  const collapseTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const scheduleCollapse = () => { if (collapseTimer.current) clearTimeout(collapseTimer.current); collapseTimer.current = setTimeout(() => setExpanded(false), 3500) }
+  useEffect(() => () => { if (collapseTimer.current) clearTimeout(collapseTimer.current) }, [])
   return <>
     <style>{`
       .evo-tabbar.evo-glass-rail {
         position: fixed !important;
         left: auto !important;
-        right: max(12px, env(safe-area-inset-right, 0px)) !important;
-        top: calc(env(safe-area-inset-top, 0px) + 102px) !important;
+        right: max(22px, env(safe-area-inset-right, 0px)) !important;
+        top: calc(env(safe-area-inset-top, 0px) + 92px) !important;
         bottom: auto !important;
         transform: none !important;
         width: 48px !important;
@@ -45,7 +50,7 @@ export default function AppTabBar({ activeTab, onSelect, avatarImage, userName }
         backdrop-filter: blur(26px) saturate(145%);
         z-index: 80;
       }
-      .evo-glass-rail .evo-tab {
+      .evo-glass-rail.is-compact { padding: 4px !important; width: 48px !important; }\n      .evo-glass-rail.is-compact .evo-tab { height: 42px !important; }\n      .evo-glass-rail.is-compact .evo-tab-caption { display: none !important; }\n      .evo-glass-rail .evo-tab {
         width: 38px !important;
         height: 43px !important;
         min-width: 0 !important;
@@ -83,16 +88,16 @@ export default function AppTabBar({ activeTab, onSelect, avatarImage, userName }
         .evo-glass-rail .evo-tab:active { transform: scale(.94); }
       }
     `}</style>
-    <nav className="evo-tabbar evo-glass-rail" aria-label="Fő navigáció">
-      {tabs.map(({ id, label, icon: Icon }) => {
+    <nav className={`evo-tabbar evo-glass-rail ${expanded ? "is-expanded" : "is-compact"}`} aria-label="Fő navigáció" onPointerEnter={() => { if (collapseTimer.current) clearTimeout(collapseTimer.current); setExpanded(true) }} onPointerLeave={scheduleCollapse} onFocus={() => { setExpanded(true); scheduleCollapse() }}>
+      {(expanded ? tabs : tabs.filter(tab => tab.id === activeTab)).map(({ id, label, icon: Icon }) => {
         const active = activeTab === id
         return <button
           type="button"
           key={id}
           className={active ? "evo-tab is-active" : "evo-tab"}
           aria-current={active ? "page" : undefined}
-          aria-label={id === "profile" ? `Profil: ${userName}` : label}
-          onClick={() => onSelect(id)}
+          aria-label={!expanded ? "Navigáció megnyitása" : id === "profile" ? `Profil: ${userName}` : label}
+          onClick={() => { if (!expanded) { setExpanded(true); scheduleCollapse() } else { onSelect(id); scheduleCollapse() } }}
         >
           <span className="evo-tab-content">
             {id === "profile" && avatarImage
