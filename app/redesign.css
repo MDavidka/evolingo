@@ -105,12 +105,13 @@ body .learn-home-screen{position:relative !important}
 body .learn-path-cloud{
   position:absolute !important;
   z-index:6 !important;
-  inset:auto 0 0 !important;
-  height:clamp(210px,42dvh,350px) !important;
+  /* Extend the fog just beyond the path edges and below the screen. */
+  inset:auto -10% -24px !important;
+  height:clamp(240px,46dvh,390px) !important;
   pointer-events:none !important;
-  background:url("/images/path-cloud.png") center bottom / 118% auto no-repeat !important;
-  -webkit-mask-image:linear-gradient(to bottom,transparent 0%,#000 25%,#000 100%) !important;
-  mask-image:linear-gradient(to bottom,transparent 0%,#000 25%,#000 100%) !important;
+  background:url("/images/path-cloud.png") center bottom / 112% auto no-repeat !important;
+  -webkit-mask-image:linear-gradient(to bottom,transparent 0%,#000 28%,#000 100%) !important;
+  mask-image:linear-gradient(to bottom,transparent 0%,#000 28%,#000 100%) !important;
   opacity:0 !important;
   visibility:hidden !important;
   transform:translateY(18px) !important;
