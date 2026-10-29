@@ -42,3 +42,46 @@ self.addEventListener("fetch", event => {
     event.respondWith(caches.match(request).then(cached => cached || fetch(request)))
   }
 })
+
+
+// Use one recognizable Evölingo icon and concise Hungarian text across
+// notifications. Stable tags replace duplicate alerts for the same event.
+self.addEventListener("push", event => {
+  let payload = {}
+  try { payload = event.data ? event.data.json() : {} } catch {
+    payload = { body: event.data ? event.data.text() : "" }
+  }
+  const plain = value => typeof value === "string" ? value.replace(/\s+/g, " ").trim() : ""
+  const title = plain(payload.title).slice(0, 80) || "Evölingo"
+  const body = plain(payload.body).slice(0, 220) || "Új esemény vár rád az Evölingóban."
+  const tag = plain(payload.tag).slice(0, 100) || (payload.type === "friend" ? "evolingo-friend-request" : "evolingo-update")
+  const path = plain(payload.url)
+  const url = path.startsWith("/") && !path.startsWith("//") ? path : "/"
+  event.waitUntil(
+    self.registration.showNotification(title, {
+      body,
+      icon: "/icon.svg",
+      badge: "/icon.svg",
+      tag,
+      renotify: false,
+      data: { url },
+    })
+  )
+})
+
+self.addEventListener("notificationclick", event => {
+  event.notification.close()
+  const targetPath = event.notification.data?.url || "/"
+  const url = new URL(targetPath, self.location.origin).href
+  event.waitUntil(
+    self.clients.matchAll({ type: "window", includeUncontrolled: true })
+      .then(async clients => {
+        const existing = clients.find(client => new URL(client.url).origin === self.location.origin)
+        if (existing) {
+          if ("navigate" in existing) await existing.navigate(url)
+          return existing.focus()
+        }
+        return self.clients.openWindow(url)
+      })
+  )
+})
