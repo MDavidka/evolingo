@@ -558,8 +558,11 @@ export default function App() {
         const verifiedCompletions = savedCompletions.filter(lessonId => {
           const lesson = fullLessons.find(item => item.id === lessonId)
           if (!lesson) return true
-          return practicePacks(lesson).every((pack, packIndex) =>
-            pack.every((_, questionIndex) => restoredAnswers.includes(practiceKey(lessonId, packIndex, questionIndex)))
+          // Keep previously completed lessons valid even after adding bonus
+          // practice. Verify only the original question set for old saves.
+          const originalPackSize = Math.ceil(lesson.questions.length / 2)
+          return lesson.questions.every((_, index) =>
+            restoredAnswers.includes(lessonId + "-p" + Math.floor(index / originalPackSize) + "-" + (index % originalPackSize))
           )
         })
         setCompletedLessons(verifiedCompletions)
