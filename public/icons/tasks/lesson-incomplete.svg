@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" fill="none" role="img" aria-labelledby="title desc">
+<title id="title">Evölingo – Lecke (még nem teljesített)</title>
+<desc id="desc">Átlátszó hátterű, lekerekített útvonalgomb, középen fehér ikonnal.</desc>
+<defs>
+  <linearGradient id="face-lessonincomplete" x1="110" y1="60" x2="402" y2="450" gradientUnits="userSpaceOnUse">
+    <stop offset="0" stop-color="#B9BBC4"/>
+    <stop offset="1" stop-color="#9EA1AB"/>
+  </linearGradient>
+  <linearGradient id="bevel-lessonincomplete" x1="256" y1="382" x2="256" y2="467" gradientUnits="userSpaceOnUse">
+    <stop offset="0" stop-color="#90939D"/>
+    <stop offset="1" stop-color="#7C808B"/>
+  </linearGradient>
+</defs>
+<rect x="54" y="80" width="404" height="384" rx="101" fill="url(#bevel-lessonincomplete)"/>
+<rect x="54" y="57" width="404" height="388" rx="101" fill="url(#face-lessonincomplete)"/>
+<g transform="translate(140 140) scale(9.6666667)" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<path d="M12 6.9C9.3 4.4 5.8 4 2.5 5v14.1c3.9-1.1 7.3-.3 9.5 1.9 2.2-2.2 5.6-3 9.5-1.9V5C18.2 4 14.7 4.4 12 6.9Z"/><path d="M12 6.9V21"/>
+</g>
+</svg>

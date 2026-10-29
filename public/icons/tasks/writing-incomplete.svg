@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" fill="none" role="img" aria-labelledby="title desc">
+<title id="title">Evölingo – Fogalmazás (még nem teljesített)</title>
+<desc id="desc">Átlátszó hátterű, lekerekített útvonalgomb, középen fehér ikonnal.</desc>
+<defs>
+  <linearGradient id="face-writingincomplete" x1="110" y1="60" x2="402" y2="450" gradientUnits="userSpaceOnUse">
+    <stop offset="0" stop-color="#B9BBC4"/>
+    <stop offset="1" stop-color="#9EA1AB"/>
+  </linearGradient>
+  <linearGradient id="bevel-writingincomplete" x1="256" y1="382" x2="256" y2="467" gradientUnits="userSpaceOnUse">
+    <stop offset="0" stop-color="#90939D"/>
+    <stop offset="1" stop-color="#7C808B"/>
+  </linearGradient>
+</defs>
+<rect x="54" y="80" width="404" height="384" rx="101" fill="url(#bevel-writingincomplete)"/>
+<rect x="54" y="57" width="404" height="388" rx="101" fill="url(#face-writingincomplete)"/>
+<g transform="translate(140 140) scale(9.6666667)" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<path d="M11 4H5.5A2.5 2.5 0 0 0 3 6.5v12A2.5 2.5 0 0 0 5.5 21h12a2.5 2.5 0 0 0 2.5-2.5V13"/><path d="m11 14 8.3-8.3a2.05 2.05 0 0 1 2.9 2.9L13.9 17l-4.2 1.2z"/>
+</g>
+</svg>
