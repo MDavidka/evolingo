@@ -132,7 +132,7 @@ export default function ChatInterface() {
           const ui = validateIntelligentUI(event.ui)
           if (ui) setMessages(old => old.map(msg => msg.id === assistantId ? { ...msg, ui } : msg))
         } else if (event.type === "error") {
-          if (!answered) setError(event.error || "Az AI jelenleg nem válaszol. Próbáld újra.")
+          setError(answered ? "A válasz megszakadt; a már megjelent szöveg megmaradt." : event.error || "Az AI jelenleg nem válaszol. Próbáld újra.")
         } else if (event.type === "done") completed = true
       } catch { /* Malformed event is not rendered or executed. */ }
     }
@@ -183,9 +183,9 @@ export default function ChatInterface() {
         reader.releaseLock()
       }
       if (!answered) throw new Error("Az AI nem adott választ.")
-      if (!completed) { /* Text is useful even when the optional UI stream ends early. */ }
+      if (!completed) setError("A kapcsolat megszakadt; a már megjelent válasz megmaradt.")
     } catch (cause) {
-      if (!answered) setError(cause instanceof Error ? cause.message : "Nem sikerült elküldeni az üzenetet.")
+      setError(answered ? "A kapcsolat megszakadt; a már megjelent válasz megmaradt." : cause instanceof Error ? cause.message : "Nem sikerült elküldeni az üzenetet.")
     } finally {
       if (frame !== null) cancelAnimationFrame(frame)
       setBusy(false)
