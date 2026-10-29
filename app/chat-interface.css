@@ -106,3 +106,60 @@ body:has(.ref-view-chat) { overflow: hidden !important; }
 .ref-view-chat .evo-chat-frame{padding-bottom:calc(8px + env(safe-area-inset-bottom,0px))!important;}
 .ref-view-chat .evo-chat-bottom{margin-top:auto!important;padding:0!important;background:transparent!important;}
 .ref-view-chat .evo-chat-composer textarea{font-size:16px!important;}
+
+
+/* Reference-accurate AI home: no course picker, isolated top-right profile,
+   a clear white canvas and an input resting on the iPhone safe-area edge. */
+.ref-view-chat > .ref-topbar {
+  align-items: flex-start !important;
+  justify-content: flex-end !important;
+  height: calc(env(safe-area-inset-top, 0px) + 106px) !important;
+  padding: calc(env(safe-area-inset-top, 0px) + 22px) 23px 0 !important;
+  background: transparent !important;
+  pointer-events: none;
+}
+.ref-view-chat > .ref-topbar .ref-course-wrap {
+  display: none !important;
+}
+.ref-view-chat > .ref-topbar .ref-profile-shortcut {
+  display: grid;
+  place-items: center;
+  width: 44px !important;
+  height: 44px !important;
+  flex: 0 0 44px;
+  pointer-events: auto;
+  touch-action: manipulation;
+}
+.ref-view-chat > .ref-topbar .ref-profile-shortcut .ref-avatar {
+  width: 44px;
+  height: 44px;
+}
+.app-shell.reference-shell:has(.ref-view-chat) .evo-chat-frame {
+  height: var(--evo-chat-visual-height, 100dvh) !important;
+  min-height: 0 !important;
+  padding-top: calc(env(safe-area-inset-top, 0px) + 110px) !important;
+}
+.ref-view-chat .evo-chat-bottom {
+  margin-top: auto !important;
+  padding-top: 0 !important;
+  background: transparent !important;
+}
+.ref-view-chat .evo-chat-composer {
+  width: 100% !important;
+  min-height: 56px !important;
+  border-radius: 999px !important;
+  box-shadow: 0 3px 22px rgba(30,49,78,.08) !important;
+}
+.ref-view-chat .evo-chat-composer textarea {
+  font-size: 16px !important;
+  line-height: 22px;
+}
+.ref-view-chat .evo-chat-toolbar {
+  padding-left: 74px;
+  padding-right: 60px;
+  background: transparent !important;
+}
+@media (max-width: 360px) {
+  .ref-view-chat > .ref-topbar { padding-right: 18px !important; }
+  .ref-view-chat .evo-chat-toolbar { padding-left: 62px; padding-right: 52px; }
+}
