@@ -5,7 +5,7 @@ import { playUiSound } from "./ui-sounds"
 import NextImage from "next/image"
 import ProfileDashboard from "./profile-dashboard"
 import SkillExercise, { type SkillMode } from "./skill-exercises"
-import SkillIcon from "./skill-icons"
+import PathTile from "./path-tile"
 import { Button } from "../components/ui/button"
 import { Input } from "../components/ui/input"
 import { Separator } from "../components/ui/separator"
@@ -1140,8 +1140,7 @@ function Home({ completedLessons, answeredTasks, readLessons, notice, clearNotic
                 onClick={() => onOpenSkill(lesson.id, skill)}
                 aria-label={lesson.title + ": " + skillLabels[skill] + (skillDone ? ", kész, újra gyakorolható" : unlocked ? "" : ", zárolva")}
               >
-                <SkillIcon kind={skill === "vocabulary" ? "vocabulary" : skill === "conversation" ? "conversation" : "essay"} color={!unlocked ? "gray" : skillDone ? "green" : skill === "vocabulary" ? "blue" : skill === "conversation" ? "purple" : "orange"} size={74} />
-                {skillDone && <span className="learn-skill-check" aria-hidden="true"><Check size={11} /></span>}
+                <PathTile kind={skill === "vocabulary" ? "flashcards" : skill === "conversation" ? "conversation" : "writing"} completed={skillDone} />
               </button>
               <span className="learn-pack-caption">{skillLabels[skill]}</span>
             </div>
@@ -1153,7 +1152,7 @@ function Home({ completedLessons, answeredTasks, readLessons, notice, clearNotic
             const unlocked = lessonDone || (lessonCurrent && chestGateOpen)
             return <div key={lesson.id + "-pack-" + packIndex} className={"learn-path-node learn-path-task-node " + (leftSide ? "tasks-left" : "tasks-right")} data-locked={!unlocked} style={{ left: position + "%", top: routeTops[index] + "px" }}>
               <button type="button" className={"learn-pack-button " + (packDone ? "is-done" : unlocked ? "is-ready" : "is-locked")} disabled={!unlocked || packDone} onClick={() => onOpenTask(lesson.id, packIndex)} aria-label={lesson.title + ", " + (packIndex + 1) + ". feladatcsomag, " + pack.length + " feladat" + (packDone ? ", kész" : unlocked ? "" : ", zárolva")}>
-                <span className={"learn-path-art learn-path-art--" + (packDone ? "task-active" : unlocked ? "task-ready" : "task-locked")} aria-hidden="true" /><strong className="learn-pack-count">{pack.length}</strong>
+                <PathTile kind={lesson.specialType === "hard" ? "hard-task" : lesson.specialType === "words" ? "flashcards" : "task"} completed={packDone} /><strong className="learn-pack-count">{pack.length}</strong>
               </button>
               <span className="learn-pack-caption">{packs.length > 1 ? "Feladat " + (packIndex + 1) : "Feladat"}</span>
             </div>
@@ -1161,7 +1160,7 @@ function Home({ completedLessons, answeredTasks, readLessons, notice, clearNotic
           const status = lessonDone ? "completed" : lessonCurrent && chestGateOpen ? "current" : "locked"
           return <div className={"learn-path-node learn-path-node-" + status + (leftSide ? " tasks-left" : " tasks-right")} data-locked={status === "locked"} key={lesson.id} style={{ left: position + "%", top: routeTops[index] + "px" }}>
             <button ref={element => { if (element) nodeRefs.current.set(lesson.id, element); else nodeRefs.current.delete(lesson.id) }} type="button" className="learn-path-node-button" disabled={status === "locked"} aria-label={lesson.title + ", " + (lessonDone ? "kész" : lessonCurrent ? "indítás" : "zárolva")} onClick={() => onOpenLesson(lesson.id)}>
-              <span className={"learn-path-art learn-path-art--" + (lessonDone ? "checkpoint-active" : lessonCurrent ? "lesson-active" : "lesson-locked")} aria-hidden="true" />
+              <PathTile kind="lesson" completed={lessonDone} />
             </button>
             <span className="learn-lesson-topic" title={lesson.title}>{lesson.title}</span>
           </div>
