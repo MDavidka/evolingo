@@ -102,7 +102,8 @@ body .app-shell.reference-shell > .screen-content.learn-home-content:has(.ref-ap
   padding-bottom: 0 !important;
 }
 .app-shell.reference-shell .ref-app:not(.ref-view-chat):not(.ref-view-auth) {
-  padding-bottom: calc(122px + env(safe-area-inset-bottom, 0px)) !important;
+  /* The navigation no longer occupies the bottom of the screen. */
+  padding-bottom: calc(28px + env(safe-area-inset-bottom, 0px)) !important;
 }
 /* The primary navigation is now on the side: do not reserve old bottom-tab space. */
 .app-shell.reference-shell:has(.ref-view-chat) .evo-chat-frame {
