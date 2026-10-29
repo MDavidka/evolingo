@@ -11,9 +11,9 @@ import { Input } from "../components/ui/input"
 import { Separator } from "../components/ui/separator"
 import ReferenceScreens, { type ReferenceView } from "./reference-screens"
 import {
-  ArrowRight, Book, BookOpen, Check, CheckCircle2, Headphones, MessageCircle, CircleHelp, Puzzle, FilePenLine,
+  ArrowRight, Book, BookOpen, Check, CheckCircle2, CircleDot, Headphones, MessageCircle, CircleHelp, Puzzle, FilePenLine,
   Flame, Heart, Lightbulb, Medal, RotateCcw, Trophy, UserRound, Dumbbell, Timer, Languages, Volume2,
-  X, Zap, LockKeyhole, ClipboardCheck, Star, ShoppingBag, Gift, Palette, Pencil, Settings, ChevronRight, CalendarDays, Sparkles, Target, Search, UserPlus, Users, Link2, Bell, Share2, Contact2, Cloud, BarChart3,
+  X, Zap, LockKeyhole, ClipboardCheck, Star, ShoppingBag, Gift, Palette, Pencil, Settings, ChevronRight, CalendarDays, Sparkles, Target, Search, UserPlus, Users, Link2, Bell, Share2, Contact2, Cloud, BarChart3, Hand,
 } from "lucide-react"
 
 const foxIcon = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Image-D15751D4-6Ne8AGNrryN8wlvyBepC8VDGQkHTw4.jpeg"
@@ -849,7 +849,7 @@ export default function App() {
   }
   const navigateReference = (view: ReferenceView) => {
     setReferenceView(view)
-    if (view === "home" || view === "selector" || view === "space") setScreen("home")
+    if (view === "home" || view === "topic" || view === "selector" || view === "space" || view === "auth") setScreen("home")
     else if (view === "profile") setScreen("profile")
   }
   const navigateTab = (next: Screen) => {
@@ -940,7 +940,7 @@ export default function App() {
       {screen === "profile" && <Profile completedCount={completedLessons.length} readCount={readLessons.length} completedTaskCount={answeredTasks.filter(key => !key.startsWith("skill:")).length} xp={xp} stars={stars} userName={userName} setUserName={setUserName} avatar={avatar} setAvatar={setAvatar} avatarImage={avatarImage} setAvatarImage={setAvatarImage} bannerImage={bannerImage} setBannerImage={setBannerImage} dailyStudy={dailyStudy} onDailyGoalChange={(dailyGoal) => setDailyStudy(previous => ({ ...previous, dailyGoal }))} saveStatus={saveStatus} onRetryCloudSave={retryCloudSave} notifications={notifications} setNotifications={setNotifications} compactMode={compactMode} setCompactMode={setCompactMode} showSettings={showSettings} setShowSettings={setShowSettings} weeklyStudySeconds={weeklyStudySeconds} onOpenFriends={() => setScreen("friends")} />}
       </>}
     </section>
-    {screen !== "lessonIntro" && screen !== "task" && screen !== "skill" && screen !== "flashcards" && screen !== "chestOpen" && referenceView !== "chat" && referenceView !== "utility" && referenceView !== "profile" && <Nav screen={screen} setScreen={navigateTab} userName={userName} avatar={avatar} avatarImage={avatarImage} />}
+    {screen !== "lessonIntro" && screen !== "task" && screen !== "skill" && screen !== "flashcards" && screen !== "chestOpen" && referenceView !== "chat" && referenceView !== "utility" && referenceView !== "profile" && referenceView !== "auth" && <Nav screen={screen} setScreen={navigateTab} userName={userName} avatar={avatar} avatarImage={avatarImage} />}
 
   </main>
   {systemNotice && <SystemNotificationSheet
@@ -1395,13 +1395,19 @@ function FlashcardSession({ lesson, onExit, onComplete }: { lesson: LessonUnit; 
     setIndex(current => current + 1)
     setFlipped(false)
   }
+  const changeCard = (next: number) => {
+    if (next < 0 || next >= cards.length) return
+    setIndex(next)
+    setFlipped(false)
+  }
   return <section className="lesson-layout flashcard-session">
-    <header className="flashcard-session-header"><button type="button" onClick={onExit} aria-label="Kilépés"><X size={21} /></button><span>{index + 1} / {cards.length}</span></header>
+    <header className="flashcard-session-header"><button type="button" onClick={onExit} aria-label="Kilépés"><X size={21} /><span>Bezárás</span></button><span>{index + 1} / {cards.length}</span></header>
     <div className="flashcard-session-progress"><i style={{ width: `${((index + 1) / cards.length) * 100}%` }} /></div>
-    <button type="button" className={`study-flashcard ${flipped ? "is-flipped" : ""}`} onClick={() => setFlipped(value => !value)} aria-label={flipped ? "Válasz megjelenítve, koppints a kérdéshez" : "Koppints a válasz megjelenítéséhez"}>
-      <small>{flipped ? "VÁLASZ" : "KÉRDÉS"}</small><strong>{flipped ? card.answer : card.prompt}</strong><span>{flipped ? "Koppints a kérdéshez" : "Koppints a válaszhoz"}</span>
+    <button type="button" className={`study-flashcard ${flipped ? "is-flipped" : ""}`} onClick={() => setFlipped(value => !value)} aria-label={flipped ? "Válasz megjelenítve, koppints a fogalomhoz" : "Koppints a válasz megjelenítéséhez"}>
+      <div className="flashcard-card-label"><small>{flipped ? "VÁLASZ" : "FOGALOM"}</small><RotateCcw size={20} aria-hidden="true" /></div><strong>{flipped ? card.answer : card.prompt}</strong><span><Hand size={19} /> {flipped ? "Érintsd meg a fogalomhoz" : "Érintsd meg a válaszhoz"}</span>
     </button>
-    <div className="flashcard-session-actions"><button type="button" className="flashcard-again" onClick={() => move(false)}>Gyakorlom még</button><button type="button" className="flashcard-known" onClick={() => move(true)}>Tudtam</button></div>
+    <div className="flashcard-session-paging"><button type="button" aria-label="Előző kártya" disabled={index === 0} onClick={() => changeCard(index - 1)}><ChevronRight size={22} /></button><span>Lapozás</span><button type="button" aria-label="Következő kártya" disabled={index + 1 === cards.length} onClick={() => changeCard(index + 1)}><ChevronRight size={22} /></button></div>
+    {!flipped ? <button type="button" className="flashcard-reveal" onClick={() => setFlipped(true)}>Válasz megjelenítése <ArrowRight size={19} /></button> : <div className="flashcard-session-actions"><button type="button" className="flashcard-again" onClick={() => move(false)}>Gyakorlom még</button><button type="button" className="flashcard-known" onClick={() => move(true)}>Tudtam</button></div>}
   </section>
 }
 
@@ -1456,22 +1462,24 @@ function TaskExercise({ lesson, taskIndex, onExit, onComplete, lives, onWrongAns
     setSelectedWords((previous) => previous.includes(position + ":" + word) ? previous.filter((item) => item !== position + ":" + word) : [...previous, position + ":" + word])
   }
   const chosenWords = selectedWords.map((item) => item.split(":").slice(1).join(":"))
-  const buttonLabel = lives <= 0 ? "Vissza az útvonalhoz" : checked ? (answerCorrect ? (taskIndex + 1 === lesson.questions.length ? "Csomag befejezése" : "Következő kérdés") : "Próbáld újra") : "Ellenőrzés"
-  const progress = Math.round((taskIndex / lesson.questions.length) * 100)
+  const buttonLabel = lives <= 0 ? "Vissza az útvonalhoz" : checked ? (answerCorrect ? (taskIndex + 1 === lesson.questions.length ? "Csomag befejezése" : "Következő kérdés") : "Próbáld újra") : "Válasz ellenőrzése"
+  const progress = Math.round(((taskIndex + 1) / lesson.questions.length) * 100)
   if (lives <= 0) return <div className="lesson-layout task-exercise-layout"><header className="lesson-topbar"><button className="exit-lesson" onClick={onOutOfLives} aria-label="Kilépés"><X size={27} /></button><div className="intro-top-title"><span>{lesson.title}</span><strong>Próba vége</strong></div><div className="lesson-hearts"><Heart size={21} fill="#e94f64" /><strong>0</strong></div></header><div className="session-ended"><div className="session-ended-heart"><Heart size={52} fill="currentColor" /></div><h1>Elfogytak az életeid</h1><p>A kérdéssort most nem tudod folytatni. Térj vissza az útvonalhoz, és később indíts új próbát.</p><button className="primary-action" onClick={onOutOfLives}>Vissza a tanuláshoz</button></div></div>
-  return <div className="lesson-layout task-exercise-layout">
+  return <div className="lesson-layout task-exercise-layout reference-assessment">
     <header className="lesson-topbar">
-      <button className="exit-lesson ios-glass-button" onClick={onExit} aria-label="Kilépés a feladatból"><X size={27} /></button>
+      <button className="exit-lesson ios-glass-button" onClick={onExit} aria-label="Kilépés a feladatból"><X size={22} /><span>Bezárás</span></button>
       <div className="lesson-progress-wrap"><div className="lesson-progress-track" aria-label="Haladás"><span style={{ width: progress + "%" }} /></div><strong className="lesson-progress-label">{taskIndex + 1}<span>/</span>{lesson.questions.length}</strong></div>
       <div className={"lesson-hearts " + (heartLost ? "heart-lost" : "")}><Heart size={22} fill="#e94f64" /><strong>{Math.max(0, lives)}</strong></div>
     </header>
     <div className="task-exercise-content">
+      <div className="reference-assessment-kicker">{lesson.title.toLocaleUpperCase("hu")}</div>
       <h1 className="task-screen-title">{question.prompt}</h1>
+      <p className="reference-assessment-instruction">{question.instruction}</p>
       {question.type === "choice" && <div className="answer-options" role="group" aria-label="Válaszlehetőségek">{question.options?.map((option, index) => {
         const selected = selectedAnswer === option
         const isRight = checked && option === question.answer
         const isWrong = checked && selected && !answerCorrect
-        return <button key={option} className={"answer-option " + (selected ? "selected " : "") + (isRight ? "correct " : "") + (isWrong ? "incorrect " : "") + (rewardPulse && isRight ? "answer-pop" : "")} onClick={() => { if (!checked) { playUiSound("select"); setSelectedAnswer(option) } }} disabled={checked || lives <= 0}><span className="option-letter">{String.fromCharCode(65 + index)}</span><span>{option}</span>{isRight && <Check size={19} />}</button>
+        return <button key={option} className={"answer-option " + (selected ? "selected " : "") + (isRight ? "correct " : "") + (isWrong ? "incorrect " : "") + (rewardPulse && isRight ? "answer-pop" : "")} onClick={() => { if (!checked) { playUiSound("select"); setSelectedAnswer(option) } }} disabled={checked || lives <= 0}><span className="option-letter">{String.fromCharCode(65 + index)}</span><span>{option}</span>{selected && !checked && <CircleDot size={20} aria-hidden="true" />}{isRight && <Check size={19} />}</button>
       })}</div>}
       {question.type === "text" && <div className={"answer-input-wrap " + (checked ? (answerCorrect ? "is-correct" : "is-incorrect") : "")}><label htmlFor="typed-answer">Válaszod</label><input id="typed-answer" autoComplete="off" autoCapitalize="none" disabled={lives <= 0 || checked} placeholder="Írd be a választ…" value={typedAnswer} onChange={(event) => setTypedAnswer(event.target.value)} onKeyDown={(event) => { if (event.key === "Enter" && canCheck && !checked) submitAnswer() }} />{checked && answerCorrect && <CheckCircle2 size={20} />}</div>}
       {question.type === "arrange" && <div className="word-arrange-area"><div className={"word-answer-line " + (checked ? (answerCorrect ? "is-correct" : "is-incorrect") : "")} aria-label="Saját mondat">{chosenWords.length ? chosenWords.map((word, index) => <button key={index + "-" + word} onClick={() => !checked && setSelectedWords((previous) => previous.filter((_, itemIndex) => itemIndex !== index))} disabled={checked || lives <= 0} className="chosen-word">{word}</button>) : <span className="word-placeholder">Koppints a szavakra a mondat összeállításához</span>}</div><div className="word-bank">{question.words?.map((word, index) => { const token = index + ":" + word; const used = selectedWords.includes(token); return <button key={token} className="word-chip" disabled={used || checked || lives <= 0} onClick={() => toggleWord(word, index)}>{word}</button> })}</div></div>}
@@ -1486,7 +1494,7 @@ function TaskExercise({ lesson, taskIndex, onExit, onComplete, lives, onWrongAns
         </div>
       </div>}
     </div>
-    <footer className="lesson-action-bar task-action-bar"><button className="primary-action" disabled={!checked && !canCheck} onClick={lives <= 0 ? onOutOfLives : submitAnswer}>{buttonLabel}{checked && answerCorrect && <ArrowRight size={19} />}</button></footer>
+    <footer className="lesson-action-bar task-action-bar"><button className="primary-action" disabled={!checked && !canCheck} onClick={lives <= 0 ? onOutOfLives : submitAnswer}>{buttonLabel}<ArrowRight size={19} /></button></footer>
   </div>
 }
 

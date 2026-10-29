@@ -3,12 +3,12 @@
 import { useEffect, useRef, useState, type ChangeEvent, type ReactNode } from "react"
 import {
   ArrowRight, ArrowUp, ArrowUpRight, BookOpen, CalendarDays, CheckCircle2, ChevronDown, ChevronsUpDown, ChevronRight,
-  CircleHelp, Cloud, FileText, Folder, GraduationCap, Grid2X2, Info, Landmark, List,
+  CircleDot, CircleHelp, Cloud, Eye, EyeOff, FileText, Folder, GraduationCap, Grid2X2, Info, Landmark, List,
   LockKeyhole, LogOut, Mic, MoreHorizontal, Plus, Search, Send, ShieldCheck, UserRound,
   X, Languages, Dna, ClipboardCheck, NotebookPen, Layers, Crown, PencilLine, type LucideIcon,
 } from "lucide-react"
 
-export type ReferenceView = "home" | "selector" | "chat" | "space" | "utility" | "profile"
+export type ReferenceView = "home" | "topic" | "selector" | "chat" | "space" | "utility" | "profile" | "auth"
 
 type Props = {
   view: ReferenceView
@@ -49,10 +49,10 @@ function Avatar({ name, src, fallback }: { name: string; src: string; fallback: 
   return <span className="ref-avatar">{src ? <img src={src} alt={name} /> : <span className="ref-avatar-fallback"><img src={fallback} alt="" /></span>}</span>
 }
 
-function Header({ name, avatarImage, avatarFallback, onProfile, onHome, onUtility, onChat, onSpace }: {
+function Header({ name, avatarImage, avatarFallback, onProfile, onHome, onUtility, onChat, onSpace, onAuth }: {
   name: string; avatarImage: string; avatarFallback: string; onProfile: () => void;
   onHome: () => void;
-  onUtility: () => void; onChat: () => void; onSpace: () => void
+  onUtility: () => void; onChat: () => void; onSpace: () => void; onAuth: () => void
 }) {
   const [menuOpen, setMenuOpen] = useState(false)
   return <header className="ref-topbar">
@@ -65,6 +65,7 @@ function Header({ name, avatarImage, avatarFallback, onProfile, onHome, onUtilit
         <button type="button" role="menuitem" onClick={() => { setMenuOpen(false); onChat() }}>AI Chat</button>
         <button type="button" role="menuitem" onClick={() => { setMenuOpen(false); onSpace() }}>Saját fájlok</button>
         <button type="button" role="menuitem" onClick={() => { setMenuOpen(false); onUtility() }}>Alkotás és szervezés</button>
+        <button type="button" role="menuitem" onClick={() => { setMenuOpen(false); onAuth() }}>Bejelentkezés</button>
       </div>}
     </div>
     <button className="ref-profile-shortcut" type="button" onClick={() => { setMenuOpen(false); onProfile() }} aria-label="Profil megnyitása"><Avatar name={name} src={avatarImage} fallback={avatarFallback} /></button>
@@ -82,6 +83,55 @@ function Topics({ topics, onSelect }: { topics: TopicData[]; onSelect: (lessonId
       <span className="ref-topic-copy"><strong>{title}</strong><small>{subtitle}</small><small>{lessonCount} lecke</small></span>
       <ChevronRight className="ref-chevron" size={19} />
     </button>})}{filtered.length === 0 && <p className="ref-empty">Nincs ilyen téma.</p>}</div>
+  </div>
+}
+
+function TopicDetail({ topic, lessons, onSelectLesson, onBack }: { topic?: TopicData; lessons: LessonData[]; onSelectLesson: (id: number) => void; onBack: () => void }) {
+  const [tab, setTab] = useState<"lessons" | "files" | "overview">("lessons")
+  const [fileCount, setFileCount] = useState(0)
+  useEffect(() => {
+    try {
+      const saved = JSON.parse(localStorage.getItem("evolingo.space.v1") || "[]") as SpaceEntry[]
+      if (Array.isArray(saved)) setFileCount(saved.filter(entry => entry.kind !== "folder").length)
+    } catch { /* File metadata is local to this browser. */ }
+  }, [])
+  const list = lessons.filter(lesson => topic?.lessonIds.includes(lesson.id))
+  return <div className="ref-topic-detail">
+    <button type="button" className="ref-topic-breadcrumb" onClick={onBack}><ChevronRight size={17} /> Saját témáim <ChevronRight size={16} /><strong>{topic?.title || "Erasmus"}</strong></button>
+    <div className="ref-topic-detail-title"><div><h1>{topic?.title || "Erasmus"}</h1><p>{topic?.subtitle || "Angol nyelvtan és kommunikáció"}</p></div><button type="button" className="ref-topic-more" aria-label="Téma műveletei"><MoreHorizontal size={22} /></button></div>
+    <div className="ref-topic-meta"><span><BookOpen size={19} />{list.length} lecke</span><span><FileText size={19} />{fileCount} fájl</span><span><Cloud size={19} />Saját téma</span></div>
+    <div className="ref-topic-tabs" role="tablist" aria-label="Téma tartalma">
+      <button type="button" role="tab" aria-selected={tab === "lessons"} onClick={() => setTab("lessons")}>Leckék</button>
+      <button type="button" role="tab" aria-selected={tab === "files"} onClick={() => setTab("files")}>Fájlok</button>
+      <button type="button" role="tab" aria-selected={tab === "overview"} onClick={() => setTab("overview")}>Áttekintés</button>
+    </div>
+    {tab === "lessons" && <div className="ref-detail-lessons">{list.map((lesson, index) => <button type="button" key={lesson.id} className="ref-detail-lesson" onClick={() => onSelectLesson(lesson.id)}><span className="ref-detail-lesson-icon"><BookOpen size={20} /></span><span><strong>{lesson.title}</strong><small>{lesson.summary}</small><small>{lesson.completed ? "Befejezve" : lesson.read ? "Elkezdve" : `${index + 1}. lecke`}</small></span><ChevronRight size={19} /></button>)}</div>}
+    {tab === "files" && <p className="ref-topic-empty">Ehhez a témához még nincs fájl hozzáadva.</p>}
+    {tab === "overview" && <div className="ref-topic-overview"><h2>A témáról</h2><p>{topic?.subtitle || "Angol nyelvtan és kommunikáció"}</p><p>{list.length} lecke található ebben a témában.</p></div>}
+  </div>
+}
+
+function AuthScreen({ onBack }: { onBack: () => void }) {
+  const [register, setRegister] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
+  const [notice, setNotice] = useState("")
+  return <div className="ref-auth">
+    <header className="ref-auth-header"><button type="button" aria-label="Vissza a tanuláshoz" onClick={onBack}><ChevronRight size={21} /></button><span className="ref-auth-mark"><BookOpen size={23} /> evölingo</span></header>
+    <div className="ref-auth-content"><h1>{register ? "Csatlakozz az Evölingóhoz." : "Üdvözlünk újra."}</h1><p>{register ? "Hozz létre fiókot, és őrizd meg a tanulási haladásod." : "Jelentkezz be, és folytasd ott, ahol abbahagytad."}</p>
+      <form onSubmit={event => { event.preventDefault(); setNotice("A fiókos bejelentkezés még nincs beállítva. Vendégként továbbra is tanulhatsz ezen az eszközön.") }}>
+        {register && <label htmlFor="ref-auth-name">Név<input id="ref-auth-name" autoComplete="name" placeholder="A neved" /></label>}
+        <label htmlFor="ref-auth-email">E-mail-cím<input id="ref-auth-email" type="email" autoComplete="email" placeholder="nev@pelda.hu" required /></label>
+        <label htmlFor="ref-auth-password"><span>Jelszó</span><button type="button" className="ref-auth-forgot" onClick={() => setNotice("A jelszó-visszaállítás még nincs beállítva.")}>Elfelejtetted?</button><span className="ref-auth-password"><input id="ref-auth-password" type={showPassword ? "text" : "password"} autoComplete={register ? "new-password" : "current-password"} minLength={8} placeholder="Legalább 8 karakter" required /><button type="button" aria-label={showPassword ? "Jelszó elrejtése" : "Jelszó megjelenítése"} onClick={() => setShowPassword(value => !value)}>{showPassword ? <EyeOff size={19} /> : <Eye size={19} />}</button></span></label>
+        {!register && <label className="ref-auth-remember"><input type="checkbox" defaultChecked /> Bejelentkezve maradok</label>}
+        <button type="submit" className="ref-auth-submit">{register ? "Regisztráció" : "Bejelentkezés"} <ArrowRight size={18} /></button>
+      </form>
+      <div className="ref-auth-divider"><span /> vagy <span /></div>
+      <button type="button" className="ref-auth-provider" onClick={() => setNotice("Az Apple-fiókos bejelentkezés még nincs beállítva.")}>Folytatás Apple-fiókkal</button>
+      <button type="button" className="ref-auth-provider" onClick={() => setNotice("A Google-fiókos bejelentkezés még nincs beállítva.")}>Folytatás Google-fiókkal</button>
+      <p className="ref-auth-switch">{register ? "Már van fiókod?" : "Még nincs fiókod?"} <button type="button" onClick={() => { setRegister(value => !value); setNotice("") }}>{register ? "Bejelentkezés" : "Regisztráció"}</button></p>
+      {notice && <p className="ref-auth-notice" role="status">{notice}</p>}
+    </div>
+    <p className="ref-auth-terms">A folytatással elfogadod a felhasználási feltételeket és az adatvédelmi szabályzatot.</p>
   </div>
 }
 
@@ -257,15 +307,18 @@ function SettingRow({ icon: Icon, title, subtitle, onClick }: { icon: LucideIcon
 export default function ReferenceScreens(props: Props) {
   const { view, userName, avatarImage, avatarFallback, onView, onSelectLesson, onSelectMode, onContinue, onEditProfile, onLogout, topics, lessons, activeLessonId } = props
   let content: ReactNode
-  if (view === "home") content = <Topics topics={topics} onSelect={id => { onSelectLesson(id); onView("selector") }} />
+  if (view === "home") content = <Topics topics={topics} onSelect={id => { onSelectLesson(id); onView("topic") }} />
+  else if (view === "topic") content = <TopicDetail topic={topics[0]} lessons={lessons} onSelectLesson={id => { onSelectLesson(id); onView("selector") }} onBack={() => onView("home")} />
   else if (view === "selector") content = <LessonSelector lesson={lessons.find(item => item.id === activeLessonId)} onSelectMode={onSelectMode} onContinue={onContinue} />
   else if (view === "chat") content = <Chat />
   else if (view === "space") content = <Space />
   else if (view === "utility") content = <Utility onSpace={() => onView("space")} onUpload={props.onUploadFile} />
+  else if (view === "auth") content = <AuthScreen onBack={() => onView("home")} />
   else content = <Profile name={userName} avatarImage={avatarImage} avatarFallback={avatarFallback} onEdit={onEditProfile} onEditAvatar={props.onEditAvatar} onLogout={onLogout} />
 
+  if (view === "auth") return <main className="ref-app ref-view-auth">{content}</main>
   return <main className={`ref-app ref-view-${view}`}>
-    <Header name={userName} avatarImage={avatarImage} avatarFallback={avatarFallback} onProfile={() => onView("profile")} onHome={() => onView("home")} onUtility={() => onView("utility")} onChat={() => onView("chat")} onSpace={() => onView("space")} />
+    <Header name={userName} avatarImage={avatarImage} avatarFallback={avatarFallback} onProfile={() => onView("profile")} onHome={() => onView("home")} onUtility={() => onView("utility")} onChat={() => onView("chat")} onSpace={() => onView("space")} onAuth={() => onView("auth")} />
     {content}
   </main>
 }
