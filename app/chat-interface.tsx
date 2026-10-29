@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, type FormEvent, type KeyboardEvent } from "react"
 import { ArrowUp, Check, Copy, Sparkles, Plus, Mic, ChevronDown } from "lucide-react"
 import IntelligentResponse from "./intelligent-ui/renderer"
+import ChatRichText from "./chat-rich-text"
 import { validateIntelligentUI, type IntelligentUI } from "./intelligent-ui/schema"
 
 type ChatMessage = { role: "user" | "assistant"; content: string; id?: string; ui?: IntelligentUI }
@@ -229,7 +230,7 @@ export default function ChatInterface() {
       {messages.length > 0 && <div className="evo-chat-thread">
         {messages.map((item, index) => <div key={index} className={`evo-chat-entry evo-chat-entry--${item.role}`}>
           {item.role === "assistant" && <span className="evo-chat-small-mark" aria-hidden="true"><Sparkles size={16} /></span>}
-          <div className="evo-chat-entry-main"><div className="evo-chat-bubble">{item.content}</div>
+          <div className="evo-chat-entry-main"><div className="evo-chat-bubble">{item.role === "assistant" ? <ChatRichText text={item.content} /> : item.content}</div>
             {item.role === "assistant" && item.ui && <IntelligentResponse ui={item.ui} messageId={item.id} />}
             {item.role === "assistant" && <button type="button" className="evo-chat-copy" aria-label="Válasz másolása" onClick={() => void copyMessage(item.content, index)}>{copied === index ? <Check size={16} /> : <Copy size={16} />}<span>{copied === index ? "Másolva" : "Másolás"}</span></button>}
           </div>
