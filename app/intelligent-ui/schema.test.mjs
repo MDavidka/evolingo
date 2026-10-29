@@ -56,3 +56,20 @@ test("rejects root keys and prototype tricks", () => {
   assert.equal(validateIntelligentUI({ version: "1", blocks: [], html: "x" }), null)
   assert.equal(parseModelUI('{"version":"1","blocks":[],"__proto__":{"admin":true}}'), null)
 })
+
+
+test("allows safe icon-and-badge educational concept cards", () => {
+  const item = { id: "concept-1", type: "concept_card", props: {
+    title: "A Present Perfect", description: "A múltat a jelennel kapcsolja össze.",
+    icon: "idea", badge: "Nyelvtan"
+  } }
+  assert.equal(validateIntelligentUI({ version: "1", blocks: [item] })?.blocks[0].type, "concept_card")
+  assert.equal(validateIntelligentUI({ version: "1", blocks: [
+    { ...item, props: { ...item.props, icon: "untrusted-svg" } }
+  ] }), null)
+})
+
+test("accepts valid structured JSON wrapped by model prose", () => {
+  const raw = JSON.stringify({ version: "1", blocks: [rule] })
+  assert.equal(parseModelUI("Ezek az elemek:\n" + raw + "\nKész.")?.blocks.length, 1)
+})
