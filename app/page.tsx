@@ -809,8 +809,37 @@ export default function App() {
     setLives(5)
     setScreen("task")
   }
+  const mainSwipeOrigin = useRef<{ x: number; y: number } | null>(null)
+  const mainTabs: Screen[] = ["home", "friends", "leaderboard", "profile"]
+  const onMainSwipeStart = (event: ReactTouchEvent<HTMLElement>) => {
+    if (!mainTabs.includes(screen) || event.touches.length !== 1) return
+    const target = event.target
+    if (!(target instanceof HTMLElement) ||
+        target.closest('button, a, input, textarea, select, [contenteditable="true"], [role="slider"], [data-swipe-exempt], .friends-tabs, .nav-selection-indicator')) {
+      mainSwipeOrigin.current = null
+      return
+    }
+    const touch = event.touches[0]
+    if (touch.clientX < 22 || touch.clientX > window.innerWidth - 22) return // iOS system back-swipe edges
+    mainSwipeOrigin.current = { x: touch.clientX, y: touch.clientY }
+  }
+  const onMainSwipeEnd = (event: ReactTouchEvent<HTMLElement>) => {
+    const origin = mainSwipeOrigin.current
+    mainSwipeOrigin.current = null
+    if (!origin || !event.changedTouches.length) return
+    const touch = event.changedTouches[0]
+    const dx = touch.clientX - origin.x
+    const dy = touch.clientY - origin.y
+    if (Math.abs(dx) < 85 || Math.abs(dx) < 1.65 * Math.abs(dy)) return
+    const current = mainTabs.indexOf(screen)
+    const next = Math.max(0, Math.min(mainTabs.length - 1, current + (dx < 0 ? 1 : -1)))
+    if (current !== next) {
+      playUiSound("swipe")
+      setScreen(mainTabs[next])
+    }
+  }
   return <><main className={"app-shell " + ((screen === "lessonIntro" || screen === "task" || screen === "chestOpen") ? "lesson-open" : "") + (screen === "skill" ? " skill-open" : "") + (screen === "leaderboard" ? " leaderboard-app" : "")}>
-    <section className={"screen-content " + (screen === "home" ? "learn-home-content " : "") + ((screen === "lessonIntro" || screen === "task" || screen === "chestOpen") ? "lesson-page" : "") + (screen === "skill" ? " skill-page" : "") + (screen === "leaderboard" ? " leaderboard-screen-content" : "")}>
+    <section onTouchStart={onMainSwipeStart} onTouchEnd={onMainSwipeEnd} onTouchCancel={() => { mainSwipeOrigin.current = null }} className={"screen-content " + (screen === "home" ? "learn-home-content " : "") + ((screen === "lessonIntro" || screen === "task" || screen === "chestOpen") ? "lesson-page" : "") + (screen === "skill" ? " skill-page" : "") + (screen === "leaderboard" ? " leaderboard-screen-content" : "")}>
       {screen === "home" && <Home
         completedLessons={completedLessons}
         answeredTasks={answeredTasks}
@@ -2258,12 +2287,13 @@ function Nav({ screen, setScreen, userName, avatar, avatarImage }: { screen: Scr
   const [dragIndex, setDragIndex] = useState<number | null>(null)
   const dragStart = useRef<{ x: number; index: number; width: number } | null>(null)
   const startIndicatorDrag = (event: React.PointerEvent<HTMLDivElement>) => {
+    if (event.pointerType === "mouse" && event.button !== 0) return
     const nav = event.currentTarget.parentElement
     if (!nav) return
     event.preventDefault()
     dragStart.current = { x: event.clientX, index: activeIndex, width: nav.clientWidth / items.length }
     setDragIndex(activeIndex)
-    event.currentTarget.setPointerCapture(event.pointerId)
+    try { event.currentTarget.setPointerCapture(event.pointerId) } catch { /* Safari may cancel capture. */ }
   }
   const moveIndicatorDrag = (event: React.PointerEvent<HTMLDivElement>) => {
     if (!dragStart.current) return
@@ -2276,6 +2306,7 @@ function Nav({ screen, setScreen, userName, avatar, avatarImage }: { screen: Scr
       // Derive the final tab from pointer-up coordinates, not a potentially stale React state snapshot.
       const delta = (event.clientX - start.x) / start.width
       const index = Math.max(0, Math.min(items.length - 1, Math.round(start.index + delta)))
+      if (items[index][0] !== screen) playUiSound("tab")
       setScreen(items[index][0])
     }
     dragStart.current = null
@@ -2304,9 +2335,10 @@ function Nav({ screen, setScreen, userName, avatar, avatarImage }: { screen: Scr
         else if (event.key === "End") nextIndex = items.length - 1
         else return
         event.preventDefault()
+        if (items[nextIndex][0] !== screen) playUiSound("tab")
         setScreen(items[nextIndex][0])
       }}
     />
-    {items.map(([id, label, Icon], index) => <button key={id} data-tab-index={index} className={screen === id ? "active" : ""} onClick={() => setScreen(id)} aria-current={screen === id ? "page" : undefined} aria-label={id === "profile" ? "Profil: " + userName : label} title={id === "profile" ? userName : undefined}>{id === "profile" ? <UserAvatar userName={userName} avatar={avatar} avatarImage={avatarImage} variant="nav" /> : <Icon size={24} strokeWidth={2} aria-hidden="true" />}<span>{label}</span></button>)}
+    {items.map(([id, label, Icon], index) => <button key={id} data-tab-index={index} className={screen === id ? "active" : ""} onClick={() => { if (id !== screen) playUiSound("tab"); setScreen(id) }} aria-current={screen === id ? "page" : undefined} aria-label={id === "profile" ? "Profil: " + userName : label} title={id === "profile" ? userName : undefined}>{id === "profile" ? <UserAvatar userName={userName} avatar={avatar} avatarImage={avatarImage} variant="nav" /> : <Icon size={24} strokeWidth={2} aria-hidden="true" />}<span>{label}</span></button>)}
   </nav>
 }
