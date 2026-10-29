@@ -13,6 +13,7 @@ export default function ChatInterface() {
   const [draft, setDraft] = useState("")
   const [busy, setBusy] = useState(false)
   const [enhancing, setEnhancing] = useState(false)
+  const [streaming, setStreaming] = useState(false)
   const [hydrated, setHydrated] = useState(false)
   const [error, setError] = useState("")
   const [copied, setCopied] = useState<number | null>(null)
@@ -92,12 +93,31 @@ export default function ChatInterface() {
 
     let answered = false
     let completed = false
+    let streamReply = ""
     const acceptEvent = (raw: string) => {
       try {
-        const event = JSON.parse(raw) as { type?: string; reply?: string; ui?: unknown; error?: string }
-        if (event.type === "text" && typeof event.reply === "string" && event.reply.trim()) {
+        const event = JSON.parse(raw) as { type?: string; reply?: string; delta?: string; ui?: unknown; error?: string }
+        if (event.type === "delta" && typeof event.delta === "string" && event.delta) {
+          streamReply += event.delta
+          if (streamReply.length > 30000) throw new Error("Túl hosszú válasz.")
           answered = true
-          setMessages([...next, { id: assistantId, role: "assistant", content: event.reply }])
+          setStreaming(true)
+          const snapshot = streamReply
+          setMessages(old => {
+            const existing = old.some(msg => msg.id === assistantId)
+            return existing
+              ? old.map(msg => msg.id === assistantId ? { ...msg, content: snapshot } : msg)
+              : [...old, { id: assistantId, role: "assistant", content: snapshot }]
+          })
+        } else if (event.type === "text" && typeof event.reply === "string" && event.reply.trim()) {
+          answered = true
+          setMessages(old => {
+            const existing = old.some(msg => msg.id === assistantId)
+            return existing
+              ? old.map(msg => msg.id === assistantId ? { ...msg, content: event.reply as string } : msg)
+              : [...old, { id: assistantId, role: "assistant", content: event.reply as string }]
+          })
+          setStreaming(false)
           setBusy(false)
           setEnhancing(true)
         } else if (event.type === "ui" && event.ui) {
@@ -161,6 +181,7 @@ export default function ChatInterface() {
     } finally {
       setBusy(false)
       setEnhancing(false)
+      setStreaming(false)
     }
   }
 
@@ -205,7 +226,7 @@ export default function ChatInterface() {
           </div>
         </div>)}
         {enhancing && <div className="evo-iui-loading" role="status">Tanulási elemek előkészítése…</div>}
-        {busy && <div className="evo-chat-entry evo-chat-entry--assistant"><span className="evo-chat-small-mark" aria-hidden="true"><Sparkles size={16} /></span><span className="evo-chat-thinking" role="status">Válasz írása<span className="evo-chat-dots">…</span></span></div>}
+        {busy && !streaming && <div className="evo-chat-entry evo-chat-entry--assistant"><span className="evo-chat-small-mark" aria-hidden="true"><Sparkles size={16} /></span><span className="evo-chat-thinking" role="status">Válasz írása<span className="evo-chat-dots">…</span></span></div>}
       </div>}
     </div>
 
