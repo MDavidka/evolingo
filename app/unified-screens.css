@@ -1,0 +1,436 @@
+/* Evölingo 2026 — one visual language on every application screen.
+ * AI home keeps its dedicated full-height gradient and chat-specific viewport rules.
+ * This layer standardises navigation, header, pages and touch/scroll behaviour.
+ */
+
+.app-shell.reference-shell {
+  --evo-page-ink: #20242d;
+  --evo-page-muted: #78818f;
+  --evo-page-line: #e8ebf0;
+  --evo-page-soft: #f3f5f8;
+  --evo-page-surface: #ffffff;
+  --evo-page-gutter: clamp(20px, 5.6vw, 28px);
+  --evo-page-radius: 20px;
+  --evo-page-max: 520px;
+  color: var(--evo-page-ink);
+}
+
+.app-shell.reference-shell .ref-app,
+.app-shell.reference-shell .ref-app *,
+.app-shell.reference-shell .ref-app *::before,
+.app-shell.reference-shell .ref-app *::after {
+  box-sizing: border-box;
+}
+
+.app-shell.reference-shell .ref-app:not(.ref-view-chat):not(.ref-view-auth) {
+  width: min(100%, var(--evo-page-max));
+  max-width: var(--evo-page-max);
+  min-height: 100dvh;
+  height: auto;
+  overflow-x: clip;
+  overflow-y: visible;
+  padding: 0 0 max(60px, calc(30px + env(safe-area-inset-bottom, 0px))) !important;
+  color: var(--evo-page-ink);
+  background: linear-gradient(180deg, #ffffff 0%, #ffffff 63%, #fafbfe 100%) !important;
+  overscroll-behavior-x: none;
+  -webkit-overflow-scrolling: touch;
+}
+.app-shell.reference-shell .ref-app:not(.ref-view-chat):not(.ref-view-auth) > .ref-topbar {
+  position: relative;
+  z-index: 35;
+  width: 100%;
+  height: calc(env(safe-area-inset-top, 0px) + 92px);
+  min-height: 92px;
+  align-items: flex-start;
+  justify-content: flex-end;
+  padding: calc(env(safe-area-inset-top, 0px) + 24px) var(--evo-page-gutter) 0;
+  background: transparent;
+}
+.app-shell.reference-shell .ref-app:not(.ref-view-chat):not(.ref-view-auth) .ref-profile-shortcut {
+  position: fixed;
+  z-index: 42;
+  top: calc(env(safe-area-inset-top, 0px) + 24px);
+  right: max(calc((100vw - 520px) / 2 + 24px), calc(env(safe-area-inset-right, 0px) + 24px));
+  width: 46px !important;
+  height: 46px !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 50%;
+  background: transparent;
+  -webkit-tap-highlight-color: transparent;
+}
+.app-shell.reference-shell .ref-profile-shortcut .ref-avatar {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+}
+.app-shell.reference-shell .ref-app:not(.ref-view-chat) .ref-course-wrap {
+  position: absolute;
+  z-index: 35;
+  top: calc(env(safe-area-inset-top, 0px) + 92px);
+  left: var(--evo-page-gutter);
+}
+.app-shell.reference-shell .ref-course {
+  min-height: 42px;
+  border-radius: 999px;
+  border: 1px solid var(--evo-page-line) !important;
+  background: rgba(248,249,252,.96);
+  box-shadow: none;
+}
+.app-shell.reference-shell .ref-course-menu {
+  z-index: 120;
+  min-width: 190px;
+  border-color: var(--evo-page-line);
+  border-radius: 16px;
+  box-shadow: 0 14px 30px rgba(40,53,78,.10);
+}
+
+/* Unified screen widths, consistent 8pt spacing, and a clean type hierarchy. */
+.app-shell.reference-shell .ref-screen-heading,
+.app-shell.reference-shell .ref-profile > h1,
+.app-shell.reference-shell .ref-space-heading h1,
+.app-shell.reference-shell .ref-selector > h1 {
+  margin: 0 0 22px;
+  color: var(--evo-page-ink);
+  font-size: clamp(26px, 7vw, 31px);
+  line-height: 1.18;
+  font-weight: 710;
+  letter-spacing: -.85px;
+}
+.app-shell.reference-shell .ref-topics,
+.app-shell.reference-shell .ref-topic-detail,
+.app-shell.reference-shell .ref-selector,
+.app-shell.reference-shell .ref-space,
+.app-shell.reference-shell .ref-utility,
+.app-shell.reference-shell .ref-profile {
+  width: 100%;
+  min-width: 0;
+  max-width: var(--evo-page-max);
+  padding-right: var(--evo-page-gutter) !important;
+  padding-left: var(--evo-page-gutter) !important;
+  padding-bottom: 40px;
+  margin-right: auto;
+  margin-left: auto;
+}
+.app-shell.reference-shell .ref-topics {
+  margin-top: 78px;
+}
+.app-shell.reference-shell .ref-topic-detail {
+  margin-top: 72px;
+}
+.app-shell.reference-shell .ref-selector,
+.app-shell.reference-shell .ref-space,
+.app-shell.reference-shell .ref-utility,
+.app-shell.reference-shell .ref-profile {
+  margin-top: 24px;
+}
+.app-shell.reference-shell .ref-selector > h1 { margin-bottom: 24px; }
+.app-shell.reference-shell .ref-profile > h1 { margin-bottom: 21px; }
+.app-shell.reference-shell .ref-utility > h1 { margin-bottom: 28px; }
+.app-shell.reference-shell .ref-search {
+  height: 50px;
+  border-color: var(--evo-page-line);
+  border-radius: 17px;
+  background: rgba(255,255,255,.96);
+  box-shadow: 0 2px 12px rgba(36,45,65,.025);
+}
+.app-shell.reference-shell .ref-search input {
+  min-width: 0;
+  font-size: 16px !important;
+}
+.app-shell.reference-shell .ref-topic-controls { margin-top: 14px; }
+.app-shell.reference-shell .ref-dark-pill,
+.app-shell.reference-shell .ref-outline-pill {
+  min-height: 44px;
+  border-radius: 999px;
+}
+.app-shell.reference-shell .ref-dark-pill { background: #242830; border-color: #242830; }
+.app-shell.reference-shell .ref-outline-pill {
+  border-color: var(--evo-page-line);
+  background: #fff;
+  color: var(--evo-page-ink) !important;
+}
+.app-shell.reference-shell .ref-soft-icon,
+.app-shell.reference-shell .ref-detail-lesson-icon {
+  flex: none;
+  border-radius: 15px;
+  border: 1px solid #f0f2f5;
+  background: #f4f6f9;
+  color: #4b5769;
+}
+.app-shell.reference-shell .ref-topic-row,
+.app-shell.reference-shell .ref-file-row,
+.app-shell.reference-shell .ref-detail-lesson,
+.app-shell.reference-shell .ref-setting-row {
+  min-width: 0;
+  min-height: 74px;
+  border-color: #eef0f3;
+}
+.app-shell.reference-shell .ref-topic-copy strong,
+.app-shell.reference-shell .ref-file-copy strong,
+.app-shell.reference-shell .ref-detail-lesson strong {
+  color: var(--evo-page-ink);
+  font-weight: 640;
+}
+.app-shell.reference-shell .ref-topic-copy small,
+.app-shell.reference-shell .ref-file-copy small,
+.app-shell.reference-shell .ref-detail-lesson small,
+.app-shell.reference-shell .ref-action-copy small,
+.app-shell.reference-shell .ref-utility-card small,
+.app-shell.reference-shell .ref-setting-row small {
+  color: var(--evo-page-muted);
+}
+.app-shell.reference-shell .ref-topic-detail-title { margin-top: 20px; }
+.app-shell.reference-shell .ref-topic-detail-title h1 {
+  font-size: clamp(29px, 7.6vw, 36px);
+  color: var(--evo-page-ink);
+}
+.app-shell.reference-shell .ref-topic-detail-title p { font-size: 15px; color: var(--evo-page-muted); }
+.app-shell.reference-shell .ref-topic-meta {
+  gap: 12px 18px;
+  font-size: 13px;
+  color: var(--evo-page-muted);
+}
+.app-shell.reference-shell .ref-topic-tabs { margin-top: 20px; gap: 5px; padding: 4px; border-radius: 999px; background: #f1f3f7; }
+.app-shell.reference-shell .ref-topic-tabs button {
+  min-height: 44px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: transparent;
+  font-size: 13px;
+  color: var(--evo-page-muted);
+}
+.app-shell.reference-shell .ref-topic-tabs button[aria-selected="true"] {
+  background: #fff;
+  box-shadow: 0 2px 7px rgba(38,47,62,.06);
+  color: var(--evo-page-ink);
+}
+.app-shell.reference-shell .ref-action-list { gap: 11px; }
+.app-shell.reference-shell .ref-action-card,
+.app-shell.reference-shell .ref-utility-card,
+.app-shell.reference-shell .ref-coming {
+  border: 1px solid var(--evo-page-line);
+  border-radius: var(--evo-page-radius);
+  background: #fff;
+  box-shadow: 0 2px 12px rgba(41,51,69,.025);
+}
+.app-shell.reference-shell .ref-action-card {
+  min-height: 82px;
+  padding: 12px;
+  gap: 12px;
+}
+.app-shell.reference-shell .ref-action-card.is-selected {
+  border-color: #9aa8bf;
+  box-shadow: 0 0 0 1px #9aa8bf;
+}
+.app-shell.reference-shell .ref-action-card:first-child .ref-action-copy small {
+  white-space: normal;
+  font-size: 13px;
+}
+.app-shell.reference-shell .ref-continue {
+  min-height: 52px;
+  margin-top: 26px;
+  border-radius: 999px;
+  background: #242830;
+  color: #fff;
+}
+.app-shell.reference-shell .ref-utility-grid { gap: 12px; }
+.app-shell.reference-shell .ref-utility-card { min-width: 0; min-height: 166px; padding: 16px; }
+.app-shell.reference-shell .ref-utility-card strong { margin-top: 14px; }
+.app-shell.reference-shell .ref-utility h2 { margin-bottom: 12px; color: var(--evo-page-muted); }
+.app-shell.reference-shell .ref-utility-community-link { min-height: 58px; }
+.app-shell.reference-shell .ref-coming { min-height: 110px; }
+
+/* File manager: title first, storage meter and list remain independently usable. */
+.app-shell.reference-shell .ref-space-heading {
+  margin: 0 0 24px;
+  align-items: center;
+}
+.app-shell.reference-shell .ref-space-heading h1 {
+  min-width: 0;
+  max-width: 65%;
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.app-shell.reference-shell .ref-space-actions { flex: none; gap: 4px; }
+.app-shell.reference-shell .ref-icon-button { width: 44px; height: 44px; }
+.app-shell.reference-shell .ref-storage { margin: 0 0 20px; }
+.app-shell.reference-shell .ref-storage-track { margin-top: 12px; }
+.app-shell.reference-shell .ref-file-list.is-grid { gap: 12px; }
+.app-shell.reference-shell .ref-file-list.is-grid .ref-file-row {
+  min-width: 0;
+  padding: 12px;
+  border-radius: 17px;
+}
+.app-shell.reference-shell .ref-file-list.is-grid .ref-file-copy strong {
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+.app-shell.reference-shell .ref-back-link { margin: 0 0 16px; }
+
+/* Profile and settings: consistent spacing, readable metadata and natural wrapping. */
+.app-shell.reference-shell .ref-profile-identity {
+  min-width: 0;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.app-shell.reference-shell .ref-profile-identity > div {
+  min-width: min(140px, 44vw);
+  flex: 1 1 130px;
+}
+.app-shell.reference-shell .ref-profile-identity > div strong {
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+.app-shell.reference-shell .ref-profile-identity .ref-outline-pill { margin-left: auto; }
+.app-shell.reference-shell .ref-profile > hr { background: var(--evo-page-line); }
+.app-shell.reference-shell .ref-settings-group h2 { color: var(--evo-page-muted); }
+.app-shell.reference-shell .ref-setting-row { min-height: 64px; }
+.app-shell.reference-shell .ref-logout {
+  min-height: 48px;
+  border-radius: 999px;
+}
+
+/* Keep overlays within an iPhone's visible bounds, above the persistent nav. */
+.app-shell.reference-shell .ref-modal-backdrop {
+  position: fixed;
+  z-index: 150;
+  inset: 0;
+  align-items: end;
+  padding: 16px max(16px, env(safe-area-inset-right, 0px)) max(16px, env(safe-area-inset-bottom, 0px));
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.app-shell.reference-shell .ref-edit-modal {
+  max-height: min(88dvh, 720px);
+  overflow-y: auto;
+  border-radius: 24px;
+}
+.app-shell.reference-shell .ref-edit-modal input {
+  font-size: 16px !important;
+}
+body:has(.ref-modal-backdrop) .evo-morph-anchor,
+.app-shell:has(input:focus, textarea:focus) .evo-morph-anchor {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+/* The same actual icon, same position and same one-piece morph on every page. */
+.evo-morph-anchor {
+  position: fixed;
+  z-index: 100;
+  top: calc(env(safe-area-inset-top, 0px) + 24px);
+  left: max(calc((100vw - 520px) / 2 + 23px), calc(env(safe-area-inset-left, 0px) + 23px));
+  width: 46px;
+  height: 46px;
+}
+.evo-morph-anchor > .evo-tabbar.evo-glass-rail.evo-morph-rail,
+.app-shell.reference-shell .evo-morph-anchor > .evo-tabbar.evo-glass-rail.evo-morph-rail {
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: auto !important;
+  bottom: auto !important;
+  width: 46px !important;
+  height: 46px !important;
+  min-height: 46px !important;
+  max-height: 46px !important;
+  transform: none !important;
+  background: #f0f1f4 !important;
+  border: 1px solid #e8eaf0 !important;
+  border-radius: 999px !important;
+  box-shadow: 0 2px 10px rgba(33,43,61,.05) !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+  overflow: hidden !important;
+  transition: width .44s cubic-bezier(.21,1.21,.31,1) !important;
+}
+.evo-morph-anchor > .evo-tabbar.evo-glass-rail.evo-morph-rail.is-expanded,
+.app-shell.reference-shell .evo-morph-anchor > .evo-tabbar.evo-glass-rail.evo-morph-rail.is-expanded {
+  width: min(282px, calc(100vw - 88px)) !important;
+  height: 46px !important;
+  min-height: 46px !important;
+  max-height: 46px !important;
+  background: #f0f1f4 !important;
+  animation: none !important;
+  transform: none !important;
+}
+.evo-morph-anchor .evo-morph-rail > nav,
+.app-shell.reference-shell .evo-morph-anchor .evo-morph-rail > nav {
+  display: flex !important;
+  flex-direction: row !important;
+  justify-content: space-around !important;
+  align-items: center !important;
+  width: 100% !important;
+  height: 100% !important;
+  gap: 0 !important;
+  padding: 0 2px !important;
+}
+.evo-morph-anchor .evo-morph-rail nav button,
+.app-shell.reference-shell .evo-morph-anchor .evo-morph-rail nav button {
+  display: grid !important;
+  place-items: center !important;
+  flex: 1 1 0 !important;
+  min-width: 44px !important;
+  width: auto !important;
+  max-width: none !important;
+  min-height: 44px !important;
+  height: 44px !important;
+  max-height: 44px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border-radius: 50% !important;
+}
+.evo-morph-anchor .evo-morph-rail nav .evo-morph-destination.is-active {
+  background: #fff !important;
+}
+.evo-morph-ai-icon { width: 23px; height: 23px; display: block; border-radius: 50%; }
+.evo-morph-anchor .evo-morph-rail.is-compact nav .evo-morph-destination {
+  visibility: hidden;
+  pointer-events: none;
+}
+.evo-morph-anchor .evo-morph-rail.is-expanded nav .evo-morph-destination {
+  visibility: visible;
+  pointer-events: auto;
+}
+
+/* Accessibility: native touch targets, keyboard focus and motion preferences. */
+.app-shell.reference-shell .ref-app button:focus-visible,
+.evo-morph-anchor button:focus-visible {
+  outline: 2px solid #617fae !important;
+  outline-offset: 2px !important;
+}
+.app-shell.reference-shell .ref-app input,
+.app-shell.reference-shell .ref-app textarea {
+  font-size: max(16px, 1em);
+}
+@media (hover: hover) and (pointer: fine) {
+  .app-shell.reference-shell .ref-action-card:hover,
+  .app-shell.reference-shell .ref-utility-card:hover,
+  .app-shell.reference-shell .ref-topic-row:hover {
+    background: #f8f9fc;
+  }
+}
+@media (max-width: 360px) {
+  .evo-morph-anchor { left: max(14px, env(safe-area-inset-left, 0px)); }
+  .app-shell.reference-shell .ref-space-heading h1 { font-size: 25px; }
+  .app-shell.reference-shell .ref-utility-grid { grid-template-columns: 1fr; }
+  .app-shell.reference-shell .ref-utility-card { min-height: 122px; }
+  .app-shell.reference-shell .ref-profile-identity > div { min-width: 110px; }
+}
+@media (max-height: 640px) {
+  .app-shell.reference-shell .ref-topics { margin-top: 62px; }
+  .app-shell.reference-shell .ref-selector { margin-top: 10px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .evo-morph-anchor > .evo-tabbar.evo-glass-rail.evo-morph-rail,
+  .app-shell.reference-shell .ref-app *,
+  .app-shell.reference-shell .ref-app *::before,
+  .app-shell.reference-shell .ref-app *::after {
+    transition-duration: .01ms !important;
+    animation-duration: .01ms !important;
+  }
+}
