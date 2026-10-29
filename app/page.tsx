@@ -1016,16 +1016,42 @@ function Home({ completedLessons, answeredTasks, readLessons, notice, clearNotic
   useEffect(() => {
     const sheet = sheetRef.current
     if (!sheet) return
-    const update = () => {
-      const locked = sheet.querySelector<HTMLElement>('.learn-path-node[data-locked="true"]')
-      if (!locked) {
-        setShowLockedCloud(false)
-        return
-      }
-      const view = sheet.getBoundingClientRect()
-      const node = locked.getBoundingClientRect()
-      setShowLockedCloud(node.top <= view.bottom - Math.min(70, view.height * 0.12))
+
+    // Allow a glimpse of the next three unavailable path nodes, but no further.
+    // Recalculate whenever progress changes so newly unlocked tasks extend the path.
+    const lockedNodes = Array.from(
+      sheet.querySelectorAll<HTMLElement>('.learn-path-node[data-locked="true"]')
+    )
+    if (!lockedNodes.length) {
+      setShowLockedCloud(false)
+      return
     }
+
+    const firstLockedNode = lockedNodes[0]
+    const previewEndNode = lockedNodes[Math.min(3, lockedNodes.length) - 1]
+
+    const update = () => {
+      const view = sheet.getBoundingClientRect()
+      const preview = previewEndNode.getBoundingClientRect()
+
+      // Place the last previewed locked node near the upper-middle of the
+      // visible sheet, leaving the lower area covered by the cloud.
+      const previewTop = preview.top - view.top + sheet.scrollTop
+      const maxScrollTop = Math.max(
+        0,
+        Math.min(
+          sheet.scrollHeight - sheet.clientHeight,
+          previewTop - sheet.clientHeight * 0.42
+        )
+      )
+      if (sheet.scrollTop > maxScrollTop + 1) sheet.scrollTop = maxScrollTop
+
+      const firstLocked = firstLockedNode.getBoundingClientRect()
+      setShowLockedCloud(
+        firstLocked.top <= view.bottom - Math.min(90, view.height * 0.14)
+      )
+    }
+
     update()
     sheet.addEventListener("scroll", update, { passive: true })
     window.addEventListener("resize", update)
