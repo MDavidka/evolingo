@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useId, useState } from "react"
-import { ArrowLeft, ArrowRight, Check, CheckCircle2, Copy, RotateCcw } from "lucide-react"
+import { ArrowLeft, ArrowRight, Check, RotateCcw } from "lucide-react"
 import type { IntelligentBlock, IntelligentUI, GrammarRuleBlock, QuizChoiceBlock, VocabularyFlashcardBlock, ComparisonTableBlock, TenseTimelineBlock, StudyPlanBlock, ProgressBarsBlock } from "./schema"
 import { validateIntelligentUI } from "./schema"
 
@@ -89,9 +89,22 @@ function Timeline({ block }: { block: TenseTimelineBlock }) {
   </section>
 }
 
-function StudyPlan({ block }: { block: StudyPlanBlock }) {
+function StudyPlan({ block, storageKey }: { block: StudyPlanBlock; storageKey: string }) {
   const [done, setDone] = useState<number[]>([])
+  const [ready, setReady] = useState(false)
   const label = useId()
+  useEffect(() => {
+    try {
+      const stored = sessionStorage.getItem(storageKey)
+      const parsed: unknown = stored ? JSON.parse(stored) : null
+      if (Array.isArray(parsed)) setDone(parsed.filter((n): n is number => Number.isInteger(n) && n >= 0 && n < block.props.days.length))
+    } catch {}
+    setReady(true)
+  }, [storageKey, block.props.days.length])
+  useEffect(() => {
+    if (!ready) return
+    try { sessionStorage.setItem(storageKey, JSON.stringify(done)) } catch {}
+  }, [done, ready, storageKey])
   return <section className="evo-iui-block" aria-labelledby={label}>
     <div className="evo-iui-flex-heading"><div><p className="evo-iui-kicker">Tanulási terv</p><h3 id={label}>{block.props.title}</h3></div><span className="evo-iui-count">{done.length}/{block.props.days.length}</span></div>
     <div className="evo-iui-plan">
@@ -113,24 +126,24 @@ function Progress({ block }: { block: ProgressBarsBlock }) {
   </section>
 }
 
-function Block({ block }: { block: IntelligentBlock }) {
+function Block({ block, storageKey }: { block: IntelligentBlock; storageKey: string }) {
   switch (block.type) {
     case "grammar_rule": return <GrammarCard block={block} />
     case "quiz_choice": return <QuizCard block={block} />
     case "vocabulary_flashcard": return <Flashcard block={block} />
     case "comparison_table": return <Comparison block={block} />
     case "tense_timeline": return <Timeline block={block} />
-    case "study_plan": return <StudyPlan block={block} />
+    case "study_plan": return <StudyPlan block={block} storageKey={storageKey} />
     case "progress_bars": return <Progress block={block} />
     default: return null
   }
 }
 
 /** Safe by construction: only validated descriptors map to prebuilt components. */
-export default function IntelligentResponse({ ui }: { ui: IntelligentUI }) {
+export default function IntelligentResponse({ ui, messageId }: { ui: IntelligentUI; messageId?: string }) {
   const validated = validateIntelligentUI(ui)
   if (!validated || !validated.blocks.length) return null
   return <div className="evo-iui-response">
-    {validated.blocks.map(block => <Block key={block.id} block={block} />)}
+    {validated.blocks.map(block => <Block key={block.id} block={block} storageKey={"evolingo.study-plan.v1." + (messageId || "session") + "." + block.id} />)}
   </div>
 }
