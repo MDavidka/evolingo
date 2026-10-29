@@ -29,6 +29,18 @@ const soundPalette: Record<UiSound, readonly Segment[]> = {
   unlock: [{ frequency: 590, duration: .07, delay: 0, volume: .014 }, { frequency: 790, duration: .10, delay: .09, volume: .014 }],
 }
 
+// Optional, locally hosted Pixabay sample pack. The files are NOT bundled
+// until individually downloaded and their source/license reviewed. The app
+// defaults to the procedural clips below, which work offline.
+const pixabaySampleFiles: Partial<Record<UiSound, string>> = {
+  tab: "/sounds/tab.mp3",
+  select: "/sounds/select.mp3",
+  open: "/sounds/open.mp3",
+  correct: "/sounds/correct.mp3",
+  complete: "/sounds/complete.mp3",
+  notification: "/sounds/notification.mp3",
+}
+const useSamplePack = process.env.NEXT_PUBLIC_EVO_PIXABAY_SOUND_PACK === "1"
 let context: AudioContext | null = null
 let lastSound = ""
 let lastPlayedAt = 0
@@ -42,6 +54,15 @@ export function playUiSound(kind: UiSound): void {
     if (lastSound === kind && now - lastPlayedAt < 85) return
     lastSound = kind
     lastPlayedAt = now
+    const sample = useSamplePack ? pixabaySampleFiles[kind] : undefined
+    if (sample) {
+      const audio = new Audio(sample)
+      audio.volume = .22
+      void audio.play().catch(() => {
+        // Missing or blocked samples should not produce audible errors.
+      })
+      return
+    }
     const AudioCtor = window.AudioContext ||
       (window as typeof window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext
     if (!AudioCtor) return
