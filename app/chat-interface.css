@@ -163,3 +163,28 @@ body:has(.ref-view-chat) { overflow: hidden !important; }
   .ref-view-chat > .ref-topbar { padding-right: 18px !important; }
   .ref-view-chat .evo-chat-toolbar { padding-left: 62px; padding-right: 52px; }
 }
+
+/* Match the gradient through the keyboard transition instead of showing a white
+   strip where the visual viewport ends. The keyboard itself remains native. */
+html:has(.ref-view-chat),
+body:has(.ref-view-chat),
+body:has(.ref-view-chat) .app-shell,
+body:has(.ref-view-chat) .screen-content,
+.ref-app.ref-view-chat {
+  background: #90a4c3 !important;
+}
+.ref-view-chat .evo-chat-toolbar {
+  min-height: 50px;
+  justify-content: flex-end;
+  padding-left: 0;
+  padding-right: 0;
+}
+.ref-view-chat .evo-chat-title {
+  display: none !important;
+}
+.ref-view-chat .evo-chat-bottom {
+  padding-bottom: 0 !important;
+}
+.ref-view-chat .evo-chat-frame {
+  background-attachment: local !important;
+}
