@@ -327,3 +327,17 @@ body:has(.ref-view-chat) .app-shell.reference-shell > .screen-content {
   flex-shrink: 0 !important;
   overscroll-behavior: none !important;
 }
+
+/* Text-only AI replies: no assistant-side icon or control column. */
+.ref-view-chat .evo-chat-entry--assistant .evo-chat-entry-main {
+  width: 100%;
+  max-width: 100%;
+}
+.ref-view-chat .evo-chat-entry--assistant .evo-chat-bubble {
+  display: block;
+  max-width: 100%;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-size: 15px;
+  line-height: 1.64;
+}
