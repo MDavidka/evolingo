@@ -1464,16 +1464,41 @@ function LeaderboardAvatar({ name, src }: { name: string; src?: string }) {
   </span>
 }
 
-const LeaderboardRow = memo(function LeaderboardRow({ entry, placement }: { entry: LeaderboardEntry; placement: "first" | "middle" | "last" | "solo" }) {
-  return <li className={"leaderboard-entry " + (entry.isCurrent ? "is-current " : "") + "is-" + placement} aria-current={entry.isCurrent ? "true" : undefined}>
-    <span className={"leaderboard-rank leaderboard-rank-" + (entry.rank <= 3 ? entry.rank : "plain")}>{entry.rank}</span>
+const LeaderboardRow = memo(function LeaderboardRow({
+  entry,
+  index,
+  rowRef,
+}: {
+  entry: LeaderboardEntry
+  index: number
+  rowRef?: React.RefObject<HTMLLIElement | null>
+}) {
+  return <li
+    ref={entry.isCurrent ? rowRef : undefined}
+    className={"leaderboard-entry " + (entry.isCurrent ? "is-current" : "")}
+    style={{ animationDelay: Math.min(index, 12) * 28 + "ms" }}
+    aria-current={entry.isCurrent ? "true" : undefined}
+  >
+    <span className={"leaderboard-rank " + (entry.rank === 1 ? "is-first" : "")}>{entry.rank}</span>
     <LeaderboardAvatar name={entry.name} src={entry.avatarImage} />
     <div className="leaderboard-name">
       <strong title={entry.name}>{entry.name}</strong>
       {entry.isCurrent && <span className="leaderboard-you">Te</span>}
     </div>
-    <span className="leaderboard-stars"><Star size={17} fill="currentColor" aria-hidden="true" />{entry.stars.toLocaleString("hu-HU")}</span>
+    <span className="leaderboard-stars"><Star size={15} fill="currentColor" aria-hidden="true" />{entry.stars.toLocaleString("hu-HU")}</span>
   </li>
+})
+
+const LeaderboardStickyRow = memo(function LeaderboardStickyRow({ entry }: { entry: LeaderboardEntry }) {
+  return <div className="leaderboard-sticky" role="status" aria-label={"A te helyezésed: " + entry.rank + ". hely, " + entry.stars + " csillag"}>
+    <span className={"leaderboard-rank " + (entry.rank === 1 ? "is-first" : "")}>{entry.rank}</span>
+    <LeaderboardAvatar name={entry.name} src={entry.avatarImage} />
+    <div className="leaderboard-name">
+      <strong title={entry.name}>{entry.name}</strong>
+      <span className="leaderboard-you">Te</span>
+    </div>
+    <span className="leaderboard-stars"><Star size={15} fill="currentColor" aria-hidden="true" />{entry.stars.toLocaleString("hu-HU")}</span>
+  </div>
 })
 
 function CampaignCountdown() {
@@ -1501,24 +1526,20 @@ function CampaignCountdown() {
   }, [])
 
   const phrase = remaining.days + " nap, " + remaining.hours + " óra, " + remaining.minutes + " perc"
-  return <div className="leaderboard-countdown">
-    <span>Hátralévő idő</span>
-    <time dateTime={endsAt || undefined} aria-label={phrase} aria-live="off">
-      {remaining.days} nap · {String(remaining.hours).padStart(2, "0")}:{String(remaining.minutes).padStart(2, "0")}:{String(remaining.seconds).padStart(2, "0")}
+  const clock = String(remaining.hours).padStart(2, "0") + ":" + String(remaining.minutes).padStart(2, "0") + ":" + String(remaining.seconds).padStart(2, "0")
+  return <div className="leaderboard-season">
+    <span className="leaderboard-season-label">Szezon vége</span>
+    <time className="leaderboard-season-time" dateTime={endsAt || undefined} aria-label={phrase} aria-live="off">
+      {remaining.days} nap {clock}
     </time>
   </div>
-}
-
-function leaderboardRowPlacement(index: number, total: number): "first" | "middle" | "last" | "solo" {
-  if (total <= 1) return "solo"
-  if (index === 0) return "first"
-  if (index === total - 1) return "last"
-  return "middle"
 }
 
 function Leaderboard() {
   const [entries, setEntries] = useState<LeaderboardEntry[] | null>(null)
   const [usingDemo, setUsingDemo] = useState(false)
+  const [currentRowVisible, setCurrentRowVisible] = useState(true)
+  const currentRowRef = useRef<HTMLLIElement>(null)
 
   const loadEntries = useCallback(() => {
     setEntries(null)
@@ -1538,46 +1559,53 @@ function Leaderboard() {
   useEffect(() => { loadEntries() }, [loadEntries])
 
   const visibleEntries = entries ?? []
-  const first = visibleEntries.find(entry => entry.rank === 1)
   const current = visibleEntries.find(entry => entry.isCurrent)
-  const gap = first && current && current.rank > 1 ? Math.max(0, first.stars - current.stars) : null
   const loading = entries === null
 
+  useEffect(() => {
+    const node = currentRowRef.current
+    if (!node || !current) {
+      setCurrentRowVisible(true)
+      return
+    }
+    const observer = new IntersectionObserver(
+      ([entry]) => setCurrentRowVisible(entry.isIntersecting),
+      { root: null, threshold: 0, rootMargin: "0px 0px -88px 0px" },
+    )
+    observer.observe(node)
+    return () => observer.disconnect()
+  }, [current, visibleEntries])
+
   return <div className="leaderboard-page">
-    <div className="leaderboard-hero">
-      <header className="leaderboard-home-header"><img src={foxIcon} alt="Evölingo róka" /><h1>Ranglista</h1></header>
-      <CampaignCountdown />
-    </div>
-    <section className="leaderboard-campaign" aria-label="Novemberi matrica nyereményjáték">
-      <div className="leaderboard-prize">
-        <div className="leaderboard-prize-image">
-          <NextImage src={campaignStickerPack} alt="Evolingo matricacsomag" width={720} height={704} sizes="96px" priority />
-        </div>
-        <div className="leaderboard-prize-copy">
-          <p>Végezz az 1. helyen és nyerj 1 darab matricacsomagot</p>
-          <span>50 darabos evolingo matricacsomag</span>
-        </div>
+    <header className="leaderboard-head">
+      <img className="leaderboard-mark" src={foxIcon} alt="" aria-hidden="true" />
+      <h1>Ranglista</h1>
+    </header>
+    <CampaignCountdown />
+    <section className="leaderboard-prize-row" aria-label="Szezon nyeremény">
+      <div className="leaderboard-prize-image">
+        <NextImage src={campaignStickerPack} alt="Evolingo matricacsomag" width={720} height={704} sizes="80px" priority />
+      </div>
+      <div className="leaderboard-prize-copy">
+        <p className="leaderboard-prize-title">Nyerj egy matricacsomagot</p>
+        <p className="leaderboard-prize-sub">Végezz az 1. helyen a szezon végén.</p>
       </div>
     </section>
-    {!loading && current?.rank === 1 && visibleEntries.length > 0 && <aside className="leaderboard-status leaderboard-status-leader" aria-label="Te vezeted a ranglistát">
-      <Trophy size={17} aria-hidden="true" />
-      <span>Jelenleg te vezeted a ranglistát</span>
-    </aside>}
-    {!loading && gap !== null && <aside className="leaderboard-status leaderboard-status-gap" aria-label={gap + " csillag a 1. helyig"}>
-      <Star size={17} fill="currentColor" aria-hidden="true" />
-      <span>{gap.toLocaleString("hu-HU")} csillag a 1. helyig</span>
-    </aside>}
     {usingDemo && !loading && <p className="leaderboard-demo-note" role="status">Bemutató ranglista — az élő adatok most nem érhetők el. <button type="button" onClick={loadEntries}>Újrapróbál</button></p>}
+    <div className="leaderboard-section-head">
+      <h2>Helyezések</h2>
+      <span>Csillagok szerint</span>
+    </div>
     <ol className="leaderboard-list" aria-label="Csillag ranglista">
       {loading && Array.from({ length: 6 }, (_, index) => <li className="leaderboard-skeleton" key={"skeleton-" + index} aria-hidden="true">
         <span /><span /><span /><span />
       </li>)}
-      {!loading && visibleEntries.map((entry, index) => <LeaderboardRow key={entry.id} entry={entry} placement={leaderboardRowPlacement(index, visibleEntries.length)} />)}
+      {!loading && visibleEntries.map((entry, index) => <LeaderboardRow key={entry.id} entry={entry} index={index} rowRef={currentRowRef} />)}
       {!loading && visibleEntries.length === 0 && <li className="leaderboard-empty">
-        <img src={foxIcon} alt="" loading="lazy" />
         <p>Még nincs rangsorolt tanuló.</p>
       </li>}
     </ol>
+    {!loading && current && !currentRowVisible && <LeaderboardStickyRow entry={current} />}
   </div>
 }
 
