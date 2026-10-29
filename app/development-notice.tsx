@@ -14,16 +14,25 @@ export default function DevelopmentNotice() {
       if (window.localStorage.getItem(DISMISS_KEY) === "dismissed") return
     } catch { /* Storage can be restricted in private browsing. */ }
 
-    // Never stack multiple modal notices or cover the loading screen.
+    // Let the app finish its own post-splash notification transition.
+    // Keep checking until there is no other dialog to avoid stacked sheets.
+    let activationTimer: number | undefined
     const maybeShow = () => {
-      if (document.querySelector(".learn-splash, .system-notice-backdrop")) return
-      setVisible(true)
-      observer.disconnect()
+      if (activationTimer !== undefined || document.querySelector(".learn-splash, .system-notice-backdrop")) return
+      activationTimer = window.setTimeout(() => {
+        activationTimer = undefined
+        if (document.querySelector(".learn-splash, .system-notice-backdrop")) return
+        setVisible(true)
+        observer.disconnect()
+      }, 550)
     }
     const observer = new MutationObserver(maybeShow)
     observer.observe(document.body, { childList: true, subtree: true })
     maybeShow()
-    return () => observer.disconnect()
+    return () => {
+      observer.disconnect()
+      if (activationTimer !== undefined) window.clearTimeout(activationTimer)
+    }
   }, [])
 
   useEffect(() => {
