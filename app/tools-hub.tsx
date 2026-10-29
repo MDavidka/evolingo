@@ -2,7 +2,6 @@
 
 import { useMemo, useState } from "react"
 import { ArrowUpRight, BarChart3, CalendarDays, ChevronRight, Search, Send, Users, X } from "lucide-react"
-import "./tools-hub.css"
 
 type Filter = "all" | "mine" | "plugins"
 type ToolHubProps = {
