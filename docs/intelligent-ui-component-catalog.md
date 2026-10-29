@@ -6,10 +6,17 @@ Az interaktív tanulási felület kizárólag a **külön Evölingo AI chatben**
 
 A meglévő `POST /api/chat` útvonal változatlanul támogatja a `{ messages }` JSON-kérésre adott `{ reply }` JSON-választ. Az `{ messages, interactive: true }` kérés szöveges eseményfolyamot ad: először fokozatos `delta` szövegrészek, majd egy végleges `text` esemény, szükség esetén `ui`, végül `done`. Az interaktív blokkok a már megjelenített szöveg után érkeznek. A kliens az animációs képkockákhoz igazítva frissíti a szöveget, hogy az iPhone görgetése gördülékeny maradjon.
 
+## Az AI-válaszok megjelenítése
+
+A korábbi nyers Markdown-szöveg helyett a `app/chat-rich-text.tsx` biztonságos React-megjelenítő rajzolja a címsorokat, kiemeléseket, idézeteket, felsorolásokat, egyszerű kódpéldákat, táblázatokat, képeket és hivatkozásokat. A felhasználó nem a `###` vagy `**` formázójeleket látja, hanem a megfelelő felületi elemeket. A hivatkozások csak ellenőrzött HTTPS-címek vagy belső útvonalak lehetnek. Külső képeket kizárólag engedélyezett, ismert médiakiszolgálókról jelenítünk meg.
+
+A modelltől származó HTML/JS/JSX/CSS soha nem kerül végrehajtásra, és a UI-komponensek kizárólag ellenőrzött JSON-adatokból, előre elkészített React-kódból épülnek fel. A sima szöveges válasz végig használható marad, ha az opcionális UI nem áll össze.
+
 ## Engedélyezett komponensek
 
 | Típus | Használat | Felhasználói interakció | Biztonsági korlát |
 | --- | --- | --- | --- |
+| `concept_card` | Rövid vizuális fogalommagyarázat | Fix Lucide ikon, oktatási jelvény | Ellenőrzött ikonválaszték; nincs fiókstátusz-állítás |
 | `grammar_rule` | Nyelvtani szabály és példák | Olvasás | 5 példa |
 | `quiz_choice` | Feleletválasztás és visszajelzés | Válasz, újrapróbálás | 2–5 válasz |
 | `vocabulary_flashcard` | Kétnyelvű szógyakorlás | Megfordítás, előző/következő | 1–12 kártya |
