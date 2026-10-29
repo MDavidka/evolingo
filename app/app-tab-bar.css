@@ -104,8 +104,9 @@ body .app-shell.reference-shell > .screen-content.learn-home-content:has(.ref-ap
 .app-shell.reference-shell .ref-app:not(.ref-view-chat):not(.ref-view-auth) {
   padding-bottom: calc(122px + env(safe-area-inset-bottom, 0px)) !important;
 }
+/* The primary navigation is now on the side: do not reserve old bottom-tab space. */
 .app-shell.reference-shell:has(.ref-view-chat) .evo-chat-frame {
-  padding-bottom: calc(87px + max(12px, env(safe-area-inset-bottom, 0px))) !important;
+  padding-bottom: max(10px, env(safe-area-inset-bottom, 0px)) !important;
 }
 .app-shell.reference-shell:has(.ref-view-chat):has(textarea:focus) .evo-chat-frame {
   padding-bottom: var(--evo-chat-bottom, 10px) !important;
