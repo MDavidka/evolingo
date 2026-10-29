@@ -1,0 +1,136 @@
+"use client"
+
+import { useEffect, useId, useState } from "react"
+import { ArrowLeft, ArrowRight, Check, CheckCircle2, Copy, RotateCcw } from "lucide-react"
+import type { IntelligentBlock, IntelligentUI, GrammarRuleBlock, QuizChoiceBlock, VocabularyFlashcardBlock, ComparisonTableBlock, TenseTimelineBlock, StudyPlanBlock, ProgressBarsBlock } from "./schema"
+import { validateIntelligentUI } from "./schema"
+
+function GrammarCard({ block }: { block: GrammarRuleBlock }) {
+  const label = useId()
+  return <section className="evo-iui-block" aria-labelledby={label}>
+    <p className="evo-iui-kicker">Nyelvtani szabály</p>
+    <h3 id={label}>{block.props.title}</h3>
+    <p className="evo-iui-rule">{block.props.rule}</p>
+    <div className="evo-iui-examples">{block.props.examples.map((value, i) => <p key={i}>{value}</p>)}</div>
+  </section>
+}
+
+function QuizCard({ block }: { block: QuizChoiceBlock }) {
+  const [selected, setSelected] = useState<number | null>(null)
+  const label = useId()
+  const correct = selected === block.props.correctIndex
+  return <section className="evo-iui-block" aria-labelledby={label}>
+    <p className="evo-iui-kicker">Gyakorlókérdés</p>
+    <h3 id={label}>{block.props.question}</h3>
+    <div className="evo-iui-choices">
+      {block.props.choices.map((choice, i) => <button key={i} type="button"
+        disabled={selected !== null}
+        aria-pressed={selected === i}
+        className={selected === i ? (correct ? "is-correct" : "is-incorrect") : selected !== null && i === block.props.correctIndex ? "is-correct" : ""}
+        onClick={() => setSelected(i)}>
+        <span>{String.fromCharCode(65 + i)}</span>{choice}
+        {selected !== null && i === block.props.correctIndex && <Check size={17} aria-hidden="true" />}
+      </button>)}
+    </div>
+    {selected !== null && <div className="evo-iui-feedback" role="status">
+      <strong>{correct ? "Helyes válasz!" : "Nem ez a helyes válasz."}</strong>
+      <p>{block.props.explanation}</p>
+      <button type="button" onClick={() => setSelected(null)}><RotateCcw size={15} /> Újrapróbálás</button>
+    </div>}
+  </section>
+}
+
+function Flashcard({ block }: { block: VocabularyFlashcardBlock }) {
+  const [index, setIndex] = useState(0)
+  const [flipped, setFlipped] = useState(false)
+  const label = useId()
+  const cards = block.props.cards
+  const current = cards[index]
+  const go = (next: number) => { setIndex(next); setFlipped(false) }
+  return <section className="evo-iui-block" aria-labelledby={label}>
+    <div className="evo-iui-flex-heading"><div><p className="evo-iui-kicker">Tanulókártyák</p><h3 id={label}>{block.props.title}</h3></div><span className="evo-iui-count">{index + 1} / {cards.length}</span></div>
+    <button type="button" className="evo-iui-flashcard" aria-label={flipped ? "Vissza a szóhoz" : "Jelentés megjelenítése"} onClick={() => setFlipped(v => !v)}>
+      <small>{flipped ? "Jelentés" : "Kifejezés"}</small>
+      <strong>{flipped ? current.back : current.front}</strong>
+      {flipped && current.example && <span>{current.example}</span>}
+      <em>Érintsd meg a megfordításhoz</em>
+    </button>
+    <div className="evo-iui-pager">
+      <button type="button" disabled={index === 0} aria-label="Előző kártya" onClick={() => go(index - 1)}><ArrowLeft size={19} /></button>
+      <span>{index + 1}. kártya</span>
+      <button type="button" disabled={index === cards.length - 1} aria-label="Következő kártya" onClick={() => go(index + 1)}><ArrowRight size={19} /></button>
+    </div>
+  </section>
+}
+
+function Comparison({ block }: { block: ComparisonTableBlock }) {
+  const label = useId()
+  return <section className="evo-iui-block" aria-labelledby={label}>
+    <p className="evo-iui-kicker">Összehasonlítás</p>
+    <h3 id={label}>{block.props.title}</h3>
+    <div className="evo-iui-comparison">
+      <div className="evo-iui-comparison-head"><span></span><strong>{block.props.columns[0]}</strong><strong>{block.props.columns[1]}</strong></div>
+      {block.props.rows.map((row, i) => <div className="evo-iui-comparison-row" key={i}><strong>{row.label}</strong><span>{row.left}</span><span>{row.right}</span></div>)}
+    </div>
+  </section>
+}
+
+function Timeline({ block }: { block: TenseTimelineBlock }) {
+  const [active, setActive] = useState(0)
+  const label = useId()
+  const selected = block.props.steps[active]
+  return <section className="evo-iui-block" aria-labelledby={label}>
+    <p className="evo-iui-kicker">Idővonal</p>
+    <h3 id={label}>{block.props.title}</h3>
+    <div className="evo-iui-timeline-tabs" role="group" aria-label="Idővonal lépései">
+      {block.props.steps.map((step, i) => <button key={i} type="button" className={active === i ? "is-active" : ""} aria-pressed={active === i} onClick={() => setActive(i)}>{step.label}</button>)}
+    </div>
+    <div className="evo-iui-timeline-description" role="status"><span>{selected.phase === "past" ? "Múlt" : selected.phase === "present" ? "Jelen" : "Jövő"}</span><p>{selected.detail}</p></div>
+  </section>
+}
+
+function StudyPlan({ block }: { block: StudyPlanBlock }) {
+  const [done, setDone] = useState<number[]>([])
+  const label = useId()
+  return <section className="evo-iui-block" aria-labelledby={label}>
+    <div className="evo-iui-flex-heading"><div><p className="evo-iui-kicker">Tanulási terv</p><h3 id={label}>{block.props.title}</h3></div><span className="evo-iui-count">{done.length}/{block.props.days.length}</span></div>
+    <div className="evo-iui-plan">
+      {block.props.days.map((day, i) => <label key={i}>
+        <input type="checkbox" checked={done.includes(i)} onChange={e => setDone(previous => e.target.checked ? [...previous, i] : previous.filter(n => n !== i))} />
+        <span className="evo-iui-check" aria-hidden="true">{done.includes(i) && <Check size={14} />}</span>
+        <span><strong>{day.day}</strong><small>{day.task}</small></span>
+      </label>)}
+    </div>
+    <p className="evo-iui-hint">A jelölések ebben a beszélgetésben maradnak. A terv nem módosítja a leckéidet.</p>
+  </section>
+}
+
+function Progress({ block }: { block: ProgressBarsBlock }) {
+  const label = useId()
+  return <section className="evo-iui-block" aria-labelledby={label}>
+    <p className="evo-iui-kicker">Haladás</p><h3 id={label}>{block.props.title}</h3>
+    <div className="evo-iui-progress">{block.props.items.map((item, i) => <div key={i}><div><strong>{item.label}</strong><span>{item.value} / {item.max}</span></div><progress value={item.value} max={item.max} aria-label={item.label} /></div>)}</div>
+  </section>
+}
+
+function Block({ block }: { block: IntelligentBlock }) {
+  switch (block.type) {
+    case "grammar_rule": return <GrammarCard block={block} />
+    case "quiz_choice": return <QuizCard block={block} />
+    case "vocabulary_flashcard": return <Flashcard block={block} />
+    case "comparison_table": return <Comparison block={block} />
+    case "tense_timeline": return <Timeline block={block} />
+    case "study_plan": return <StudyPlan block={block} />
+    case "progress_bars": return <Progress block={block} />
+    default: return null
+  }
+}
+
+/** Safe by construction: only validated descriptors map to prebuilt components. */
+export default function IntelligentResponse({ ui }: { ui: IntelligentUI }) {
+  const validated = validateIntelligentUI(ui)
+  if (!validated || !validated.blocks.length) return null
+  return <div className="evo-iui-response">
+    {validated.blocks.map(block => <Block key={block.id} block={block} />)}
+  </div>
+}
