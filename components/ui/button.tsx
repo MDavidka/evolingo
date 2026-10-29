@@ -1,20 +1,15 @@
 "use client"
 
-/** Local shadcn-style, white-theme button primitive for the Evölingo profile. */
-import { forwardRef, type ButtonHTMLAttributes } from "react"
-import styles from "./profile-primitives.module.css"
+import { Button as OpenAIButton } from "@openai/apps-sdk-ui/components/Button"
+import type { ComponentProps } from "react"
 
-export type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
+export type ButtonProps = Omit<ComponentProps<typeof OpenAIButton>, "variant" | "size" | "color"> & {
   variant?: "default" | "secondary" | "outline" | "ghost"
   size?: "default" | "sm" | "icon"
 }
-export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ variant = "default", size = "default", className = "", type = "button", ...props }, ref) =>
-    <button
-      ref={ref}
-      type={type}
-      className={[styles.button, styles[variant], styles[size], className].filter(Boolean).join(" ")}
-      {...props}
-    />
-)
-Button.displayName = "Button"
+
+export function Button({ variant = "default", size = "default", className = "", type = "button", children, ...props }: ButtonProps) {
+  const visualVariant: "solid" | "soft" | "outline" | "ghost" = variant === "default" ? "solid" : variant === "secondary" ? "soft" : variant
+  const controlSize: "lg" | "sm" | "md" = size === "icon" ? "lg" : size === "sm" ? "sm" : "md"
+  return <OpenAIButton color="primary" variant={visualVariant} size={controlSize} uniform={size === "icon"} className={className} type={type} {...props}>{children}</OpenAIButton>
+}

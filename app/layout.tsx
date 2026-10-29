@@ -8,6 +8,7 @@ import "./development-notice.css"
 import "./reference-screens.css"
 import "./chat-interface.css"
 import "./app-tab-bar.css"
+import { AppsSDKUIProvider } from "@openai/apps-sdk-ui/components/AppsSDKUIProvider"
 import PwaRegister from "./pwa-register"
 import DevelopmentNotice from "./development-notice"
 
@@ -22,4 +23,4 @@ export const metadata: Metadata = {
   formatDetection: { telephone: false },
 }
 export const viewport: Viewport = { width: "device-width", initialScale: 1, themeColor: "#ffffff", viewportFit: "cover" }
-export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) { return <html lang="hu"><body className={inter.className}><PwaRegister /><DevelopmentNotice />{children}</body></html> }
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) { return <html lang="hu"><body className={inter.className}><AppsSDKUIProvider linkComponent="a"><PwaRegister /><DevelopmentNotice />{children}</AppsSDKUIProvider></body></html> }

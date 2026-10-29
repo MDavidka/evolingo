@@ -1,10 +1,8 @@
 "use client"
 
-import { forwardRef, type InputHTMLAttributes } from "react"
-import styles from "./profile-primitives.module.css"
+import { Input as OpenAIInput } from "@openai/apps-sdk-ui/components/Input"
+import type { ComponentProps } from "react"
 
-export const Input = forwardRef<HTMLInputElement, InputHTMLAttributes<HTMLInputElement>>(
-  ({ className = "", ...props }, ref) =>
-    <input ref={ref} className={[styles.input, className].filter(Boolean).join(" ")} {...props} />
-)
-Input.displayName = "Input"
+export function Input({ className = "", ...props }: ComponentProps<typeof OpenAIInput>) {
+  return <OpenAIInput className={className} {...props} />
+}
