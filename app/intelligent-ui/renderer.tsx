@@ -1,8 +1,8 @@
 "use client"
 
 import { useEffect, useId, useState } from "react"
-import { ArrowLeft, ArrowRight, Check, RotateCcw } from "lucide-react"
-import type { IntelligentBlock, IntelligentUI, GrammarRuleBlock, QuizChoiceBlock, VocabularyFlashcardBlock, ComparisonTableBlock, TenseTimelineBlock, StudyPlanBlock, ProgressBarsBlock } from "./schema"
+import { ArrowLeft, ArrowRight, Check, RotateCcw, Lightbulb, BookOpen, Languages, CheckCircle2 } from "lucide-react"
+import type { IntelligentBlock, IntelligentUI, GrammarRuleBlock, QuizChoiceBlock, VocabularyFlashcardBlock, ComparisonTableBlock, TenseTimelineBlock, StudyPlanBlock, ConceptCardBlock, ProgressBarsBlock } from "./schema"
 import { validateIntelligentUI } from "./schema"
 
 function GrammarCard({ block }: { block: GrammarRuleBlock }) {
@@ -118,6 +118,18 @@ function StudyPlan({ block, storageKey }: { block: StudyPlanBlock; storageKey: s
   </section>
 }
 
+function Concept({ block }: { block: ConceptCardBlock }) {
+  const label = useId()
+  const iconMap = { idea: Lightbulb, book: BookOpen, language: Languages, check: CheckCircle2 }
+  const Icon = iconMap[block.props.icon]
+  return <section className="evo-iui-block evo-iui-concept" aria-labelledby={label}>
+    <div className="evo-iui-concept-top"><span className="evo-iui-concept-icon"><Icon size={23} strokeWidth={1.75} aria-hidden="true" /></span>
+    {block.props.badge && <span className="evo-iui-concept-badge">{block.props.badge}</span>}</div>
+    <h3 id={label}>{block.props.title}</h3>
+    <p>{block.props.description}</p>
+  </section>
+}
+
 function Progress({ block }: { block: ProgressBarsBlock }) {
   const label = useId()
   return <section className="evo-iui-block" aria-labelledby={label}>
@@ -134,6 +146,7 @@ function Block({ block, storageKey }: { block: IntelligentBlock; storageKey: str
     case "comparison_table": return <Comparison block={block} />
     case "tense_timeline": return <Timeline block={block} />
     case "study_plan": return <StudyPlan block={block} storageKey={storageKey} />
+    case "concept_card": return <Concept block={block} />
     case "progress_bars": return <Progress block={block} />
     default: return null
   }
