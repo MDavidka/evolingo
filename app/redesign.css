@@ -1460,3 +1460,221 @@ body .profile-badges-list{
   body .profile-badge{width:74px!important;min-width:74px!important}
   body .profile-badge>span:last-child{max-width:72px!important}
 }
+
+
+/* 2026 iOS polish — compact silver reward tiles, calm motion, purposeful feedback */
+body .learn-path-overview{
+  align-items:start !important;
+}
+body .learn-lesson-progress-banner{
+  align-self:start !important;
+}
+body .learn-side-countdowns{
+  grid-template-rows:repeat(2,minmax(92px,auto)) !important;
+  gap:10px !important;
+  overflow:visible !important;
+}
+body .learn-countdown-card{
+  min-height:92px !important;
+  width:100% !important;
+  display:flex !important;
+  flex-direction:column !important;
+  align-items:center !important;
+  justify-content:flex-end !important;
+  gap:0 !important;
+  padding:6px 3px 11px !important;
+  border:1px solid rgba(115,115,123,.10) !important;
+  border-radius:20px !important;
+  background:#dfdfe1 !important;
+  color:#424247 !important;
+  box-shadow:0 5px 0 #bcbcbf, inset 0 1px 0 rgba(255,255,255,.64) !important;
+}
+body .learn-countdown-art{
+  position:absolute !important;
+  top:4px !important;
+  left:50% !important;
+  width:64px !important;
+  height:64px !important;
+  transform:translateX(-50%) scale(.79) !important;
+  transform-origin:top center !important;
+}
+body .learn-countdown-card small{display:none !important}
+body .learn-countdown-card strong{
+  position:relative !important;
+  z-index:1 !important;
+  font-size:clamp(14px,4.4vw,18px) !important;
+  font-weight:750 !important;
+  letter-spacing:-.03em !important;
+  line-height:1.15 !important;
+  font-variant-numeric:tabular-nums !important;
+}
+body .learn-countdown-card.chest.is-counting,
+body .learn-countdown-card.lesson.is-counting{
+  background:#dedee0 !important;
+  color:#4b4b50 !important;
+}
+body .learn-countdown-card:active{
+  transform:translateY(2px) scale(.98) !important;
+}
+body .learn-skill-button.is-locked .evo-skill-cutout{
+  filter:grayscale(1) saturate(0) !important;
+  opacity:.78 !important;
+}
+body .learn-skill-button.is-ready .evo-skill-cutout,
+body .learn-skill-button.is-done .evo-skill-cutout{
+  filter:none !important;
+  opacity:1 !important;
+}
+
+/* One understated moving selector, rather than separate active tab backgrounds. */
+body .bottom-nav{
+  border-radius:32px !important;
+  padding:6px !important;
+  background:rgba(244,245,247,.88) !important;
+  border:1px solid rgba(255,255,255,.88) !important;
+  box-shadow:0 12px 30px rgba(24,30,42,.11),inset 0 1px 0 rgba(255,255,255,.9) !important;
+  -webkit-backdrop-filter:blur(22px) saturate(145%) !important;
+  backdrop-filter:blur(22px) saturate(145%) !important;
+}
+body .nav-selection-indicator{
+  top:5px !important;
+  bottom:5px !important;
+  left:5px !important;
+  width:calc((100% - 10px) / 4) !important;
+  border-radius:27px !important;
+  background:rgba(255,255,255,.97) !important;
+  box-shadow:0 3px 12px rgba(22,27,39,.09),inset 0 1px 0 #fff !important;
+  -webkit-backdrop-filter:none !important;
+  backdrop-filter:none !important;
+  touch-action:none !important;
+  transition:transform .38s cubic-bezier(.16,1,.3,1),box-shadow .2s ease !important;
+  will-change:transform;
+}
+body .nav-selection-indicator.is-dragging{
+  transition:none !important;
+  box-shadow:0 5px 16px rgba(22,27,39,.12),inset 0 1px 0 #fff !important;
+}
+body .bottom-nav button{
+  color:#55565d !important;
+  -webkit-tap-highlight-color:transparent !important;
+}
+body .bottom-nav button.active{
+  background:transparent !important;
+  box-shadow:none !important;
+  color:#18181b !important;
+}
+body .bottom-nav button.active svg{color:#18181b !important}
+
+/* Modern white loading experience. */
+body .learn-splash{
+  background:#fff !important;
+  color:#1d1d22 !important;
+  gap:10px !important;
+}
+body .learn-splash img{
+  width:76px !important;
+  height:76px !important;
+  object-fit:contain !important;
+  border-radius:0 !important;
+  animation:learn-splash-rise .5s cubic-bezier(.2,.8,.2,1) both !important;
+}
+body .learn-splash strong{
+  font-size:33px !important;
+  font-weight:800 !important;
+  letter-spacing:-.055em !important;
+}
+body .learn-splash > span{
+  font-size:14px !important;
+  color:#77777f !important;
+}
+body .learn-splash-progress{
+  width:104px !important;
+  height:3px !important;
+  margin:21px 0 0 !important;
+  overflow:hidden !important;
+  border-radius:99px !important;
+  background:#ededf0 !important;
+}
+body .learn-splash-progress span{
+  display:block !important;
+  height:100% !important;
+  width:44% !important;
+  border-radius:inherit !important;
+  background:#64ac48 !important;
+  animation:evo-loading-travel 1.2s ease-in-out infinite alternate !important;
+}
+body .learn-splash-footnote{
+  display:block !important;
+  color:#a0a0a6 !important;
+  font-size:11px !important;
+  font-weight:450 !important;
+  letter-spacing:.01em !important;
+}
+@keyframes evo-loading-travel{
+  from{transform:translateX(-100%)}
+  to{transform:translateX(230%)}
+}
+
+/* White, content-sized system sheets with matching monochrome iconography. */
+body .system-notice-backdrop{background:rgba(25,25,32,.27) !important}
+body .system-notice-sheet{
+  min-height:0 !important;
+  gap:0 !important;
+  justify-content:flex-start !important;
+  padding:38px 25px max(26px,calc(22px + env(safe-area-inset-bottom))) !important;
+  border-radius:32px 32px 0 0 !important;
+  box-shadow:0 -8px 32px rgba(20,24,35,.075) !important;
+}
+body .system-notice-icon{
+  width:58px !important;
+  height:58px !important;
+  margin:0 0 20px !important;
+  border-radius:18px !important;
+  color:#24252a !important;
+  background:#f3f3f5 !important;
+  box-shadow:none !important;
+}
+body .system-notice-sheet>p{
+  color:#7b7b83 !important;
+  font-size:11px !important;
+  font-weight:650 !important;
+  letter-spacing:.07em !important;
+}
+body .system-notice-sheet h2{
+  color:#1c1c1e !important;
+  font-size:clamp(23px,6vw,29px) !important;
+  font-weight:750 !important;
+}
+body .system-notice-copy{
+  margin:13px 0 26px !important;
+  color:#65656c !important;
+  font-size:15px !important;
+  font-weight:400 !important;
+  line-height:1.45 !important;
+}
+body .system-notice-action{
+  min-height:52px !important;
+  border-radius:17px !important;
+  box-shadow:none !important;
+  font-size:16px !important;
+  font-weight:650 !important;
+}
+body .system-notice-action:active{
+  transform:scale(.985) !important;
+  box-shadow:none !important;
+}
+body .system-notice-chest-art{
+  width:74px !important;
+  height:74px !important;
+  margin:0 0 18px !important;
+}
+@media(max-width:359px){
+  body .learn-side-countdowns{grid-template-rows:repeat(2,minmax(82px,auto)) !important}
+  body .learn-countdown-card{min-height:82px !important;border-radius:17px !important}
+  body .learn-countdown-art{transform:translateX(-50%) scale(.69) !important}
+  body .learn-countdown-card strong{font-size:13px !important}
+}
+@media(prefers-reduced-motion:reduce){
+  body .learn-splash-progress span{animation:none !important;transform:none !important;width:100% !important}
+  body .nav-selection-indicator{transition:none !important}
+}
