@@ -1,12 +1,14 @@
-# Evölingo — Intelligent UI v1
+# Evölingo — archív Intelligent UI komponenskatalógus
 
-## Állapot
+**Jelenlegi működés: kizárólag szöveges AI-válaszok.** Az interaktív AI-válaszkártyák, táblázatok, tanulókártyák, kvízgombok, jelvények, ikonok, linkek, válaszhoz tartozó másolásgomb és vizuális betöltésjelzők **ki vannak kapcsolva**. Az AI nem készít JSON-alapú felületleírásokat, és a kliens nem jeleníti meg a korábban elmentett UI-leírásokat sem. A Tanulás képernyő továbbra is AI-mentes.
 
-Az interaktív tanulási felület kizárólag a **külön Evölingo AI chatben** aktív. A **Tanulás kezdőképernyőn nem jelenik meg AI-funkció**. Az oktatási komponensek egy saját React-készletből állnak, nem az OpenAI ChatGPT belső, nem publikus felületrajzolójából.
+A `POST /api/chat` továbbra is működik: a `{ messages }` kérés JSON-választ, a `{ messages, interactive: true }` kérés pedig kizárólag `delta`, `text`, `done` (vagy `error`) eseményeket küld. A JSON csak belső adatcsere, nem a felhasználói válasz tartalma. Az esetleges régebbi Markdown-szintaxist a kliens olvasható szöveggé alakítja.
 
-A meglévő `POST /api/chat` útvonal változatlanul támogatja a `{ messages }` JSON-kérésre adott `{ reply }` JSON-választ. Az `{ messages, interactive: true }` kérés szöveges eseményfolyamot ad: először fokozatos `delta` szövegrészek, majd egy végleges `text` esemény, szükség esetén `ui`, végül `done`. Az interaktív blokkok a már megjelenített szöveg után érkeznek. A kliens az animációs képkockákhoz igazítva frissíti a szöveget, hogy az iPhone görgetése gördülékeny maradjon.
+Az alábbi katalógus **archív referencia**, nem aktív vagy bekapcsolandó funkciólista. A megmaradt forrásfájlok nem kapcsolódnak a chat megjelenítéséhez. Visszakapcsolásukhoz külön termékdöntés szükséges.
 
-## Engedélyezett komponensek
+---
+
+## Korábban megvalósított, jelenleg inaktív komponensek
 
 | Típus | Használat | Felhasználói interakció | Biztonsági korlát |
 | --- | --- | --- | --- |
