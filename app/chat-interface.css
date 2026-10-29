@@ -257,3 +257,43 @@ body:has(.ref-view-chat) .screen-content,
 .ref-view-chat .evo-chat-composer textarea {
   touch-action: manipulation;
 }
+
+/* Keyboard-safe background: keep the same full-screen gradient when the visual
+   viewport shrinks. Never paint a second gradient inside the shrinking frame. */
+html:has(.ref-view-chat),
+body:has(.ref-view-chat),
+body:has(.ref-view-chat) .app-shell,
+body:has(.ref-view-chat) .screen-content,
+.ref-app.ref-view-chat {
+  background: linear-gradient(180deg,#fff 0%,#fff 24%,#fcfcfd 36%,#f1f2f6 50%,#dbe0eb 65%,#b6c2d7 81%,#8095b7 100%) !important;
+  background-size: 100% var(--evo-chat-layout-height, 100dvh) !important;
+  background-repeat: no-repeat !important;
+  background-position: top center !important;
+}
+.ref-view-chat .evo-chat-frame {
+  background: transparent !important;
+  background-image: none !important;
+  overscroll-behavior: none !important;
+  touch-action: pan-y;
+}
+.ref-view-chat .evo-chat-messages {
+  overscroll-behavior: contain !important;
+  scrollbar-width: none !important;
+}
+.ref-view-chat .evo-chat-messages::-webkit-scrollbar { display: none; }
+.ref-view-chat .evo-chat-bottom {
+  overscroll-behavior: none;
+  touch-action: auto;
+}
+.ref-view-chat .evo-composer-surface {
+  width: 100%;
+  border-radius: 999px;
+  background: #fff;
+  box-shadow: 0 3px 18px rgba(29,43,69,.08);
+}
+.ref-view-chat .evo-chat-composer {
+  background: #fff !important;
+  border: 1px solid #eceef2 !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
