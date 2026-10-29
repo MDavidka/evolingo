@@ -67,8 +67,12 @@ export function playUiSound(kind: UiSound): void {
       (window as typeof window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext
     if (!AudioCtor) return
     if (!context || context.state === "closed") context = new AudioCtor()
-    if (context.state === "suspended") void context.resume().catch(() => {})
-    if (context.state !== "running") return // Respect Safari's user-gesture policy.
+    if (context.state === "suspended") {
+      // Safari resumes Web Audio from the first actual tap. Schedule the cue
+      // now so that first tap is not silent, but never queue an autoplay chime.
+      if (kind === "welcome") return
+      void context.resume().catch(() => {})
+    }
 
     const base = context.currentTime + .005
     for (const segment of soundPalette[kind]) {
