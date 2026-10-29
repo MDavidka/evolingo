@@ -1,7 +1,7 @@
 "use client"
 
 import { useCallback, useEffect, useRef, useState } from "react"
-import { Folder, Grid2X2, PanelLeft } from "lucide-react"
+import { BookOpen, Folder, Grid2X2, PanelLeft } from "lucide-react"
 
 export type AppTab = "learn" | "ai" | "files" | "tools" | "profile"
 
@@ -13,15 +13,17 @@ type Props = {
 }
 
 const destinations = [
-  { id: "learn", label: "Tanulás", Icon: PanelLeft },
+  { id: "learn", label: "Tanulás", Icon: BookOpen },
+  { id: "ai", label: "AI", Icon: BookOpen },
   { id: "files", label: "Fájlok", Icon: Folder },
   { id: "tools", label: "Eszközök", Icon: Grid2X2 },
 ] as const
 
+/** Shared navigation on every app screen. The trigger morphs into the menu. */
 export default function AppTabBar({ activeTab, onSelect }: Props) {
   const [expanded, setExpanded] = useState(false)
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const railRef = useRef<HTMLDivElement>(null)
+  const anchor = useRef<HTMLDivElement>(null)
 
   const clearTimer = useCallback(() => {
     if (timer.current) clearTimeout(timer.current)
@@ -45,42 +47,51 @@ export default function AppTabBar({ activeTab, onSelect }: Props) {
 
   useEffect(() => {
     const onSend = () => collapse()
-    const onOutside = (event: PointerEvent) => {
-      if (railRef.current && !railRef.current.contains(event.target as Node)) collapse()
+    const onPointerDown = (event: PointerEvent) => {
+      if (anchor.current && !anchor.current.contains(event.target as Node)) collapse()
+    }
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") collapse()
     }
     window.addEventListener("evolingo:chat-message-sent", onSend)
-    document.addEventListener("pointerdown", onOutside)
+    document.addEventListener("pointerdown", onPointerDown)
+    document.addEventListener("keydown", onKeyDown)
     return () => {
       window.removeEventListener("evolingo:chat-message-sent", onSend)
-      document.removeEventListener("pointerdown", onOutside)
+      document.removeEventListener("pointerdown", onPointerDown)
+      document.removeEventListener("keydown", onKeyDown)
       clearTimer()
     }
   }, [collapse, clearTimer])
 
   return (
-    <div ref={railRef} className="evo-morph-anchor">
+    <div ref={anchor} className="evo-morph-anchor">
       <div className={`evo-tabbar evo-glass-rail evo-morph-rail ${expanded ? "is-expanded" : "is-compact"}`}>
-        <nav aria-label="Fő navigáció" onPointerEnter={event => { if (event.pointerType === "mouse" && expanded) scheduleCollapse() }}>
+        <nav aria-label="Fő navigáció">
           <button
             type="button"
             className="evo-morph-toggle"
-            aria-label={expanded ? "Navigáció bezárása" : "Navigáció megnyitása"}
+            aria-label={expanded ? "Menü bezárása" : "Menü megnyitása"}
             aria-expanded={expanded}
             onClick={() => expanded ? collapse() : expand()}
           >
-            <PanelLeft size={23} strokeWidth={1.9} aria-hidden="true" />
+            <PanelLeft size={23} strokeWidth={1.8} aria-hidden="true" />
           </button>
-          {destinations.slice(1).map(({ id, label, Icon }) => (
+          {destinations.map(({ id, label, Icon }) => (
             <button
               key={id}
               type="button"
               className={`evo-morph-destination ${activeTab === id ? "is-active" : ""}`}
               aria-label={label}
+              title={label}
               aria-current={activeTab === id ? "page" : undefined}
               tabIndex={expanded ? 0 : -1}
+              aria-hidden={!expanded}
               onClick={() => { onSelect(id); collapse() }}
             >
-              <Icon size={23} strokeWidth={1.85} aria-hidden="true" />
+              {id === "ai"
+                ? <img className="evo-morph-ai-icon" src="/images/evolingo-ai-orb.svg" alt="" />
+                : <Icon size={23} strokeWidth={1.8} aria-hidden="true" />}
             </button>
           ))}
         </nav>
