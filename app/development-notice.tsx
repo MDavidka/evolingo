@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
+import { X } from "lucide-react"
 
 const DISMISS_KEY = "evolingo.notice.developments.v2"
 
@@ -10,21 +11,33 @@ export default function DevelopmentNotice() {
 
   useEffect(() => {
     try {
-      setVisible(window.localStorage.getItem(DISMISS_KEY) !== "dismissed")
-    } catch {
+      if (window.localStorage.getItem(DISMISS_KEY) === "dismissed") return
+    } catch { /* Storage can be restricted in private browsing. */ }
+
+    // Never stack multiple modal notices or cover the loading screen.
+    const maybeShow = () => {
+      if (document.querySelector(".learn-splash, .system-notice-backdrop")) return
       setVisible(true)
+      observer.disconnect()
     }
+    const observer = new MutationObserver(maybeShow)
+    observer.observe(document.body, { childList: true, subtree: true })
+    maybeShow()
+    return () => observer.disconnect()
   }, [])
 
   useEffect(() => {
     if (!visible) return
-
     const previousOverflow = document.body.style.overflow
     document.body.style.overflow = "hidden"
     acknowledgeButton.current?.focus({ preventScroll: true })
-
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") dismiss()
+    }
+    window.addEventListener("keydown", onKeyDown)
     return () => {
       document.body.style.overflow = previousOverflow
+      window.removeEventListener("keydown", onKeyDown)
     }
   }, [visible])
 
@@ -32,9 +45,7 @@ export default function DevelopmentNotice() {
     setVisible(false)
     try {
       window.localStorage.setItem(DISMISS_KEY, "dismissed")
-    } catch {
-      // The button still dismisses the dialog if storage is unavailable.
-    }
+    } catch { /* The dialog still closes when storage is unavailable. */ }
   }
 
   if (!visible) return null
@@ -48,30 +59,21 @@ export default function DevelopmentNotice() {
         aria-labelledby="ev-development-heading"
         aria-describedby="ev-development-description"
       >
+        <div className="ev-development-handle" aria-hidden="true" />
+        <button type="button" className="ev-development-close" aria-label="Bezárás" onClick={dismiss}>
+          <X size={19} aria-hidden="true" />
+        </button>
         <div className="ev-development-body">
-          <img
-            className="ev-development-icon"
-            src="/images/development-warning.png"
-            width={72}
-            height={72}
-            alt=""
-            aria-hidden="true"
-          />
-          <h2 id="ev-development-heading" className="ev-development-heading">
-            Fejlesztések
-          </h2>
+          <div className="ev-development-icon-wrap">
+            <img className="ev-development-icon" src="/images/development-warning.png" width={52} height={52} alt="" aria-hidden="true" />
+          </div>
+          <span className="ev-development-eyebrow">EVÖLINGO · HÍREK</span>
+          <h2 id="ev-development-heading" className="ev-development-heading">Fejlesztések</h2>
           <p id="ev-development-description" className="ev-development-description">
-            Dávid továbbra is az Evölingo fejlesztésén dolgozik. Az alkalmazás ezért néha megakadhat, vagy nem töltődhetnek be bizonyos dolgok.
+            Dávid továbbra is fejleszti az Evölingót. Egyes funkciók ezért időnként lassabban működhetnek, vagy átmenetileg nem érhetők el.
           </p>
         </div>
-        <button
-          ref={acknowledgeButton}
-          type="button"
-          className="ev-development-confirm"
-          onClick={dismiss}
-        >
-          Értem!
-        </button>
+        <button ref={acknowledgeButton} type="button" className="ev-development-confirm" onClick={dismiss}>Értem</button>
       </section>
     </div>
   )
