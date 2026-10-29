@@ -1,6 +1,7 @@
 "use client"
 
-import { memo, useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from "react"
+import { memo, useCallback, useEffect, useMemo, useRef, useState, type FormEvent, type TouchEvent as ReactTouchEvent } from "react"
+import { playUiSound } from "./ui-sounds"
 import NextImage from "next/image"
 import ProfileDashboard from "./profile-dashboard"
 import SkillExercise, { type SkillMode } from "./skill-exercises"
@@ -329,12 +330,34 @@ const generatedLessons: LessonUnit[] = curriculumTopics.map((topic, index) => {
   return { id, title: topic.title, level: index < 11 ? "A2" : "B1", summary: topic.summary, sections: [{ title: "Mikor használjuk?", body: topic.summary, tip: topic.tip }, { title: "Példa és szabály", body: topic.explanation, examples: [{ sentence: topic.prompt, translation: topic.answer }] }], questions }
 })
 const fullLessons = [...lessons, ...generatedLessons]
+// Stable lesson-specific recall exercises: old questions retain their saved keys.
+function bonusQuestions(lesson: LessonUnit): Question[] {
+  if (lesson.specialType) return []
+  const choices = lesson.questions.filter(q => q.type === "choice" && (q.options?.length ?? 0) > 1)
+  if (!choices.length) return []
+  const fill = choices.find(q => /_{2,}/.test(q.prompt))
+  const extras: Question[] = []
+  if (fill) extras.push({ ...fill, type: "text", instruction: "Írd be a hiányzó kifejezést", options: undefined, words: undefined })
+  const review = choices.find(q => q !== fill) ?? choices[0]
+  const options = review.options ?? []
+  const offset = 1 + (lesson.id % (options.length - 1))
+  extras.push({
+    ...review,
+    instruction: "Ismétlés · " + review.instruction,
+    options: [...options.slice(offset), ...options.slice(0, offset)],
+  })
+  if (extras.length < 2) {
+    const textQuestion = lesson.questions.find(q => q.type === "text")
+    if (textQuestion) extras.push({ ...textQuestion, instruction: "Önálló gyakorlás · " + textQuestion.instruction })
+  }
+  return extras
+}
 function practicePacks(lesson: LessonUnit): Question[][] {
   if (lesson.specialType) return [lesson.questions]
   const firstPackSize = lesson.questions.length >= 4
     ? [3, 2, 1][lesson.id % 3]
     : Math.ceil(lesson.questions.length / 2)
-  return [lesson.questions.slice(0, firstPackSize), lesson.questions.slice(firstPackSize)].filter(pack => pack.length > 0)
+  return [lesson.questions.slice(0, firstPackSize), [...lesson.questions.slice(firstPackSize), ...bonusQuestions(lesson)]].filter(pack => pack.length > 0)
 }
 const skillKey = (lessonId: number, mode: SkillMode) => "skill:" + lessonId + ":" + mode
 const skillTypes: SkillMode[] = ["conversation", "vocabulary", "essay"]
@@ -344,6 +367,7 @@ const practiceKey = (lessonId: number, packIndex: number, questionIndex: number)
   if (!lesson || lesson.specialType) return lessonId + "-p" + packIndex + "-" + questionIndex
   const packs = practicePacks(lesson)
   const globalQuestionIndex = packs.slice(0, packIndex).reduce((count, pack) => count + pack.length, 0) + questionIndex
+  if (globalQuestionIndex >= lesson.questions.length) return lessonId + "-bonus-" + (globalQuestionIndex - lesson.questions.length)
   const previousPackSize = Math.ceil(lesson.questions.length / 2)
   const previousPackIndex = Math.floor(globalQuestionIndex / previousPackSize)
   const previousQuestionIndex = globalQuestionIndex % previousPackSize
@@ -445,9 +469,9 @@ export default function App() {
   useEffect(() => {
     let cancelled = false
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches
-    const minimumDisplayTime = reducedMotion ? 900 : 2400
+    const minimumDisplayTime = reducedMotion ? 450 : 1450
     const startedAt = Date.now()
-    const assets = [foxIcon, "/images/path-symbols.png"]
+    const assets = [foxIcon, "/images/path-symbols.png", "/images/lesson-level-6.png", "/images/evoskill-cutouts-v3/vocabulary-gray.webp"]
 
     const preload = (src: string) => new Promise<void>((resolve) => {
       const image = new Image()
@@ -758,6 +782,7 @@ export default function App() {
     if (purchasedItems.includes("chest:" + claimableChest)) return
     setActiveChestLevel(claimableChest)
     setChestReward(null)
+    playUiSound("chest")
     setScreen("chestOpen")
   }
   const openChestReward = () => {
@@ -855,7 +880,8 @@ function SplashScreen() {
     <img src={foxIcon} alt="" aria-hidden="true" />
     <strong>Evölingo</strong>
     <span>Tanulj minden nap egy kicsit.</span>
-    <div className="learn-splash-dots" aria-hidden="true"><i /><i /><i /></div>
+    <div className="learn-splash-progress" aria-hidden="true"><span /></div>
+    <small className="learn-splash-footnote">A tanulás itt kezdődik.</small>
   </div>
 }
 
@@ -878,8 +904,8 @@ function SystemNotificationSheet({ kind, nextChestAt, onClose, onAllowNotificati
     },
     daily: (() => {
       const options = [
-        { icon: Users, eyebrow: "TANULÓTÁRSAK", title: "Valaki ma már tanult", copy: "Egy tanulótársad teljesített egy leckét. Csatlakozz te is a mai fejlődéshez!" },
-        { icon: Trophy, eyebrow: "RANGLISTA", title: "Mozgás van a ranglistán", copy: "Valaki több csillagot gyűjtött ma. Egy feladat megoldásával te is közelebb kerülsz az élmezőnyhöz." },
+        { icon: Users, eyebrow: "TANULÓTÁRSAK", title: "Tanuljatok együtt", copy: "Hívj meg egy barátot, és motiváljátok egymást a közös fejlődésben." },
+        { icon: Trophy, eyebrow: "RANGLISTA", title: "Gyűjts csillagokat", copy: "Oldj meg egy feladatot, és haladj előre a ranglistán." },
         { icon: BookOpen, eyebrow: "NAPI TANULÁS", title: "Egy rövid lecke is számít", copy: "Szánj pár percet egy feladatra, és tartsd életben a napi sorozatodat." },
       ] as const
       const option = options[new Date().getDate() % options.length]
@@ -907,7 +933,7 @@ function SystemNotificationSheet({ kind, nextChestAt, onClose, onAllowNotificati
   return <div className="system-notice-backdrop" role="presentation" onMouseDown={event => { if (event.target === event.currentTarget) onClose() }}>
     <section className="system-notice-sheet" role="dialog" aria-modal="true" aria-labelledby="system-notice-title">
       <button className="system-notice-close" type="button" aria-label="Bezárás" onClick={onClose}><X size={21} /></button>
-      {kind === "chest" ? <img className="system-notice-chest-art" src="/images/chest-notification.svg" alt="" aria-hidden="true" /> : <span className="system-notice-icon" aria-hidden="true"><Icon size={34} strokeWidth={2.2} /></span>}
+      {kind === "chest" ? <img className="system-notice-chest-art" src="/images/chest-notification.svg" alt="" aria-hidden="true" /> : <span className="system-notice-icon" aria-hidden="true"><Icon size={26} strokeWidth={1.8} /></span>}
       <p>{item.eyebrow}</p>
       <h2 id="system-notice-title">{item.title}</h2>
       <span className="system-notice-copy">{item.copy}</span>
@@ -1003,54 +1029,19 @@ function Home({ completedLessons, answeredTasks, readLessons, notice, clearNotic
   const formatCountdown = (seconds: number) => String(Math.floor(seconds / 60)) + ":" + String(seconds % 60).padStart(2, "0")
   const routeItems: { lesson: LessonUnit; packIndex: number | null; skill?: SkillMode; chest?: boolean }[] = fullLessons.flatMap((lesson, lessonIndex) => {
     const items: { lesson: LessonUnit; packIndex: number | null; skill?: SkillMode; chest?: boolean }[] = [{ lesson, packIndex: null }]
-    practicePacks(lesson).forEach((_, packIndex) => items.push({ lesson, packIndex }))
-    skillTypes.forEach(skill => items.push({ lesson, packIndex: null, skill }))
+    const skills = skillTypes.map((_, i) => skillTypes[(i + lesson.id) % skillTypes.length])
+    const placement = lesson.id % 2 === 0 ? [1, 0, 2] : [0, 2, 1]
+    practicePacks(lesson).forEach((_, packIndex) => {
+      items.push({ lesson, packIndex })
+      if (packIndex < placement.length) items.push({ lesson, packIndex: null, skill: skills[placement[packIndex]] })
+    })
+    skills.forEach(skill => { if (!items.some(item => item.skill === skill)) items.push({ lesson, packIndex: null, skill }) })
     if ((lessonIndex + 1) % 5 === 0) items.push({ lesson, packIndex: null, chest: true })
     return items
   })
   let routeHeight = 0
   const routeTops = routeItems.map(item => { const top = routeHeight; routeHeight += item.skill ? 146 : item.chest || item.packIndex !== null ? 108 : 164; return top })
   const nodeRefs = useRef<Map<number, HTMLButtonElement>>(new Map())
-  const sheetRef = useRef<HTMLElement>(null)
-  useEffect(() => {
-    const sheet = sheetRef.current
-    if (!sheet) return
-
-    // Allow a glimpse of the next three unavailable path nodes, but no further.
-    // Recalculate whenever progress changes so newly unlocked tasks extend the path.
-    const lockedNodes = Array.from(
-      sheet.querySelectorAll<HTMLElement>('.learn-path-node[data-locked="true"]')
-    )
-    if (!lockedNodes.length) return
-
-    const previewEndNode = lockedNodes[Math.min(3, lockedNodes.length) - 1]
-
-    const update = () => {
-      const view = sheet.getBoundingClientRect()
-      const preview = previewEndNode.getBoundingClientRect()
-
-      // Place the last previewed locked node near the upper-middle of the
-      // visible sheet, leaving the lower area covered by the cloud.
-      const previewTop = preview.top - view.top + sheet.scrollTop
-      const maxScrollTop = Math.max(
-        0,
-        Math.min(
-          sheet.scrollHeight - sheet.clientHeight,
-          previewTop - sheet.clientHeight * 0.42
-        )
-      )
-      if (sheet.scrollTop > maxScrollTop + 1) sheet.scrollTop = maxScrollTop
-
-    }
-
-    update()
-    sheet.addEventListener("scroll", update, { passive: true })
-    window.addEventListener("resize", update)
-    return () => {
-      sheet.removeEventListener("scroll", update)
-      window.removeEventListener("resize", update)
-    }
-  }, [answeredTasks, chestReady, completedLessons, currentLessonId, openedChests, routeHeight])
   useEffect(() => {
     if (currentLessonId === null || !readLessons.length && !completedLessons.length) return
     const node = nodeRefs.current.get(currentLessonId)
@@ -1067,7 +1058,7 @@ function Home({ completedLessons, answeredTasks, readLessons, notice, clearNotic
     </header>
     <div className="learn-star-balance" aria-label={stars + " csillag"}><Star size={18} fill="currentColor" aria-hidden="true" /><strong>{stars}</strong></div>
     {notice && <button className="inline-notice learn-inline-notice" type="button" onClick={clearNotice}><span>{notice}</span><X size={16} aria-hidden="true" /></button>}
-    <section className="learn-sheet" ref={sheetRef} aria-label="Tanulási útvonal">
+    <section className="learn-sheet" aria-label="Tanulási útvonal">
       <div className="learn-path-overview">
         <section className="learn-lesson-progress-banner" aria-label={currentLesson.title + " haladása: " + lessonPercent + "%"}>
           <div className="learn-progress-banner-top"><h2>{currentLesson.title}</h2><strong>{lessonPercent}%</strong></div>
@@ -1117,7 +1108,7 @@ function Home({ completedLessons, answeredTasks, readLessons, notice, clearNotic
                 onClick={() => onOpenSkill(lesson.id, skill)}
                 aria-label={lesson.title + ": " + skillLabels[skill] + (skillDone ? ", kész, újra gyakorolható" : unlocked ? "" : ", zárolva")}
               >
-                <SkillIcon kind={skill === "vocabulary" ? "vocabulary" : skill === "conversation" ? "conversation" : "essay"} color={skillDone ? "green" : !unlocked ? "gray" : skill === "vocabulary" ? "blue" : skill === "conversation" ? "purple" : "orange"} size={84} />
+                <SkillIcon kind={skill === "vocabulary" ? "vocabulary" : skill === "conversation" ? "conversation" : "essay"} color={!unlocked ? "gray" : skillDone ? "green" : skill === "vocabulary" ? "blue" : skill === "conversation" ? "purple" : "orange"} size={74} />
                 {skillDone && <span className="learn-skill-check" aria-hidden="true"><Check size={11} /></span>}
               </button>
               <span className="learn-pack-caption">{skillLabels[skill]}</span>
@@ -1310,44 +1301,8 @@ function LessonSectionContent({ section, index }: { section: LessonSection; inde
   </section>
 }
 
-let taskAudioContext: AudioContext | null = null
-let scheduledTaskSoundUntil = 0
-
 function playTaskSound(kind: "welcome" | "open" | "correct" | "wrong" | "complete") {
-  try {
-    const AudioContextClass = window.AudioContext || (window as typeof window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext
-    if (!AudioContextClass) return
-    if (!taskAudioContext || taskAudioContext.state === "closed") taskAudioContext = new AudioContextClass()
-    const context = taskAudioContext
-    if (context.state === "suspended") void context.resume().catch(() => {})
-
-    const sequences = {
-      welcome: { notes: [587.33, 739.99, 880, 1174.66, 987.77, 1174.66], spacing: 0.24, duration: 0.34, volume: 0.045 },
-      open: { notes: [392, 493.88, 587.33, 783.99, 987.77], spacing: 0.22, duration: 0.32, volume: 0.055 },
-      correct: { notes: [659.25, 880], spacing: 0.11, duration: 0.17, volume: 0.055 },
-      wrong: { notes: [220, 174.61], spacing: 0.1, duration: 0.16, volume: 0.045 },
-      complete: { notes: [523.25, 659.25, 783.99], spacing: 0.16, duration: 0.28, volume: 0.06 },
-    } as const
-    const sequence = sequences[kind]
-    const startAt = Math.max(context.currentTime + 0.025, scheduledTaskSoundUntil)
-    const endAt = startAt + (sequence.notes.length - 1) * sequence.spacing + sequence.duration
-    scheduledTaskSoundUntil = endAt + 0.04
-
-    sequence.notes.forEach((frequency, index) => {
-      const when = startAt + index * sequence.spacing
-      const oscillator = context.createOscillator()
-      const noteGain = context.createGain()
-      oscillator.type = kind === "wrong" ? "triangle" : kind === "open" ? "triangle" : "sine"
-      oscillator.frequency.setValueAtTime(frequency, when)
-      noteGain.gain.setValueAtTime(0.0001, when)
-      noteGain.gain.exponentialRampToValueAtTime(sequence.volume, when + 0.025)
-      noteGain.gain.exponentialRampToValueAtTime(0.0001, when + sequence.duration)
-      oscillator.connect(noteGain)
-      noteGain.connect(context.destination)
-      oscillator.start(when)
-      oscillator.stop(when + sequence.duration + 0.02)
-    })
-  } catch { /* Audio remains optional on devices that disable Web Audio. */ }
+  playUiSound(kind)
 }
 
 function TaskExercise({ lesson, taskIndex, onExit, onComplete, lives, onWrongAnswer, onNextQuestion, onOutOfLives }: {
