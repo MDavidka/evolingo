@@ -1,18 +1,43 @@
 "use client"
 
 import { useEffect, useRef, useState, type FormEvent, type KeyboardEvent } from "react"
-import { ArrowUp, Check, Copy, MessageSquarePlus, Sparkles, Plus, Mic, ChevronDown } from "lucide-react"
+import { ArrowUp, Check, Copy, Sparkles, Plus, Mic, ChevronDown } from "lucide-react"
+import IntelligentResponse from "./intelligent-ui/renderer"
+import { validateIntelligentUI, type IntelligentUI } from "./intelligent-ui/schema"
 
-type ChatMessage = { role: "user" | "assistant"; content: string }
+type ChatMessage = { role: "user" | "assistant"; content: string; id?: string; ui?: IntelligentUI }
+const SESSION_KEY = "evolingo.chat.session.v1"
 
 export default function ChatInterface() {
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [draft, setDraft] = useState("")
   const [busy, setBusy] = useState(false)
+  const [enhancing, setEnhancing] = useState(false)
+  const [hydrated, setHydrated] = useState(false)
   const [error, setError] = useState("")
   const [copied, setCopied] = useState<number | null>(null)
   const scroll = useRef<HTMLDivElement>(null)
   const input = useRef<HTMLTextAreaElement>(null)
+
+  useEffect(() => {
+    try {
+      const raw = sessionStorage.getItem(SESSION_KEY)
+      const parsed: unknown = raw ? JSON.parse(raw) : null
+      if (Array.isArray(parsed)) {
+        const safe = parsed.slice(-16).filter((item): item is ChatMessage =>
+          !!item && typeof item === "object" && (item.role === "user" || item.role === "assistant") &&
+          typeof item.content === "string" && item.content.length <= 30000
+        ).map(item => ({ ...item, ui: item.ui ? validateIntelligentUI(item.ui) ?? undefined : undefined }))
+        setMessages(safe)
+      }
+    } catch { /* Keep empty conversation when session data is unavailable. */ }
+    setHydrated(true)
+  }, [])
+
+  useEffect(() => {
+    if (!hydrated) return
+    try { sessionStorage.setItem(SESSION_KEY, JSON.stringify(messages.slice(-16))) } catch {}
+  }, [messages, hydrated])
 
   useEffect(() => {
     const root = document.documentElement
@@ -54,8 +79,9 @@ export default function ChatInterface() {
 
   async function send(text: string) {
     const content = text.trim()
-    if (!content || busy) return
-    const next: ChatMessage[] = [...messages, { role: "user", content }]
+    if (!content || busy || enhancing) return
+    const next: ChatMessage[] = [...messages, { id: crypto.randomUUID(), role: "user", content }]
+    const assistantId = crypto.randomUUID()
     setMessages(next)
     window.dispatchEvent(new CustomEvent("evolingo:chat-message-sent"))
     input.current?.blur()
@@ -63,20 +89,78 @@ export default function ChatInterface() {
     setBusy(true)
     setError("")
     if (input.current) input.current.style.height = "auto"
+
+    let answered = false
+    let completed = false
+    const acceptEvent = (raw: string) => {
+      try {
+        const event = JSON.parse(raw) as { type?: string; reply?: string; ui?: unknown; error?: string }
+        if (event.type === "text" && typeof event.reply === "string" && event.reply.trim()) {
+          answered = true
+          setMessages([...next, { id: assistantId, role: "assistant", content: event.reply }])
+          setBusy(false)
+          setEnhancing(true)
+        } else if (event.type === "ui" && event.ui) {
+          const ui = validateIntelligentUI(event.ui)
+          if (ui) setMessages(old => old.map(msg => msg.id === assistantId ? { ...msg, ui } : msg))
+        } else if (event.type === "error") {
+          if (!answered) setError(event.error || "Az AI jelenleg nem válaszol. Próbáld újra.")
+        } else if (event.type === "done") completed = true
+      } catch { /* Malformed event is not rendered or executed. */ }
+    }
+
     try {
       const response = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages: next.slice(-12) }),
+        body: JSON.stringify({ messages: next.slice(-12).map(({ role, content }) => ({ role, content })), interactive: true }),
         cache: "no-store",
       })
-      const payload = await response.json() as { reply?: string; error?: string }
-      if (!response.ok || !payload.reply) throw new Error(payload.error || "Az AI jelenleg nem válaszol. Próbáld újra.")
-      setMessages([...next, { role: "assistant", content: payload.reply }])
+      if (!response.ok) {
+        const payload = await response.json().catch(() => ({})) as { error?: string }
+        throw new Error(payload.error || "Az AI jelenleg nem válaszol. Próbáld újra.")
+      }
+      const type = response.headers.get("content-type") || ""
+      if (!type.includes("text/event-stream")) {
+        // Older deployments/clients continue to work with the JSON reply.
+        const payload = await response.json() as { reply?: string; error?: string }
+        if (!payload.reply) throw new Error(payload.error || "Az AI nem adott választ.")
+        setMessages([...next, { id: assistantId, role: "assistant", content: payload.reply }])
+        answered = true
+        return
+      }
+      if (!response.body) throw new Error("A válasz nem olvasható.")
+      const reader = response.body.getReader()
+      const decoder = new TextDecoder()
+      let buffer = ""
+      try {
+        while (true) {
+          const { value, done } = await reader.read()
+          if (done) break
+          buffer += decoder.decode(value, { stream: true })
+          if (buffer.length > 60000) throw new Error("A válasz túl hosszú.")
+          const segments = buffer.split("\n\n")
+          buffer = segments.pop() || ""
+          for (const segment of segments) {
+            const line = segment.split("\n").find(part => part.startsWith("data: "))
+            if (line) acceptEvent(line.slice(6))
+          }
+        }
+        buffer += decoder.decode()
+        if (buffer.trim()) {
+          const line = buffer.split("\n").find(part => part.startsWith("data: "))
+          if (line) acceptEvent(line.slice(6))
+        }
+      } finally {
+        reader.releaseLock()
+      }
+      if (!answered) throw new Error("Az AI nem adott választ.")
+      if (!completed) { /* Text is useful even when the optional UI stream ends early. */ }
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : "Nem sikerült elküldeni az üzenetet.")
+      if (!answered) setError(cause instanceof Error ? cause.message : "Nem sikerült elküldeni az üzenetet.")
     } finally {
       setBusy(false)
+      setEnhancing(false)
     }
   }
 
@@ -93,7 +177,7 @@ export default function ChatInterface() {
   }
 
   function startNewChat() {
-    if (busy) return
+    if (busy || enhancing) return
     setMessages([])
     setDraft("")
     setError("")
@@ -116,9 +200,11 @@ export default function ChatInterface() {
         {messages.map((item, index) => <div key={index} className={`evo-chat-entry evo-chat-entry--${item.role}`}>
           {item.role === "assistant" && <span className="evo-chat-small-mark" aria-hidden="true"><Sparkles size={16} /></span>}
           <div className="evo-chat-entry-main"><div className="evo-chat-bubble">{item.content}</div>
+            {item.role === "assistant" && item.ui && <IntelligentResponse ui={item.ui} />}
             {item.role === "assistant" && <button type="button" className="evo-chat-copy" aria-label="Válasz másolása" onClick={() => void copyMessage(item.content, index)}>{copied === index ? <Check size={16} /> : <Copy size={16} />}<span>{copied === index ? "Másolva" : "Másolás"}</span></button>}
           </div>
         </div>)}
+        {enhancing && <div className="evo-iui-loading" role="status">Tanulási elemek előkészítése…</div>}
         {busy && <div className="evo-chat-entry evo-chat-entry--assistant"><span className="evo-chat-small-mark" aria-hidden="true"><Sparkles size={16} /></span><span className="evo-chat-thinking" role="status">Válasz írása<span className="evo-chat-dots">…</span></span></div>}
       </div>}
     </div>
@@ -128,7 +214,7 @@ export default function ChatInterface() {
       <div className="evo-composer-surface">
       <form onSubmit={submit} className="evo-chat-composer">
         <button type="button" className="evo-chat-attach" aria-label="Fájlok hamarosan" title="Fájlok hamarosan" disabled><Plus size={21} /></button><textarea ref={input} value={draft} onChange={event => { setDraft(event.target.value); resizeInput() }} onKeyDown={keyDown} rows={1} maxLength={4000} aria-label="Üzenet írása" placeholder="Írj egy üzenetet..." />
-        <span className="evo-chat-model">Evölingo <ChevronDown size={13} /></span><button type="button" className="evo-chat-mic" disabled aria-label="Hangbevitel hamarosan"><Mic size={19} /></button><button type="submit" className="evo-chat-send" disabled={!draft.trim() || busy} aria-label="Üzenet küldése"><ArrowUp size={20} strokeWidth={2.2} /></button>
+        <span className="evo-chat-model">Evölingo <ChevronDown size={13} /></span><button type="button" className="evo-chat-mic" disabled aria-label="Hangbevitel hamarosan"><Mic size={19} /></button><button type="submit" className="evo-chat-send" disabled={!draft.trim() || busy || enhancing} aria-label="Üzenet küldése"><ArrowUp size={20} strokeWidth={2.2} /></button>
       </form>
       </div>
       
