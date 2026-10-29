@@ -92,7 +92,7 @@ function Topics({ topics, onSelect, onChat }: { topics: TopicData[]; onSelect: (
   const filtered = topics.filter(topic => `${topic.title} ${topic.subtitle}`.toLocaleLowerCase("hu").includes(query.toLocaleLowerCase("hu")))
   return <div className="ref-topics">
     <h1 className="ref-screen-heading">Tanulás</h1>
-    <label className="ref-search"><Search size={19} /><input aria-label="Témák keresése" value={query} onChange={event => setQuery(event.target.value)} /></label>
+    <label className="ref-search"><Search size={19} /><input aria-label="Témák keresése" placeholder="Keresés a témák között" value={query} onChange={event => setQuery(event.target.value)} /></label>
     <div className="ref-topic-controls"><span>{topics.length} téma</span><button type="button" className="ref-dark-pill" onClick={() => onSelect(topics[0]?.id ?? 1)}><Plus size={17} /> Új lecke</button></div>
     <button type="button" className="evo-ai-shortcut" onClick={onChat}><span className="evo-ai-shortcut-icon"><img src="/images/evolingo-ai-orb.svg" alt="" style={{width:27,height:27,borderRadius:"50%"}} /></span><span><strong>Kérdezd az Evölingo AI-t</strong><small>Tanulás, gyakorlás, magyarázatok</small></span><ArrowRight size={17} className="evo-ai-shortcut-arrow" /></button>
     <div className="ref-topic-list">{filtered.slice(0, 3).map(({ id, title, subtitle, lessonCount, lessonIds }) => { const Icon = id === 1 ? Languages : id % 2 ? Landmark : Dna; return <button type="button" className="ref-topic-row" key={id} onClick={() => onSelect(lessonIds[0] || 1)}>
@@ -279,6 +279,10 @@ function SettingRow({ icon: Icon, title, subtitle, onClick }: { icon: LucideIcon
 
 export default function ReferenceScreens(props: Props) {
   const { view, userName, avatarImage, avatarFallback, onView, onSelectLesson, onSelectMode, onContinue, onEditProfile, onLogout, topics, lessons, activeLessonId } = props
+  useEffect(() => {
+    // Each tab starts at its own top instead of inheriting the previous page scroll.
+    if (view !== "chat") window.scrollTo(0, 0)
+  }, [view])
   let content: ReactNode
   if (view === "home") content = <Topics topics={topics} onSelect={id => { onSelectLesson(id); onView("topic") }} onChat={() => onView("chat")} />
   else if (view === "topic") content = <TopicDetail topic={topics[0]} lessons={lessons} onSelectLesson={id => { onSelectLesson(id); onView("selector") }} onBack={() => onView("home")} />
