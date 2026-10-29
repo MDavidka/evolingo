@@ -5,7 +5,7 @@ import ChatInterface from "./chat-interface"
 import {
   ArrowRight, ArrowUp, ArrowUpRight, BookOpen, CalendarDays, CheckCircle2, ChevronDown, ChevronsUpDown, ChevronRight,
   CircleDot, CircleHelp, Cloud, Eye, EyeOff, FileText, Folder, GraduationCap, Grid2X2, Info, Landmark, List,
-  LockKeyhole, LogOut, Mic, MoreHorizontal, Plus, Search, Send, ShieldCheck, UserRound,
+  LockKeyhole, LogOut, LogIn, Mic, MoreHorizontal, Plus, Search, Send, ShieldCheck, UserRound, Users, BarChart3, Check,
   X, Languages, Dna, ClipboardCheck, NotebookPen, Layers, Crown, PencilLine, Sparkles, type LucideIcon,
 } from "lucide-react"
 
@@ -30,6 +30,8 @@ type Props = {
   onEditProfile: (name: string) => void
   onEditAvatar: (file: File) => void
   onLogout: () => void
+  onOpenFriends: () => void
+  onOpenLeaderboard: () => void
 }
 
 type TopicData = { id: number; title: string; subtitle: string; lessonCount: number; lessonIds: number[] }
@@ -50,26 +52,38 @@ function Avatar({ name, src, fallback }: { name: string; src: string; fallback: 
   return <span className="ref-avatar">{src ? <img src={src} alt={name} /> : <span className="ref-avatar-fallback"><img src={fallback} alt="" /></span>}</span>
 }
 
-function Header({ name, avatarImage, avatarFallback, onProfile, onHome, onUtility, onChat, onSpace, onAuth }: {
-  name: string; avatarImage: string; avatarFallback: string; onProfile: () => void;
-  onHome: () => void;
-  onUtility: () => void; onChat: () => void; onSpace: () => void; onAuth: () => void
+function Header({ name, avatarImage, avatarFallback, onProfile, onHome }: {
+  name: string; avatarImage: string; avatarFallback: string; onProfile: () => void; onHome: () => void
 }) {
-  const [menuOpen, setMenuOpen] = useState(false)
+  const [courseOpen, setCourseOpen] = useState(false)
+  const courseRef = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    const dismiss = (event: PointerEvent) => {
+      if (!courseRef.current?.contains(event.target as Node)) setCourseOpen(false)
+    }
+    const escape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setCourseOpen(false)
+    }
+    document.addEventListener("pointerdown", dismiss)
+    document.addEventListener("keydown", escape)
+    return () => { document.removeEventListener("pointerdown", dismiss); document.removeEventListener("keydown", escape) }
+  }, [])
   return <header className="ref-topbar">
-    <div className="ref-course-wrap">
-      <button className="ref-course" type="button" aria-expanded={menuOpen} onClick={() => setMenuOpen(value => !value)}>
+    <div className="ref-course-wrap" ref={courseRef}>
+      <button className="ref-course" type="button" aria-haspopup="menu" aria-expanded={courseOpen} onClick={() => setCourseOpen(value => !value)}>
         <GraduationCap size={20} strokeWidth={1.8} /><strong>Erasmus</strong><span className="ref-course-chevron"><ChevronsUpDown size={13} /></span>
       </button>
-      {menuOpen && <div className="ref-course-menu" role="menu">
-        <button type="button" role="menuitem" onClick={() => { setMenuOpen(false); onHome() }}>Tanulás</button>
-        <button type="button" role="menuitem" onClick={() => { setMenuOpen(false); onChat() }}>AI Chat</button>
-        <button type="button" role="menuitem" onClick={() => { setMenuOpen(false); onSpace() }}>Saját fájlok</button>
-        <button type="button" role="menuitem" onClick={() => { setMenuOpen(false); onUtility() }}>Alkotás és szervezés</button>
-        <button type="button" role="menuitem" onClick={() => { setMenuOpen(false); onAuth() }}>Bejelentkezés</button>
+      {courseOpen && <div className="ref-course-menu" role="menu" aria-label="Téma kiválasztása">
+        <span className="ref-course-menu-label">Jelenlegi téma</span>
+        <button className="ref-course-choice" type="button" role="menuitem" onClick={() => { setCourseOpen(false); onHome() }}>
+          <GraduationCap size={17} /> Erasmus <Check size={17} />
+        </button>
+        <button className="ref-course-choice" type="button" role="menuitem" onClick={() => { setCourseOpen(false); onHome() }}>
+          <BookOpen size={17} /> Összes téma
+        </button>
       </div>}
     </div>
-    <button className="ref-profile-shortcut" type="button" onClick={() => { setMenuOpen(false); onProfile() }} aria-label="Profil megnyitása"><Avatar name={name} src={avatarImage} fallback={avatarFallback} /></button>
+    <button className="ref-profile-shortcut" type="button" onClick={() => { setCourseOpen(false); onProfile() }} aria-label="Profil megnyitása"><Avatar name={name} src={avatarImage} fallback={avatarFallback} /></button>
   </header>
 }
 
@@ -228,15 +242,21 @@ function Space() {
   </div>
 }
 
-function Utility({ onSpace, onUpload }: { onSpace: () => void; onUpload: () => void }) {
+function Utility({ onSpace, onUpload, onFriends, onLeaderboard }: { onSpace: () => void; onUpload: () => void; onFriends: () => void; onLeaderboard: () => void }) {
   return <div className="ref-utility"><h2>ALKOTÁS ÉS SZERVEZÉS</h2><div className="ref-utility-grid">
     <button type="button" className="ref-utility-card" onClick={onUpload}><span className="ref-soft-icon"><Send size={21} /></span><strong>Fájlküldés</strong><small>Fájlok megosztása</small><ArrowUpRight className="ref-utility-arrow" size={15} /></button>
     <button type="button" className="ref-utility-card" onClick={() => {}} aria-disabled="true"><span className="ref-soft-icon"><CalendarDays size={21} /></span><strong>Tervező</strong><small>Tervek és időbeosztás</small><ArrowUpRight className="ref-utility-arrow" size={15} /></button>
-  </div><h2 className="ref-coming-heading">HAMAROSAN</h2><div className="ref-coming"><span className="ref-soft-icon"><Layers size={21} /></span><div><strong>Még több alkotási lehetőség</strong><p>Hamarosan új eszközökkel bővül a munkaterület.</p></div><LockKeyhole size={15} /></div></div>
+  </div>
+    <section className="ref-utility-community" aria-label="Közösség">
+      <h2>KÖZÖSSÉG</h2>
+      <button type="button" className="ref-utility-community-link" onClick={onFriends}><Users size={20} /><span>Barátok</span><ChevronRight size={18} /></button>
+      <button type="button" className="ref-utility-community-link" onClick={onLeaderboard}><BarChart3 size={20} /><span>Tanterem és ranglista</span><ChevronRight size={18} /></button>
+    </section>
+    <h2 className="ref-coming-heading">HAMAROSAN</h2><div className="ref-coming"><span className="ref-soft-icon"><Layers size={21} /></span><div><strong>Még több alkotási lehetőség</strong><p>Hamarosan új eszközökkel bővül a munkaterület.</p></div><LockKeyhole size={15} /></div></div>
 }
 
-function Profile({ name, avatarImage, avatarFallback, onEdit, onEditAvatar, onLogout }: {
-  name: string; avatarImage: string; avatarFallback: string; onEdit: (name: string) => void; onEditAvatar: (file: File) => void; onLogout: () => void
+function Profile({ name, avatarImage, avatarFallback, onEdit, onEditAvatar, onLogout, onLogin }: {
+  name: string; avatarImage: string; avatarFallback: string; onEdit: (name: string) => void; onEditAvatar: (file: File) => void; onLogout: () => void; onLogin: () => void
 }) {
   const [editing, setEditing] = useState(false)
   const [draft, setDraft] = useState(name)
@@ -244,7 +264,7 @@ function Profile({ name, avatarImage, avatarFallback, onEdit, onEditAvatar, onLo
   const avatarPicker = useRef<HTMLInputElement>(null)
   const handle = name.normalize("NFKD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "").slice(0, 20) || "tanulo"
   return <div className="ref-profile"><h1>Profil</h1><div className="ref-profile-identity"><Avatar name={name} src={avatarImage} fallback={avatarFallback} /><div><strong>{name}</strong><span>@{handle}</span></div><button type="button" className="ref-outline-pill" onClick={() => { setDraft(name); setEditing(true) }}>Szerkesztés</button></div><hr />
-    <div className="ref-settings-group"><h2>Fiók</h2><SettingRow icon={UserRound} title="Személyes adatok" subtitle="Név, profilkép és felhasználónév" onClick={() => { setDraft(name); setEditing(true) }} /><SettingRow icon={ShieldCheck} title="Biztonság" subtitle="Jelszó és bejelentkezés" onClick={() => setLogoutNote("A biztonsági beállítások vendégfióknál nem érhetők el.")} /><SettingRow icon={Crown} title="Előfizetés" subtitle="Csomag és szolgáltatások" onClick={() => setLogoutNote("Előfizetési beállítások nem érhetők el.")} /></div>
+    <div className="ref-settings-group"><h2>Fiók</h2><SettingRow icon={LogIn} title="Bejelentkezés" subtitle="Fiók létrehozása vagy belépés" onClick={onLogin} /><SettingRow icon={UserRound} title="Személyes adatok" subtitle="Név, profilkép és felhasználónév" onClick={() => { setDraft(name); setEditing(true) }} /><SettingRow icon={ShieldCheck} title="Biztonság" subtitle="Jelszó és bejelentkezés" onClick={() => setLogoutNote("A biztonsági beállítások vendégfióknál nem érhetők el.")} /><SettingRow icon={Crown} title="Előfizetés" subtitle="Csomag és szolgáltatások" onClick={() => setLogoutNote("Előfizetési beállítások nem érhetők el.")} /></div>
     <div className="ref-settings-group ref-support-group"><h2>Támogatás</h2><SettingRow icon={CircleHelp} title="Súgó és támogatás" /><SettingRow icon={Info} title="Az alkalmazásról" /></div>
     <button className="ref-logout" type="button" onClick={() => { onLogout(); setLogoutNote("A kijelentkezés vendégfióknál nem érhető el.") }}><LogOut size={18} /> Kijelentkezés</button>
     {logoutNote && <p className="ref-profile-notice" role="status">{logoutNote}</p>}
@@ -264,13 +284,13 @@ export default function ReferenceScreens(props: Props) {
   else if (view === "selector") content = <LessonSelector lesson={lessons.find(item => item.id === activeLessonId)} onSelectMode={onSelectMode} onContinue={onContinue} />
   else if (view === "chat") content = <ChatInterface />
   else if (view === "space") content = <Space />
-  else if (view === "utility") content = <Utility onSpace={() => onView("space")} onUpload={props.onUploadFile} />
+  else if (view === "utility") content = <Utility onSpace={() => onView("space")} onUpload={props.onUploadFile} onFriends={props.onOpenFriends} onLeaderboard={props.onOpenLeaderboard} />
   else if (view === "auth") content = <AuthScreen onBack={() => onView("home")} />
-  else content = <Profile name={userName} avatarImage={avatarImage} avatarFallback={avatarFallback} onEdit={onEditProfile} onEditAvatar={props.onEditAvatar} onLogout={onLogout} />
+  else content = <Profile name={userName} avatarImage={avatarImage} avatarFallback={avatarFallback} onEdit={onEditProfile} onEditAvatar={props.onEditAvatar} onLogout={onLogout} onLogin={() => onView("auth")} />
 
   if (view === "auth") return <main className="ref-app ref-view-auth">{content}</main>
   return <main className={`ref-app ref-view-${view}`}>
-    <Header name={userName} avatarImage={avatarImage} avatarFallback={avatarFallback} onProfile={() => onView("profile")} onHome={() => onView("home")} onUtility={() => onView("utility")} onChat={() => onView("chat")} onSpace={() => onView("space")} onAuth={() => onView("auth")} />
+    <Header key={view} name={userName} avatarImage={avatarImage} avatarFallback={avatarFallback} onProfile={() => onView("profile")} onHome={() => onView("home")} />
     {content}
   </main>
 }

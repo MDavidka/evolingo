@@ -1,0 +1,158 @@
+/* Evölingo — iOS-style primary navigation. One bar throughout the app. */
+.evo-tabbar {
+  position: fixed !important;
+  z-index: 25 !important;
+  bottom: max(12px, calc(env(safe-area-inset-bottom, 0px) + 7px)) !important;
+  left: 50% !important;
+  display: grid !important;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 3px;
+  width: min(460px, calc(100% - 28px)) !important;
+  height: 76px !important;
+  padding: 6px !important;
+  transform: translateX(-50%) !important;
+  border: 1px solid rgba(255,255,255,.86) !important;
+  border-radius: 999px !important;
+  background: rgba(239,240,243,.93) !important;
+  box-shadow: 0 8px 30px rgba(25,27,34,.11), inset 0 1px 0 rgba(255,255,255,.8) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(140%);
+  backdrop-filter: blur(20px) saturate(140%);
+  -webkit-tap-highlight-color: transparent;
+  isolation: isolate;
+}
+.evo-tabbar .evo-tab {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  min-height: 60px;
+  padding: 0 2px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: #5f6065;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+.evo-tabbar .evo-tab::before {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  border-radius: inherit;
+  background: #fff;
+  box-shadow: 0 3px 12px rgba(28,29,38,.08);
+  content: "";
+  opacity: 0;
+  transform: scale(.92);
+  transition: opacity .22s ease, transform .3s cubic-bezier(.2,.8,.2,1);
+}
+.evo-tabbar .evo-tab.is-active::before { opacity: 1; transform: scale(1); }
+.evo-tabbar .evo-tab:active .evo-tab-content { transform: scale(.96); }
+.evo-tabbar .evo-tab.is-active { color: #19191b; }
+.evo-tab-content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  width: 100%;
+  min-width: 0;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  transition: transform .14s ease;
+}
+.evo-tab-content > svg { flex: none; width: 23px; height: 23px; }
+.evo-tab-caption {
+  display: block;
+  max-width: 100%;
+  overflow: hidden;
+  font-size: 10px;
+  font-weight: 650;
+  letter-spacing: -.15px;
+  line-height: 1.2;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.evo-tab-avatar {
+  display: block;
+  width: 24px;
+  height: 24px;
+  object-fit: cover;
+  border-radius: 50%;
+}
+.evo-tabbar .evo-tab:focus-visible {
+  outline: 2px solid #242424;
+  outline-offset: -3px;
+}
+/* The learning-screen 100dvh overflow lock must not clip reference pages. */
+body .app-shell.reference-shell:not(:has(.ref-view-chat)) {
+  height: auto !important;
+  min-height: 100dvh !important;
+  overflow: visible !important;
+}
+body .app-shell.reference-shell > .screen-content.learn-home-content:has(.ref-app:not(.ref-view-chat)) {
+  height: auto !important;
+  min-height: 100dvh !important;
+  overflow: visible !important;
+}
+.app-shell.reference-shell:has(.ref-app:not(.ref-view-auth)) > .screen-content {
+  padding-bottom: 0 !important;
+}
+.app-shell.reference-shell .ref-app:not(.ref-view-chat):not(.ref-view-auth) {
+  padding-bottom: calc(122px + env(safe-area-inset-bottom, 0px)) !important;
+}
+.app-shell.reference-shell:has(.ref-view-chat) .evo-chat-frame {
+  padding-bottom: calc(87px + max(12px, env(safe-area-inset-bottom, 0px))) !important;
+}
+.app-shell.reference-shell:has(.ref-view-chat):has(textarea:focus) .evo-chat-frame {
+  padding-bottom: var(--evo-chat-bottom, 10px) !important;
+}
+.app-shell:has(input:focus, textarea:focus) > .evo-tabbar {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+body:has(.ref-modal-backdrop) .evo-tabbar { opacity: 0; pointer-events: none; }
+.ref-course-menu > .ref-course-menu-label {
+  display: block;
+  padding: 7px 11px 3px;
+  color: #8b8b8b;
+  font-size: 11px;
+  font-weight: 600;
+}
+.ref-course-menu .ref-course-choice {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 550;
+}
+.ref-course-choice > svg:last-child { margin-left: auto; }
+.ref-utility-community { margin-top: 27px; }
+.ref-utility-community h2 { margin-bottom: 9px; }
+.ref-utility-community-link {
+  display: flex;
+  width: 100%;
+  min-height: 56px;
+  align-items: center;
+  gap: 12px;
+  padding: 9px 3px;
+  border: 0;
+  border-bottom: 1px solid #ededed;
+  background: transparent;
+  text-align: left;
+  color: #262626;
+}
+.ref-utility-community-link > svg:first-child { flex: none; color: #5b5b5b; }
+.ref-utility-community-link > span { flex: 1; font-size: 14px; font-weight: 600; }
+.ref-utility-community-link > svg:last-child { color: #9c9c9c; }
+@media (max-width: 360px) {
+  .evo-tabbar { width: calc(100% - 20px) !important; gap: 1px; height: 72px !important; padding: 5px !important; }
+  .evo-tabbar .evo-tab { min-height: 58px; }
+  .evo-tab-caption { font-size: 9.5px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .evo-tabbar .evo-tab::before, .evo-tab-content { transition: none; }
+}

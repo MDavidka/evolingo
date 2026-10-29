@@ -10,6 +10,7 @@ import { Button } from "../components/ui/button"
 import { Input } from "../components/ui/input"
 import { Separator } from "../components/ui/separator"
 import ReferenceScreens, { type ReferenceView } from "./reference-screens"
+import AppTabBar, { type AppTab } from "./app-tab-bar"
 import {
   ArrowRight, Book, BookOpen, Check, CheckCircle2, CircleDot, Headphones, MessageCircle, CircleHelp, Puzzle, FilePenLine,
   Flame, Heart, Lightbulb, Medal, RotateCcw, Trophy, UserRound, Dumbbell, Timer, Languages, Volume2,
@@ -852,11 +853,19 @@ export default function App() {
     if (view === "home" || view === "topic" || view === "selector" || view === "space" || view === "auth") setScreen("home")
     else if (view === "profile") setScreen("profile")
   }
-  const navigateTab = (next: Screen) => {
-    setScreen(next)
-    if (next === "home") setReferenceView("home")
-    else if (next === "profile") setReferenceView("profile")
-    else setReferenceView(null)
+  const currentAppTab: AppTab = referenceView === "chat" ? "ai"
+    : referenceView === "space" ? "files"
+    : referenceView === "utility" || (!referenceView && (screen === "friends" || screen === "leaderboard" || screen === "shop")) ? "tools"
+    : referenceView === "profile" || (!referenceView && screen === "profile") ? "profile"
+    : "learn"
+  const navigateAppTab = (tab: AppTab) => {
+    if (currentAppTab !== tab) playUiSound("tab")
+    const target: Record<AppTab, ReferenceView> = { learn: "home", ai: "chat", files: "space", tools: "utility", profile: "profile" }
+    navigateReference(target[tab])
+  }
+  const openLegacyPage = (target: "friends" | "leaderboard") => {
+    setReferenceView(null)
+    setScreen(target)
   }
   return <><main className={"app-shell " + (referenceView ? "reference-shell " : "") + ((screen === "lessonIntro" || screen === "task" || screen === "flashcards" || screen === "chestOpen") ? "lesson-open" : "") + (screen === "skill" ? " skill-open" : "") + (screen === "leaderboard" ? " leaderboard-app" : "")}>
     <section onTouchStart={onMainSwipeStart} onTouchEnd={onMainSwipeEnd} onTouchCancel={() => { mainSwipeOrigin.current = null }} className={"screen-content " + (screen === "home" ? "learn-home-content " : "") + ((screen === "lessonIntro" || screen === "task" || screen === "flashcards" || screen === "chestOpen") ? "lesson-page " : "") + (screen === "skill" ? "skill-page " : "") + (screen === "leaderboard" ? "leaderboard-screen-content" : "")}>
@@ -873,6 +882,8 @@ export default function App() {
         avatarImage={avatarImage}
         avatarFallback={foxIcon}
         onView={navigateReference}
+        onOpenFriends={() => openLegacyPage("friends")}
+        onOpenLeaderboard={() => openLegacyPage("leaderboard")}
         onSelectLesson={id => { setActiveLessonId(id); setReferenceMode(0); setReferenceView("selector") }}
         onSelectMode={setReferenceMode}
     onContinue={() => { setActivePackIndex(referenceMode === 1 ? 0 : null); setActiveTaskIndex(0); setReferenceView(null); setScreen(referenceMode === 3 ? "flashcards" : referenceMode === 2 ? "task" : "lessonIntro") }}
@@ -940,7 +951,7 @@ export default function App() {
       {screen === "profile" && <Profile completedCount={completedLessons.length} readCount={readLessons.length} completedTaskCount={answeredTasks.filter(key => !key.startsWith("skill:")).length} xp={xp} stars={stars} userName={userName} setUserName={setUserName} avatar={avatar} setAvatar={setAvatar} avatarImage={avatarImage} setAvatarImage={setAvatarImage} bannerImage={bannerImage} setBannerImage={setBannerImage} dailyStudy={dailyStudy} onDailyGoalChange={(dailyGoal) => setDailyStudy(previous => ({ ...previous, dailyGoal }))} saveStatus={saveStatus} onRetryCloudSave={retryCloudSave} notifications={notifications} setNotifications={setNotifications} compactMode={compactMode} setCompactMode={setCompactMode} showSettings={showSettings} setShowSettings={setShowSettings} weeklyStudySeconds={weeklyStudySeconds} onOpenFriends={() => setScreen("friends")} />}
       </>}
     </section>
-    {screen !== "lessonIntro" && screen !== "task" && screen !== "skill" && screen !== "flashcards" && screen !== "chestOpen" && referenceView !== "chat" && referenceView !== "utility" && referenceView !== "profile" && referenceView !== "auth" && <Nav screen={screen} setScreen={navigateTab} userName={userName} avatar={avatar} avatarImage={avatarImage} />}
+    {screen !== "lessonIntro" && screen !== "task" && screen !== "skill" && screen !== "flashcards" && screen !== "chestOpen" && referenceView !== "auth" && <AppTabBar activeTab={currentAppTab} onSelect={navigateAppTab} avatarImage={avatarImage} userName={userName} />}
 
   </main>
   {systemNotice && <SystemNotificationSheet
@@ -2361,64 +2372,3 @@ function Profile({ completedCount, readCount, completedTaskCount, xp, stars, use
   </div>
 }
 function PageHeader({ title }: { title: string }) { return <header className={"page-header " + (title === "Ranglista" ? "leaderboard-header" : "")}><div className="brand compact"><img src={foxIcon} alt="Evölingo róka" /><div><span className="brand-wordmark">Evölingo</span></div></div><h1>{title}</h1></header> }
-function Nav({ screen, setScreen, userName, avatar, avatarImage }: { screen: Screen; setScreen: (screen: Screen) => void; userName: string; avatar: string; avatarImage: string }) {
-  const items: [Screen, string, React.ElementType][] = [["home", "Tanulás", BookOpen], ["friends", "Barátok", Users], ["leaderboard", "Tanterem", BarChart3], ["profile", "Profil", UserRound]]
-  const activeIndex = Math.max(0, items.findIndex(([id]) => id === screen))
-  const [dragIndex, setDragIndex] = useState<number | null>(null)
-  const dragStart = useRef<{ x: number; index: number; width: number } | null>(null)
-  const startIndicatorDrag = (event: React.PointerEvent<HTMLDivElement>) => {
-    if (event.pointerType === "mouse" && event.button !== 0) return
-    const nav = event.currentTarget.parentElement
-    if (!nav) return
-    event.preventDefault()
-    dragStart.current = { x: event.clientX, index: activeIndex, width: nav.clientWidth / items.length }
-    setDragIndex(activeIndex)
-    try { event.currentTarget.setPointerCapture(event.pointerId) } catch { /* Safari may cancel capture. */ }
-  }
-  const moveIndicatorDrag = (event: React.PointerEvent<HTMLDivElement>) => {
-    if (!dragStart.current) return
-    const delta = (event.clientX - dragStart.current.x) / dragStart.current.width
-    setDragIndex(Math.max(0, Math.min(items.length - 1, dragStart.current.index + delta)))
-  }
-  const finishIndicatorDrag = (event: React.PointerEvent<HTMLDivElement>) => {
-    const start = dragStart.current
-    if (start && event.type === "pointerup") {
-      // Derive the final tab from pointer-up coordinates, not a potentially stale React state snapshot.
-      const delta = (event.clientX - start.x) / start.width
-      const index = Math.max(0, Math.min(items.length - 1, Math.round(start.index + delta)))
-      if (items[index][0] !== screen) playUiSound("tab")
-      setScreen(items[index][0])
-    }
-    dragStart.current = null
-    setDragIndex(null)
-  }
-  return <nav className="bottom-nav">
-    <div
-      className={"nav-selection-indicator " + (dragIndex !== null ? "is-dragging" : "")}
-      aria-label="Húzd jobbra vagy balra a kiválasztott fület"
-      role="slider"
-      aria-valuemin={0}
-      aria-valuemax={items.length - 1}
-      aria-valuenow={Math.round(dragIndex ?? activeIndex)}
-      aria-valuetext={items[Math.round(dragIndex ?? activeIndex)]?.[1]}
-      tabIndex={0}
-      style={{ transform: `translateX(calc(${(dragIndex ?? activeIndex) * 100}%))` }}
-      onPointerDown={startIndicatorDrag}
-      onPointerMove={moveIndicatorDrag}
-      onPointerUp={finishIndicatorDrag}
-      onPointerCancel={finishIndicatorDrag}
-      onKeyDown={(event) => {
-        let nextIndex = activeIndex
-        if (event.key === "ArrowRight") nextIndex = Math.min(items.length - 1, activeIndex + 1)
-        else if (event.key === "ArrowLeft") nextIndex = Math.max(0, activeIndex - 1)
-        else if (event.key === "Home") nextIndex = 0
-        else if (event.key === "End") nextIndex = items.length - 1
-        else return
-        event.preventDefault()
-        if (items[nextIndex][0] !== screen) playUiSound("tab")
-        setScreen(items[nextIndex][0])
-      }}
-    />
-    {items.map(([id, label, Icon], index) => <button key={id} data-tab-index={index} className={screen === id ? "active" : ""} onClick={() => { if (id !== screen) playUiSound("tab"); setScreen(id) }} aria-current={screen === id ? "page" : undefined} aria-label={id === "profile" ? "Profil: " + userName : label} title={id === "profile" ? userName : undefined}>{id === "profile" ? <UserAvatar userName={userName} avatar={avatar} avatarImage={avatarImage} variant="nav" /> : <Icon size={24} strokeWidth={2} aria-hidden="true" />}<span>{label}</span></button>)}
-  </nav>
-}

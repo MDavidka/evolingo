@@ -7,6 +7,7 @@ import "./profile-dashboard.css"
 import "./development-notice.css"
 import "./reference-screens.css"
 import "./chat-interface.css"
+import "./app-tab-bar.css"
 import PwaRegister from "./pwa-register"
 import DevelopmentNotice from "./development-notice"
 
