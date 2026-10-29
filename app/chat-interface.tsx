@@ -120,7 +120,7 @@ export default function ChatInterface() {
 
     <div className="evo-chat-messages" ref={scroll} role="log" aria-label="Beszélgetés">
       {messages.length === 0 && <div className="evo-chat-welcome">
-        <div className="evo-chat-mark"><img src="/images/evolingo-ai-orb.png" alt="" onError={event => { event.currentTarget.style.display = "none" }} /></div>
+        <div className="evo-chat-mark"><img src="/images/evolingo-ai-orb.svg" alt="" onError={event => { event.currentTarget.style.display = "none" }} /></div>
         <h1>Miben segíthetek?</h1>
         <p>Tanulj, kérdezz és gyakorolj az AI segítségével.</p>
         <div className="evo-chat-prompts">{suggestions.map(suggestion =>
