@@ -21,7 +21,7 @@ function blockValid(b: unknown, allowProgress: boolean): b is IntelligentBlock {
   const p = b.props
   switch (b.type) {
     case "grammar_rule": return keys(p, ["title", "rule", "examples"]) && txt(p.title, 100) && txt(p.rule, 480) && texts(p.examples, 1, 5)
-    case "quiz_choice": return keys(p, ["question", "choices", "correctIndex", "explanation"]) && txt(p.question, 260) && texts(p.choices, 2, 5, 160) && Number.isInteger(p.correctIndex) && (p.correctIndex as number) >= 0 && (p.correctIndex as number) < (p.choices as string[]).length && txt(p.explanation, 400)
+    case "quiz_choice": return keys(p, ["question", "choices", "correctIndex", "explanation"]) && txt(p.question, 260) && texts(p.choices, 2, 5, 160) && typeof p.correctIndex === "number" && Number.isInteger(p.correctIndex) && (p.correctIndex as number) >= 0 && (p.correctIndex as number) < (p.choices as string[]).length && txt(p.explanation, 400)
     case "vocabulary_flashcard": return keys(p, ["title", "cards"]) && txt(p.title, 100) && rows(p.cards, 1, 12, v => keys(v, ["front", "back", "example"]) && txt(v.front, 120) && txt(v.back, 180) && (v.example === undefined || txt(v.example, 180)))
     case "comparison_table": return keys(p, ["title", "columns", "rows"]) && txt(p.title, 100) && texts(p.columns, 2, 2, 80) && rows(p.rows, 1, 8, v => keys(v, ["label", "left", "right"]) && txt(v.label, 90) && txt(v.left, 200) && txt(v.right, 200))
     case "tense_timeline": return keys(p, ["title", "steps"]) && txt(p.title, 100) && rows(p.steps, 2, 5, v => keys(v, ["phase", "label", "detail"]) && ["past", "present", "future"].includes(String(v.phase)) && txt(v.label, 120) && txt(v.detail, 240))
@@ -37,7 +37,7 @@ export function validateIntelligentUI(input: unknown, opts?: { allowUserProgress
     if (!blockValid(b, opts?.allowUserProgress === true) || ids.has(b.id)) return null
     ids.add(b.id)
   }
-  return input as IntelligentUI
+  return input as unknown as IntelligentUI
 }
 export function parseModelUI(raw: string): IntelligentUI | null {
   if (raw.length > 14000) return null
