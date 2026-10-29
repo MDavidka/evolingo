@@ -1095,8 +1095,8 @@ function Home({ completedLessons, answeredTasks, readLessons, notice, clearNotic
         <section className="learn-lesson-progress-banner" aria-label={currentLesson.title + " haladása: " + lessonPercent + "%"}>
           <div className="learn-progress-banner-top"><h2>{currentLesson.title}</h2><strong>{lessonPercent}%</strong></div>
           <div className="learn-progress-meter" role="progressbar" aria-label="Lecke haladása" aria-valuemin={0} aria-valuemax={100} aria-valuenow={lessonPercent}><span style={{ width: lessonPercent + "%" }} /></div>
-          <small>{answeredLessonTasks}/{totalLessonTasks} feladat</small>
-          <span className="learn-progress-badge" aria-hidden="true"><img src="/images/lesson-level-6.png" alt="" /></span>
+
+          <span className="learn-progress-badge" aria-hidden="true">{lessonPercent}%</span>
         </section>
         <aside className="learn-side-countdowns" aria-label="Következő jutalmak és leckék">
           <button type="button" className={"learn-countdown-card chest " + (chestReady ? "is-available" : "is-counting")} onClick={onClaimChest} aria-label={chestReady ? "Láda nyitható" : "Láda visszaszámlálás: " + formatCountdown(chestSeconds)}>
