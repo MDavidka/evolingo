@@ -36,9 +36,9 @@ export default function ChatInterface() {
   }, [])
 
   useEffect(() => {
-    if (!hydrated) return
+    if (!hydrated || busy || enhancing) return
     try { sessionStorage.setItem(SESSION_KEY, JSON.stringify(messages.slice(-16))) } catch {}
-  }, [messages, hydrated])
+  }, [messages, hydrated, busy, enhancing])
 
   useEffect(() => {
     const root = document.documentElement
@@ -68,7 +68,10 @@ export default function ChatInterface() {
   }, [])
 
   useEffect(() => {
-    if (scroll.current) scroll.current.scrollTop = scroll.current.scrollHeight
+    const container = scroll.current
+    if (!container) return
+    const distance = container.scrollHeight - container.scrollTop - container.clientHeight
+    if (distance < 140) container.scrollTop = container.scrollHeight
   }, [messages, busy, error])
 
   const resizeInput = () => {
@@ -94,6 +97,7 @@ export default function ChatInterface() {
     let answered = false
     let completed = false
     let streamReply = ""
+    let frame: number | null = null
     const acceptEvent = (raw: string) => {
       try {
         const event = JSON.parse(raw) as { type?: string; reply?: string; delta?: string; ui?: unknown; error?: string }
@@ -102,14 +106,18 @@ export default function ChatInterface() {
           if (streamReply.length > 30000) throw new Error("Túl hosszú válasz.")
           answered = true
           setStreaming(true)
-          const snapshot = streamReply
-          setMessages(old => {
-            const existing = old.some(msg => msg.id === assistantId)
-            return existing
-              ? old.map(msg => msg.id === assistantId ? { ...msg, content: snapshot } : msg)
-              : [...old, { id: assistantId, role: "assistant", content: snapshot }]
+          if (frame === null) frame = requestAnimationFrame(() => {
+            frame = null
+            const snapshot = streamReply
+            setMessages(old => {
+              const existing = old.some(msg => msg.id === assistantId)
+              return existing
+                ? old.map(msg => msg.id === assistantId ? { ...msg, content: snapshot } : msg)
+                : [...old, { id: assistantId, role: "assistant", content: snapshot }]
+            })
           })
         } else if (event.type === "text" && typeof event.reply === "string" && event.reply.trim()) {
+          if (frame !== null) { cancelAnimationFrame(frame); frame = null }
           answered = true
           setMessages(old => {
             const existing = old.some(msg => msg.id === assistantId)
@@ -179,6 +187,7 @@ export default function ChatInterface() {
     } catch (cause) {
       if (!answered) setError(cause instanceof Error ? cause.message : "Nem sikerült elküldeni az üzenetet.")
     } finally {
+      if (frame !== null) cancelAnimationFrame(frame)
       setBusy(false)
       setEnhancing(false)
       setStreaming(false)
