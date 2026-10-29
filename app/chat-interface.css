@@ -230,3 +230,30 @@ body:has(.ref-view-chat) .screen-content,
 .ref-view-chat .evo-chat-thread {
   margin-top: -14px !important;
 }
+
+/* Mobile scroll performance: scroll only the message list, not the full app. */
+.ref-view-chat .evo-chat-frame {
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+  min-height: 0 !important;
+  max-height: var(--evo-chat-visual-height, 100dvh) !important;
+  overscroll-behavior: none;
+}
+.ref-view-chat .evo-chat-messages {
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
+  overflow-anchor: auto;
+  touch-action: pan-y;
+}
+.ref-view-chat .evo-chat-bottom {
+  flex: 0 0 auto !important;
+  min-width: 0 !important;
+}
+.ref-view-chat .evo-chat-composer textarea {
+  touch-action: manipulation;
+}
