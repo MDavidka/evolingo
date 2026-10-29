@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react"
 import { BookOpen, Folder, Grid2X2 } from "lucide-react"
+import LiquidGlassSurface from "./liquid-glass-surface"
 
 export type AppTab = "learn" | "ai" | "files" | "tools" | "profile"
 
@@ -52,9 +53,8 @@ export default function AppTabBar({ activeTab, onSelect }: Props) {
   }, [scheduleCollapse])
 
   return (
-    <nav
-      className={`evo-tabbar evo-glass-rail ${expanded ? "is-expanded" : "is-compact"}`}
-      aria-label="Fő navigáció"
+    <LiquidGlassSurface kind="rail" className={`evo-tabbar evo-glass-rail ${expanded ? "is-expanded" : "is-compact"}`}>
+    <nav aria-label="Fő navigáció"
       onPointerEnter={(event) => {
         if (event.pointerType === "mouse") reveal()
       }}
@@ -87,5 +87,6 @@ export default function AppTabBar({ activeTab, onSelect }: Props) {
         </button>
       ))}
     </nav>
+    </LiquidGlassSurface>
   )
 }
