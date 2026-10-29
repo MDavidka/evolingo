@@ -90,11 +90,7 @@ export default function AppTabBar({ activeTab, onSelect }: Props) {
           }}
         >
           <span className="evo-tab-content">
-            {id === "ai" ? (
-              <img className="evo-tab-ai-orb" src="/images/evolingo-ai-orb.svg" alt="" />
-            ) : (
-              <Icon size={22} strokeWidth={1.75} aria-hidden="true" />
-            )}
+            <Icon size={22} strokeWidth={1.75} aria-hidden="true" />
             <span className="evo-tab-caption">{label}</span>
           </span>
         </button>
