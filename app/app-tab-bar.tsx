@@ -1,7 +1,7 @@
 "use client"
 
 import { useCallback, useEffect, useRef, useState } from "react"
-import { BookOpen, Folder, Grid2X2 } from "lucide-react"
+import { BookOpen, Folder, Grid2X2, PanelLeft } from "lucide-react"
 import LiquidGlassSurface from "./liquid-glass-surface"
 
 export type AppTab = "learn" | "ai" | "files" | "tools" | "profile"
@@ -23,7 +23,7 @@ type Props = {
 export default function AppTabBar({ activeTab, onSelect }: Props) {
   // Keep all four destinations accessible even when labels are compacted.
   // The profile is a separate button in the top-right header.
-  const [expanded, setExpanded] = useState(true)
+  const [expanded, setExpanded] = useState(false)
   const collapseTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const scheduleCollapse = useCallback(() => {
@@ -53,6 +53,8 @@ export default function AppTabBar({ activeTab, onSelect }: Props) {
   }, [scheduleCollapse])
 
   return (
+    <>
+    <button type="button" className="evo-home-menu-trigger" aria-label={expanded ? "Navigáció bezárása" : "Navigáció megnyitása"} aria-expanded={expanded} onClick={() => setExpanded(value => !value)}><PanelLeft size={22} strokeWidth={1.9} /></button>
     <LiquidGlassSurface kind="rail" className={`evo-tabbar evo-glass-rail ${expanded ? "is-expanded" : "is-compact"}`}>
     <nav aria-label="Fő navigáció"
       onPointerEnter={(event) => {
@@ -88,5 +90,6 @@ export default function AppTabBar({ activeTab, onSelect }: Props) {
       ))}
     </nav>
     </LiquidGlassSurface>
+    </>
   )
 }
