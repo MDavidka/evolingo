@@ -106,8 +106,8 @@ function Topics({ topics, lessons, onSelectTopic, onSelectLesson, onNewLesson }:
     }
   }, [])
 
-  const term = query.toLocaleLowerCase("hu").normalize("NFD").replace(/[\\u0300-\\u036f]/g, "").trim()
-  const contains = (value: string) => value.toLocaleLowerCase("hu").normalize("NFD").replace(/[\\u0300-\\u036f]/g, "").includes(term)
+  const term = query.toLocaleLowerCase("hu").normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim()
+  const contains = (value: string) => value.toLocaleLowerCase("hu").normalize("NFD").replace(/[\u0300-\u036f]/g, "").includes(term)
   const matchingLessons = term
     ? lessons.filter(lesson => contains(lesson.title + " " + lesson.summary))
     : []
