@@ -30,6 +30,15 @@ export default function AppTabBar({ activeTab, onSelect }: Props) {
     collapseTimer.current = setTimeout(() => setExpanded(false), 6000)
   }, [])
 
+  useEffect(() => {
+    const compactOnSend = () => {
+      if (collapseTimer.current) clearTimeout(collapseTimer.current)
+      setExpanded(false)
+    }
+    window.addEventListener("evolingo:chat-message-sent", compactOnSend)
+    return () => window.removeEventListener("evolingo:chat-message-sent", compactOnSend)
+  }, [])
+
   const reveal = useCallback(() => {
     setExpanded(true)
     scheduleCollapse()
