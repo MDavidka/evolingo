@@ -285,3 +285,45 @@ body:has(.ref-view-chat) .screen-content,
   -webkit-backdrop-filter: none !important;
   backdrop-filter: none !important;
 }
+
+/* AI home only: lock the page and its gradient in place on iOS.
+   Messages remain the sole scrollable surface; the composer stays fixed
+   in the flex layout and the keyboard's visual viewport can still resize. */
+html:has(.ref-view-chat),
+body:has(.ref-view-chat) {
+  width: 100%;
+  height: 100%;
+  overflow: hidden !important;
+  overscroll-behavior: none !important;
+  touch-action: pan-y;
+}
+body:has(.ref-view-chat) .app-shell.reference-shell,
+body:has(.ref-view-chat) .app-shell.reference-shell > .screen-content {
+  height: 100dvh !important;
+  min-height: 0 !important;
+  max-height: 100dvh !important;
+  overflow: hidden !important;
+  overscroll-behavior: none !important;
+}
+.app-shell.reference-shell .ref-app.ref-view-chat {
+  height: 100dvh !important;
+  min-height: 0 !important;
+  max-height: 100dvh !important;
+  overflow: hidden !important;
+  overscroll-behavior: none !important;
+  padding-bottom: 0 !important;
+}
+.app-shell.reference-shell .ref-view-chat .evo-chat-frame {
+  overflow: hidden !important;
+  overscroll-behavior: none !important;
+}
+.app-shell.reference-shell .ref-view-chat .evo-chat-messages {
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  overscroll-behavior-y: contain !important;
+  touch-action: pan-y !important;
+}
+.app-shell.reference-shell .ref-view-chat .evo-chat-bottom {
+  flex-shrink: 0 !important;
+  overscroll-behavior: none !important;
+}
