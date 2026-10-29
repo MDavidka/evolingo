@@ -1017,14 +1017,14 @@ function Home({ completedLessons, answeredTasks, readLessons, notice, clearNotic
     const sheet = sheetRef.current
     if (!sheet) return
     const update = () => {
-      const locked = sheet.querySelector(".learn-path-node-locked")
+      const locked = sheet.querySelector<HTMLElement>('.learn-path-node[data-locked="true"]')
       if (!locked) {
         setShowLockedCloud(false)
         return
       }
       const view = sheet.getBoundingClientRect()
       const node = locked.getBoundingClientRect()
-      setShowLockedCloud(node.top < view.bottom - 24 && node.bottom > view.top + 80)
+      setShowLockedCloud(node.top <= view.bottom - Math.min(70, view.height * 0.12))
     }
     update()
     sheet.addEventListener("scroll", update, { passive: true })
@@ -1033,7 +1033,7 @@ function Home({ completedLessons, answeredTasks, readLessons, notice, clearNotic
       sheet.removeEventListener("scroll", update)
       window.removeEventListener("resize", update)
     }
-  }, [completedLessons, openedChests, routeHeight])
+  }, [answeredTasks, chestReady, completedLessons, currentLessonId, openedChests, routeHeight])
   useEffect(() => {
     if (currentLessonId === null || !readLessons.length && !completedLessons.length) return
     const node = nodeRefs.current.get(currentLessonId)
@@ -1079,7 +1079,7 @@ function Home({ completedLessons, answeredTasks, readLessons, notice, clearNotic
             const chestOpened = openedChests.includes("chest:" + level)
             const ready = !chestOpened && completedLessonCount >= level * 5 && chestReady && nextChestAt === level * 5
             const chestArt = chestOpened ? "chest-opened" : completedLessonCount >= level * 5 ? "chest-active" : "chest-locked"
-            return <div key={"chest-" + level} className="learn-path-node learn-path-chest-node" style={{ left: position + "%", top: routeTops[index] + "px" }}><button type="button" className={"learn-path-chest " + (ready ? "is-ready" : "") + (chestOpened ? " is-opened" : "")} disabled={chestOpened} onClick={onClaimChest} aria-label={"Láda " + level + (chestOpened ? ", kinyitva" : ready ? ", nyitható" : ", lezárva")}><span className={"learn-path-art learn-path-art--" + chestArt} aria-hidden="true" /></button><span className="learn-pack-caption">Láda</span></div>
+            return <div key={"chest-" + level} className="learn-path-node learn-path-chest-node" data-locked={!chestOpened && !ready} style={{ left: position + "%", top: routeTops[index] + "px" }}><button type="button" className={"learn-path-chest " + (ready ? "is-ready" : "") + (chestOpened ? " is-opened" : "")} disabled={chestOpened} onClick={onClaimChest} aria-label={"Láda " + level + (chestOpened ? ", kinyitva" : ready ? ", nyitható" : ", lezárva")}><span className={"learn-path-art learn-path-art--" + chestArt} aria-hidden="true" /></button><span className="learn-pack-caption">Láda</span></div>
           }
           const lessonCurrent = lesson.id === currentLessonId
           const requiredChestLevel = Math.floor((lesson.id - 1) / 5)
@@ -1090,6 +1090,7 @@ function Home({ completedLessons, answeredTasks, readLessons, notice, clearNotic
             return <div
               key={lesson.id + "-skill-" + skill}
               className={"learn-path-node learn-path-skill-node " + (leftSide ? "tasks-left" : "tasks-right")}
+              data-locked={!unlocked}
               style={{ left: position + "%", top: routeTops[index] + "px" }}
             >
               <button
@@ -1110,7 +1111,7 @@ function Home({ completedLessons, answeredTasks, readLessons, notice, clearNotic
             const pack = packs[packIndex]
             const packDone = lessonDone || pack.every((_, questionIndex) => answeredTasks.includes(practiceKey(lesson.id, packIndex, questionIndex)))
             const unlocked = lessonDone || (lessonCurrent && chestGateOpen)
-            return <div key={lesson.id + "-pack-" + packIndex} className={"learn-path-node learn-path-task-node " + (leftSide ? "tasks-left" : "tasks-right")} style={{ left: position + "%", top: routeTops[index] + "px" }}>
+            return <div key={lesson.id + "-pack-" + packIndex} className={"learn-path-node learn-path-task-node " + (leftSide ? "tasks-left" : "tasks-right")} data-locked={!unlocked} style={{ left: position + "%", top: routeTops[index] + "px" }}>
               <button type="button" className={"learn-pack-button " + (packDone ? "is-done" : unlocked ? "is-ready" : "is-locked")} disabled={!unlocked || packDone} onClick={() => onOpenTask(lesson.id, packIndex)} aria-label={lesson.title + ", " + (packIndex + 1) + ". feladatcsomag, " + pack.length + " feladat" + (packDone ? ", kész" : unlocked ? "" : ", zárolva")}>
                 <span className={"learn-path-art learn-path-art--" + (packDone ? "task-active" : unlocked ? "task-ready" : "task-locked")} aria-hidden="true" /><strong className="learn-pack-count">{pack.length}</strong>
               </button>
@@ -1118,7 +1119,7 @@ function Home({ completedLessons, answeredTasks, readLessons, notice, clearNotic
             </div>
           }
           const status = lessonDone ? "completed" : lessonCurrent && chestGateOpen ? "current" : "locked"
-          return <div className={"learn-path-node learn-path-node-" + status + (leftSide ? " tasks-left" : " tasks-right")} key={lesson.id} style={{ left: position + "%", top: routeTops[index] + "px" }}>
+          return <div className={"learn-path-node learn-path-node-" + status + (leftSide ? " tasks-left" : " tasks-right")} data-locked={status === "locked"} key={lesson.id} style={{ left: position + "%", top: routeTops[index] + "px" }}>
             <button ref={element => { if (element) nodeRefs.current.set(lesson.id, element); else nodeRefs.current.delete(lesson.id) }} type="button" className="learn-path-node-button" disabled={status === "locked"} aria-label={lesson.title + ", " + (lessonDone ? "kész" : lessonCurrent ? "indítás" : "zárolva")} onClick={() => onOpenLesson(lesson.id)}>
               <span className={"learn-path-art learn-path-art--" + (lessonDone ? "checkpoint-active" : lessonCurrent ? "lesson-active" : "lesson-locked")} aria-hidden="true" />
             </button>
@@ -1127,7 +1128,7 @@ function Home({ completedLessons, answeredTasks, readLessons, notice, clearNotic
         })}
       </div>
     </section>
-    {showLockedCloud && <div className="learn-path-cloud" aria-hidden="true" />}
+    <div className={"learn-path-cloud" + (showLockedCloud ? " is-visible" : "")} aria-hidden="true" />
   </div>
 }
 
