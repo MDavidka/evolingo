@@ -22,5 +22,5 @@ export const metadata: Metadata = {
   icons: { icon: "/icon.svg", apple: "/icon.svg" },
   formatDetection: { telephone: false },
 }
-export const viewport: Viewport = { width: "device-width", initialScale: 1, themeColor: "#ffffff", viewportFit: "cover" }
+export const viewport: Viewport = { width: "device-width", initialScale: 1, maximumScale: 1, userScalable: false, themeColor: "#ffffff", viewportFit: "cover" }
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) { return <html lang="hu"><body className={inter.className}><AppsSDKUIProvider linkComponent="a"><PwaRegister /><DevelopmentNotice />{children}</AppsSDKUIProvider></body></html> }
