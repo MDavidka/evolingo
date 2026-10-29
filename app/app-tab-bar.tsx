@@ -25,18 +25,18 @@ export default function AppTabBar({ activeTab, onSelect, avatarImage, userName }
       .evo-tabbar.evo-glass-rail {
         position: fixed !important;
         left: auto !important;
-        right: max(10px, env(safe-area-inset-right, 0px)) !important;
-        top: 50% !important;
+        right: max(12px, env(safe-area-inset-right, 0px)) !important;
+        top: calc(env(safe-area-inset-top, 0px) + 96px) !important;
         bottom: auto !important;
-        transform: translateY(-50%) !important;
-        width: 64px !important;
+        transform: none !important;
+        width: 52px !important;
         height: auto !important;
         max-height: min(440px, 72dvh) !important;
-        padding: 10px 6px !important;
+        padding: 7px 4px !important;
         display: flex !important;
         flex-direction: column !important;
         align-items: stretch !important;
-        gap: 4px !important;
+        gap: 2px !important;
         border-radius: 999px !important;
         background: rgba(211, 219, 230, .44) !important;
         border: 1px solid rgba(255,255,255,.65) !important;
@@ -46,8 +46,8 @@ export default function AppTabBar({ activeTab, onSelect, avatarImage, userName }
         z-index: 80;
       }
       .evo-glass-rail .evo-tab {
-        width: 50px !important;
-        height: 57px !important;
+        width: 42px !important;
+        height: 46px !important;
         min-width: 0 !important;
         min-height: 0 !important;
         flex: none !important;
@@ -71,8 +71,8 @@ export default function AppTabBar({ activeTab, onSelect, avatarImage, userName }
         width: 100% !important;
         height: 100% !important;
       }
-      .evo-glass-rail .evo-tab-caption { font-size: 9px !important; line-height: 12px !important; font-weight: 600 !important; white-space: nowrap; }
-      .evo-glass-rail .evo-tab-avatar { width: 24px !important; height: 24px !important; border-radius: 50% !important; object-fit: cover; }
+      .evo-glass-rail .evo-tab-caption { font-size: 8px !important; line-height: 12px !important; font-weight: 600 !important; white-space: nowrap; }
+      .evo-glass-rail .evo-tab-avatar { width: 21px !important; height: 21px !important; border-radius: 50% !important; object-fit: cover; }
       .evo-glass-rail .evo-tab:focus-visible { outline: 2px solid #3277e6 !important; outline-offset: 2px; }
       @media (max-height: 620px) {
         .evo-glass-rail .evo-tab { height: 47px !important; }
@@ -97,8 +97,8 @@ export default function AppTabBar({ activeTab, onSelect, avatarImage, userName }
           <span className="evo-tab-content">
             {id === "profile" && avatarImage
               ? <img className="evo-tab-avatar" src={avatarImage} alt="" />
-              : id === "ai" ? <img src="/images/evolingo-ai-orb.svg" alt="" style={{ width: 24, height: 24, borderRadius: "50%" }} />
-              : <Icon size={22} strokeWidth={1.8} aria-hidden="true" />}
+              : id === "ai" ? <img src="/images/evolingo-ai-orb.svg" alt="" style={{ width: 21, height: 21, borderRadius: "50%" }} />
+              : <Icon size={19} strokeWidth={1.8} aria-hidden="true" />}
             <span className="evo-tab-caption">{label}</span>
           </span>
         </button>
