@@ -170,7 +170,7 @@ function Topics({ topics, lessons, onSelectTopic, onSelectLesson, onNewLesson }:
       </div>
     </section>}
 
-    <button type="button" className="evo-learning-library" onClick={() => onSelectTopic(topics[0]?.id ?? 0)} disabled={!topics.length}>
+    <button type="button" className="evo-learning-library" onClick={() => onSelectTopic(-1)} disabled={!lessons.length}>
       <span className="evo-learning-library-icon"><LibraryBig size={23} strokeWidth={1.75} aria-hidden="true" /></span>
       <span><strong>Összes lecke</strong><small>Böngészd az összes tananyagot</small></span>
       <ChevronRight size={20} strokeWidth={1.75} aria-hidden="true" />
@@ -178,7 +178,7 @@ function Topics({ topics, lessons, onSelectTopic, onSelectLesson, onNewLesson }:
   </div>
 }
 
-function TopicDetail({ topic, lessons, onSelectLesson, onBack }: { topic?: TopicData; lessons: LessonData[]; onSelectLesson: (id: number) => void; onBack: () => void }) {
+function TopicDetail({ topic, lessons, onSelectLesson, onBack, showAll = false }: { topic?: TopicData; lessons: LessonData[]; onSelectLesson: (id: number) => void; onBack: () => void; showAll?: boolean }) {
   const [tab, setTab] = useState<"lessons" | "files" | "overview">("lessons")
   const [fileCount, setFileCount] = useState(0)
   useEffect(() => {
@@ -187,10 +187,10 @@ function TopicDetail({ topic, lessons, onSelectLesson, onBack }: { topic?: Topic
       if (Array.isArray(saved)) setFileCount(saved.filter(entry => entry.kind !== "folder").length)
     } catch { /* File metadata is local to this browser. */ }
   }, [])
-  const list = lessons.filter(lesson => topic?.lessonIds.includes(lesson.id))
+  const list = showAll ? lessons : lessons.filter(lesson => topic?.lessonIds.includes(lesson.id))
   return <div className="ref-topic-detail">
-    <button type="button" className="ref-topic-breadcrumb" onClick={onBack}><ChevronRight size={17} /> Saját témáim <ChevronRight size={16} /><strong>{topic?.title || "Erasmus"}</strong></button>
-    <div className="ref-topic-detail-title"><div><h1>{topic?.title || "Erasmus"}</h1><p>{topic?.subtitle || "Angol nyelvtan és kommunikáció"}</p></div><button type="button" className="ref-topic-more" aria-label="Téma műveletei"><MoreHorizontal size={22} /></button></div>
+    <button type="button" className="ref-topic-breadcrumb" onClick={onBack}><ChevronRight size={17} /> Saját témáim <ChevronRight size={16} /><strong>{showAll ? "Összes lecke" : topic?.title || "Témáim"}</strong></button>
+    <div className="ref-topic-detail-title"><div><h1>{topic?.title || "Erasmus"}</h1><p>{showAll ? "Böngészd az összes tananyagot" : topic?.subtitle || ""}</p></div><button type="button" className="ref-topic-more" aria-label="Téma műveletei"><MoreHorizontal size={22} /></button></div>
     <div className="ref-topic-meta"><span><BookOpen size={19} />{list.length} lecke</span><span><FileText size={19} />{fileCount} fájl</span><span><Cloud size={19} />Saját téma</span></div>
     <div className="ref-topic-tabs" role="tablist" aria-label="Téma tartalma">
       <button type="button" role="tab" aria-selected={tab === "lessons"} onClick={() => setTab("lessons")}>Leckék</button>
@@ -350,7 +350,7 @@ export default function ReferenceScreens(props: Props) {
   const selectedTopic = topics.find(topic => topic.id === selectedTopicId) ?? topics[0]
   let content: ReactNode
   if (view === "home") content = <Topics topics={topics} lessons={lessons} onSelectTopic={id => { setSelectedTopicId(id); onView("topic") }} onSelectLesson={id => { onSelectLesson(id); onView("selector") }} onNewLesson={() => { const first = topics[0]?.lessonIds[0]; if (first != null) { onSelectLesson(first); onView("selector") } }} />
-  else if (view === "topic") content = <TopicDetail topic={selectedTopic} lessons={lessons} onSelectLesson={id => { onSelectLesson(id); onView("selector") }} onBack={() => onView("home")} />
+  else if (view === "topic") content = <TopicDetail topic={selectedTopicId === -1 ? undefined : selectedTopic} showAll={selectedTopicId === -1} lessons={lessons} onSelectLesson={id => { onSelectLesson(id); onView("selector") }} onBack={() => onView("home")} />
   else if (view === "selector") content = <LessonSelector lesson={lessons.find(item => item.id === activeLessonId)} onSelectMode={onSelectMode} onContinue={onContinue} />
   else if (view === "chat") content = <ChatInterface />
   else if (view === "space") content = <Space />
