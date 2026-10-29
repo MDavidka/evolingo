@@ -222,3 +222,11 @@ body:has(.ref-view-chat) .screen-content,
     padding-right: 14px !important;
   }
 }
+
+/* Keep chat content slightly higher after removing the floating new-chat action. */
+.ref-view-chat .evo-chat-messages {
+  padding-top: 0 !important;
+}
+.ref-view-chat .evo-chat-thread {
+  margin-top: -14px !important;
+}
