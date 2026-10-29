@@ -558,3 +558,29 @@ html.evo-reduced-motion *, html.evo-reduced-motion *::before, html.evo-reduced-m
 @media (prefers-reduced-motion: reduce) {
   .evo-morph-anchor > .evo-tabbar.evo-glass-rail.evo-morph-rail { transition: none !important; }
 }
+
+/* Stable, non-glass morphing sidebar: single matte surface, no WebGL. */
+.evo-morph-anchor > .evo-tabbar.evo-glass-rail.evo-morph-rail,
+.app-shell.reference-shell:has(.ref-view-chat) .evo-morph-anchor > .evo-tabbar.evo-glass-rail.evo-morph-rail,
+.evo-morph-anchor > .evo-tabbar.evo-glass-rail.evo-morph-rail.is-expanded,
+.app-shell.reference-shell:has(.ref-view-chat) .evo-morph-anchor > .evo-tabbar.evo-glass-rail.evo-morph-rail.is-expanded {
+  background: #f0f1f4 !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+  border: 1px solid #e8e9ed !important;
+  box-shadow: 0 2px 12px rgba(34,45,64,.055) !important;
+  isolation: isolate;
+  will-change: width;
+}
+.evo-morph-anchor .evo-morph-rail > nav {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  width: 224px !important;
+  height: 100% !important;
+  padding: 0 !important;
+  gap: 0 !important;
+}
+.evo-morph-anchor .evo-morph-rail nav .evo-morph-toggle { margin-right: 12px; }
+.evo-morph-anchor .evo-morph-rail nav .evo-morph-destination { margin-right: 12px; }
