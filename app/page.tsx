@@ -781,7 +781,7 @@ export default function App() {
     return requiredChestLevel === 0 || purchasedItems.includes("chest:" + requiredChestLevel)
   }
   const claimChest = () => {
-    if (!claimableChest) { setSystemNotice("chest"); return }
+    if (!claimableChest) { playUiSound("notification"); setSystemNotice("chest"); return }
     if (purchasedItems.includes("chest:" + claimableChest)) return
     setActiveChestLevel(claimableChest)
     setChestReward(null)
@@ -964,12 +964,12 @@ function SystemNotificationSheet({ kind, nextChestAt, onClose, onAllowNotificati
   const Icon = item.icon
   return <div className="system-notice-backdrop" role="presentation" onMouseDown={event => { if (event.target === event.currentTarget) onClose() }}>
     <section className="system-notice-sheet" role="dialog" aria-modal="true" aria-labelledby="system-notice-title">
-      <button className="system-notice-close" type="button" aria-label="Bezárás" onClick={onClose}><X size={21} /></button>
+      <button className="system-notice-close" type="button" aria-label="Bezárás" onClick={() => { playUiSound("tap"); onClose() }}><X size={21} /></button>
       {kind === "chest" ? <img className="system-notice-chest-art" src="/images/chest-notification.svg" alt="" aria-hidden="true" /> : <span className="system-notice-icon" aria-hidden="true"><Icon size={26} strokeWidth={1.8} /></span>}
       <p>{item.eyebrow}</p>
       <h2 id="system-notice-title">{item.title}</h2>
       <span className="system-notice-copy">{item.copy}</span>
-      <button className="system-notice-action" type="button" onClick={item.onAction}>{item.action}</button>
+      <button className="system-notice-action" type="button" onClick={() => { playUiSound("select"); item.onAction() }}>{item.action}</button>
       {kind === "permission" && <button className="system-notice-secondary" type="button" onClick={() => { try { localStorage.setItem("evolingo.notification-intro.v1", "1") } catch {}; onClose() }}>Most nem</button>}
     </section>
   </div>
@@ -1384,6 +1384,7 @@ function TaskExercise({ lesson, taskIndex, onExit, onComplete, lives, onWrongAns
   }
   const toggleWord = (word: string, position: number) => {
     if (checked || lives <= 0) return
+    playUiSound("select")
     setSelectedWords((previous) => previous.includes(position + ":" + word) ? previous.filter((item) => item !== position + ":" + word) : [...previous, position + ":" + word])
   }
   const chosenWords = selectedWords.map((item) => item.split(":").slice(1).join(":"))
@@ -1402,7 +1403,7 @@ function TaskExercise({ lesson, taskIndex, onExit, onComplete, lives, onWrongAns
         const selected = selectedAnswer === option
         const isRight = checked && option === question.answer
         const isWrong = checked && selected && !answerCorrect
-        return <button key={option} className={"answer-option " + (selected ? "selected " : "") + (isRight ? "correct " : "") + (isWrong ? "incorrect " : "") + (rewardPulse && isRight ? "answer-pop" : "")} onClick={() => !checked && setSelectedAnswer(option)} disabled={checked || lives <= 0}><span className="option-letter">{String.fromCharCode(65 + index)}</span><span>{option}</span>{isRight && <Check size={19} />}</button>
+        return <button key={option} className={"answer-option " + (selected ? "selected " : "") + (isRight ? "correct " : "") + (isWrong ? "incorrect " : "") + (rewardPulse && isRight ? "answer-pop" : "")} onClick={() => { if (!checked) { playUiSound("select"); setSelectedAnswer(option) } }} disabled={checked || lives <= 0}><span className="option-letter">{String.fromCharCode(65 + index)}</span><span>{option}</span>{isRight && <Check size={19} />}</button>
       })}</div>}
       {question.type === "text" && <div className={"answer-input-wrap " + (checked ? (answerCorrect ? "is-correct" : "is-incorrect") : "")}><label htmlFor="typed-answer">Válaszod</label><input id="typed-answer" autoComplete="off" autoCapitalize="none" disabled={lives <= 0 || checked} placeholder="Írd be a választ…" value={typedAnswer} onChange={(event) => setTypedAnswer(event.target.value)} onKeyDown={(event) => { if (event.key === "Enter" && canCheck && !checked) submitAnswer() }} />{checked && answerCorrect && <CheckCircle2 size={20} />}</div>}
       {question.type === "arrange" && <div className="word-arrange-area"><div className={"word-answer-line " + (checked ? (answerCorrect ? "is-correct" : "is-incorrect") : "")} aria-label="Saját mondat">{chosenWords.length ? chosenWords.map((word, index) => <button key={index + "-" + word} onClick={() => !checked && setSelectedWords((previous) => previous.filter((_, itemIndex) => itemIndex !== index))} disabled={checked || lives <= 0} className="chosen-word">{word}</button>) : <span className="word-placeholder">Koppints a szavakra a mondat összeállításához</span>}</div><div className="word-bank">{question.words?.map((word, index) => { const token = index + ":" + word; const used = selectedWords.includes(token); return <button key={token} className="word-chip" disabled={used || checked || lives <= 0} onClick={() => toggleWord(word, index)}>{word}</button> })}</div></div>}
