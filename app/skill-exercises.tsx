@@ -9,6 +9,7 @@ import {
 import "./skill-exercises.css"
 import { lessonVocabulary } from "./skill-vocabulary"
 import SkillIcon from "./skill-icons"
+import { playUiSound } from "./ui-sounds"
 
 export type SkillMode = "conversation" | "vocabulary" | "essay"
 export type SkillLesson = {
@@ -134,27 +135,6 @@ export default function SkillExercise({ mode, lesson, alreadyCompleted, onExit, 
   const [introPlaying, setIntroPlaying] = useState(false)
   const introVideoRef = useRef<HTMLVideoElement | null>(null)
   const introTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const playCardSound = () => {
-    try {
-      const AudioContextCtor = window.AudioContext
-      if (!AudioContextCtor) return
-      const context = new AudioContextCtor()
-      void context.resume().then(() => {
-        const oscillator = context.createOscillator()
-        const gain = context.createGain()
-        oscillator.type = "sine"
-        oscillator.frequency.setValueAtTime(520, context.currentTime)
-        oscillator.frequency.exponentialRampToValueAtTime(780, context.currentTime + 0.13)
-        gain.gain.setValueAtTime(0.0001, context.currentTime)
-        gain.gain.exponentialRampToValueAtTime(0.065, context.currentTime + 0.018)
-        gain.gain.exponentialRampToValueAtTime(0.0001, context.currentTime + 0.25)
-        oscillator.connect(gain).connect(context.destination)
-        oscillator.start()
-        oscillator.stop(context.currentTime + 0.26)
-        oscillator.onended = () => { void context.close() }
-      }).catch(() => { void context.close() })
-    } catch { /* Sound is optional on unsupported browsers. */ }
-  }
   const dismissWordIntro = () => {
     if (introTimer.current) clearTimeout(introTimer.current)
     setWordIntro(false)
@@ -185,6 +165,7 @@ export default function SkillExercise({ mode, lesson, alreadyCompleted, onExit, 
     if (finishedRef.current) return
     finishedRef.current = true
     setFinished(true)
+    playUiSound("complete")
     completion.current()
   }
 
@@ -224,6 +205,7 @@ export default function SkillExercise({ mode, lesson, alreadyCompleted, onExit, 
 
   const toggleMic = () => {
     if (recognizerRef.current && listening) {
+      playUiSound("select")
       recognizerRef.current.stop()
       return
     }
@@ -252,6 +234,7 @@ export default function SkillExercise({ mode, lesson, alreadyCompleted, onExit, 
       }
       recognition.onend = () => { setListening(false); recognizerRef.current = null }
       recognition.start()
+      playUiSound("open")
       setListening(true)
     } catch {
       setListening(false)
@@ -269,6 +252,7 @@ export default function SkillExercise({ mode, lesson, alreadyCompleted, onExit, 
         question: questions[questionIndex], answer, lessonTitle: lesson.title,
       })
       setAnswerFeedback(result)
+      playUiSound(result.accepted ? "correct" : "wrong")
       setDebugStage("conversation-check: OK")
     } catch (error) {
       setSpeechError(error instanceof Error ? error.message : "Nem sikerült az értékelés.")
@@ -282,6 +266,7 @@ export default function SkillExercise({ mode, lesson, alreadyCompleted, onExit, 
       return
     }
     if (recognizerRef.current) { recognizerRef.current.abort(); recognizerRef.current = null; setListening(false) }
+    playUiSound("open")
     setQuestionIndex(index => index + 1)
     setAnswer("")
     setAnswerFeedback(null)
@@ -295,6 +280,7 @@ export default function SkillExercise({ mode, lesson, alreadyCompleted, onExit, 
   }
   const chooseWord = (known: boolean) => {
     if (!cards.length || wordIndex >= cards.length || finishedRef.current) return
+    playUiSound(known ? "correct" : "swipe")
     if (known) setKnownCount(prev => prev + 1)
     setSwipeDelta(0)
     setRevealed(false)
@@ -331,6 +317,7 @@ export default function SkillExercise({ mode, lesson, alreadyCompleted, onExit, 
     try {
       const result = await askAI<EssayFeedback>("essay-check", { title: topic.title, prompt: topic.prompt, essay })
       setEssayFeedback(result)
+      playUiSound(result.accepted ? "correct" : "wrong")
       setDebugStage("essay-check: OK")
     } catch (error) {
       setEssayError(error instanceof Error ? error.message : "Az esszé nem értékelhető.")
@@ -402,7 +389,7 @@ export default function SkillExercise({ mode, lesson, alreadyCompleted, onExit, 
           onPointerMove={pointerMove}
           onPointerUp={pointerUp}
           onPointerCancel={() => { startPointer.current = null; setSwipeDelta(0) }}
-          onClick={() => { if (swallowClick.current) { swallowClick.current = false; return } setRevealed(v => !v) }}
+          onClick={() => { if (swallowClick.current) { swallowClick.current = false; return } playUiSound("flip"); setRevealed(v => !v) }}
           onKeyDown={event => { if (event.key === "ArrowLeft") { event.preventDefault(); chooseWord(false) } else if (event.key === "ArrowRight") { event.preventDefault(); chooseWord(true) } }}
           aria-label={revealed ? "Magyarul: " + cards[wordIndex]?.hungarian + ". Koppints a visszafordításhoz." : cards[wordIndex]?.english + ". Koppints a fordításhoz; balra nem tudtam, jobbra tudtam."}
         >
@@ -422,7 +409,7 @@ export default function SkillExercise({ mode, lesson, alreadyCompleted, onExit, 
         <div className="skill-essay-task-meta"><span>WRITING TASK</span><span><FilePenLine size={16} /> 120–220 szó</span></div>
         <h1 className="skill-essay-heading">{topic?.title}</h1>
         <p className="skill-essay-prompt">{topic?.prompt}</p>
-        <button type="button" className="skill-essay-details-toggle" aria-expanded={essayDetailsOpen} onClick={() => setEssayDetailsOpen(value => !value)}>
+        <button type="button" className="skill-essay-details-toggle" aria-expanded={essayDetailsOpen} onClick={() => { playUiSound("tap"); setEssayDetailsOpen(value => !value) }}>
           <ChevronRight size={19} className={essayDetailsOpen ? "is-open" : ""} />
           Teljes feladat megtekintése
         </button>
