@@ -1,0 +1,271 @@
+"use client"
+
+import { useEffect, useRef, useState, type ChangeEvent, type ReactNode } from "react"
+import {
+  ArrowRight, ArrowUp, ArrowUpRight, BookOpen, CalendarDays, CheckCircle2, ChevronDown, ChevronsUpDown, ChevronRight,
+  CircleHelp, Cloud, FileText, Folder, GraduationCap, Grid2X2, Info, Landmark, List,
+  LockKeyhole, LogOut, Mic, MoreHorizontal, Plus, Search, Send, ShieldCheck, UserRound,
+  X, Languages, Dna, ClipboardCheck, NotebookPen, Layers, Crown, PencilLine, type LucideIcon,
+} from "lucide-react"
+
+export type ReferenceView = "home" | "selector" | "chat" | "space" | "utility" | "profile"
+
+type Props = {
+  view: ReferenceView
+  onUploadFile: () => void
+  onPickFile: () => void
+  topics: TopicData[]
+  lessons: LessonData[]
+  completedLessons: number[]
+  readLessons: number[]
+  activeLessonId: number
+  userName: string
+  avatarImage: string
+  avatarFallback: string
+  onView: (view: ReferenceView) => void
+  onSelectLesson: (lessonId: number) => void
+  onSelectMode: (mode: number) => void
+  onContinue: () => void
+  onEditProfile: (name: string) => void
+  onEditAvatar: (file: File) => void
+  onLogout: () => void
+}
+
+type TopicData = { id: number; title: string; subtitle: string; lessonCount: number; lessonIds: number[] }
+type LessonData = { id: number; title: string; summary: string; read: boolean; completed: boolean }
+
+const initialFiles: SpaceEntry[] = []
+type SpaceEntry = { id: string; name: string; detail: string; kind: "folder" | "pdf" | "note"; parent?: string; size?: number }
+const SPACE_BLOBS_KEY = "evolingo.space-blobs.v1"
+
+const actionTypes: { title: string; detail: string; icon: LucideIcon }[] = [
+  { title: "Tanulás", detail: "Az anyag áttekintése és megértése.", icon: BookOpen },
+  { title: "Gyakorlás", detail: "Interaktív feladatok és kérdések.", icon: PencilLine },
+  { title: "Tudásfelmérés", detail: "Ellenőrizd, mennyire ismered az anyagot.", icon: ClipboardCheck },
+  { title: "Tanulókártyák", detail: "Fogalmak és meghatározások ismétlése.", icon: Layers },
+]
+
+function Avatar({ name, src, fallback }: { name: string; src: string; fallback: string }) {
+  return <span className="ref-avatar">{src ? <img src={src} alt={name} /> : <span className="ref-avatar-fallback"><img src={fallback} alt="" /></span>}</span>
+}
+
+function Header({ name, avatarImage, avatarFallback, onProfile, onHome, onUtility, onChat, onSpace }: {
+  name: string; avatarImage: string; avatarFallback: string; onProfile: () => void;
+  onHome: () => void;
+  onUtility: () => void; onChat: () => void; onSpace: () => void
+}) {
+  const [menuOpen, setMenuOpen] = useState(false)
+  return <header className="ref-topbar">
+    <div className="ref-course-wrap">
+      <button className="ref-course" type="button" aria-expanded={menuOpen} onClick={() => setMenuOpen(value => !value)}>
+        <GraduationCap size={20} strokeWidth={1.8} /><strong>Erasmus</strong><span className="ref-course-chevron"><ChevronsUpDown size={13} /></span>
+      </button>
+      {menuOpen && <div className="ref-course-menu" role="menu">
+        <button type="button" role="menuitem" onClick={() => { setMenuOpen(false); onHome() }}>Tanulás</button>
+        <button type="button" role="menuitem" onClick={() => { setMenuOpen(false); onChat() }}>AI Chat</button>
+        <button type="button" role="menuitem" onClick={() => { setMenuOpen(false); onSpace() }}>Saját fájlok</button>
+        <button type="button" role="menuitem" onClick={() => { setMenuOpen(false); onUtility() }}>Alkotás és szervezés</button>
+      </div>}
+    </div>
+    <button className="ref-profile-shortcut" type="button" onClick={() => { setMenuOpen(false); onProfile() }} aria-label="Profil megnyitása"><Avatar name={name} src={avatarImage} fallback={avatarFallback} /></button>
+  </header>
+}
+
+function Topics({ topics, onSelect }: { topics: TopicData[]; onSelect: (lessonId: number) => void }) {
+  const [query, setQuery] = useState("")
+  const filtered = topics.filter(topic => `${topic.title} ${topic.subtitle}`.toLocaleLowerCase("hu").includes(query.toLocaleLowerCase("hu")))
+  return <div className="ref-topics">
+    <label className="ref-search"><Search size={19} /><input aria-label="Témák keresése" value={query} onChange={event => setQuery(event.target.value)} /></label>
+    <div className="ref-topic-controls"><span>{topics.length} téma</span><button type="button" className="ref-dark-pill" onClick={() => onSelect(topics[0]?.id ?? 1)}><Plus size={17} /> Új lecke</button></div>
+    <div className="ref-topic-list">{filtered.slice(0, 3).map(({ id, title, subtitle, lessonCount, lessonIds }) => { const Icon = id === 1 ? Languages : id % 2 ? Landmark : Dna; return <button type="button" className="ref-topic-row" key={id} onClick={() => onSelect(lessonIds[0] || 1)}>
+      <span className="ref-soft-icon"><Icon size={20} strokeWidth={1.8} /></span>
+      <span className="ref-topic-copy"><strong>{title}</strong><small>{subtitle}</small><small>{lessonCount} lecke</small></span>
+      <ChevronRight className="ref-chevron" size={19} />
+    </button>})}{filtered.length === 0 && <p className="ref-empty">Nincs ilyen téma.</p>}</div>
+  </div>
+}
+
+function LessonSelector({ lesson, onSelectMode, onContinue }: { lesson?: LessonData; onSelectMode: (mode: number) => void; onContinue: () => void }) {
+  const [selected, setSelected] = useState(0)
+  return <div className="ref-selector">
+    <h1>Hogyan tovább?</h1>
+    <div className="ref-action-list" role="radiogroup" aria-label="Lecke módja">
+      {actionTypes.map((item, index) => { const Icon = item.icon; return <button type="button" key={item.title} role="radio" aria-checked={selected === index} className={`ref-action-card ${selected === index ? "is-selected" : ""}`} onClick={() => { setSelected(index); onSelectMode(index) }}>
+        <span className="ref-soft-icon"><Icon size={21} strokeWidth={1.8} /></span><span className="ref-action-copy"><strong>{item.title}</strong><small>{item.detail}</small></span>
+        {selected === index ? <CheckCircle2 className="ref-selected-check" size={20} /> : <span className="ref-unselected-dot" />}
+      </button>})}
+    </div>
+    <button type="button" className="ref-continue" onClick={onContinue}>Folytatás <ArrowRight size={18} /></button>
+  </div>
+}
+
+function Chat() {
+  const [message, setMessage] = useState("")
+  const [error, setError] = useState("")
+  const [busy, setBusy] = useState(false)
+  const input = useRef<HTMLInputElement>(null)
+  useEffect(() => {
+    const viewport = window.visualViewport
+    const updateViewport = () => {
+      const visibleHeight = viewport?.height ?? window.innerHeight
+      const keyboardInset = Math.max(0, window.innerHeight - visibleHeight - (viewport?.offsetTop ?? 0))
+      document.documentElement.style.setProperty("--ref-visual-height", `${visibleHeight}px`)
+      document.documentElement.style.setProperty("--ref-keyboard-inset", `${keyboardInset}px`)
+    }
+    updateViewport()
+    viewport?.addEventListener("resize", updateViewport)
+    viewport?.addEventListener("scroll", updateViewport)
+    window.addEventListener("resize", updateViewport)
+    return () => {
+      viewport?.removeEventListener("resize", updateViewport)
+      viewport?.removeEventListener("scroll", updateViewport)
+      window.removeEventListener("resize", updateViewport)
+      document.documentElement.style.removeProperty("--ref-visual-height")
+      document.documentElement.style.removeProperty("--ref-keyboard-inset")
+    }
+  }, [])
+  async function send(event: React.FormEvent) {
+    event.preventDefault()
+    const content = message.trim()
+    if (!content || busy) return
+    setBusy(true); setError("")
+    try {
+      const response = await fetch("/api/chat", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ message: content }) })
+      if (!response.ok) throw new Error("A chat szolgáltatás most nem érhető el.")
+      setMessage("")
+    } catch (cause) { setError(cause instanceof Error ? cause.message : "A chat szolgáltatás most nem érhető el.") }
+    finally { setBusy(false); input.current?.focus() }
+  }
+  return <div className="ref-chat">
+    <div className="ref-chat-spacer" />
+    {error && <p className="ref-chat-error" role="alert">{error}</p>}
+    <form className="ref-chat-composer" onSubmit={event => { void send(event) }}>
+      <button type="button" aria-label="Fájl csatolása" onClick={() => setError("A fájlcsatolás még nem érhető el.")}><Plus size={20} /></button>
+      <input ref={input} value={message} onChange={event => setMessage(event.target.value)} placeholder="Írj egy üzenetet..." aria-label="Üzenet" />
+      <button className="ref-model" type="button" aria-label="Modell: Vanilla 1">Vanilla 1 <ChevronDown size={13} /></button>
+      <button type="button" aria-label="Hangüzenet" onClick={() => setError("A hangbevitel nem érhető el.")}><Mic size={18} /></button>
+      <button className="ref-send" type="submit" disabled={busy || !message.trim()} aria-label={busy ? "Küldés folyamatban" : "Küldés"}><ArrowUp size={20} /></button>
+    </form>
+  </div>
+}
+
+function Space() {
+  const filePicker = useRef<HTMLInputElement>(null)
+  const [entries, setEntries] = useState<SpaceEntry[]>(initialFiles)
+  const [view, setView] = useState<"list" | "grid">("list")
+  const [folder, setFolder] = useState<string | null>(null)
+  const [menuFor, setMenuFor] = useState<string | null>(null)
+  const [newMenu, setNewMenu] = useState(false)
+  const [notice, setNotice] = useState("")
+  const [storageUsed, setStorageUsed] = useState<number | null>(null)
+  const folderName = folder ? entries.find(item => item.id === folder)?.name || "Saját fájlok" : null
+  useEffect(() => {
+    try { const saved = localStorage.getItem("evolingo.space.v1"); if (saved) { const parsed = JSON.parse(saved) as SpaceEntry[]; if (Array.isArray(parsed)) setEntries(parsed) } } catch { /* Keep the visible starter collection. */ }
+  }, [])
+  useEffect(() => {
+    let cancelled = false
+    fetch("/api/space", { cache: "no-store" }).then(async response => {
+      if (!response.ok) return
+      const data = await response.json() as { entries?: SpaceEntry[]; storageUsed?: number; available?: boolean }
+      if (cancelled) return
+      if (Array.isArray(data.entries)) setEntries(data.entries)
+      if (data.available === true && typeof data.storageUsed === "number" && Number.isFinite(data.storageUsed)) setStorageUsed(Math.max(0, data.storageUsed))
+    }).catch(() => {})
+    return () => { cancelled = true }
+  }, [])
+  const update = (next: SpaceEntry[]) => { setEntries(next); try { localStorage.setItem("evolingo.space.v1", JSON.stringify(next)) } catch { setNotice("A módosítást nem sikerült elmenteni.") } }
+  const persistEntries = (next: SpaceEntry[]) => update(next)
+  const startUpload = () => filePicker.current?.click()
+  const uploadFile = (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    event.target.value = ""
+    if (!file) return
+    if (file.size > 2 * 1024 * 1024) { setNotice("A fájl legfeljebb 2 MB lehet."); return }
+    const reader = new FileReader()
+    reader.onload = () => {
+      if (typeof reader.result !== "string") { setNotice("A fájlt nem sikerült beolvasni."); return }
+      const id = crypto.randomUUID()
+      const entry: SpaceEntry = { id, name: file.name, detail: `Fájl · ${(file.size / (1024 * 1024)).toLocaleString("hu-HU", { maximumFractionDigits: 2 })} MB`, kind: file.type === "application/pdf" ? "pdf" : "note", parent: folder || undefined, size: file.size }
+      try {
+        const blobs = JSON.parse(localStorage.getItem(SPACE_BLOBS_KEY) || "{}") as Record<string, string>
+        blobs[id] = reader.result
+        localStorage.setItem(SPACE_BLOBS_KEY, JSON.stringify(blobs))
+        persistEntries([...entries, entry])
+        setNotice("A fájl ezen az eszközön lett elmentve.")
+      } catch { setNotice("A tárhely megtelt; a fájl nem lett elmentve.") }
+    }
+    reader.onerror = () => setNotice("A fájlt nem sikerült beolvasni.")
+    reader.readAsDataURL(file)
+  }
+  const newFolder = () => { const name = window.prompt("Új mappa neve"); if (name?.trim()) persistEntries([...entries, { id: crypto.randomUUID(), name: name.trim(), detail: "0 elem", kind: "folder", parent: undefined }]); setNewMenu(false) }
+  const rename = (entry: SpaceEntry) => { const name = window.prompt("Új név", entry.name); if (name?.trim()) persistEntries(entries.map(item => item.id === entry.id ? { ...item, name: name.trim() } : item)); setMenuFor(null) }
+  const move = (entry: SpaceEntry) => { const folders = entries.filter(item => item.kind === "folder" && item.id !== entry.id); const choice = window.prompt("Áthelyezés mappába (név vagy üres a gyökérhez)", folders[0]?.name || ""); if (choice !== null) { const target = folders.find(item => item.name.toLocaleLowerCase("hu") === choice.trim().toLocaleLowerCase("hu")); if (choice.trim() && !target) setNotice("Ilyen mappa nem található."); else persistEntries(entries.map(item => item.id === entry.id ? { ...item, parent: target?.id } : item)); } setMenuFor(null) }
+  const visible = entries.filter(item => item.parent === (folder || undefined))
+  return <div className="ref-space">
+    <input ref={filePicker} className="ref-hidden-file" type="file" aria-label="Fájl kiválasztása" onChange={uploadFile} />
+    {folder && <button className="ref-back-link" type="button" onClick={() => setFolder(null)}><ChevronRight size={17} /> Saját fájlok</button>}
+    <div className="ref-storage"><div><span><Cloud size={16} /> Tárhely</span><span>{storageUsed === null ? "" : `${(storageUsed / 1024).toLocaleString("hu-HU", { maximumFractionDigits: 1 })} GB / 5 GB`}</span></div><div className="ref-storage-track"><i style={{ width: storageUsed === null ? 0 : `${Math.min(100, storageUsed / (5 * 1024) * 100)}%` }} /></div></div>
+    <div className="ref-space-heading"><h1>{folderName || "Saját fájlok"}</h1><div className="ref-space-actions"><button className="ref-icon-button" type="button" aria-label="Rácsnézet" onClick={() => setView(value => value === "list" ? "grid" : "list")}>{view === "list" ? <Grid2X2 size={19} /> : <List size={19} />}</button><div className="ref-new-wrap"><button className="ref-outline-pill" type="button" onClick={() => setNewMenu(value => !value)}><Plus size={17} /> Új</button>{newMenu && <div className="ref-new-menu"><button type="button" onClick={newFolder}>Új mappa</button><button type="button" onClick={() => { setNewMenu(false); startUpload() }}>Fájl feltöltése</button></div>}</div></div></div>
+    <div className={`ref-file-list ${view === "grid" ? "is-grid" : ""}`}>{visible.map(entry => <div className="ref-file-row" key={entry.id}>
+      <button type="button" className="ref-file-open" onClick={() => {
+        if (entry.kind === "folder") { setFolder(entry.id); return }
+        if (entry.kind === "pdf") {
+          try { const blobs = JSON.parse(localStorage.getItem(SPACE_BLOBS_KEY) || "{}") as Record<string, string>; if (blobs[entry.id]) { const link = document.createElement("a"); link.href = blobs[entry.id]; link.download = entry.name; link.click(); return } } catch {}
+          setNotice(`${entry.name} fájltartalma nem érhető el ezen az eszközön.`)
+          return
+        }
+        setNotice(`${entry.name} megnyitása`)
+      }}>
+        <span className="ref-soft-icon">{entry.kind === "folder" ? <Folder size={21} /> : entry.kind === "pdf" ? <FileText size={20} /> : <NotebookPen size={20} />}</span>
+        <span className="ref-file-copy"><strong>{entry.name}</strong><small>{entry.detail}</small></span>
+      </button>
+      <button type="button" className="ref-more" aria-label={`${entry.name} műveletek`} onClick={() => setMenuFor(menuFor === entry.id ? null : entry.id)}><MoreHorizontal size={20} /></button>
+      {menuFor === entry.id && <div className="ref-file-menu"><button type="button" onClick={() => rename(entry)}>Átnevezés</button><button type="button" onClick={() => move(entry)}>Áthelyezés</button><button type="button" onClick={() => { persistEntries(entries.filter(item => item.id !== entry.id)); try { const blobs = JSON.parse(localStorage.getItem(SPACE_BLOBS_KEY) || "{}") as Record<string, string>; delete blobs[entry.id]; localStorage.setItem(SPACE_BLOBS_KEY, JSON.stringify(blobs)) } catch {}; setMenuFor(null) }}>Törlés</button></div>}
+    </div>)}</div>
+    {notice && <div className="ref-inline-notice" role="status">{notice}<button type="button" aria-label="Bezárás" onClick={() => setNotice("")}><X size={15} /></button></div>}
+  </div>
+}
+
+function Utility({ onSpace, onUpload }: { onSpace: () => void; onUpload: () => void }) {
+  return <div className="ref-utility"><h2>ALKOTÁS ÉS SZERVEZÉS</h2><div className="ref-utility-grid">
+    <button type="button" className="ref-utility-card" onClick={onUpload}><span className="ref-soft-icon"><Send size={21} /></span><strong>Fájlküldés</strong><small>Fájlok megosztása</small><ArrowUpRight className="ref-utility-arrow" size={15} /></button>
+    <button type="button" className="ref-utility-card" onClick={() => {}} aria-disabled="true"><span className="ref-soft-icon"><CalendarDays size={21} /></span><strong>Tervező</strong><small>Tervek és időbeosztás</small><ArrowUpRight className="ref-utility-arrow" size={15} /></button>
+  </div><h2 className="ref-coming-heading">HAMAROSAN</h2><div className="ref-coming"><span className="ref-soft-icon"><Layers size={21} /></span><div><strong>Még több alkotási lehetőség</strong><p>Hamarosan új eszközökkel bővül a munkaterület.</p></div><LockKeyhole size={15} /></div></div>
+}
+
+function Profile({ name, avatarImage, avatarFallback, onEdit, onEditAvatar, onLogout }: {
+  name: string; avatarImage: string; avatarFallback: string; onEdit: (name: string) => void; onEditAvatar: (file: File) => void; onLogout: () => void
+}) {
+  const [editing, setEditing] = useState(false)
+  const [draft, setDraft] = useState(name)
+  const [logoutNote, setLogoutNote] = useState("")
+  const avatarPicker = useRef<HTMLInputElement>(null)
+  const handle = name.normalize("NFKD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "").slice(0, 20) || "tanulo"
+  return <div className="ref-profile"><h1>Profil</h1><div className="ref-profile-identity"><Avatar name={name} src={avatarImage} fallback={avatarFallback} /><div><strong>{name}</strong><span>@{handle}</span></div><button type="button" className="ref-outline-pill" onClick={() => { setDraft(name); setEditing(true) }}>Szerkesztés</button></div><hr />
+    <div className="ref-settings-group"><h2>Fiók</h2><SettingRow icon={UserRound} title="Személyes adatok" subtitle="Név, profilkép és felhasználónév" onClick={() => { setDraft(name); setEditing(true) }} /><SettingRow icon={ShieldCheck} title="Biztonság" subtitle="Jelszó és bejelentkezés" onClick={() => setLogoutNote("A biztonsági beállítások vendégfióknál nem érhetők el.")} /><SettingRow icon={Crown} title="Előfizetés" subtitle="Csomag és szolgáltatások" onClick={() => setLogoutNote("Előfizetési beállítások nem érhetők el.")} /></div>
+    <div className="ref-settings-group ref-support-group"><h2>Támogatás</h2><SettingRow icon={CircleHelp} title="Súgó és támogatás" /><SettingRow icon={Info} title="Az alkalmazásról" /></div>
+    <button className="ref-logout" type="button" onClick={() => { onLogout(); setLogoutNote("A kijelentkezés vendégfióknál nem érhető el.") }}><LogOut size={18} /> Kijelentkezés</button>
+    {logoutNote && <p className="ref-profile-notice" role="status">{logoutNote}</p>}
+    {editing && <div className="ref-modal-backdrop" role="presentation" onMouseDown={event => { if (event.target === event.currentTarget) setEditing(false) }}><form className="ref-edit-modal" role="dialog" aria-modal="true" aria-labelledby="ref-edit-title" onSubmit={event => { event.preventDefault(); if (draft.trim()) onEdit(draft.trim()); setEditing(false) }}><div><h2 id="ref-edit-title">Profil szerkesztése</h2><button type="button" aria-label="Bezárás" onClick={() => setEditing(false)}><X size={20} /></button></div><label htmlFor="ref-name">Megjelenített név</label><input id="ref-name" value={draft} maxLength={32} onChange={event => setDraft(event.target.value)} /><input ref={avatarPicker} type="file" accept="image/*" hidden onChange={event => { const file = event.target.files?.[0]; if (file) onEditAvatar(file); event.target.value = "" }} /><button className="ref-avatar-edit" type="button" onClick={() => avatarPicker.current?.click()}>Profilkép módosítása</button><button className="ref-dark-pill" type="submit">Mentés</button></form></div>}
+  </div>
+}
+
+function SettingRow({ icon: Icon, title, subtitle, onClick }: { icon: LucideIcon; title: string; subtitle?: string; onClick?: () => void }) {
+  return <button type="button" className="ref-setting-row" onClick={onClick}><Icon size={19} strokeWidth={1.8} /><span><strong>{title}</strong>{subtitle && <small>{subtitle}</small>}</span><ChevronRight size={18} /></button>
+}
+
+export default function ReferenceScreens(props: Props) {
+  const { view, userName, avatarImage, avatarFallback, onView, onSelectLesson, onSelectMode, onContinue, onEditProfile, onLogout, topics, lessons, activeLessonId } = props
+  let content: ReactNode
+  if (view === "home") content = <Topics topics={topics} onSelect={id => { onSelectLesson(id); onView("selector") }} />
+  else if (view === "selector") content = <LessonSelector lesson={lessons.find(item => item.id === activeLessonId)} onSelectMode={onSelectMode} onContinue={onContinue} />
+  else if (view === "chat") content = <Chat />
+  else if (view === "space") content = <Space />
+  else if (view === "utility") content = <Utility onSpace={() => onView("space")} onUpload={props.onUploadFile} />
+  else content = <Profile name={userName} avatarImage={avatarImage} avatarFallback={avatarFallback} onEdit={onEditProfile} onEditAvatar={props.onEditAvatar} onLogout={onLogout} />
+
+  return <main className={`ref-app ref-view-${view}`}>
+    <Header name={userName} avatarImage={avatarImage} avatarFallback={avatarFallback} onProfile={() => onView("profile")} onHome={() => onView("home")} onUtility={() => onView("utility")} onChat={() => onView("chat")} onSpace={() => onView("space")} />
+    {content}
+  </main>
+}

@@ -9,6 +9,7 @@ import PathTile from "./path-tile"
 import { Button } from "../components/ui/button"
 import { Input } from "../components/ui/input"
 import { Separator } from "../components/ui/separator"
+import ReferenceScreens, { type ReferenceView } from "./reference-screens"
 import {
   ArrowRight, Book, BookOpen, Check, CheckCircle2, Headphones, MessageCircle, CircleHelp, Puzzle, FilePenLine,
   Flame, Heart, Lightbulb, Medal, RotateCcw, Trophy, UserRound, Dumbbell, Timer, Languages, Volume2,
@@ -29,7 +30,7 @@ const lessonIllustrations: Record<number, { src: string; alt: string }> = {
   9: { src: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1200&q=85", alt: "Különböző magasságú hegycsúcsok" },
   10: { src: "https://images.unsplash.com/photo-1649843787933-a4e0d5313391?auto=format&fit=crop&w=1200&q=85", alt: "Sötét esőfelhők a feltételes mondatok példáihoz" },
 }
-type Screen = "home" | "lessonIntro" | "task" | "skill" | "chestOpen" | "shop" | "leaderboard" | "profile" | "friends"
+type Screen = "home" | "lessonIntro" | "task" | "skill" | "flashcards" | "chestOpen" | "shop" | "leaderboard" | "profile" | "friends"
 type DailyStudyState = { streak: number; lastStudyDate: string; todayActivityCount: number; activityDate: string; dailyGoal: number }
 type CloudSaveStatus = "loading" | "saving" | "saved" | "local" | "error"
 type LocalProgressSnapshot = { version: 1; sessionKey: string; savedAt: number; state: Record<string, unknown> }
@@ -385,6 +386,8 @@ const normalizeAnswer = (value: string) => value.toLowerCase().trim().replace(/[
 
 export default function App() {
   const [screen, setScreen] = useState<Screen>("home")
+  const [referenceView, setReferenceView] = useState<ReferenceView | null>("home")
+  const [referenceMode, setReferenceMode] = useState(0)
   const [activeLessonId, setActiveLessonId] = useState(1)
   const [activeSkill, setActiveSkill] = useState<SkillMode>("conversation")
   const skillClaimsRef = useRef(new Set<string>())
@@ -483,7 +486,7 @@ export default function App() {
     const finishSplash = async () => {
       await Promise.race([
         Promise.all(assets.map(preload)),
-        new Promise<void>((resolve) => window.setTimeout(resolve, 4000)),
+        new Promise<void>((resolve) => window.setTimeout(resolve, 1000)),
       ])
       const remaining = Math.max(0, minimumDisplayTime - (Date.now() - startedAt))
       window.setTimeout(() => { if (!cancelled) setShowSplash(false) }, remaining)
@@ -719,7 +722,9 @@ export default function App() {
   const openLesson = (lessonId: number) => {
     if ((lessonId > 1 && !completedLessons.includes(lessonId - 1)) || !chestGateIsOpen(lessonId)) return
     setActiveLessonId(lessonId)
-    setScreen("lessonIntro")
+    setActivePackIndex(null)
+    setReferenceMode(0)
+    setReferenceView("selector")
   }
   const openTask = (lessonId: number, packIndex: number) => {
     const targetLesson = fullLessons.find(lesson => lesson.id === lessonId)
@@ -770,6 +775,7 @@ export default function App() {
       : lesson ? practicePacks(lesson).every((pack, packIndex) => pack.every((_, index) => nextAnswered.includes(practiceKey(lessonId, packIndex, index)))) : false
     if (allDone) setCompletedLessons(previous => previous.includes(lessonId) ? previous : [...previous, lessonId])
     setScreen("home")
+    setReferenceView("home")
     setNotice("Feladatcsomag teljesítve! " + (answeredTasks.includes(taskKey) ? "" : "Jutalom jóváírva."))
   }
   const completedLessonCount = fullLessons.filter(lesson => completedLessons.includes(lesson.id)).length
@@ -841,8 +847,45 @@ export default function App() {
       setScreen(mainTabs[next])
     }
   }
-  return <><main className={"app-shell " + ((screen === "lessonIntro" || screen === "task" || screen === "chestOpen") ? "lesson-open" : "") + (screen === "skill" ? " skill-open" : "") + (screen === "leaderboard" ? " leaderboard-app" : "")}>
-    <section onTouchStart={onMainSwipeStart} onTouchEnd={onMainSwipeEnd} onTouchCancel={() => { mainSwipeOrigin.current = null }} className={"screen-content " + (screen === "home" ? "learn-home-content " : "") + ((screen === "lessonIntro" || screen === "task" || screen === "chestOpen") ? "lesson-page" : "") + (screen === "skill" ? " skill-page" : "") + (screen === "leaderboard" ? " leaderboard-screen-content" : "")}>
+  const navigateReference = (view: ReferenceView) => {
+    setReferenceView(view)
+    if (view === "home" || view === "selector" || view === "space") setScreen("home")
+    else if (view === "profile") setScreen("profile")
+  }
+  const navigateTab = (next: Screen) => {
+    setScreen(next)
+    if (next === "home") setReferenceView("home")
+    else if (next === "profile") setReferenceView("profile")
+    else setReferenceView(null)
+  }
+  return <><main className={"app-shell " + (referenceView ? "reference-shell " : "") + ((screen === "lessonIntro" || screen === "task" || screen === "flashcards" || screen === "chestOpen") ? "lesson-open" : "") + (screen === "skill" ? " skill-open" : "") + (screen === "leaderboard" ? " leaderboard-app" : "")}>
+    <section onTouchStart={onMainSwipeStart} onTouchEnd={onMainSwipeEnd} onTouchCancel={() => { mainSwipeOrigin.current = null }} className={"screen-content " + (screen === "home" ? "learn-home-content " : "") + ((screen === "lessonIntro" || screen === "task" || screen === "flashcards" || screen === "chestOpen") ? "lesson-page " : "") + (screen === "skill" ? "skill-page " : "") + (screen === "leaderboard" ? "leaderboard-screen-content" : "")}>
+      {referenceView && <ReferenceScreens
+        view={referenceView}
+        onUploadFile={() => { setReferenceView("space"); setTimeout(() => document.querySelector<HTMLInputElement>(".ref-space input[type=file]")?.click(), 0) }}
+        onPickFile={() => document.querySelector<HTMLInputElement>(".ref-space input[type=file]")?.click()}
+        activeLessonId={activeLessonId}
+        topics={[{ id: 1, title: "Erasmus", subtitle: "Angol nyelvtan és kommunikáció", lessonCount: fullLessons.length, lessonIds: fullLessons.map(lesson => lesson.id) }]}
+        completedLessons={completedLessons}
+        readLessons={readLessons}
+        lessons={fullLessons.map(lesson => ({ id: lesson.id, title: lesson.title, summary: lesson.summary, read: readLessons.includes(lesson.id), completed: completedLessons.includes(lesson.id) }))}
+        userName={userName}
+        avatarImage={avatarImage}
+        avatarFallback={foxIcon}
+        onView={navigateReference}
+        onSelectLesson={id => { setActiveLessonId(id); setReferenceMode(0); setReferenceView("selector") }}
+        onSelectMode={setReferenceMode}
+    onContinue={() => { setActivePackIndex(referenceMode === 1 ? 0 : null); setActiveTaskIndex(0); setReferenceView(null); setScreen(referenceMode === 3 ? "flashcards" : referenceMode === 2 ? "task" : "lessonIntro") }}
+        onEditProfile={setUserName}
+        onEditAvatar={file => {
+          const reader = new FileReader()
+          reader.onload = () => { if (typeof reader.result === "string") setAvatarImage(reader.result) }
+          reader.readAsDataURL(file)
+        }}
+        onLogout={() => setNotice("A kijelentkezés vendégfióknál nem érhető el.")}
+      />}
+      {!referenceView && <>
+
       {screen === "home" && <Home
         completedLessons={completedLessons}
         answeredTasks={answeredTasks}
@@ -866,7 +909,7 @@ export default function App() {
       {screen === "lessonIntro" && <LessonIntro
         lesson={activeLesson}
         alreadyRead={readLessons.includes(activeLesson.id)}
-        onExit={() => { setNotice(""); setScreen("home") }}
+        onExit={() => { setNotice(""); setScreen("home"); setReferenceView("home") }}
         onReadComplete={() => handleReadComplete(activeLesson.id)}
         onPractice={() => { setScreen("home"); setNotice("A feladatok megnyíltak — válassz egy narancssárga pontot!") }}
       />}
@@ -883,19 +926,22 @@ export default function App() {
       {screen === "task" && <TaskExercise
         lesson={activePracticeLesson}
         taskIndex={activeTaskIndex}
-        onExit={() => setScreen("home")}
+        onExit={() => { setScreen("home"); setReferenceView("home") }}
         onComplete={() => { const key = activePackIndex === null ? activeLesson.id + "-" + activeTaskIndex : practiceKey(activeLesson.id, activePackIndex, activeTaskIndex); if (!answeredTasks.includes(key)) recordDailyActivity(); setStars((current) => current + (answeredTasks.includes(key) ? 0 : activeLesson.specialType === "hard" ? 3 : 1)); setXp((current) => current + (answeredTasks.includes(key) ? 0 : 5)); completeTask(activeLesson.id, activeTaskIndex); }}
         lives={lives}
         onWrongAnswer={() => setLives((current) => Math.max(0, current - 1))}
         onNextQuestion={(nextIndex) => { const key = activePackIndex === null ? activeLesson.id + "-" + activeTaskIndex : practiceKey(activeLesson.id, activePackIndex, activeTaskIndex); if (!answeredTasks.includes(key)) { recordDailyActivity(); setAnsweredTasks((items) => items.includes(key) ? items : [...items, key]); setStars((current) => current + (activeLesson.specialType === "hard" ? 3 : 1)); setXp((current) => current + 5); } setActiveTaskIndex(nextIndex); }}
-        onOutOfLives={() => { setNotice("Elfogytak az életeid. Pihenj egy kicsit, és próbáld újra!"); setScreen("home"); }}
+        onOutOfLives={() => { setNotice("Elfogytak az életeid. Pihenj egy kicsit, és próbáld újra!"); setScreen("home"); setReferenceView("home") }}
       />}
+      {screen === "flashcards" && <FlashcardSession lesson={activeLesson} onExit={() => { setScreen("home"); setReferenceView("home") }} onComplete={() => { setScreen("home"); setReferenceView("home"); setNotice("A tanulókártyák végére értél.") }} />}
       {screen === "shop" && <Shop stars={stars} purchasedItems={purchasedItems} onPurchase={(id, cost) => { if (stars >= cost && !purchasedItems.includes(id)) { setStars((value) => value - cost); setPurchasedItems((items) => [...items, id]); setNotice("Sikeres vásárlás!"); } }} />}
       {screen === "leaderboard" && <Leaderboard />}
       {screen === "friends" && <Friends userName={userName} avatar={avatar} avatarImage={avatarImage} xp={xp} dailyStudy={dailyStudy} saveStatus={saveStatus} onRetryCloudSave={retryCloudSave} />}
       {screen === "profile" && <Profile completedCount={completedLessons.length} readCount={readLessons.length} completedTaskCount={answeredTasks.filter(key => !key.startsWith("skill:")).length} xp={xp} stars={stars} userName={userName} setUserName={setUserName} avatar={avatar} setAvatar={setAvatar} avatarImage={avatarImage} setAvatarImage={setAvatarImage} bannerImage={bannerImage} setBannerImage={setBannerImage} dailyStudy={dailyStudy} onDailyGoalChange={(dailyGoal) => setDailyStudy(previous => ({ ...previous, dailyGoal }))} saveStatus={saveStatus} onRetryCloudSave={retryCloudSave} notifications={notifications} setNotifications={setNotifications} compactMode={compactMode} setCompactMode={setCompactMode} showSettings={showSettings} setShowSettings={setShowSettings} weeklyStudySeconds={weeklyStudySeconds} onOpenFriends={() => setScreen("friends")} />}
+      </>}
     </section>
-    {screen !== "lessonIntro" && screen !== "task" && screen !== "skill" && screen !== "chestOpen" && <Nav screen={screen} setScreen={setScreen} userName={userName} avatar={avatar} avatarImage={avatarImage} />}
+    {screen !== "lessonIntro" && screen !== "task" && screen !== "skill" && screen !== "flashcards" && screen !== "chestOpen" && referenceView !== "chat" && referenceView !== "utility" && referenceView !== "profile" && <Nav screen={screen} setScreen={navigateTab} userName={userName} avatar={avatar} avatarImage={avatarImage} />}
+
   </main>
   {systemNotice && <SystemNotificationSheet
     kind={systemNotice}
@@ -1334,6 +1380,29 @@ function LessonSectionContent({ section, index }: { section: LessonSection; inde
 
 function playTaskSound(kind: "welcome" | "open" | "correct" | "wrong" | "complete") {
   playUiSound(kind)
+}
+
+function FlashcardSession({ lesson, onExit, onComplete }: { lesson: LessonUnit; onExit: () => void; onComplete: () => void }) {
+  const cards = lesson.questions
+  const [index, setIndex] = useState(0)
+  const [flipped, setFlipped] = useState(false)
+  const [known, setKnown] = useState<number[]>([])
+  const card = cards[index]
+  if (!card) return null
+  const move = (knewIt: boolean) => {
+    if (knewIt && !known.includes(index)) setKnown(current => [...current, index])
+    if (index + 1 >= cards.length) { onComplete(); return }
+    setIndex(current => current + 1)
+    setFlipped(false)
+  }
+  return <section className="lesson-layout flashcard-session">
+    <header className="flashcard-session-header"><button type="button" onClick={onExit} aria-label="Kilépés"><X size={21} /></button><span>{index + 1} / {cards.length}</span></header>
+    <div className="flashcard-session-progress"><i style={{ width: `${((index + 1) / cards.length) * 100}%` }} /></div>
+    <button type="button" className={`study-flashcard ${flipped ? "is-flipped" : ""}`} onClick={() => setFlipped(value => !value)} aria-label={flipped ? "Válasz megjelenítve, koppints a kérdéshez" : "Koppints a válasz megjelenítéséhez"}>
+      <small>{flipped ? "VÁLASZ" : "KÉRDÉS"}</small><strong>{flipped ? card.answer : card.prompt}</strong><span>{flipped ? "Koppints a kérdéshez" : "Koppints a válaszhoz"}</span>
+    </button>
+    <div className="flashcard-session-actions"><button type="button" className="flashcard-again" onClick={() => move(false)}>Gyakorlom még</button><button type="button" className="flashcard-known" onClick={() => move(true)}>Tudtam</button></div>
+  </section>
 }
 
 function TaskExercise({ lesson, taskIndex, onExit, onComplete, lives, onWrongAnswer, onNextQuestion, onOutOfLives }: {

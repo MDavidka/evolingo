@@ -5,6 +5,7 @@ import "./redesign.css"
 import "./profile-mobile.css"
 import "./profile-dashboard.css"
 import "./development-notice.css"
+import "./reference-screens.css"
 import PwaRegister from "./pwa-register"
 import DevelopmentNotice from "./development-notice"
 
@@ -18,5 +19,5 @@ export const metadata: Metadata = {
   icons: { icon: "/icon.svg", apple: "/icon.svg" },
   formatDetection: { telephone: false },
 }
-export const viewport: Viewport = { width: "device-width", initialScale: 1, maximumScale: 1, themeColor: "#ffffff", viewportFit: "cover" }
-export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) { return <html lang="en"><body className={inter.className}><PwaRegister /><DevelopmentNotice />{children}</body></html> }
+export const viewport: Viewport = { width: "device-width", initialScale: 1, themeColor: "#ffffff", viewportFit: "cover" }
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) { return <html lang="hu"><body className={inter.className}><PwaRegister /><DevelopmentNotice />{children}</body></html> }
