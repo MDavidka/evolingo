@@ -387,7 +387,7 @@ const normalizeAnswer = (value: string) => value.toLowerCase().trim().replace(/[
 
 export default function App() {
   const [screen, setScreen] = useState<Screen>("home")
-  const [referenceView, setReferenceView] = useState<ReferenceView | null>("home")
+  const [referenceView, setReferenceView] = useState<ReferenceView | null>("chat")
   const [referenceMode, setReferenceMode] = useState(0)
   const [activeLessonId, setActiveLessonId] = useState(1)
   const [activeSkill, setActiveSkill] = useState<SkillMode>("conversation")
