@@ -53,8 +53,10 @@ function Avatar({ name, src, fallback }: { name: string; src: string; fallback: 
   return <span className="ref-avatar">{src ? <img src={src} alt={name} /> : <span className="ref-avatar-fallback"><img src={fallback} alt="" /></span>}</span>
 }
 
-function Header({ name, avatarImage, avatarFallback, onProfile, onHome, showCourse, courseName }: {
-  name: string; avatarImage: string; avatarFallback: string; onProfile: () => void; onHome: () => void; showCourse: boolean; courseName?: string
+function Header({ name, avatarImage, avatarFallback, onProfile, onHome, onSelectCourse, topics, selectedTopicId, showCourse, courseName }: {
+  name: string; avatarImage: string; avatarFallback: string; onProfile: () => void; onHome: () => void
+  onSelectCourse: (id: number) => void; topics: TopicData[]; selectedTopicId: number | null
+  showCourse: boolean; courseName?: string
 }) {
   const [courseOpen, setCourseOpen] = useState(false)
   const courseRef = useRef<HTMLDivElement>(null)
@@ -76,9 +78,9 @@ function Header({ name, avatarImage, avatarFallback, onProfile, onHome, showCour
       </button>
       {courseOpen && <div className="ref-course-menu" role="menu" aria-label="Téma kiválasztása">
         <span className="ref-course-menu-label">Jelenlegi téma</span>
-        <button className="ref-course-choice" type="button" role="menuitem" onClick={() => { setCourseOpen(false); onHome() }}>
-          <GraduationCap size={17} /> {courseName || "Témáim"} <Check size={17} />
-        </button>
+        {topics.map(topic => <button key={topic.id} className="ref-course-choice" type="button" role="menuitem" onClick={() => { setCourseOpen(false); onSelectCourse(topic.id) }}>
+          <GraduationCap size={17} /> {topic.title} {(selectedTopicId === topic.id || (selectedTopicId === null && topics[0]?.id === topic.id)) && <Check size={17} />}
+        </button>)}
         <button className="ref-course-choice" type="button" role="menuitem" onClick={() => { setCourseOpen(false); onHome() }}>
           <BookOpen size={17} /> Összes téma
         </button>
@@ -190,7 +192,7 @@ function TopicDetail({ topic, lessons, onSelectLesson, onBack, showAll = false }
   const list = showAll ? lessons : lessons.filter(lesson => topic?.lessonIds.includes(lesson.id))
   return <div className="ref-topic-detail">
     <button type="button" className="ref-topic-breadcrumb" onClick={onBack}><ChevronRight size={17} /> Saját témáim <ChevronRight size={16} /><strong>{showAll ? "Összes lecke" : topic?.title || "Témáim"}</strong></button>
-    <div className="ref-topic-detail-title"><div><h1>{topic?.title || "Erasmus"}</h1><p>{showAll ? "Böngészd az összes tananyagot" : topic?.subtitle || ""}</p></div><button type="button" className="ref-topic-more" aria-label="Téma műveletei"><MoreHorizontal size={22} /></button></div>
+    <div className="ref-topic-detail-title"><div><h1>{showAll ? "Összes lecke" : topic?.title || "Témáim"}</h1><p>{showAll ? "Böngészd az összes tananyagot" : topic?.subtitle || ""}</p></div><button type="button" className="ref-topic-more" aria-label="Téma műveletei"><MoreHorizontal size={22} /></button></div>
     <div className="ref-topic-meta"><span><BookOpen size={19} />{list.length} lecke</span><span><FileText size={19} />{fileCount} fájl</span><span><Cloud size={19} />Saját téma</span></div>
     <div className="ref-topic-tabs" role="tablist" aria-label="Téma tartalma">
       <button type="button" role="tab" aria-selected={tab === "lessons"} onClick={() => setTab("lessons")}>Leckék</button>
@@ -360,7 +362,7 @@ export default function ReferenceScreens(props: Props) {
 
   if (view === "auth") return <main className="ref-app ref-view-auth">{content}</main>
   return <main className={`ref-app ref-view-${view}`}>
-    <Header key={view} name={userName} avatarImage={avatarImage} avatarFallback={avatarFallback} onProfile={() => onView("profile")} onHome={() => onView("home")} showCourse={view === "home" || view === "topic"} courseName={selectedTopic?.title} />
+    <Header key={view} name={userName} avatarImage={avatarImage} avatarFallback={avatarFallback} onProfile={() => onView("profile")} onHome={() => onView("home")} onSelectCourse={id => { setSelectedTopicId(id); onView("topic") }} topics={topics} selectedTopicId={selectedTopicId} showCourse={view === "home" || view === "topic"} courseName={selectedTopicId === -1 ? "Összes lecke" : selectedTopic?.title} />
     {content}
   </main>
 }
