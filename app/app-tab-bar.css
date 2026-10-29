@@ -157,3 +157,116 @@ body:has(.ref-modal-backdrop) .evo-tabbar { opacity: 0; pointer-events: none; }
 @media (prefers-reduced-motion: reduce) {
   .evo-tabbar .evo-tab::before, .evo-tab-content { transition: none; }
 }
+
+
+/* 2026 home redesign: a single, continuous left-hand iOS glass navigation rail.
+   The user avatar lives separately in the opposite header corner. */
+.evo-tabbar.evo-glass-rail {
+  position: fixed !important;
+  z-index: 80 !important;
+  top: calc(env(safe-area-inset-top, 0px) + 112px) !important;
+  left: max(calc((100vw - 520px) / 2 + 23px), calc(env(safe-area-inset-left, 0px) + 23px)) !important;
+  right: auto !important;
+  bottom: auto !important;
+  transform: none !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: space-around !important;
+  gap: 4px !important;
+  width: 62px !important;
+  height: 292px !important;
+  padding: 8px 5px !important;
+  border-radius: 999px !important;
+  border: 1px solid rgba(255,255,255,.73) !important;
+  background: rgba(218,225,239,.58) !important;
+  box-shadow: 0 12px 30px rgba(44,58,85,.07), inset 0 1px rgba(255,255,255,.80) !important;
+  -webkit-backdrop-filter: blur(26px) saturate(140%) !important;
+  backdrop-filter: blur(26px) saturate(140%) !important;
+  isolation: isolate;
+  box-sizing: border-box;
+  transition: width .24s ease, height .24s ease;
+}
+.app-shell.reference-shell:has(.ref-view-chat) .evo-tabbar.evo-glass-rail {
+  top: calc(env(safe-area-inset-top, 0px) + 22px) !important;
+}
+.evo-tabbar.evo-glass-rail .evo-tab {
+  position: relative;
+  width: 100% !important;
+  height: 63px !important;
+  min-width: 44px !important;
+  min-height: 44px !important;
+  flex: 1 1 0 !important;
+  padding: 4px 1px !important;
+  border-radius: 24px !important;
+  background: transparent !important;
+  color: #424d60 !important;
+}
+.evo-tabbar.evo-glass-rail .evo-tab.is-active {
+  color: #171e2d !important;
+}
+.evo-tabbar.evo-glass-rail .evo-tab.is-active::before {
+  opacity: 1;
+  background: rgba(255,255,255,.96);
+  box-shadow: 0 4px 14px rgba(48,65,98,.12);
+  transform: scale(1);
+}
+.evo-tabbar.evo-glass-rail .evo-tab-content {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 100% !important;
+  height: 100% !important;
+  gap: 3px !important;
+}
+.evo-tabbar.evo-glass-rail .evo-tab-content > svg {
+  width: 23px !important;
+  height: 23px !important;
+}
+.evo-tabbar.evo-glass-rail .evo-tab-ai-orb {
+  display: block;
+  flex: 0 0 auto;
+  width: 23px;
+  height: 23px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+.evo-tabbar.evo-glass-rail .evo-tab-caption {
+  display: block;
+  max-width: 100%;
+  overflow: visible;
+  font-size: 9px !important;
+  font-weight: 600;
+  line-height: 12px;
+  white-space: nowrap;
+}
+.evo-tabbar.evo-glass-rail.is-compact {
+  width: 54px !important;
+  height: 244px !important;
+}
+.evo-tabbar.evo-glass-rail.is-compact .evo-tab {
+  height: 52px !important;
+}
+.evo-tabbar.evo-glass-rail.is-compact .evo-tab-caption {
+  display: none;
+}
+.evo-tabbar.evo-glass-rail .evo-tab:focus-visible {
+  outline: 2px solid #4b75c0 !important;
+  outline-offset: 1px !important;
+}
+@media (max-height: 630px) {
+  .evo-tabbar.evo-glass-rail { height: 244px !important; }
+  .evo-tabbar.evo-glass-rail .evo-tab-caption { display: none; }
+  .evo-tabbar.evo-glass-rail.is-compact { height: 218px !important; }
+}
+@media (max-width: 360px) {
+  .evo-tabbar.evo-glass-rail {
+    left: max(14px, env(safe-area-inset-left, 0px)) !important;
+    width: 58px !important;
+  }
+  .evo-tabbar.evo-glass-rail.is-compact { width: 52px !important; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .evo-tabbar.evo-glass-rail { transition: none; }
+}
