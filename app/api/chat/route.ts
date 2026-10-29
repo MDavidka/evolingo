@@ -75,6 +75,71 @@ async function optionalUI(apiKey: string, question: string, reply: string): Prom
   }
 }
 
+/** Relays provider text deltas only, never reasoning_content or model-generated code. */
+async function streamProviderText(
+  apiKey: string,
+  messages: Message[],
+  onDelta: (delta: string) => void,
+): Promise<string> {
+  const upstream = await fetch(API_URL, {
+    method: "POST",
+    headers: { Authorization: "Bearer " + apiKey, "Content-Type": "application/json" },
+    body: JSON.stringify({
+      model: MODEL,
+      messages: [{ role: "system", content: replyPrompt }, ...messages],
+      temperature: 0.7,
+      max_tokens: 1700,
+      stream: true,
+    }),
+    cache: "no-store",
+    signal: AbortSignal.timeout(30000),
+  })
+  if (!upstream.ok) {
+    console.error("[chat] streaming provider status", upstream.status)
+    throw new Error(upstream.status === 429 ? "Az AI jelenleg túlterhelt." : "Az AI szolgáltatás nem érhető el.")
+  }
+  if (!upstream.body) throw new Error("Az AI nem adott olvasható választ.")
+
+  const reader = upstream.body.getReader()
+  const decoder = new TextDecoder()
+  let buffer = ""
+  let reply = ""
+  const parseFrame = (frame: string) => {
+    const line = frame.split("\n").find(value => value.startsWith("data: "))
+    if (!line) return
+    const content = line.slice(6).trim()
+    if (!content || content === "[DONE]") return
+    try {
+      const parsed = JSON.parse(content) as { choices?: Array<{ delta?: { content?: unknown } }> }
+      const delta = parsed.choices?.[0]?.delta?.content
+      if (typeof delta !== "string" || !delta) return
+      if (reply.length + delta.length > 30000) throw new Error("Túl hosszú AI-válasz.")
+      reply += delta
+      onDelta(delta)
+    } catch (error) {
+      // Text length violations must stop generation; malformed JSON chunks are skipped.
+      if (error instanceof Error && error.message === "Túl hosszú AI-válasz.") throw error
+    }
+  }
+  try {
+    while (true) {
+      const { done, value } = await reader.read()
+      if (done) break
+      buffer += decoder.decode(value, { stream: true }).replace(/\r\n/g, "\n")
+      if (buffer.length > 60000) throw new Error("Érvénytelen AI-válasz.")
+      const frames = buffer.split("\n\n")
+      buffer = frames.pop() || ""
+      for (const frame of frames) parseFrame(frame)
+    }
+    buffer += decoder.decode().replace(/\r\n/g, "\n")
+    if (buffer.trim()) parseFrame(buffer)
+  } finally {
+    reader.releaseLock()
+  }
+  if (!reply.trim()) throw new Error("Az AI nem adott választ.")
+  return reply.trim()
+}
+
 function makeStream(apiKey: string, messages: Message[]) {
   const encoder = new TextEncoder()
   return new ReadableStream<Uint8Array>({
@@ -82,7 +147,7 @@ function makeStream(apiKey: string, messages: Message[]) {
       const emit = (type: string, data: Record<string, unknown> = {}) =>
         controller.enqueue(encoder.encode("data: " + JSON.stringify({ type, ...data }) + "\n\n"))
       try {
-        const reply = await providerCompletion(apiKey, messages, replyPrompt, 1400, 25000)
+        const reply = await streamProviderText(apiKey, messages, delta => emit("delta", { delta }))
         emit("text", { reply })
         const ui = await optionalUI(apiKey, messages[messages.length - 1].content, reply)
         if (ui?.blocks.length) emit("ui", { ui })
