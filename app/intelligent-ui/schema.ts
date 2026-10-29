@@ -5,8 +5,9 @@ export type VocabularyFlashcardBlock = { id: string; type: "vocabulary_flashcard
 export type ComparisonTableBlock = { id: string; type: "comparison_table"; props: { title: string; columns: [string, string]; rows: { label: string; left: string; right: string }[] } }
 export type TenseTimelineBlock = { id: string; type: "tense_timeline"; props: { title: string; steps: { phase: "past" | "present" | "future"; label: string; detail: string }[] } }
 export type StudyPlanBlock = { id: string; type: "study_plan"; props: { title: string; days: { day: string; task: string }[] } }
+export type ConceptCardBlock = { id: string; type: "concept_card"; props: { title: string; description: string; icon: "idea" | "book" | "language" | "check"; badge?: string } }
 export type ProgressBarsBlock = { id: string; type: "progress_bars"; props: { title: string; items: { label: string; value: number; max: number }[] } }
-export type IntelligentBlock = GrammarRuleBlock | QuizChoiceBlock | VocabularyFlashcardBlock | ComparisonTableBlock | TenseTimelineBlock | StudyPlanBlock | ProgressBarsBlock
+export type IntelligentBlock = GrammarRuleBlock | QuizChoiceBlock | VocabularyFlashcardBlock | ComparisonTableBlock | TenseTimelineBlock | StudyPlanBlock | ConceptCardBlock | ProgressBarsBlock
 export type IntelligentUI = { version: "1"; blocks: IntelligentBlock[] }
 
 type Obj = Record<string, unknown>
@@ -26,6 +27,7 @@ function blockValid(b: unknown, allowProgress: boolean): b is IntelligentBlock {
     case "comparison_table": return keys(p, ["title", "columns", "rows"]) && txt(p.title, 100) && texts(p.columns, 2, 2, 80) && rows(p.rows, 1, 8, v => keys(v, ["label", "left", "right"]) && txt(v.label, 90) && txt(v.left, 200) && txt(v.right, 200))
     case "tense_timeline": return keys(p, ["title", "steps"]) && txt(p.title, 100) && rows(p.steps, 2, 5, v => keys(v, ["phase", "label", "detail"]) && ["past", "present", "future"].includes(String(v.phase)) && txt(v.label, 120) && txt(v.detail, 240))
     case "study_plan": return keys(p, ["title", "days"]) && txt(p.title, 100) && rows(p.days, 1, 7, v => keys(v, ["day", "task"]) && txt(v.day, 50) && txt(v.task, 180))
+    case "concept_card": return keys(p, ["title", "description", "icon", "badge"]) && txt(p.title, 100) && txt(p.description, 480) && ["idea", "book", "language", "check"].includes(String(p.icon)) && (p.badge === undefined || txt(p.badge, 36))
     case "progress_bars": return allowProgress && keys(p, ["title", "items"]) && txt(p.title, 100) && rows(p.items, 1, 8, v => keys(v, ["label", "value", "max"]) && txt(v.label, 90) && typeof v.value === "number" && typeof v.max === "number" && Number.isFinite(v.max) && Number.isFinite(v.value) && v.max > 0 && v.max <= 1000000 && v.value >= 0 && v.value <= v.max)
     default: return false
   }
