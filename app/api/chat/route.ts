@@ -20,11 +20,18 @@ function fail(error: string, status: number) {
 
 /** Intelligent UI is an optional progressive enhancement, not an executable model response. */
 const UI_ENABLED = process.env.EVO_INTELLIGENT_UI_ENABLED !== "false"
-const replyPrompt = "Az Evölingo magyar nyelvű tanulási asszisztense vagy. Válaszolj magyarul, érthetően, és ne találj ki személyes tanulási adatokat."
+const replyPrompt = [
+  "Az Evölingo magyar nyelvű tanulási asszisztense vagy. Pontosan, érthetően és természetesen válaszolj magyarul.",
+  "Használj szabályos Markdown formázást, ha javítja az érthetőséget: rövid címsorok, **kiemelés**, példamondatok, felsorolások, összehasonlító táblázatok és működő HTTPS forráshivatkozások.",
+  "Ne adj nyers HTML-t, JSX-et, JSON UI-leírást vagy kódot a felület vezérlésére.",
+  "Képet kizárólag létező, igazolható HTTPS-forrásból idézz, ne találj ki képhivatkozást.",
+  "Egyszerű kérdésre válaszolj röviden, felesleges kártyák, jelölések és táblázatok nélkül.",
+  "Ne találj ki személyes tanulási adatot, és ne állítsd, hogy ChatGPT vagy.",
+].join(" ")
 function uiCandidate(value: string) {
   const input = value.toLocaleLowerCase("hu")
   if (/csak (rövid|szöveges)|only text|no ui|felület nélkül/.test(input)) return false
-  return /nyelvtan|igeidő|present |past |future |grammar|tense|különbség|hasonlít|összehasonl|gyakorol|teszt|kvíz|quiz|szókincs|szavak|szót|tanulókárty|flashcard|szótanul|terv|órarend|idővonal|timeline|példamondat|erasmus/.test(input)
+  return /nyelvtan|igeidő|present |past |future |grammar|tense|különbség|hasonlít|összehasonl|gyakorol|teszt|kvíz|quiz|szókincs|szavak|szót|tanulókárty|flashcard|szótanul|terv|órarend|idővonal|timeline|példamondat|erasmus|magyarázd|magyarázat|taníts|tanulás|példa/.test(input)
 }
 const uiInstructions = [
   'Csak érvényes JSON objektumot adj meg, markdown vagy kód nélkül.',
@@ -38,6 +45,7 @@ const uiInstructions = [
   '{"id":"compare-1","type":"comparison_table","props":{"title":"Összehasonlítás","columns":["A","B"],"rows":[{"label":"Szempont","left":"A értéke","right":"B értéke"}]}}',
   '{"id":"timeline-1","type":"tense_timeline","props":{"title":"Idővonal","steps":[{"phase":"past","label":"Múlt","detail":"Esemény"},{"phase":"present","label":"Jelen","detail":"Eredmény"}]}}',
   '{"id":"plan-1","type":"study_plan","props":{"title":"Heti terv","days":[{"day":"Hétfő","task":"15 perc tanulás"}]}}',
+  '{"id":"concept-1","type":"concept_card","props":{"title":"Fontos szabály","description":"Rövid, hasznos magyarázat.","icon":"idea","badge":"Tipp"}}',
   'A progress_bars típus NEM engedélyezett a modell számára, mert hitelesített felhasználói adatot igényel.',
   'Ne adj meg HTML-t, JS-t, JSX-et, URL-t, külső műveleteket, szerverhívásokat vagy személyes statisztikákat.',
   'Legfeljebb 12 tanulókártya, 8 összehasonlító sor, 7 nap, 5 válasz, 5 lépés és 5 példamondat legyen.',
@@ -206,7 +214,7 @@ export async function POST(request: NextRequest) {
       body: JSON.stringify({
         model: MODEL,
         messages: [
-          { role: "system", content: "Az Evölingo magyar nyelvű tanulást segítő asszisztense vagy. Válaszolj érthetően, tömören és segítőkészen magyarul, hacsak a felhasználó más nyelvet nem kér. Segíts a nyelvtanulásban, gyakorlásban és tanulástervezésben. Ne állítsd, hogy ChatGPT vagy, és ne találj ki személyes adatokat." },
+          { role: "system", content: replyPrompt },
           ...messages,
         ],
         temperature: 0.7,
