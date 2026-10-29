@@ -44,5 +44,18 @@ export function validateIntelligentUI(input: unknown, opts?: { allowUserProgress
 export function parseModelUI(raw: string): IntelligentUI | null {
   if (raw.length > 14000) return null
   const clean = raw.trim().replace(/^\x60{3}(?:json)?\s*/i, "").replace(/\s*\x60{3}$/, "")
-  try { return validateIntelligentUI(JSON.parse(clean)) } catch { return null }
+  const candidates = [clean]
+  // Some compatible providers wrap a valid JSON object in short explanatory
+  // text despite instructions. Extracting is safe: validation still rejects
+  // every unknown component, prop or oversized data value.
+  const first = clean.indexOf("{")
+  const last = clean.lastIndexOf("}")
+  if (first >= 0 && last > first) candidates.push(clean.slice(first, last + 1))
+  for (const candidate of candidates) {
+    try {
+      const parsed = validateIntelligentUI(JSON.parse(candidate))
+      if (parsed) return parsed
+    } catch {}
+  }
+  return null
 }
