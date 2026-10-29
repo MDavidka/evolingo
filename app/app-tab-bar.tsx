@@ -26,13 +26,13 @@ export default function AppTabBar({ activeTab, onSelect, avatarImage, userName }
         position: fixed !important;
         left: auto !important;
         right: max(12px, env(safe-area-inset-right, 0px)) !important;
-        top: calc(env(safe-area-inset-top, 0px) + 96px) !important;
+        top: calc(env(safe-area-inset-top, 0px) + 102px) !important;
         bottom: auto !important;
         transform: none !important;
-        width: 52px !important;
+        width: 48px !important;
         height: auto !important;
         max-height: min(440px, 72dvh) !important;
-        padding: 7px 4px !important;
+        padding: 6px 4px !important;
         display: flex !important;
         flex-direction: column !important;
         align-items: stretch !important;
@@ -46,8 +46,8 @@ export default function AppTabBar({ activeTab, onSelect, avatarImage, userName }
         z-index: 80;
       }
       .evo-glass-rail .evo-tab {
-        width: 42px !important;
-        height: 46px !important;
+        width: 38px !important;
+        height: 43px !important;
         min-width: 0 !important;
         min-height: 0 !important;
         flex: none !important;
