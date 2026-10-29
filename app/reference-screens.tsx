@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, type ChangeEvent, type ReactNode } from "react"
 import ChatInterface from "./chat-interface"
+import ToolsHub from "./tools-hub"
 import {
   ArrowRight, ArrowUp, ArrowUpRight, BookOpen, CalendarDays, CheckCircle2, ChevronDown, ChevronsUpDown, ChevronRight,
   CircleDot, CircleHelp, Cloud, Eye, EyeOff, FileText, Folder, GraduationCap, Grid2X2, Info, Landmark, List,
@@ -243,18 +244,6 @@ function Space() {
   </div>
 }
 
-function Utility({ onSpace, onUpload, onFriends, onLeaderboard }: { onSpace: () => void; onUpload: () => void; onFriends: () => void; onLeaderboard: () => void }) {
-  return <div className="ref-utility"><h1 className="ref-screen-heading">Eszközök</h1><h2>ALKOTÁS ÉS SZERVEZÉS</h2><div className="ref-utility-grid">
-    <button type="button" className="ref-utility-card" onClick={onUpload}><span className="ref-soft-icon"><Send size={21} /></span><strong>Fájlküldés</strong><small>Fájlok megosztása</small><ArrowUpRight className="ref-utility-arrow" size={15} /></button>
-    <button type="button" className="ref-utility-card" onClick={() => {}} aria-disabled="true"><span className="ref-soft-icon"><CalendarDays size={21} /></span><strong>Tervező</strong><small>Tervek és időbeosztás</small><ArrowUpRight className="ref-utility-arrow" size={15} /></button>
-  </div>
-    <section className="ref-utility-community" aria-label="Közösség">
-      <h2>KÖZÖSSÉG</h2>
-      <button type="button" className="ref-utility-community-link" onClick={onFriends}><Users size={20} /><span>Barátok</span><ChevronRight size={18} /></button>
-      <button type="button" className="ref-utility-community-link" onClick={onLeaderboard}><BarChart3 size={20} /><span>Tanterem és ranglista</span><ChevronRight size={18} /></button>
-    </section>
-    <h2 className="ref-coming-heading">HAMAROSAN</h2><div className="ref-coming"><span className="ref-soft-icon"><Layers size={21} /></span><div><strong>Még több alkotási lehetőség</strong><p>Hamarosan új eszközökkel bővül a munkaterület.</p></div><LockKeyhole size={15} /></div></div>
-}
 
 function Profile({ name, avatarImage, avatarFallback, onEdit, onEditAvatar, onLogout, onLogin }: {
   name: string; avatarImage: string; avatarFallback: string; onEdit: (name: string) => void; onEditAvatar: (file: File) => void; onLogout: () => void; onLogin: () => void
@@ -289,7 +278,7 @@ export default function ReferenceScreens(props: Props) {
   else if (view === "selector") content = <LessonSelector lesson={lessons.find(item => item.id === activeLessonId)} onSelectMode={onSelectMode} onContinue={onContinue} />
   else if (view === "chat") content = <ChatInterface />
   else if (view === "space") content = <Space />
-  else if (view === "utility") content = <Utility onSpace={() => onView("space")} onUpload={props.onUploadFile} onFriends={props.onOpenFriends} onLeaderboard={props.onOpenLeaderboard} />
+  else if (view === "utility") content = <ToolsHub onUpload={props.onUploadFile} onFriends={props.onOpenFriends} onLeaderboard={props.onOpenLeaderboard} />
   else if (view === "auth") content = <AuthScreen onBack={() => onView("home")} />
   else content = <Profile name={userName} avatarImage={avatarImage} avatarFallback={avatarFallback} onEdit={onEditProfile} onEditAvatar={props.onEditAvatar} onLogout={onLogout} onLogin={() => onView("auth")} />
 
