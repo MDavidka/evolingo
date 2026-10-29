@@ -6,7 +6,7 @@ import ToolsHub from "./tools-hub"
 import {
   ArrowRight, ArrowUp, ArrowUpRight, BookOpen, CalendarDays, CheckCircle2, ChevronDown, ChevronsUpDown, ChevronRight,
   CircleDot, CircleHelp, Cloud, Eye, EyeOff, FileText, Folder, GraduationCap, Grid2X2, Info, Landmark, List,
-  LockKeyhole, LogOut, LogIn, Mic, MoreHorizontal, Plus, Search, Send, ShieldCheck, UserRound, Users, BarChart3, Check,
+  LockKeyhole, LogOut, LogIn, Mic, MoreHorizontal, Plus, Search, Send, ShieldCheck, UserRound, Users, BarChart3, Check, LibraryBig,
   X, Languages, Dna, ClipboardCheck, NotebookPen, Layers, Crown, PencilLine, Sparkles, type LucideIcon,
 } from "lucide-react"
 
@@ -53,8 +53,8 @@ function Avatar({ name, src, fallback }: { name: string; src: string; fallback: 
   return <span className="ref-avatar">{src ? <img src={src} alt={name} /> : <span className="ref-avatar-fallback"><img src={fallback} alt="" /></span>}</span>
 }
 
-function Header({ name, avatarImage, avatarFallback, onProfile, onHome, showCourse }: {
-  name: string; avatarImage: string; avatarFallback: string; onProfile: () => void; onHome: () => void; showCourse: boolean
+function Header({ name, avatarImage, avatarFallback, onProfile, onHome, showCourse, courseName }: {
+  name: string; avatarImage: string; avatarFallback: string; onProfile: () => void; onHome: () => void; showCourse: boolean; courseName?: string
 }) {
   const [courseOpen, setCourseOpen] = useState(false)
   const courseRef = useRef<HTMLDivElement>(null)
@@ -72,12 +72,12 @@ function Header({ name, avatarImage, avatarFallback, onProfile, onHome, showCour
   return <header className="ref-topbar">
     {showCourse && <div className="ref-course-wrap" ref={courseRef}>
       <button className="ref-course" type="button" aria-haspopup="menu" aria-expanded={courseOpen} onClick={() => setCourseOpen(value => !value)}>
-        <GraduationCap size={20} strokeWidth={1.8} /><strong>Erasmus</strong><span className="ref-course-chevron"><ChevronsUpDown size={13} /></span>
+        <GraduationCap size={20} strokeWidth={1.8} /><strong>{courseName || "Témáim"}</strong><span className="ref-course-chevron"><ChevronsUpDown size={13} /></span>
       </button>
       {courseOpen && <div className="ref-course-menu" role="menu" aria-label="Téma kiválasztása">
         <span className="ref-course-menu-label">Jelenlegi téma</span>
         <button className="ref-course-choice" type="button" role="menuitem" onClick={() => { setCourseOpen(false); onHome() }}>
-          <GraduationCap size={17} /> Erasmus <Check size={17} />
+          <GraduationCap size={17} /> {courseName || "Témáim"} <Check size={17} />
         </button>
         <button className="ref-course-choice" type="button" role="menuitem" onClick={() => { setCourseOpen(false); onHome() }}>
           <BookOpen size={17} /> Összes téma
@@ -88,19 +88,93 @@ function Header({ name, avatarImage, avatarFallback, onProfile, onHome, showCour
   </header>
 }
 
-function Topics({ topics, onSelect, onChat }: { topics: TopicData[]; onSelect: (lessonId: number) => void; onChat: () => void }) {
+let savedLearningScroll = 0
+
+function Topics({ topics, lessons, onSelectTopic, onSelectLesson, onNewLesson }: {
+  topics: TopicData[]
+  lessons: LessonData[]
+  onSelectTopic: (id: number) => void
+  onSelectLesson: (id: number) => void
+  onNewLesson: () => void
+}) {
   const [query, setQuery] = useState("")
-  const filtered = topics.filter(topic => `${topic.title} ${topic.subtitle}`.toLocaleLowerCase("hu").includes(query.toLocaleLowerCase("hu")))
-  return <div className="ref-topics">
-    <h1 className="ref-screen-heading">Tanulás</h1>
-    <label className="ref-search"><Search size={19} /><input aria-label="Témák keresése" placeholder="Keresés a témák között" value={query} onChange={event => setQuery(event.target.value)} /></label>
-    <div className="ref-topic-controls"><span>{topics.length} téma</span><button type="button" className="ref-dark-pill" onClick={() => onSelect(topics[0]?.id ?? 1)}><Plus size={17} /> Új lecke</button></div>
-    <button type="button" className="evo-ai-shortcut" onClick={onChat}><span className="evo-ai-shortcut-icon"><img src="/images/evolingo-ai-orb.svg" alt="" style={{width:27,height:27,borderRadius:"50%"}} /></span><span><strong>Kérdezd az Evölingo AI-t</strong><small>Tanulás, gyakorlás, magyarázatok</small></span><ArrowRight size={17} className="evo-ai-shortcut-arrow" /></button>
-    <div className="ref-topic-list">{filtered.slice(0, 3).map(({ id, title, subtitle, lessonCount, lessonIds }) => { const Icon = id === 1 ? Languages : id % 2 ? Landmark : Dna; return <button type="button" className="ref-topic-row" key={id} onClick={() => onSelect(lessonIds[0] || 1)}>
-      <span className="ref-soft-icon"><Icon size={20} strokeWidth={1.8} /></span>
-      <span className="ref-topic-copy"><strong>{title}</strong><small>{subtitle}</small><small>{lessonCount} lecke</small></span>
-      <ChevronRight className="ref-chevron" size={19} />
-    </button>})}{filtered.length === 0 && <p className="ref-empty">Nincs ilyen téma.</p>}</div>
+  useEffect(() => {
+    const frame = requestAnimationFrame(() => window.scrollTo(0, savedLearningScroll))
+    return () => {
+      cancelAnimationFrame(frame)
+      savedLearningScroll = window.scrollY
+    }
+  }, [])
+
+  const term = query.toLocaleLowerCase("hu").normalize("NFD").replace(/[\\u0300-\\u036f]/g, "").trim()
+  const contains = (value: string) => value.toLocaleLowerCase("hu").normalize("NFD").replace(/[\\u0300-\\u036f]/g, "").includes(term)
+  const matchingLessons = term
+    ? lessons.filter(lesson => contains(lesson.title + " " + lesson.summary))
+    : []
+  const matchingLessonIds = new Set(matchingLessons.map(lesson => lesson.id))
+  const filteredTopics = topics.filter(topic =>
+    !term || contains(topic.title + " " + topic.subtitle) || topic.lessonIds.some(id => matchingLessonIds.has(id))
+  )
+
+  return <div className="ref-topics evo-learning-home">
+    <div className="evo-learning-welcome">
+      <p>A tanulás itt kezdődik</p>
+      <h1>Mit tanulnál ma?</h1>
+    </div>
+
+    <label className="evo-learning-search">
+      <Search size={21} strokeWidth={1.75} aria-hidden="true" />
+      <input
+        type="search"
+        autoComplete="off"
+        aria-label="Témák és leckék keresése"
+        placeholder="Témák és leckék keresése"
+        value={query}
+        onChange={event => setQuery(event.target.value)}
+      />
+      {query && <button type="button" aria-label="Keresés törlése" onClick={() => setQuery("")}><X size={18} strokeWidth={1.75} /></button>}
+    </label>
+
+    <section className="evo-learning-section" aria-labelledby="evo-learning-topics-title">
+      <div className="evo-learning-section-header">
+        <h2 id="evo-learning-topics-title">Témáim</h2>
+        <button type="button" className="evo-learning-create" onClick={onNewLesson}>
+          <Plus size={18} strokeWidth={1.75} aria-hidden="true" /> Új lecke
+        </button>
+      </div>
+      <div className="evo-learning-topic-list">
+        {filteredTopics.map((topic, index) => {
+          const Icon = index === 0 ? GraduationCap : index % 2 === 0 ? BookOpen : Languages
+          return <button type="button" className="evo-learning-topic-card" key={topic.id} onClick={() => onSelectTopic(topic.id)}>
+            <span className="evo-learning-topic-icon"><Icon size={24} strokeWidth={1.75} aria-hidden="true" /></span>
+            <span className="evo-learning-topic-copy">
+              <strong>{topic.title}</strong>
+              <span>{topic.subtitle}</span>
+              <small>{topic.lessonIds.length} lecke</small>
+            </span>
+            <ChevronRight size={20} strokeWidth={1.75} className="evo-learning-chevron" aria-hidden="true" />
+          </button>
+        })}
+        {filteredTopics.length === 0 && matchingLessons.length === 0 && <p className="evo-learning-empty">Nem található ilyen téma vagy lecke.</p>}
+      </div>
+    </section>
+
+    {term && matchingLessons.length > 0 && <section className="evo-learning-section" aria-labelledby="evo-learning-results-title">
+      <div className="evo-learning-section-header"><h2 id="evo-learning-results-title">Talált leckék</h2><span>{matchingLessons.length} találat</span></div>
+      <div className="evo-learning-lesson-list">
+        {matchingLessons.map(lesson => <button type="button" className="evo-learning-lesson-row" key={lesson.id} onClick={() => onSelectLesson(lesson.id)}>
+          <span className="evo-learning-lesson-icon"><BookOpen size={21} strokeWidth={1.75} aria-hidden="true" /></span>
+          <span><strong>{lesson.title}</strong><small>{lesson.summary}</small></span>
+          <ChevronRight size={19} strokeWidth={1.75} aria-hidden="true" />
+        </button>)}
+      </div>
+    </section>}
+
+    <button type="button" className="evo-learning-library" onClick={() => onSelectTopic(topics[0]?.id ?? 0)} disabled={!topics.length}>
+      <span className="evo-learning-library-icon"><LibraryBig size={23} strokeWidth={1.75} aria-hidden="true" /></span>
+      <span><strong>Összes lecke</strong><small>Böngészd az összes tananyagot</small></span>
+      <ChevronRight size={20} strokeWidth={1.75} aria-hidden="true" />
+    </button>
   </div>
 }
 
@@ -270,11 +344,13 @@ export default function ReferenceScreens(props: Props) {
   const { view, userName, avatarImage, avatarFallback, onView, onSelectLesson, onSelectMode, onContinue, onEditProfile, onLogout, topics, lessons, activeLessonId } = props
   useEffect(() => {
     // Each tab starts at its own top instead of inheriting the previous page scroll.
-    if (view !== "chat") window.scrollTo(0, 0)
+    if (view !== "chat" && view !== "home") window.scrollTo(0, 0)
   }, [view])
+  const [selectedTopicId, setSelectedTopicId] = useState<number | null>(null)
+  const selectedTopic = topics.find(topic => topic.id === selectedTopicId) ?? topics[0]
   let content: ReactNode
-  if (view === "home") content = <Topics topics={topics} onSelect={id => { onSelectLesson(id); onView("topic") }} onChat={() => onView("chat")} />
-  else if (view === "topic") content = <TopicDetail topic={topics[0]} lessons={lessons} onSelectLesson={id => { onSelectLesson(id); onView("selector") }} onBack={() => onView("home")} />
+  if (view === "home") content = <Topics topics={topics} lessons={lessons} onSelectTopic={id => { setSelectedTopicId(id); onView("topic") }} onSelectLesson={id => { onSelectLesson(id); onView("selector") }} onNewLesson={() => { const first = topics[0]?.lessonIds[0]; if (first != null) { onSelectLesson(first); onView("selector") } }} />
+  else if (view === "topic") content = <TopicDetail topic={selectedTopic} lessons={lessons} onSelectLesson={id => { onSelectLesson(id); onView("selector") }} onBack={() => onView("home")} />
   else if (view === "selector") content = <LessonSelector lesson={lessons.find(item => item.id === activeLessonId)} onSelectMode={onSelectMode} onContinue={onContinue} />
   else if (view === "chat") content = <ChatInterface />
   else if (view === "space") content = <Space />
@@ -284,7 +360,7 @@ export default function ReferenceScreens(props: Props) {
 
   if (view === "auth") return <main className="ref-app ref-view-auth">{content}</main>
   return <main className={`ref-app ref-view-${view}`}>
-    <Header key={view} name={userName} avatarImage={avatarImage} avatarFallback={avatarFallback} onProfile={() => onView("profile")} onHome={() => onView("home")} showCourse={view === "home" || view === "topic"} />
+    <Header key={view} name={userName} avatarImage={avatarImage} avatarFallback={avatarFallback} onProfile={() => onView("profile")} onHome={() => onView("home")} showCourse={view === "home" || view === "topic"} courseName={selectedTopic?.title} />
     {content}
   </main>
 }
