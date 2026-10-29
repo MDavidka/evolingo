@@ -332,3 +332,48 @@ body:has(.ref-modal-backdrop) .evo-tabbar { opacity: 0; pointer-events: none; }
 @media (prefers-reduced-motion: reduce) {
   .evo-liquid-root .evo-liquid-surface { transition: none; }
 }
+
+/* Screenshot-matched home: single top-left sidebar trigger, expanded glass menu on demand. */
+.evo-home-menu-trigger { display: none; }
+.app-shell.reference-shell:has(.ref-view-chat) .evo-home-menu-trigger {
+  display: grid;
+  position: fixed;
+  z-index: 100;
+  top: calc(env(safe-area-inset-top, 0px) + 24px);
+  left: max(calc((100vw - 520px) / 2 + 23px), calc(env(safe-area-inset-left, 0px) + 23px));
+  width: 46px;
+  height: 46px;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  color: #2c3036;
+  background: rgba(244,245,247,.90);
+  box-shadow: inset 0 1px rgba(255,255,255,.75);
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+.app-shell.reference-shell:has(.ref-view-chat) .evo-tabbar.evo-glass-rail {
+  top: calc(env(safe-area-inset-top, 0px) + 80px) !important;
+  transition: opacity .22s ease, transform .22s ease, visibility .22s ease !important;
+}
+.app-shell.reference-shell:has(.ref-view-chat) .evo-tabbar.evo-glass-rail.is-compact {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+  transform: translateY(-8px) scale(.97) !important;
+}
+.app-shell.reference-shell:has(.ref-view-chat) .evo-tabbar.evo-glass-rail.is-expanded {
+  opacity: 1 !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
+  transform: none !important;
+}
+.app-shell.reference-shell:has(.ref-view-chat) .evo-home-menu-trigger:focus-visible {
+  outline: 2px solid #4b75c0;
+  outline-offset: 3px;
+}
+@media (max-width: 360px) {
+  .app-shell.reference-shell:has(.ref-view-chat) .evo-home-menu-trigger {
+    left: max(14px, env(safe-area-inset-left, 0px));
+  }
+}
