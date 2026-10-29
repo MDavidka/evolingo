@@ -3,9 +3,9 @@ import type { MetadataRoute } from "next"
 export default function manifest(): MetadataRoute.Manifest {
   return {
     id: "/",
-    name: "Evölingo — English Learning",
+    name: "Evölingo — Angoltanulás",
     short_name: "Evölingo",
-    description: "Learn English with short lessons and daily practice.",
+    description: "Tanulj angolul rövid leckékkel és személyre szabott gyakorlással.",
     start_url: "/",
     scope: "/",
     display: "standalone",
