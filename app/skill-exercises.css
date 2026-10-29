@@ -508,3 +508,71 @@ body .skill-vocabulary .skill-word-intro-play { display: inline-flex; align-item
 body .skill-vocabulary .skill-word-intro-fallback { display: flex; flex-direction: column; gap: 12px; align-items: center; padding: 45px 20px; }
 body .skill-vocabulary .skill-word-intro-fallback strong { font-size: 32px; }
 body .skill-vocabulary .skill-word-intro-fallback small { color: #777; }
+
+
+/* Shared SVG tile pack: align specialist tasks with normal lesson/task nodes. */
+body .learn-path-track .learn-path-node.learn-path-skill-node{
+  box-sizing:border-box !important;
+  width:108px !important;
+  min-width:108px !important;
+  height:116px !important;
+  min-height:116px !important;
+  overflow:visible !important;
+  gap:0 !important;
+  z-index:2 !important;
+}
+body .learn-path-track .learn-path-skill-node .learn-skill-button{
+  flex:0 0 88px !important;
+  width:88px !important;
+  height:88px !important;
+  min-width:88px !important;
+  min-height:88px !important;
+  padding:0 !important;
+  border:0 !important;
+  border-radius:0 !important;
+  background:transparent !important;
+  box-shadow:none !important;
+  opacity:1 !important;
+}
+body .learn-path-track .learn-path-skill-node .learn-skill-button > .evo-path-svg-tile{
+  display:block !important;
+  width:88px !important;
+  height:88px !important;
+  min-width:88px !important;
+  min-height:88px !important;
+  max-width:88px !important;
+  max-height:88px !important;
+  background:transparent !important;
+  filter:none !important;
+  opacity:1 !important;
+  object-fit:contain !important;
+  pointer-events:none !important;
+}
+body .learn-path-track .learn-path-skill-node > .learn-pack-caption{
+  position:static !important;
+  inset:auto !important;
+  transform:none !important;
+  flex:0 0 auto !important;
+  width:120px !important;
+  max-width:120px !important;
+  min-height:18px !important;
+  margin:0 !important;
+  font-size:11px !important;
+  line-height:18px !important;
+  white-space:nowrap !important;
+}
+@media(max-width:359px){
+  body .learn-path-track .learn-path-skill-node .learn-skill-button{
+    flex-basis:80px !important;
+    width:80px !important;
+    height:80px !important;
+    min-width:80px !important;
+    min-height:80px !important;
+  }
+  body .learn-path-track .learn-path-skill-node .learn-skill-button > .evo-path-svg-tile{
+    width:80px !important;
+    height:80px !important;
+    min-width:80px !important;
+    min-height:80px !important;
+  }
+}
