@@ -1430,6 +1430,16 @@ type LeaderboardEntry = {
   isCurrent: boolean
 }
 
+const LEADERBOARD_DEMO_ENTRIES: LeaderboardEntry[] = [
+  { id: "demo-1", rank: 1, name: "Mdaviiiid", avatar: "fox", stars: 174, isCurrent: true },
+  { id: "demo-2", rank: 2, name: "Janka", avatar: "fox", stars: 95, isCurrent: false },
+  { id: "demo-3", rank: 3, name: "Timi", avatar: "fox", stars: 81, isCurrent: false },
+  { id: "demo-4", rank: 4, name: "A kis róka 576065", avatar: "fox", stars: 28, isCurrent: false },
+  { id: "demo-5", rank: 5, name: "Vio", avatar: "fox", stars: 16, isCurrent: false },
+  { id: "demo-6", rank: 6, name: "Bence", avatar: "fox", stars: 12, isCurrent: false },
+  { id: "demo-7", rank: 7, name: "MDavid", avatar: "fox", stars: 8, isCurrent: false },
+]
+
 function leaderboardInitials(name: string) {
   return name.trim().split(/\s+/).filter(Boolean).slice(0, 2).map(part => Array.from(part)[0]?.toLocaleUpperCase("hu-HU") ?? "").join("")
 }
@@ -1454,9 +1464,9 @@ function LeaderboardAvatar({ name, src }: { name: string; src?: string }) {
   </span>
 }
 
-const LeaderboardRow = memo(function LeaderboardRow({ entry }: { entry: LeaderboardEntry }) {
-  return <li className={"leaderboard-entry " + (entry.isCurrent ? "is-current" : "")} aria-current={entry.isCurrent ? "true" : undefined}>
-    <span className={"leaderboard-rank leaderboard-rank-" + (entry.rank <= 3 ? entry.rank : "other")}>{entry.rank}</span>
+const LeaderboardRow = memo(function LeaderboardRow({ entry, placement }: { entry: LeaderboardEntry; placement: "first" | "middle" | "last" | "solo" }) {
+  return <li className={"leaderboard-entry " + (entry.isCurrent ? "is-current " : "") + "is-" + placement} aria-current={entry.isCurrent ? "true" : undefined}>
+    <span className={"leaderboard-rank leaderboard-rank-" + (entry.rank <= 3 ? entry.rank : "plain")}>{entry.rank}</span>
     <LeaderboardAvatar name={entry.name} src={entry.avatarImage} />
     <div className="leaderboard-name">
       <strong title={entry.name}>{entry.name}</strong>
@@ -1499,28 +1509,45 @@ function CampaignCountdown() {
   </div>
 }
 
+function leaderboardRowPlacement(index: number, total: number): "first" | "middle" | "last" | "solo" {
+  if (total <= 1) return "solo"
+  if (index === 0) return "first"
+  if (index === total - 1) return "last"
+  return "middle"
+}
+
 function Leaderboard() {
   const [entries, setEntries] = useState<LeaderboardEntry[] | null>(null)
-  const [loadFailed, setLoadFailed] = useState(false)
+  const [usingDemo, setUsingDemo] = useState(false)
 
   const loadEntries = useCallback(() => {
     setEntries(null)
-    setLoadFailed(false)
+    setUsingDemo(false)
     fetch("/api/leaderboard", { credentials: "same-origin", cache: "no-store" })
       .then(response => response.ok ? response.json() as Promise<{ entries?: LeaderboardEntry[] }> : Promise.reject(new Error("leaderboard")))
-      .then(result => setEntries(Array.isArray(result.entries) ? result.entries : []))
-      .catch(() => setLoadFailed(true))
+      .then(result => {
+        const next = Array.isArray(result.entries) ? result.entries : []
+        setEntries(next)
+      })
+      .catch(() => {
+        setEntries(LEADERBOARD_DEMO_ENTRIES)
+        setUsingDemo(true)
+      })
   }, [])
 
   useEffect(() => { loadEntries() }, [loadEntries])
 
-  const first = entries?.find(entry => entry.rank === 1)
-  const current = entries?.find(entry => entry.isCurrent)
+  const visibleEntries = entries ?? []
+  const first = visibleEntries.find(entry => entry.rank === 1)
+  const current = visibleEntries.find(entry => entry.isCurrent)
   const gap = first && current && current.rank > 1 ? Math.max(0, first.stars - current.stars) : null
+  const loading = entries === null
 
   return <div className="leaderboard-page">
-    <header className="leaderboard-home-header"><img src={foxIcon} alt="Evölingo róka" /><h1>Ranglista</h1></header>
-    <CampaignCountdown />
+    <div className="leaderboard-hero">
+      <header className="leaderboard-home-header"><img src={foxIcon} alt="Evölingo róka" /><h1>Ranglista</h1></header>
+      <CampaignCountdown />
+    </div>
     <section className="leaderboard-campaign" aria-label="Novemberi matrica nyereményjáték">
       <div className="leaderboard-prize">
         <div className="leaderboard-prize-image">
@@ -1532,22 +1559,23 @@ function Leaderboard() {
         </div>
       </div>
     </section>
-    {gap !== null && <aside className="leaderboard-gap" aria-label={gap + " csillag a 1. helyig"}>
+    {!loading && current?.rank === 1 && visibleEntries.length > 0 && <aside className="leaderboard-status leaderboard-status-leader" aria-label="Te vezeted a ranglistát">
+      <Trophy size={17} aria-hidden="true" />
+      <span>Jelenleg te vezeted a ranglistát</span>
+    </aside>}
+    {!loading && gap !== null && <aside className="leaderboard-status leaderboard-status-gap" aria-label={gap + " csillag a 1. helyig"}>
       <Star size={17} fill="currentColor" aria-hidden="true" />
       <span>{gap.toLocaleString("hu-HU")} csillag a 1. helyig</span>
     </aside>}
+    {usingDemo && !loading && <p className="leaderboard-demo-note" role="status">Bemutató ranglista — az élő adatok most nem érhetők el. <button type="button" onClick={loadEntries}>Újrapróbál</button></p>}
     <ol className="leaderboard-list" aria-label="Csillag ranglista">
-      {entries === null && !loadFailed && Array.from({ length: 5 }, (_, index) => <li className="leaderboard-skeleton" key={"skeleton-" + index} aria-hidden="true">
+      {loading && Array.from({ length: 6 }, (_, index) => <li className="leaderboard-skeleton" key={"skeleton-" + index} aria-hidden="true">
         <span /><span /><span /><span />
       </li>)}
-      {entries?.map(entry => <LeaderboardRow key={entry.id} entry={entry} />)}
-      {entries?.length === 0 && <li className="leaderboard-empty">
+      {!loading && visibleEntries.map((entry, index) => <LeaderboardRow key={entry.id} entry={entry} placement={leaderboardRowPlacement(index, visibleEntries.length)} />)}
+      {!loading && visibleEntries.length === 0 && <li className="leaderboard-empty">
         <img src={foxIcon} alt="" loading="lazy" />
         <p>Még nincs rangsorolt tanuló.</p>
-      </li>}
-      {loadFailed && <li className="leaderboard-error" role="alert">
-        <p>A ranglista most nem érhető el.</p>
-        <button type="button" onClick={loadEntries}>Újrapróbál</button>
       </li>}
     </ol>
   </div>
