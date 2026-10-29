@@ -7,7 +7,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "test": "echo \"No tests configured\""
+    "test": "node --experimental-strip-types --test app/intelligent-ui/schema.test.mjs",
+    "typecheck": "tsc --noEmit"
   },
   "repository": {
     "type": "git",
