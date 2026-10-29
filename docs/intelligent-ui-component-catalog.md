@@ -4,7 +4,7 @@
 
 Az interaktív tanulási felület kizárólag a **külön Evölingo AI chatben** aktív. A **Tanulás kezdőképernyőn nem jelenik meg AI-funkció**. Az oktatási komponensek egy saját React-készletből állnak, nem az OpenAI ChatGPT belső, nem publikus felületrajzolójából.
 
-A meglévő `POST /api/chat` útvonal változatlanul támogatja a `{ messages }` JSON-kérésre adott `{ reply }` JSON-választ. Az `{ messages, interactive: true }` kérés szöveges eseményfolyamot ad: először `text`, majd szükség esetén `ui`, végül `done`. Nem tokenenkénti szövegstream: a kész szöveg érkezik a válaszhoz később hozzáadott interaktív blokkok előtt.
+A meglévő `POST /api/chat` útvonal változatlanul támogatja a `{ messages }` JSON-kérésre adott `{ reply }` JSON-választ. Az `{ messages, interactive: true }` kérés szöveges eseményfolyamot ad: először fokozatos `delta` szövegrészek, majd egy végleges `text` esemény, szükség esetén `ui`, végül `done`. Az interaktív blokkok a már megjelenített szöveg után érkeznek. A kliens az animációs képkockákhoz igazítva frissíti a szöveget, hogy az iPhone görgetése gördülékeny maradjon.
 
 ## Engedélyezett komponensek
 
@@ -24,7 +24,7 @@ Minden mezőnek kötelező típusa és hosszhatára van. Ismeretlen típus, mez�
 
 ## A modellel való együttműködés
 
-1. Az eredeti modellvégpont előállítja a magyar szöveges választ.
+1. Az eredeti modellvégpont SSE-ként fokozatosan továbbítja a magyar szöveges választ.
 2. Egy gyors témaszűrő eldönti, hogy a kérés alkalmas-e tanulási UI-ra; ez költség- és késleltetésvédelmi szűrő.
 3. Ha igen, a modell **külön kérésben** megkísérel legfeljebb két szabályosan strukturált UI-blokkot összeállítani.
 4. A szerver ellenőrzi a szigorú sémát, majd csak a megfelelő blokkokat továbbítja.
@@ -62,4 +62,4 @@ npm run build
 
 Az ellenőrzőtesztek érvényes és rosszindulatú UI-adatokat is vizsgálnak. A GitHub Actions `verify.yml` workflow ugyanezeket futtatja.
 
-A teljes tervből a további változatokra marad a szélesebb komponenskatalógus (például szókártyapárosítás, diagramok és dokumentum-összegzés), hitelesített személyes haladás megjelenítése, perzisztens felhőbeli beszélgetések, szolgáltatói strukturált kimenet, valódi tokenstream, teljes mobilos VoiceOver-interakciós teszt és fokozatos felhasználói bevezetés. Ezeket a v1 nem állítja késznek.
+A teljes tervből a további változatokra marad a szélesebb komponenskatalógus (például szókártyapárosítás, diagramok és dokumentum-összegzés), hitelesített személyes haladás megjelenítése, perzisztens felhőbeli beszélgetések, szolgáltatói strukturált kimenet, teljes mobilos VoiceOver-interakciós teszt és fokozatos felhasználói bevezetés. Ezeket a v1 nem állítja késznek.
