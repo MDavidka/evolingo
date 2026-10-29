@@ -93,7 +93,7 @@ function Topics({ topics, onSelect, onChat }: { topics: TopicData[]; onSelect: (
   return <div className="ref-topics">
     <label className="ref-search"><Search size={19} /><input aria-label="Témák keresése" value={query} onChange={event => setQuery(event.target.value)} /></label>
     <div className="ref-topic-controls"><span>{topics.length} téma</span><button type="button" className="ref-dark-pill" onClick={() => onSelect(topics[0]?.id ?? 1)}><Plus size={17} /> Új lecke</button></div>
-    <button type="button" className="evo-ai-shortcut" onClick={onChat}><span className="evo-ai-shortcut-icon"><Sparkles size={19} /></span><span><strong>Kérdezd az Evölingo AI-t</strong><small>Tanulás, gyakorlás, magyarázatok</small></span><ArrowRight size={17} className="evo-ai-shortcut-arrow" /></button>
+    <button type="button" className="evo-ai-shortcut" onClick={onChat}><span className="evo-ai-shortcut-icon"><img src="/images/evolingo-ai-orb.svg" alt="" style={{width:27,height:27,borderRadius:"50%"}} /></span><span><strong>Kérdezd az Evölingo AI-t</strong><small>Tanulás, gyakorlás, magyarázatok</small></span><ArrowRight size={17} className="evo-ai-shortcut-arrow" /></button>
     <div className="ref-topic-list">{filtered.slice(0, 3).map(({ id, title, subtitle, lessonCount, lessonIds }) => { const Icon = id === 1 ? Languages : id % 2 ? Landmark : Dna; return <button type="button" className="ref-topic-row" key={id} onClick={() => onSelect(lessonIds[0] || 1)}>
       <span className="ref-soft-icon"><Icon size={20} strokeWidth={1.8} /></span>
       <span className="ref-topic-copy"><strong>{title}</strong><small>{subtitle}</small><small>{lessonCount} lecke</small></span>
