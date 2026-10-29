@@ -1011,6 +1011,29 @@ function Home({ completedLessons, answeredTasks, readLessons, notice, clearNotic
   let routeHeight = 0
   const routeTops = routeItems.map(item => { const top = routeHeight; routeHeight += item.skill ? 146 : item.chest || item.packIndex !== null ? 108 : 164; return top })
   const nodeRefs = useRef<Map<number, HTMLButtonElement>>(new Map())
+  const sheetRef = useRef<HTMLElement>(null)
+  const [showLockedCloud, setShowLockedCloud] = useState(false)
+  useEffect(() => {
+    const sheet = sheetRef.current
+    if (!sheet) return
+    const update = () => {
+      const locked = sheet.querySelector(".learn-path-node-locked")
+      if (!locked) {
+        setShowLockedCloud(false)
+        return
+      }
+      const view = sheet.getBoundingClientRect()
+      const node = locked.getBoundingClientRect()
+      setShowLockedCloud(node.top < view.bottom - 24 && node.bottom > view.top + 80)
+    }
+    update()
+    sheet.addEventListener("scroll", update, { passive: true })
+    window.addEventListener("resize", update)
+    return () => {
+      sheet.removeEventListener("scroll", update)
+      window.removeEventListener("resize", update)
+    }
+  }, [completedLessons, openedChests, routeHeight])
   useEffect(() => {
     if (currentLessonId === null || !readLessons.length && !completedLessons.length) return
     const node = nodeRefs.current.get(currentLessonId)
@@ -1027,7 +1050,7 @@ function Home({ completedLessons, answeredTasks, readLessons, notice, clearNotic
     </header>
     <div className="learn-star-balance" aria-label={stars + " csillag"}><Star size={18} fill="currentColor" aria-hidden="true" /><strong>{stars}</strong></div>
     {notice && <button className="inline-notice learn-inline-notice" type="button" onClick={clearNotice}><span>{notice}</span><X size={16} aria-hidden="true" /></button>}
-    <section className="learn-sheet" aria-label="Tanulási útvonal">
+    <section className="learn-sheet" ref={sheetRef} aria-label="Tanulási útvonal">
       <div className="learn-path-overview">
         <section className="learn-lesson-progress-banner" aria-label={currentLesson.title + " haladása: " + lessonPercent + "%"}>
           <div className="learn-progress-banner-top"><h2>{currentLesson.title}</h2><strong>{lessonPercent}%</strong></div>
@@ -1104,6 +1127,7 @@ function Home({ completedLessons, answeredTasks, readLessons, notice, clearNotic
         })}
       </div>
     </section>
+    {showLockedCloud && <div className="learn-path-cloud" aria-hidden="true" />}
   </div>
 }
 
