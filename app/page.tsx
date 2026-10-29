@@ -2285,7 +2285,7 @@ function Nav({ screen, setScreen, userName, avatar, avatarImage }: { screen: Scr
     dragStart.current = null
     setDragIndex(null)
   }
-  return <nav className={"bottom-nav " + (screen === "leaderboard" ? "leaderboard-nav" : "")}>
+  return <nav className="bottom-nav">
     <div
       className={"nav-selection-indicator " + (dragIndex !== null ? "is-dragging" : "")}
       aria-label="Húzd jobbra vagy balra a kiválasztott fület"
