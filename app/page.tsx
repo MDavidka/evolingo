@@ -1012,7 +1012,6 @@ function Home({ completedLessons, answeredTasks, readLessons, notice, clearNotic
   const routeTops = routeItems.map(item => { const top = routeHeight; routeHeight += item.skill ? 146 : item.chest || item.packIndex !== null ? 108 : 164; return top })
   const nodeRefs = useRef<Map<number, HTMLButtonElement>>(new Map())
   const sheetRef = useRef<HTMLElement>(null)
-  const [showLockedCloud, setShowLockedCloud] = useState(false)
   useEffect(() => {
     const sheet = sheetRef.current
     if (!sheet) return
@@ -1022,12 +1021,8 @@ function Home({ completedLessons, answeredTasks, readLessons, notice, clearNotic
     const lockedNodes = Array.from(
       sheet.querySelectorAll<HTMLElement>('.learn-path-node[data-locked="true"]')
     )
-    if (!lockedNodes.length) {
-      setShowLockedCloud(false)
-      return
-    }
+    if (!lockedNodes.length) return
 
-    const firstLockedNode = lockedNodes[0]
     const previewEndNode = lockedNodes[Math.min(3, lockedNodes.length) - 1]
 
     const update = () => {
@@ -1046,10 +1041,6 @@ function Home({ completedLessons, answeredTasks, readLessons, notice, clearNotic
       )
       if (sheet.scrollTop > maxScrollTop + 1) sheet.scrollTop = maxScrollTop
 
-      const firstLocked = firstLockedNode.getBoundingClientRect()
-      setShowLockedCloud(
-        firstLocked.top <= view.bottom - Math.min(90, view.height * 0.14)
-      )
     }
 
     update()
@@ -1154,7 +1145,6 @@ function Home({ completedLessons, answeredTasks, readLessons, notice, clearNotic
         })}
       </div>
     </section>
-    <div className={"learn-path-cloud" + (showLockedCloud ? " is-visible" : "")} aria-hidden="true" />
   </div>
 }
 
