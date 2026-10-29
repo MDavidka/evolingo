@@ -1,0 +1,103 @@
+/* Mobile-first conversation screen: one visual viewport, one scroll container. */
+html, body { max-width: 100%; overflow-x: clip; }
+.app-shell.reference-shell:has(.ref-view-chat),
+.app-shell.reference-shell > .screen-content:has(.ref-view-chat) {
+  height: var(--evo-chat-visual-height, 100dvh) !important;
+  min-height: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+}
+body:has(.ref-view-chat) { overflow: hidden !important; }
+.ref-app.ref-view-chat {
+  width: 100%;
+  max-width: 520px;
+  min-height: 0;
+  height: var(--evo-chat-visual-height, 100dvh);
+  padding: 0;
+  overflow: hidden;
+  background: #fff;
+}
+.ref-view-chat > .ref-topbar {
+  position: fixed;
+  z-index: 24;
+  top: var(--evo-chat-visual-top, 0px);
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(100%, 520px);
+  height: calc(env(safe-area-inset-top, 0px) + 70px);
+  align-items: flex-end;
+  padding: env(safe-area-inset-top, 0px) 22px 8px;
+  background: #fff;
+}
+.evo-chat-frame {
+  position: fixed;
+  z-index: 20;
+  top: var(--evo-chat-visual-top, 0px);
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  width: min(100%, 520px);
+  height: var(--evo-chat-visual-height, 100dvh);
+  min-height: 0;
+  padding: calc(env(safe-area-inset-top, 0px) + 75px) clamp(16px, 5vw, 26px) var(--evo-chat-bottom, 16px);
+  background: #fff;
+  color: #171717;
+  overflow: hidden;
+}
+.evo-chat-toolbar { display:flex; align-items:center; justify-content:space-between; gap:12px; flex:none; padding: 6px 1px 13px; border-bottom:1px solid #f1f1f1; }
+.evo-chat-title { display:flex; flex-direction:column; gap:3px; min-width:0; }
+.evo-chat-title strong { font-size: 17px; font-weight: 670; letter-spacing: -.35px; }
+.evo-chat-title span { font-size: 12px; color: #8d8d8d; }
+.ref-view-chat .evo-chat-new { display:grid; place-items:center; width:44px; height:44px; flex:none; border:1px solid #ececec; border-radius:14px; background:#fff; color:#343434; }
+.ref-view-chat .evo-chat-new:disabled { opacity:.4; }
+.evo-chat-messages { flex:1 1 auto; min-height:0; overflow-y:auto; overflow-x:hidden; overscroll-behavior:contain; -webkit-overflow-scrolling:touch; scrollbar-width:thin; }
+.evo-chat-welcome { display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:100%; padding: 28px 2px 34px; text-align:center; }
+.evo-chat-mark { display:grid; place-items:center; width:54px; height:54px; border:1px solid #ececec; border-radius:19px; background:#fafafa; }
+.evo-chat-welcome h1 { margin:22px 0 8px; font-size:clamp(26px, 7vw, 33px); font-weight:700; line-height:1.2; letter-spacing:-1px; }
+.evo-chat-welcome p { max-width:320px; margin:0; color:#828282; font-size:14px; line-height:1.55; }
+.evo-chat-prompts { display:grid; gap:9px; width:100%; max-width:360px; margin-top:30px; }
+.ref-view-chat .evo-chat-prompts button { width:100%; min-height:48px; padding:12px 16px; border:1px solid #e9e9e9; border-radius:16px; background:#fff; text-align:left; font-size:13px; line-height:1.35; color:#3c3c3c; }
+.evo-chat-thread { display:flex; flex-direction:column; gap:24px; padding:22px 0 24px; }
+.evo-chat-entry { display:flex; gap:10px; max-width:100%; align-items:flex-start; }
+.evo-chat-entry--user { justify-content:flex-end; }
+.evo-chat-entry-main { min-width:0; max-width:calc(100% - 36px); }
+.evo-chat-entry--user .evo-chat-entry-main { max-width:87%; }
+.evo-chat-bubble { white-space:pre-wrap; overflow-wrap:anywhere; font-size:15px; line-height:1.65; }
+.evo-chat-entry--user .evo-chat-bubble { padding:11px 15px; border-radius:20px 20px 5px 20px; background:#f1f1f1; }
+.evo-chat-entry--assistant .evo-chat-bubble { padding:5px 0; color:#242424; }
+.evo-chat-small-mark { display:grid; place-items:center; width:25px; height:25px; flex:none; margin-top:4px; border:1px solid #ebebeb; border-radius:9px; background:#fafafa; }
+.ref-view-chat .evo-chat-copy { display:flex; align-items:center; gap:7px; min-height:36px; margin-top:4px; padding:0 2px; color:#858585; font-size:12px; }
+.evo-chat-thinking { display:inline-flex; align-items:center; min-height:32px; color:#929292; font-size:13px; }
+.evo-chat-dots { display:inline-block; animation:evoChatPulse 1.2s ease-in-out infinite; }
+@keyframes evoChatPulse { 50% { opacity:.25; } }
+.evo-chat-bottom { flex:0 0 auto; min-width:0; padding-top:11px; background:#fff; }
+.evo-chat-error { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:9px; padding:9px 12px; border:1px solid #f2d8d8; border-radius:12px; background:#fff8f8; color:#9d3636; font-size:12px; line-height:1.4; }
+.ref-view-chat .evo-chat-error button { display:grid; place-items:center; width:30px; min-width:30px; height:30px; font-size:18px; color:inherit; }
+.evo-chat-composer { display:flex; align-items:flex-end; gap:10px; min-height:55px; padding:8px 8px 8px 16px; border:1px solid #e7e7e7; border-radius:26px; background:#fff; box-shadow:0 2px 14px #00000008; }
+.evo-chat-composer:focus-within { border-color:#bcbcbc; }
+.ref-view-chat .evo-chat-composer textarea { display:block; flex:1; min-width:0; min-height:37px; max-height:144px; padding:8px 0; margin:0; resize:none; border:0; outline:0; background:transparent; color:#171717; font:inherit; font-size:16px; line-height:21px; overflow-y:auto; }
+.evo-chat-composer textarea::placeholder { color:#989898; }
+.ref-view-chat .evo-chat-send { display:grid; place-items:center; width:39px; min-width:39px; height:39px; margin:0; border:0; border-radius:50%; color:#fff; background:#242424; }
+.ref-view-chat .evo-chat-send:disabled { background:#e9e9e9; color:#a2a2a2; }
+.evo-chat-disclaimer { margin:8px 0 0; color:#aaa; text-align:center; font-size:10px; line-height:1.35; }
+@media (max-width: 370px) {
+  .evo-chat-frame { padding-left:14px; padding-right:14px; }
+  .evo-chat-welcome { padding-top:12px; padding-bottom:12px; }
+  .evo-chat-prompts { gap:7px; margin-top:16px; }
+}
+@media (max-height: 620px) {
+  .evo-chat-welcome { justify-content:flex-start; padding-top:14px; }
+  .evo-chat-welcome h1 { margin-top:12px; font-size:25px; }
+  .evo-chat-prompts { margin-top:14px; }
+  .evo-chat-disclaimer { display:none; }
+}
+@media (prefers-reduced-motion: reduce) { .evo-chat-dots { animation:none; } }
+
+/* Discoverable AI entry on the topic index. */
+.ref-view-home .evo-ai-shortcut { display:flex; align-items:center; gap:12px; width:100%; min-height:70px; margin:12px 0 10px; padding:12px 14px; border:1px solid #e8e8e8; border-radius:17px; background:#fff; text-align:left; }
+.evo-ai-shortcut-icon { display:grid; width:42px; height:42px; flex:none; place-items:center; border-radius:13px; background:#f5f5f5; color:#262626; }
+.evo-ai-shortcut > span:nth-child(2) { display:flex; min-width:0; flex:1; flex-direction:column; gap:4px; }
+.evo-ai-shortcut strong { font-size:14px; font-weight:650; letter-spacing:-.2px; }
+.evo-ai-shortcut small { color:#8a8a8a; font-size:12px; }
+.evo-ai-shortcut-arrow { color:#858585; flex:none; }

@@ -1,0 +1,150 @@
+"use client"
+
+import { useEffect, useRef, useState, type FormEvent, type KeyboardEvent } from "react"
+import { ArrowUp, Check, Copy, MessageSquarePlus, Sparkles } from "lucide-react"
+
+type ChatMessage = { role: "user" | "assistant"; content: string }
+
+const suggestions = [
+  "Magyarázd el egyszerűen a Present Perfectet",
+  "Kérdezz ki az Erasmus témából",
+  "Segíts megtervezni a mai tanulást",
+]
+
+export default function ChatInterface() {
+  const [messages, setMessages] = useState<ChatMessage[]>([])
+  const [draft, setDraft] = useState("")
+  const [busy, setBusy] = useState(false)
+  const [error, setError] = useState("")
+  const [copied, setCopied] = useState<number | null>(null)
+  const scroll = useRef<HTMLDivElement>(null)
+  const input = useRef<HTMLTextAreaElement>(null)
+
+  useEffect(() => {
+    const root = document.documentElement
+    const viewport = window.visualViewport
+    const update = () => {
+      const height = viewport?.height ?? window.innerHeight
+      const top = viewport?.offsetTop ?? 0
+      const keyboardOpen = window.innerHeight - height - top > 120
+      root.style.setProperty("--evo-chat-visual-height", `${height}px`)
+      root.style.setProperty("--evo-chat-visual-top", `${top}px`)
+      root.style.setProperty("--evo-chat-bottom", keyboardOpen ? "10px" : "max(14px, env(safe-area-inset-bottom, 0px))")
+    }
+    update()
+    viewport?.addEventListener("resize", update)
+    viewport?.addEventListener("scroll", update)
+    window.addEventListener("resize", update)
+    return () => {
+      viewport?.removeEventListener("resize", update)
+      viewport?.removeEventListener("scroll", update)
+      window.removeEventListener("resize", update)
+      root.style.removeProperty("--evo-chat-visual-height")
+      root.style.removeProperty("--evo-chat-visual-top")
+      root.style.removeProperty("--evo-chat-bottom")
+    }
+  }, [])
+
+  useEffect(() => {
+    if (scroll.current) scroll.current.scrollTop = scroll.current.scrollHeight
+  }, [messages, busy, error])
+
+  const resizeInput = () => {
+    const field = input.current
+    if (!field) return
+    field.style.height = "auto"
+    field.style.height = `${Math.min(field.scrollHeight, 144)}px`
+  }
+
+  async function send(text: string) {
+    const content = text.trim()
+    if (!content || busy) return
+    const next: ChatMessage[] = [...messages, { role: "user", content }]
+    setMessages(next)
+    setDraft("")
+    setBusy(true)
+    setError("")
+    if (input.current) input.current.style.height = "auto"
+    try {
+      const response = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ messages: next.slice(-12) }),
+        cache: "no-store",
+      })
+      const payload = await response.json() as { reply?: string; error?: string }
+      if (!response.ok || !payload.reply) throw new Error(payload.error || "Az AI jelenleg nem válaszol. Próbáld újra.")
+      setMessages([...next, { role: "assistant", content: payload.reply }])
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : "Nem sikerült elküldeni az üzenetet.")
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  function submit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+    void send(draft)
+  }
+
+  function keyDown(event: KeyboardEvent<HTMLTextAreaElement>) {
+    if (event.key === "Enter" && !event.shiftKey && !event.nativeEvent.isComposing && window.matchMedia("(pointer: fine)").matches) {
+      event.preventDefault()
+      void send(draft)
+    }
+  }
+
+  function startNewChat() {
+    if (busy) return
+    setMessages([])
+    setDraft("")
+    setError("")
+    setCopied(null)
+    input.current?.focus()
+  }
+
+  async function copyMessage(content: string, index: number) {
+    try {
+      await navigator.clipboard.writeText(content)
+      setCopied(index)
+    } catch {
+      setError("A másolás nem sikerült.")
+    }
+  }
+
+  return <div className="evo-chat-frame">
+    <div className="evo-chat-toolbar">
+      <div className="evo-chat-title"><strong>Evölingo AI</strong><span>Tanulótársad</span></div>
+      <button type="button" className="evo-chat-new" onClick={startNewChat} disabled={busy} aria-label="Új beszélgetés" title="Új beszélgetés"><MessageSquarePlus size={21} strokeWidth={1.8} /></button>
+    </div>
+
+    <div className="evo-chat-messages" ref={scroll} role="log" aria-label="Beszélgetés">
+      {messages.length === 0 && <div className="evo-chat-welcome">
+        <div className="evo-chat-mark"><Sparkles size={25} strokeWidth={1.8} /></div>
+        <h1>Miben segíthetek?</h1>
+        <p>Kérdezz a tananyagról, gyakorolj, vagy tervezzük meg együtt a tanulást.</p>
+        <div className="evo-chat-prompts">{suggestions.map(suggestion =>
+          <button key={suggestion} type="button" onClick={() => void send(suggestion)} disabled={busy}>{suggestion}</button>
+        )}</div>
+      </div>}
+      {messages.length > 0 && <div className="evo-chat-thread">
+        {messages.map((item, index) => <div key={index} className={`evo-chat-entry evo-chat-entry--${item.role}`}>
+          {item.role === "assistant" && <span className="evo-chat-small-mark" aria-hidden="true"><Sparkles size={16} /></span>}
+          <div className="evo-chat-entry-main"><div className="evo-chat-bubble">{item.content}</div>
+            {item.role === "assistant" && <button type="button" className="evo-chat-copy" aria-label="Válasz másolása" onClick={() => void copyMessage(item.content, index)}>{copied === index ? <Check size={16} /> : <Copy size={16} />}<span>{copied === index ? "Másolva" : "Másolás"}</span></button>}
+          </div>
+        </div>)}
+        {busy && <div className="evo-chat-entry evo-chat-entry--assistant"><span className="evo-chat-small-mark" aria-hidden="true"><Sparkles size={16} /></span><span className="evo-chat-thinking" role="status">Válasz írása<span className="evo-chat-dots">…</span></span></div>}
+      </div>}
+    </div>
+
+    <div className="evo-chat-bottom">
+      {error && <div className="evo-chat-error" role="alert">{error}<button type="button" onClick={() => setError("")} aria-label="Hibaüzenet bezárása">×</button></div>}
+      <form onSubmit={submit} className="evo-chat-composer">
+        <textarea ref={input} value={draft} onChange={event => { setDraft(event.target.value); resizeInput() }} onKeyDown={keyDown} rows={1} maxLength={4000} aria-label="Üzenet írása" placeholder="Kérdezz bármit..." />
+        <button type="submit" className="evo-chat-send" disabled={!draft.trim() || busy} aria-label="Üzenet küldése"><ArrowUp size={20} strokeWidth={2.2} /></button>
+      </form>
+      <p className="evo-chat-disclaimer">Az AI tévedhet. A fontos információkat ellenőrizd.</p>
+    </div>
+  </div>
+}

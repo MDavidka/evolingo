@@ -821,7 +821,7 @@ export default function App() {
   const mainSwipeOrigin = useRef<{ x: number; y: number } | null>(null)
   const mainTabs: Screen[] = ["home", "friends", "leaderboard", "profile"]
   const onMainSwipeStart = (event: ReactTouchEvent<HTMLElement>) => {
-    if (!mainTabs.includes(screen) || event.touches.length !== 1) return
+    if (referenceView || !mainTabs.includes(screen) || event.touches.length !== 1) return
     const target = event.target
     if (!(target instanceof HTMLElement) ||
         target.closest('button, a, input, textarea, select, [contenteditable="true"], [role="slider"], [data-swipe-exempt], .friends-tabs, .nav-selection-indicator')) {

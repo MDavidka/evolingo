@@ -1,11 +1,12 @@
 "use client"
 
 import { useEffect, useRef, useState, type ChangeEvent, type ReactNode } from "react"
+import ChatInterface from "./chat-interface"
 import {
   ArrowRight, ArrowUp, ArrowUpRight, BookOpen, CalendarDays, CheckCircle2, ChevronDown, ChevronsUpDown, ChevronRight,
   CircleDot, CircleHelp, Cloud, Eye, EyeOff, FileText, Folder, GraduationCap, Grid2X2, Info, Landmark, List,
   LockKeyhole, LogOut, Mic, MoreHorizontal, Plus, Search, Send, ShieldCheck, UserRound,
-  X, Languages, Dna, ClipboardCheck, NotebookPen, Layers, Crown, PencilLine, type LucideIcon,
+  X, Languages, Dna, ClipboardCheck, NotebookPen, Layers, Crown, PencilLine, Sparkles, type LucideIcon,
 } from "lucide-react"
 
 export type ReferenceView = "home" | "topic" | "selector" | "chat" | "space" | "utility" | "profile" | "auth"
@@ -72,12 +73,13 @@ function Header({ name, avatarImage, avatarFallback, onProfile, onHome, onUtilit
   </header>
 }
 
-function Topics({ topics, onSelect }: { topics: TopicData[]; onSelect: (lessonId: number) => void }) {
+function Topics({ topics, onSelect, onChat }: { topics: TopicData[]; onSelect: (lessonId: number) => void; onChat: () => void }) {
   const [query, setQuery] = useState("")
   const filtered = topics.filter(topic => `${topic.title} ${topic.subtitle}`.toLocaleLowerCase("hu").includes(query.toLocaleLowerCase("hu")))
   return <div className="ref-topics">
     <label className="ref-search"><Search size={19} /><input aria-label="Témák keresése" value={query} onChange={event => setQuery(event.target.value)} /></label>
     <div className="ref-topic-controls"><span>{topics.length} téma</span><button type="button" className="ref-dark-pill" onClick={() => onSelect(topics[0]?.id ?? 1)}><Plus size={17} /> Új lecke</button></div>
+    <button type="button" className="evo-ai-shortcut" onClick={onChat}><span className="evo-ai-shortcut-icon"><Sparkles size={19} /></span><span><strong>Kérdezd az Evölingo AI-t</strong><small>Tanulás, gyakorlás, magyarázatok</small></span><ArrowRight size={17} className="evo-ai-shortcut-arrow" /></button>
     <div className="ref-topic-list">{filtered.slice(0, 3).map(({ id, title, subtitle, lessonCount, lessonIds }) => { const Icon = id === 1 ? Languages : id % 2 ? Landmark : Dna; return <button type="button" className="ref-topic-row" key={id} onClick={() => onSelect(lessonIds[0] || 1)}>
       <span className="ref-soft-icon"><Icon size={20} strokeWidth={1.8} /></span>
       <span className="ref-topic-copy"><strong>{title}</strong><small>{subtitle}</small><small>{lessonCount} lecke</small></span>
@@ -146,56 +148,6 @@ function LessonSelector({ lesson, onSelectMode, onContinue }: { lesson?: LessonD
       </button>})}
     </div>
     <button type="button" className="ref-continue" onClick={onContinue}>Folytatás <ArrowRight size={18} /></button>
-  </div>
-}
-
-function Chat() {
-  const [message, setMessage] = useState("")
-  const [error, setError] = useState("")
-  const [busy, setBusy] = useState(false)
-  const input = useRef<HTMLInputElement>(null)
-  useEffect(() => {
-    const viewport = window.visualViewport
-    const updateViewport = () => {
-      const visibleHeight = viewport?.height ?? window.innerHeight
-      const keyboardInset = Math.max(0, window.innerHeight - visibleHeight - (viewport?.offsetTop ?? 0))
-      document.documentElement.style.setProperty("--ref-visual-height", `${visibleHeight}px`)
-      document.documentElement.style.setProperty("--ref-keyboard-inset", `${keyboardInset}px`)
-    }
-    updateViewport()
-    viewport?.addEventListener("resize", updateViewport)
-    viewport?.addEventListener("scroll", updateViewport)
-    window.addEventListener("resize", updateViewport)
-    return () => {
-      viewport?.removeEventListener("resize", updateViewport)
-      viewport?.removeEventListener("scroll", updateViewport)
-      window.removeEventListener("resize", updateViewport)
-      document.documentElement.style.removeProperty("--ref-visual-height")
-      document.documentElement.style.removeProperty("--ref-keyboard-inset")
-    }
-  }, [])
-  async function send(event: React.FormEvent) {
-    event.preventDefault()
-    const content = message.trim()
-    if (!content || busy) return
-    setBusy(true); setError("")
-    try {
-      const response = await fetch("/api/chat", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ message: content }) })
-      if (!response.ok) throw new Error("A chat szolgáltatás most nem érhető el.")
-      setMessage("")
-    } catch (cause) { setError(cause instanceof Error ? cause.message : "A chat szolgáltatás most nem érhető el.") }
-    finally { setBusy(false); input.current?.focus() }
-  }
-  return <div className="ref-chat">
-    <div className="ref-chat-spacer" />
-    {error && <p className="ref-chat-error" role="alert">{error}</p>}
-    <form className="ref-chat-composer" onSubmit={event => { void send(event) }}>
-      <button type="button" aria-label="Fájl csatolása" onClick={() => setError("A fájlcsatolás még nem érhető el.")}><Plus size={20} /></button>
-      <input ref={input} value={message} onChange={event => setMessage(event.target.value)} placeholder="Írj egy üzenetet..." aria-label="Üzenet" />
-      <button className="ref-model" type="button" aria-label="Modell: Vanilla 1">Vanilla 1 <ChevronDown size={13} /></button>
-      <button type="button" aria-label="Hangüzenet" onClick={() => setError("A hangbevitel nem érhető el.")}><Mic size={18} /></button>
-      <button className="ref-send" type="submit" disabled={busy || !message.trim()} aria-label={busy ? "Küldés folyamatban" : "Küldés"}><ArrowUp size={20} /></button>
-    </form>
   </div>
 }
 
@@ -307,10 +259,10 @@ function SettingRow({ icon: Icon, title, subtitle, onClick }: { icon: LucideIcon
 export default function ReferenceScreens(props: Props) {
   const { view, userName, avatarImage, avatarFallback, onView, onSelectLesson, onSelectMode, onContinue, onEditProfile, onLogout, topics, lessons, activeLessonId } = props
   let content: ReactNode
-  if (view === "home") content = <Topics topics={topics} onSelect={id => { onSelectLesson(id); onView("topic") }} />
+  if (view === "home") content = <Topics topics={topics} onSelect={id => { onSelectLesson(id); onView("topic") }} onChat={() => onView("chat")} />
   else if (view === "topic") content = <TopicDetail topic={topics[0]} lessons={lessons} onSelectLesson={id => { onSelectLesson(id); onView("selector") }} onBack={() => onView("home")} />
   else if (view === "selector") content = <LessonSelector lesson={lessons.find(item => item.id === activeLessonId)} onSelectMode={onSelectMode} onContinue={onContinue} />
-  else if (view === "chat") content = <Chat />
+  else if (view === "chat") content = <ChatInterface />
   else if (view === "space") content = <Space />
   else if (view === "utility") content = <Utility onSpace={() => onView("space")} onUpload={props.onUploadFile} />
   else if (view === "auth") content = <AuthScreen onBack={() => onView("home")} />
