@@ -200,7 +200,7 @@ export default function ChatInterface() {
         {messages.map((item, index) => <div key={index} className={`evo-chat-entry evo-chat-entry--${item.role}`}>
           {item.role === "assistant" && <span className="evo-chat-small-mark" aria-hidden="true"><Sparkles size={16} /></span>}
           <div className="evo-chat-entry-main"><div className="evo-chat-bubble">{item.content}</div>
-            {item.role === "assistant" && item.ui && <IntelligentResponse ui={item.ui} />}
+            {item.role === "assistant" && item.ui && <IntelligentResponse ui={item.ui} messageId={item.id} />}
             {item.role === "assistant" && <button type="button" className="evo-chat-copy" aria-label="Válasz másolása" onClick={() => void copyMessage(item.content, index)}>{copied === index ? <Check size={16} /> : <Copy size={16} />}<span>{copied === index ? "Másolva" : "Másolás"}</span></button>}
           </div>
         </div>)}
