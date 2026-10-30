@@ -27,13 +27,13 @@ const replyPrompt = [
   "Használj szabályos Markdown formázást, ha javítja az érthetőséget: rövid címsorok, **kiemelés**, példamondatok, felsorolások, összehasonlító táblázatok és működő HTTPS forráshivatkozások.",
   "Ne adj nyers HTML-t, JSX-et, JSON UI-leírást vagy kódot a felület vezérlésére.",
   "Képet kizárólag létező, igazolható HTTPS-forrásból idézz, ne találj ki képhivatkozást.",
-  "Egyszerű kérdésre válaszolj röviden, felesleges kártyák, jelölések és táblázatok nélkül.",
+  "Egyszerű kérdésre válaszolj röviden. Általános ismeretterjesztő kérdéseknél adj világos magyarázatot, érdekes tényeket és releváns példákat. A külön vizuális réteg illusztrációt, órát vagy kártyát is adhat.",
   "Ne találj ki személyes tanulási adatot, és ne állítsd, hogy ChatGPT vagy.",
 ].join(" ")
 
 const uiInstructions = [
   'Csak érvényes JSON objektumot adj meg, markdown vagy kód nélkül.',
-  'A felhasználói kérés és az asszisztens válasza alapján válassz 0-2 oktatási UI elemet. Ha a szöveg elég, legyen üres tömb.',
+  'A felhasználói kérés és az asszisztens válasza alapján válassz 1-2 releváns vizuális UI elemet, ha egy ábra, kép, élő óra, fogalomkártya vagy diagram segít. Általános tudáskérdésekhez is használj vizuális magyarázatot; ne csak nyelvtanhoz. Ha a válasz nagyon rövid vagy a vizualizáció félrevezető lenne, legyen üres tömb.',
   'Gyökér: {"version":"1","blocks":[]}. Csak a version és blocks kulcsok használhatók.',
   'Minden blokknál pontosan id, type és props kulcs szerepeljen. Az id csak angol betűt, számot vagy kötőjelet tartalmazzon.',
   'Megengedett blokkok formátumai:',
@@ -45,12 +45,16 @@ const uiInstructions = [
   '{"id":"plan-1","type":"study_plan","props":{"title":"Heti terv","days":[{"day":"Hétfő","task":"15 perc tanulás"}]}}',
   '{"id":"concept-1","type":"concept_card","props":{"title":"Fontos szabály","description":"Rövid, hasznos magyarázat.","icon":"idea","badge":"Tipp"}}',
   '{"id":"chart-1","type":"chart_card","props":{"title":"Példa grafikon","chartType":"bar","source":"example","unit":"pont","points":[{"label":"A","value":8},{"label":"B","value":13}]}}',
+  '{"id":"eu-1","type":"illustration","props":{"subject":"european_union","title":"Európai Unió","caption":"Az EU zászlaja tizenkét csillaggal."}}',
+  '{"id":"clock-1","type":"live_time","props":{"title":"Pontos idő","timeZone":"Europe/Bucharest","label":"Románia"}}',
+  'Az illustration csak european_union subject értékkel megengedett. A kép előre jóváhagyott forrásból származik; ne készíts kép-URL-t. Más témához válassz fogalomkártyát, összehasonlítást vagy idővonalat.',
+  'A live_time csak Europe/Bucharest, Europe/London, Europe/Paris vagy UTC időzónát használhat. Az óra böngészőben frissül, ezért ne generálj hamis pillanatnyi időpontot.',
   'chartType csak bar, line vagy donut lehet. A forrás mindig source: example, és a kártya szemléltető adatok feliratot kap. Csak akkor kérj grafikont, ha a felhasználó példadiagramot vagy összehasonlító számsort kér.',
   'SOHA ne állítsd, hogy a modell személyes tanulási haladási statisztikákat ismer. Nincs jogosultság hitelesített értékek előállítására. A chart_card source: verified kizárólag a kliens megbízható adataiból keletkezhet.',
   'A study_calculator kizárólag tanulásiidő-kalkulációhoz használható. Példa: {"id":"calc-1","type":"study_calculator","props":{"title":"Tanulási idő kiszámítása","dailyMinutes":30,"daysPerWeek":5,"weeks":4}}. A napi percek csak 5-ösével választhatók 5 és 120 között, a napok 1-7, a hetek 1-12 között. Az alkalmazás számol, ne generálj futtatható képletet.',
   'Kizárólag az engedélyezett blokkokat választhatod: '+VISUAL_CAPABILITIES.join(', ')+'.',
   'A progress_bars típus NEM engedélyezett a modell számára, mert hitelesített felhasználói adatot igényel.',
-  'Ne adj meg HTML-t, JS-t, JSX-et, URL-t, külső műveleteket, szerverhívásokat vagy személyes statisztikákat.',
+  'Ne adj meg HTML-t, JS-t, JSX-et, URL-t, külső műveleteket, szerverhívásokat vagy személyes statisztikákat. Kizárólag valóban releváns vizuális elemet adj.',
   'Legfeljebb 12 tanulókártya, 8 összehasonlító sor, 7 nap, 5 válasz, 5 lépés és 5 példamondat legyen.',
   'Minden UI-szöveg magyar legyen (kivéve a tanult nyelvű példákat). A JSON legyen rövid és a kvíz helyes válasza pontos.',
 ].join("\n")
