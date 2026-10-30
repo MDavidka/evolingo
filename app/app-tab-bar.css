@@ -612,3 +612,31 @@ html.evo-reduced-motion *, html.evo-reduced-motion *::before, html.evo-reduced-m
 }
 /* Avoid duplicate profile shortcuts while the shared control is mounted. */
 .app-shell:has(.evo-global-profile-button) .ref-profile-shortcut { visibility: hidden !important; pointer-events: none !important; }
+
+/* Align both global header controls on one symmetric 46px axis. */
+.evo-sidebar-host {
+  --evo-header-inset: max(16px, calc(env(safe-area-inset-left, 0px) + 16px));
+  --evo-header-top: calc(env(safe-area-inset-top, 0px) + 16px);
+}
+.evo-sidebar-host .evo-morph-anchor {
+  top: var(--evo-header-top) !important;
+  left: max(calc((100vw - 520px) / 2 + 16px), var(--evo-header-inset)) !important;
+  width: 46px !important;
+  height: 46px !important;
+}
+.evo-sidebar-host .evo-morph-anchor > .evo-morph-toggle {
+  width: 46px !important;
+  height: 46px !important;
+  min-width: 46px !important;
+  min-height: 46px !important;
+  padding: 0 !important;
+  border-radius: 50% !important;
+  box-sizing: border-box;
+}
+.evo-sidebar-host .evo-global-profile-button {
+  top: var(--evo-header-top) !important;
+  right: max(calc((100vw - 520px) / 2 + 16px), calc(env(safe-area-inset-right, 0px) + 16px)) !important;
+  width: 46px !important;
+  height: 46px !important;
+  box-sizing: border-box;
+}
