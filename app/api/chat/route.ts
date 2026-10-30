@@ -98,7 +98,9 @@ async function optionalUI(apiKey: string, question: string, reply: string): Prom
   try {
     const raw = await providerCompletion(apiKey, [{ role: "user", content: prompt }], uiInstructions, 1300, 8000)
     const parsed = parseModelUI(raw)
-    if (parsed) return parsed.blocks.length ? parsed : generalVisualFallback(question)
+    const guaranteed = generalVisualFallback(question)
+    if (guaranteed) return guaranteed
+    if (parsed) return parsed.blocks.length ? parsed : null
     // Bounded retry on schema failure, never a second request on a valid empty result.
     const retry = await providerCompletion(apiKey, [{ role: "user", content: prompt + "\nAz előző válasz formátuma hibás volt. Javítsd ki a JSON-szerkezetet, egyéb szöveg nélkül." }], uiInstructions, 900, 4000)
     const safe = parseModelUI(retry)
