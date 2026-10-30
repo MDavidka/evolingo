@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { parseModelUI, type IntelligentUI } from "../../intelligent-ui/schema"
 import { projectVisualResponse } from "../../intelligent-ui/visual-policy"
+import { classifyVisualIntent, getVisualSelectionHint, shouldPlanVisuals, VISUAL_CAPABILITIES } from "../../intelligent-ui/orchestrator"
 
 export const runtime = "nodejs"
 export const dynamic = "force-dynamic"
@@ -29,11 +30,7 @@ const replyPrompt = [
   "Egyszerű kérdésre válaszolj röviden, felesleges kártyák, jelölések és táblázatok nélkül.",
   "Ne találj ki személyes tanulási adatot, és ne állítsd, hogy ChatGPT vagy.",
 ].join(" ")
-function uiCandidate(value: string) {
-  const input = value.toLocaleLowerCase("hu")
-  if (/csak (rövid|szöveges)|only text|no ui|felület nélkül/.test(input)) return false
-  return /nyelvtan|igeidő|present |past |future |grammar|tense|különbség|hasonlít|összehasonl|gyakorol|teszt|kvíz|quiz|szókincs|szavak|szót|tanulókárty|flashcard|szótanul|terv|órarend|idővonal|timeline|példamondat|erasmus|magyarázd|magyarázat|taníts|tanulás|példa|diagram|grafikon|statisztik|chart|adatvizual|oszlopdiagram|kördiagram/.test(input)
-}
+
 const uiInstructions = [
   'Csak érvényes JSON objektumot adj meg, markdown vagy kód nélkül.',
   'A felhasználói kérés és az asszisztens válasza alapján válassz 0-2 oktatási UI elemet. Ha a szöveg elég, legyen üres tömb.',
@@ -50,6 +47,8 @@ const uiInstructions = [
   '{"id":"chart-1","type":"chart_card","props":{"title":"Példa grafikon","chartType":"bar","source":"example","unit":"pont","points":[{"label":"A","value":8},{"label":"B","value":13}]}}',
   'chartType csak bar, line vagy donut lehet. A forrás mindig source: example, és a kártya szemléltető adatok feliratot kap. Csak akkor kérj grafikont, ha a felhasználó példadiagramot vagy összehasonlító számsort kér.',
   'SOHA ne állítsd, hogy a modell személyes tanulási haladási statisztikákat ismer. Nincs jogosultság hitelesített értékek előállítására. A chart_card source: verified kizárólag a kliens megbízható adataiból keletkezhet.',
+  'A study_calculator kizárólag tanulásiidő-kalkulációhoz használható. Példa: {"id":"calc-1","type":"study_calculator","props":{"title":"Tanulási idő kiszámítása","dailyMinutes":30,"daysPerWeek":5,"weeks":4}}. A napi percek csak 5-ösével választhatók 5 és 120 között, a napok 1-7, a hetek 1-12 között. Az alkalmazás számol, ne generálj futtatható képletet.',
+  'Kizárólag az engedélyezett blokkokat választhatod: '+VISUAL_CAPABILITIES.join(', ')+'.',
   'A progress_bars típus NEM engedélyezett a modell számára, mert hitelesített felhasználói adatot igényel.',
   'Ne adj meg HTML-t, JS-t, JSX-et, URL-t, külső műveleteket, szerverhívásokat vagy személyes statisztikákat.',
   'Legfeljebb 12 tanulókártya, 8 összehasonlító sor, 7 nap, 5 válasz, 5 lépés és 5 példamondat legyen.',
@@ -76,8 +75,8 @@ async function providerCompletion(apiKey: string, messages: Message[], system: s
 }
 
 async function optionalUI(apiKey: string, question: string, reply: string): Promise<IntelligentUI | null> {
-  if (!UI_ENABLED || !uiCandidate(question)) return null
-  const prompt = "Kérés: " + question.slice(0, 1100) + "\nVálasz: " + reply.slice(0, 2300) + "\nCsak JSON legyen az eredmény."
+  if (!UI_ENABLED || !shouldPlanVisuals(question)) return null
+  const prompt = "Kérés: " + question.slice(0, 1100) + "\nVálasz: " + reply.slice(0, 2300) + "\nJavasolt megjelenítés: " + getVisualSelectionHint(question) + "\nCsak JSON legyen az eredmény."
   try {
     const raw = await providerCompletion(apiKey, [{ role: "user", content: prompt }], uiInstructions, 1300, 8000)
     const parsed = parseModelUI(raw)
@@ -165,6 +164,22 @@ function makeStream(apiKey: string, messages: Message[]) {
       const emit = (type: string, data: Record<string, unknown> = {}) =>
         controller.enqueue(encoder.encode("data: " + JSON.stringify({ type, ...data }) + "\n\n"))
       try {
+        const question = messages[messages.length - 1].content
+        // For quiz requests, keep the answer entirely on the server until
+        // submission. Even the streamed prose must not reveal the solution.
+        if (UI_ENABLED && classifyVisualIntent(question) === "quiz") {
+          const planned = await optionalUI(apiKey, question,
+            "Készíts ellenőrizhető, helyes válaszú feleletválasztós kvízt a felhasználó témájából.")
+          const safe = planned ? projectVisualResponse(planned) : null
+          if (safe?.blocks.some(block => block.type === "quiz_choice")) {
+            emit("text", { reply: "Válassz a gyakorlókérdés lehetőségei közül. A megoldás ellenőrzés után jelenik meg." })
+            emit("ui", { ui: safe })
+          } else {
+            emit("text", { reply: "Most nem sikerült ellenőrizhető kvízt készíteni. Próbáld újra, vagy kérj szöveges magyarázatot." })
+          }
+          emit("done")
+          return
+        }
         const reply = await streamProviderText(apiKey, messages, delta => emit("delta", { delta }))
         emit("text", { reply })
         const ui = await optionalUI(apiKey, messages[messages.length - 1].content, reply)
