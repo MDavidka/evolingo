@@ -295,7 +295,8 @@ export default function ReferenceScreens(props: Props) {
 
   if (view === "auth") return <main className="ref-app ref-view-auth">{content}</main>
   return <main className={`ref-app ref-view-${view}`}>
-    <Header key={view} name={userName} avatarImage={avatarImage} avatarFallback={avatarFallback} onProfile={() => onView("profile")} onHome={() => onView("home")} onSelectCourse={id => { onSelectTopic(id); onView("topic") }} topics={topics} selectedTopicId={selectedTopicId} showCourse={view === "home" || view === "topic"} courseName={selectedTopicId === -1 ? "Összes lecke" : selectedTopic?.title} />
+    {/* Könyvtár uses the app-level floating sidebar/profile; do not render an empty page header. */}
+    {view !== "space" && <Header key={view} name={userName} avatarImage={avatarImage} avatarFallback={avatarFallback} onProfile={() => onView("profile")} onHome={() => onView("home")} onSelectCourse={id => { onSelectTopic(id); onView("topic") }} topics={topics} selectedTopicId={selectedTopicId} showCourse={view === "home" || view === "topic"} courseName={selectedTopicId === -1 ? "Összes lecke" : selectedTopic?.title} />}
     {content}
   </main>
 }
