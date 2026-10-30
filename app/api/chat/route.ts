@@ -94,6 +94,8 @@ function generalVisualFallback(question: string): IntelligentUI | null {
 
 async function optionalUI(apiKey: string, question: string, reply: string): Promise<IntelligentUI | null> {
   if (!UI_ENABLED || !shouldPlanVisuals(question)) return null
+  const curated = generalVisualFallback(question)
+  if (curated) return curated
   const prompt = "Kérés: " + question.slice(0, 1100) + "\nVálasz: " + reply.slice(0, 2300) + "\nJavasolt megjelenítés: " + getVisualSelectionHint(question) + "\nCsak JSON legyen az eredmény."
   try {
     const raw = await providerCompletion(apiKey, [{ role: "user", content: prompt }], uiInstructions, 1300, 8000)
