@@ -187,3 +187,34 @@
   .evo-visual-chart .evo-visual-chart-selection { gap:5px; }
   .evo-visual-chart .evo-visual-chart-selection button { padding:7px 8px; font-size:11px; }
 }
+
+/* Three production learning interactions: deliberate selection, mastery and touch. */
+.evo-iui-quiz .evo-iui-choices button.is-selected {
+  border-color:#798da9;
+  background:#f2f5f9;
+}
+.evo-iui-quiz .evo-iui-choices button:disabled { opacity:1; }
+.evo-iui-quiz .evo-iui-choices button:disabled:not(.is-correct):not(.is-incorrect) { opacity:.62; }
+.evo-iui-quiz .evo-iui-check-answer {
+  display:flex; justify-content:center; align-items:center; width:100%; min-height:47px;
+  margin-top:14px; border:0; border-radius:999px; background:#252830; color:#fff;
+  font-size:14px; font-weight:620;
+}
+.evo-iui-quiz .evo-iui-check-answer:disabled { opacity:.35; }
+.evo-iui-vocabulary .evo-iui-flashcard { touch-action:pan-y; -webkit-user-select:none; user-select:none; }
+.evo-iui-vocabulary .evo-iui-pager .evo-iui-pronounce {
+  display:flex; align-items:center; justify-content:center; gap:7px;
+  width:auto; min-width:100px; height:44px; padding:0 12px; border-radius:999px; background:#f5f5f7; border:0;
+  color:#4e5e72; font-size:13px;
+}
+.evo-iui-vocabulary .evo-iui-mastery { margin-top:15px; padding-top:13px; border-top:1px solid #e5e5ea; }
+.evo-iui-vocabulary .evo-iui-mastery-heading { display:flex; align-items:center; justify-content:space-between; gap:10px; font-size:12px; color:#8e8e93; }
+.evo-iui-vocabulary .evo-iui-mastery-heading strong { color:#333b47; font-variant-numeric:tabular-nums; }
+.evo-iui-vocabulary .evo-iui-mastery progress { display:block; width:100%; height:6px; margin:9px 0 14px; appearance:none; background:#e5e5ea; border:0; border-radius:999px; }
+.evo-iui-vocabulary .evo-iui-mastery progress::-webkit-progress-bar { background:#e5e5ea; border-radius:999px; }
+.evo-iui-vocabulary .evo-iui-mastery progress::-webkit-progress-value { background:#6685a2; border-radius:999px; }
+.evo-iui-vocabulary .evo-iui-mastery progress::-moz-progress-bar { background:#6685a2; border-radius:999px; }
+.evo-iui-vocabulary .evo-iui-mastery-actions { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
+.evo-iui-vocabulary .evo-iui-mastery-actions button { display:flex; align-items:center; justify-content:center; gap:7px; min-height:47px; padding:9px; border:1px solid #e5e5ea; border-radius:999px; font-size:13px; color:#454d59; background:#fff; }
+.evo-iui-vocabulary .evo-iui-mastery-actions button:last-child { color:#fff; background:#252830; border-color:#252830; }
+.evo-iui-vocabulary .evo-iui-mastery > p { margin:12px 0 0; color:#8e8e93; font-size:11px; line-height:1.5; }
