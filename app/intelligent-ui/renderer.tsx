@@ -26,7 +26,7 @@ function QuizCard({ block, storageKey }: { block: QuizChoiceBlock | PublicQuizCh
   const [error, setError] = useState("")
   const label = useId()
   const checked = result !== null
-  const solutionIndex = result?.correctIndex ?? (!isServerGraded ? block.props.correctIndex : null)
+  const solutionIndex = result?.correctIndex ?? (!("ticket" in block.props) ? block.props.correctIndex : null)
 
   useEffect(() => {
     setSelected(null)
@@ -59,7 +59,7 @@ function QuizCard({ block, storageKey }: { block: QuizChoiceBlock | PublicQuizCh
     setError("")
     try {
       let verified: { correctIndex: number; correct: boolean; explanation: string }
-      if (isServerGraded) {
+      if ("ticket" in block.props) {
         const response = await fetch("/api/chat/quiz", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
