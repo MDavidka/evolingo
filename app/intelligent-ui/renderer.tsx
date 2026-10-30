@@ -16,27 +16,68 @@ function GrammarCard({ block }: { block: GrammarRuleBlock }) {
   </section>
 }
 
-function QuizCard({ block }: { block: QuizChoiceBlock }) {
+function QuizCard({ block, storageKey }: { block: QuizChoiceBlock; storageKey: string }) {
   const [selected, setSelected] = useState<number | null>(null)
+  const [checked, setChecked] = useState(false)
+  const [attempts, setAttempts] = useState(0)
   const label = useId()
   const correct = selected === block.props.correctIndex
-  return <section className="evo-iui-block" aria-labelledby={label}>
-    <p className="evo-iui-kicker">Gyakorlókérdés</p>
-    <h3 id={label}>{block.props.question}</h3>
-    <div className="evo-iui-choices">
+
+  useEffect(() => {
+    setSelected(null)
+    setChecked(false)
+    try {
+      const raw = localStorage.getItem(storageKey)
+      const previous: unknown = raw ? JSON.parse(raw) : null
+      if (!previous || typeof previous !== "object") return
+      const progress = previous as { selected?: unknown; checked?: unknown; attempts?: unknown }
+      if (typeof progress.selected === "number" && Number.isInteger(progress.selected) &&
+          progress.selected >= 0 && progress.selected < block.props.choices.length) {
+        setSelected(progress.selected)
+        setChecked(progress.checked === true)
+      }
+      if (typeof progress.attempts === "number" && Number.isInteger(progress.attempts) &&
+          progress.attempts >= 0 && progress.attempts < 10000) setAttempts(progress.attempts)
+    } catch {}
+  }, [storageKey, block.props.choices.length])
+
+  const verify = () => {
+    if (selected === null || checked) return
+    const nextAttempts = attempts + 1
+    setChecked(true)
+    setAttempts(nextAttempts)
+    try { localStorage.setItem(storageKey, JSON.stringify({ selected, checked: true, attempts: nextAttempts })) } catch {}
+  }
+  const retry = () => {
+    setSelected(null)
+    setChecked(false)
+    try { localStorage.setItem(storageKey, JSON.stringify({ selected: null, checked: false, attempts })) } catch {}
+  }
+  const choose = (index: number) => {
+    if (checked) return
+    setSelected(index)
+  }
+
+  return <section className="evo-iui-block evo-iui-quiz" aria-labelledby={label}>
+    <div className="evo-iui-flex-heading">
+      <div><p className="evo-iui-kicker">Gyakorlókérdés</p><h3 id={label}>{block.props.question}</h3></div>
+      <span className="evo-iui-count">{attempts ? attempts + ". próbálkozás" : "1 kérdés"}</span>
+    </div>
+    <div className="evo-iui-choices" role="group" aria-label="Válaszlehetőségek">
       {block.props.choices.map((choice, i) => <button key={i} type="button"
-        disabled={selected !== null}
         aria-pressed={selected === i}
-        className={selected === i ? (correct ? "is-correct" : "is-incorrect") : selected !== null && i === block.props.correctIndex ? "is-correct" : ""}
-        onClick={() => setSelected(i)}>
+        disabled={checked}
+        className={checked ? (i === block.props.correctIndex ? "is-correct" : selected === i ? "is-incorrect" : "") : selected === i ? "is-selected" : ""}
+        onClick={() => choose(i)}>
         <span>{String.fromCharCode(65 + i)}</span>{choice}
-        {selected !== null && i === block.props.correctIndex && <Check size={17} aria-hidden="true" />}
+        {checked && i === block.props.correctIndex && <Check size={17} aria-hidden="true" />}
       </button>)}
     </div>
-    {selected !== null && <div className="evo-iui-feedback" role="status">
+    {!checked && <button className="evo-iui-check-answer" type="button" disabled={selected === null} onClick={verify}>Válasz ellenőrzése</button>}
+    {checked && <div className="evo-iui-feedback" role="status">
       <strong>{correct ? "Helyes válasz!" : "Nem ez a helyes válasz."}</strong>
       <p>{block.props.explanation}</p>
-      <button type="button" onClick={() => setSelected(null)}><RotateCcw size={15} /> Újrapróbálás</button>
+      <button type="button" onClick={retry}><RotateCcw size={15} /> Újrapróbálás</button>
     </div>}
   </section>
 }
@@ -142,7 +183,7 @@ function Progress({ block }: { block: ProgressBarsBlock }) {
 function Block({ block, storageKey }: { block: IntelligentBlock; storageKey: string }) {
   switch (block.type) {
     case "grammar_rule": return <GrammarCard block={block} />
-    case "quiz_choice": return <QuizCard block={block} />
+    case "quiz_choice": return <QuizCard block={block} storageKey={storageKey} />
     case "vocabulary_flashcard": return <Flashcard block={block} />
     case "comparison_table": return <Comparison block={block} />
     case "tense_timeline": return <Timeline block={block} />
