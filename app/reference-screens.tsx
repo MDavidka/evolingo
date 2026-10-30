@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState, type ChangeEvent, type ReactNode } from "react"
 import ChatInterface from "./chat-interface"
 import IntelligentResponse from "./intelligent-ui/renderer"
-import type { IntelligentUI, IntelligentBlock } from "./intelligent-ui/schema"
+import { buildLessonOverview } from "./intelligent-ui/lesson-overview"
 import ToolsHub from "./tools-hub"
 import {
   ArrowRight, ArrowUp, ArrowUpRight, BookOpen, CalendarDays, CheckCircle2, ChevronDown, ChevronsUpDown, ChevronRight,
@@ -192,49 +192,7 @@ function TopicDetail({ topic, lessons, onSelectLesson, onBack, showAll = false }
     } catch { /* File metadata is local to this browser. */ }
   }, [])
   const list = showAll ? lessons : lessons.filter(lesson => topic?.lessonIds.includes(lesson.id))
-  const overviewBlocks: IntelligentBlock[] = []
-  if (list.length > 0) {
-    const finished = list.filter(lesson => lesson.completed).length
-    const started = list.filter(lesson => lesson.read && !lesson.completed).length
-    const waiting = list.length - finished - started
-    overviewBlocks.push({
-      id: "lesson-status", type: "chart_card",
-      props: {
-        title: "Leckék állapota", chartType: "donut", source: "verified", unit: "lecke",
-        points: [
-          { label: "Befejezett", value: finished },
-          { label: "Elkezdett", value: started },
-          { label: "Hátralévő", value: waiting },
-        ],
-      },
-    })
-    const preview = list.slice(0, 6)
-    overviewBlocks.push({
-      id: "lesson-review", type: "vocabulary_flashcard",
-      props: {
-        title: "Leckefogalmak áttekintése",
-        cards: preview.map(lesson => ({
-          front: lesson.title.slice(0, 120),
-          back: lesson.summary.slice(0, 180),
-        })),
-      },
-    })
-    if (list.length >= 3 && list[0].summary.trim()) {
-      const choices = list.slice(1, 3).map(lesson => lesson.title.slice(0, 160))
-      const correctIndex = Math.abs(topic?.id ?? 1) % 3
-      choices.splice(correctIndex, 0, list[0].title.slice(0, 160))
-      overviewBlocks.push({
-        id: "lesson-overview-quiz", type: "quiz_choice",
-        props: {
-          question: "Melyik leckéhez tartozik ez a leírás? " + list[0].summary.slice(0, 190),
-          choices,
-          correctIndex,
-          explanation: "A megfelelő lecke: " + list[0].title.slice(0, 120),
-        },
-      })
-    }
-  }
-  const overviewUI: IntelligentUI = { version: "1", blocks: overviewBlocks }
+  const overviewUI = buildLessonOverview(list, topic?.id ?? 0)
   return <div className="ref-topic-detail">
     <button type="button" className="ref-topic-breadcrumb" onClick={onBack}><ChevronRight size={17} /> Saját témáim <ChevronRight size={16} /><strong>{showAll ? "Összes lecke" : topic?.title || "Témáim"}</strong></button>
     <div className="ref-topic-detail-title"><div><h1>{showAll ? "Összes lecke" : topic?.title || "Témáim"}</h1><p>{showAll ? "Böngészd az összes tananyagot" : topic?.subtitle || ""}</p></div><button type="button" className="ref-topic-more" aria-label="Téma műveletei"><MoreHorizontal size={22} /></button></div>
