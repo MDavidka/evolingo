@@ -2,7 +2,7 @@
 
 import { useEffect, useId, useRef, useState, type TouchEvent } from "react"
 import { ArrowLeft, ArrowRight, Check, RotateCcw, Volume2, Lightbulb, BookOpen, Languages, CheckCircle2 } from "lucide-react"
-import type { IntelligentBlock, IntelligentUI, GrammarRuleBlock, QuizChoiceBlock, VocabularyFlashcardBlock, ComparisonTableBlock, TenseTimelineBlock, StudyPlanBlock, ConceptCardBlock, ProgressBarsBlock } from "./schema"
+import type { IntelligentBlock, IntelligentUI, GrammarRuleBlock, QuizChoiceBlock, PublicQuizChoiceBlock, VocabularyFlashcardBlock, ComparisonTableBlock, TenseTimelineBlock, StudyPlanBlock, ConceptCardBlock, ProgressBarsBlock } from "./schema"
 import { validateIntelligentUI } from "./schema"
 import ChartCard from "./chart-card"
 
@@ -16,46 +16,84 @@ function GrammarCard({ block }: { block: GrammarRuleBlock }) {
   </section>
 }
 
-function QuizCard({ block, storageKey }: { block: QuizChoiceBlock; storageKey: string }) {
+function QuizCard({ block, storageKey }: { block: QuizChoiceBlock | PublicQuizChoiceBlock; storageKey: string }) {
+  const isServerGraded = "ticket" in block.props
   const [selected, setSelected] = useState<number | null>(null)
-  const [checked, setChecked] = useState(false)
+  const [result, setResult] = useState<{ correctIndex: number; correct: boolean; explanation: string } | null>(null)
   const [attempts, setAttempts] = useState(0)
+  const [submitting, setSubmitting] = useState(false)
+  const [error, setError] = useState("")
   const label = useId()
-  const correct = selected === block.props.correctIndex
+  const checked = result !== null
+  const solutionIndex = result?.correctIndex ?? (!isServerGraded ? block.props.correctIndex : null)
 
   useEffect(() => {
     setSelected(null)
-    setChecked(false)
+    setResult(null)
+    setError("")
     try {
       const raw = localStorage.getItem(storageKey)
       const previous: unknown = raw ? JSON.parse(raw) : null
-      if (!previous || typeof previous !== "object") return
-      const progress = previous as { selected?: unknown; checked?: unknown; attempts?: unknown }
-      if (typeof progress.selected === "number" && Number.isInteger(progress.selected) &&
-          progress.selected >= 0 && progress.selected < block.props.choices.length) {
-        setSelected(progress.selected)
-        setChecked(progress.checked === true)
+      if (!previous || typeof previous !== "object" || Array.isArray(previous)) return
+      const state = previous as { selected?: unknown; attempts?: unknown; result?: unknown }
+      if (Number.isInteger(state.selected) && typeof state.selected === "number" &&
+          state.selected >= 0 && state.selected < block.props.choices.length) setSelected(state.selected)
+      if (typeof state.attempts === "number" && Number.isInteger(state.attempts) &&
+          state.attempts >= 0 && state.attempts <= 9999) setAttempts(state.attempts)
+      if (state.result && typeof state.result === "object") {
+        const saved = state.result as { correctIndex?: unknown; correct?: unknown; explanation?: unknown }
+        if (typeof saved.correctIndex === "number" && Number.isInteger(saved.correctIndex) &&
+            saved.correctIndex >= 0 && saved.correctIndex < block.props.choices.length &&
+            typeof saved.correct === "boolean" && typeof saved.explanation === "string" &&
+            saved.explanation.length < 500) {
+          setResult({ correctIndex: saved.correctIndex, correct: saved.correct, explanation: saved.explanation })
+        }
       }
-      if (typeof progress.attempts === "number" && Number.isInteger(progress.attempts) &&
-          progress.attempts >= 0 && progress.attempts < 10000) setAttempts(progress.attempts)
-    } catch {}
+    } catch { /* Missing storage must not block practice. */ }
   }, [storageKey, block.props.choices.length])
 
-  const verify = () => {
-    if (selected === null || checked) return
-    const nextAttempts = attempts + 1
-    setChecked(true)
-    setAttempts(nextAttempts)
-    try { localStorage.setItem(storageKey, JSON.stringify({ selected, checked: true, attempts: nextAttempts })) } catch {}
+  const verify = async () => {
+    if (selected === null || checked || submitting) return
+    setSubmitting(true)
+    setError("")
+    try {
+      let verified: { correctIndex: number; correct: boolean; explanation: string }
+      if (isServerGraded) {
+        const response = await fetch("/api/chat/quiz", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ ticket: block.props.ticket, selectedIndex: selected }),
+          cache: "no-store",
+          credentials: "same-origin",
+        })
+        const data = await response.json() as { correctIndex?: unknown; correct?: unknown; explanation?: unknown; error?: string }
+        if (!response.ok || typeof data.correctIndex !== "number" || typeof data.correct !== "boolean" ||
+            typeof data.explanation !== "string" || data.correctIndex < 0 ||
+            data.correctIndex >= block.props.choices.length)
+          throw new Error(data.error || "A válasz ellenőrzése sikertelen.")
+        verified = { correctIndex: data.correctIndex, correct: data.correct, explanation: data.explanation }
+      } else {
+        verified = {
+          correctIndex: block.props.correctIndex,
+          correct: selected === block.props.correctIndex,
+          explanation: block.props.explanation,
+        }
+      }
+      const nextAttempts = attempts + 1
+      setAttempts(nextAttempts)
+      setResult(verified)
+      try { localStorage.setItem(storageKey, JSON.stringify({ selected, attempts: nextAttempts, result: verified })) } catch {}
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : "A válasz ellenőrzése nem sikerült.")
+    } finally {
+      setSubmitting(false)
+    }
   }
   const retry = () => {
     setSelected(null)
-    setChecked(false)
-    try { localStorage.setItem(storageKey, JSON.stringify({ selected: null, checked: false, attempts })) } catch {}
-  }
-  const choose = (index: number) => {
-    if (checked) return
-    setSelected(index)
+    setResult(null)
+    setError("")
+    try { localStorage.setItem(storageKey, JSON.stringify({ selected: null, attempts })) } catch {}
   }
 
   return <section className="evo-iui-block evo-iui-quiz" aria-labelledby={label}>
@@ -65,20 +103,22 @@ function QuizCard({ block, storageKey }: { block: QuizChoiceBlock; storageKey: s
     </div>
     <div className="evo-iui-choices" role="group" aria-label="Válaszlehetőségek">
       {block.props.choices.map((choice, i) => <button key={i} type="button"
-        aria-pressed={selected === i}
-        disabled={checked}
-        className={checked ? (i === block.props.correctIndex ? "is-correct" : selected === i ? "is-incorrect" : "") : selected === i ? "is-selected" : ""}
-        onClick={() => choose(i)}>
+        aria-pressed={selected === i} disabled={checked || submitting}
+        className={checked ? (i === solutionIndex ? "is-correct" : selected === i ? "is-incorrect" : "") : selected === i ? "is-selected" : ""}
+        onClick={() => setSelected(i)}>
         <span>{String.fromCharCode(65 + i)}</span>{choice}
-        {checked && i === block.props.correctIndex && <Check size={17} aria-hidden="true" />}
+        {checked && i === solutionIndex && <Check size={17} aria-hidden="true" />}
       </button>)}
     </div>
-    {!checked && <button className="evo-iui-check-answer" type="button" disabled={selected === null} onClick={verify}>Válasz ellenőrzése</button>}
-    {checked && <div className="evo-iui-feedback" role="status">
-      <strong>{correct ? "Helyes válasz!" : "Nem ez a helyes válasz."}</strong>
-      <p>{block.props.explanation}</p>
+    {!checked && <button className="evo-iui-check-answer" type="button" disabled={selected === null || submitting}
+      onClick={() => void verify()}>{submitting ? "Ellenőrzés…" : "Válasz ellenőrzése"}</button>}
+    {error && <p className="evo-iui-quiz-error" role="alert">{error}</p>}
+    {result && <div className="evo-iui-feedback" role="status">
+      <strong>{result.correct ? "Helyes válasz!" : "Nem ez a helyes válasz."}</strong>
+      <p>{result.explanation}</p>
       <button type="button" onClick={retry}><RotateCcw size={15} /> Újrapróbálás</button>
     </div>}
+    {isServerGraded && <p className="evo-iui-quiz-note">A helyes válasz ellenőrzése a szerveren történik. Ez gyakorlás, nem hivatalos leckepont.</p>}
   </section>
 }
 
@@ -261,7 +301,7 @@ function Block({ block, storageKey }: { block: IntelligentBlock; storageKey: str
 
 /** Safe by construction: only validated descriptors map to prebuilt components. */
 export default function IntelligentResponse({ ui, messageId, verifiedData = false }: { ui: IntelligentUI; messageId?: string; verifiedData?: boolean }) {
-  const validated = validateIntelligentUI(ui, { allowVerifiedCharts: verifiedData, allowUserProgress: verifiedData })
+  const validated = validateIntelligentUI(ui, { allowVerifiedCharts: verifiedData, allowUserProgress: verifiedData, allowPublicQuizzes: true })
   if (!validated || !validated.blocks.length) return null
   return <div className="evo-iui-response">
     {validated.blocks.map(block => <Block key={block.id} block={block} storageKey={"evolingo.study-plan.v1." + (messageId || "session") + "." + block.id} />)}
