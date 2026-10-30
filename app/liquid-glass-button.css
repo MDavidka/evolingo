@@ -1,0 +1,72 @@
+/* Evölingo Liquid Glass controls. The pseudo-layers are optical highlights, not simulated physical refraction. */
+.evo-liquid-button {
+  position: relative; isolation: isolate; display: inline-flex; align-items: center; justify-content: center;
+  gap: 8px; flex-shrink: 0; box-sizing: border-box; min-width: 44px; min-height: 44px;
+  height: 50px; padding: 0 20px; overflow: hidden; border-radius: 9999px;
+  border: 1px solid rgba(255,255,255,.65); background: rgba(255,255,255,.48);
+  color: #202127; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", Inter, system-ui, sans-serif;
+  font-size: 16px; font-weight: 600; line-height: 1.2; white-space: nowrap;
+  box-shadow: 0 7px 22px rgba(25,29,42,.09), 0 1px 3px rgba(25,29,42,.07),
+    inset 0 1px 0 rgba(255,255,255,.9), inset 0 -1px 0 rgba(255,255,255,.28);
+  -webkit-backdrop-filter: blur(24px) saturate(180%); backdrop-filter: blur(24px) saturate(180%);
+  -webkit-tap-highlight-color: transparent; touch-action: manipulation; cursor: pointer;
+  transform: translateZ(0) scale(1);
+  transition: transform 240ms cubic-bezier(.2,1.35,.3,1), background-color 180ms ease,
+    box-shadow 180ms ease, border-color 180ms ease;
+}
+.evo-liquid-button::before, .evo-liquid-button::after {
+  content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; z-index: -1;
+}
+.evo-liquid-button::before {
+  background: linear-gradient(155deg, rgba(255,255,255,.33), rgba(255,255,255,0) 47%);
+  opacity: .8; transition: opacity 180ms ease;
+}
+.evo-liquid-button::after {
+  inset: 1px; border: 1px solid rgba(255,255,255,.28);
+  box-shadow: inset 0 2px 2px rgba(255,255,255,.34), inset 0 -3px 6px rgba(26,30,44,.025);
+}
+.evo-liquid-button__content { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-width: 0; }
+.evo-liquid-button__content > svg { flex: none; }
+.evo-liquid-button__label { overflow: hidden; text-overflow: ellipsis; }
+.evo-liquid-button--primary { background: rgba(255,255,255,.64); border-color: rgba(255,255,255,.82); }
+.evo-liquid-button--compact { height: 40px; min-height: 44px; padding-inline: 16px; font-size: 15px; }
+.evo-liquid-button--icon { width: 48px; height: 48px; min-width: 48px; padding: 0; }
+.evo-liquid-button--compact:not(:has(.evo-liquid-button__label)) { width: 44px; min-width: 44px; padding: 0; }
+@media (hover: hover) {
+  .evo-liquid-button:hover:not(:disabled) { background-color: rgba(255,255,255,.62); box-shadow: 0 9px 25px rgba(25,29,42,.11), inset 0 1px rgba(255,255,255,.95); }
+  .evo-liquid-button:hover:not(:disabled)::before { opacity: 1; }
+}
+.evo-liquid-button:active:not(:disabled) { transform: translateZ(0) scale(.96); transition-duration: 120ms; background-color: rgba(255,255,255,.68); }
+.evo-liquid-button:focus-visible { outline: 2px solid #202127; outline-offset: 3px; }
+.evo-liquid-button:disabled { cursor: not-allowed; opacity: .5; box-shadow: inset 0 1px rgba(255,255,255,.5); }
+.evo-liquid-button[aria-busy="true"] .evo-liquid-button__content { visibility: hidden; }
+.evo-liquid-button__loader { position: absolute; inset: 0; display: grid; place-items: center; }
+.evo-liquid-button__loader svg { animation: evo-liquid-spin .8s linear infinite; }
+@keyframes evo-liquid-spin { to { transform: rotate(360deg); } }
+@supports not ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
+  .evo-liquid-button { background: #f4f4f6; border-color: #d5d5da; }
+}
+@media (prefers-reduced-transparency: reduce) {
+  .evo-liquid-button { background: #f5f5f7; border-color: #c9c9ce; -webkit-backdrop-filter: none; backdrop-filter: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .evo-liquid-button, .evo-liquid-button::before { transition: none !important; animation: none !important; }
+  .evo-liquid-button:active:not(:disabled) { transform: none; }
+  .evo-liquid-button__loader svg { animation-duration: 2s; }
+}
+/* Shared floating navigation uses the same glass optics; the avatar remains an accessible image control. */
+.evo-sidebar-host .evo-morph-anchor > .evo-morph-toggle.evo-liquid-button,
+.evo-sidebar-host .evo-global-profile-button.evo-liquid-button {
+  background: rgba(255,255,255,.48) !important;
+  border: 1px solid rgba(255,255,255,.65) !important;
+  box-shadow: 0 7px 22px rgba(25,29,42,.09), 0 1px 3px rgba(25,29,42,.07), inset 0 1px rgba(255,255,255,.9) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
+  backdrop-filter: blur(24px) saturate(180%) !important;
+  color: #202127 !important;
+}
+.evo-sidebar-host .evo-morph-anchor > .evo-morph-toggle.evo-liquid-button:active,
+.evo-sidebar-host .evo-global-profile-button.evo-liquid-button:active { transform: scale(.96) !important; }
+@media (prefers-reduced-transparency: reduce) {
+  .evo-sidebar-host .evo-morph-anchor > .evo-morph-toggle.evo-liquid-button,
+  .evo-sidebar-host .evo-global-profile-button.evo-liquid-button { background: #f5f5f7 !important; border-color: #c9c9ce !important; backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
+}
