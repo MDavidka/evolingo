@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useMemo, useRef, useState, type ChangeEvent } from "react"
+import { useEffect, useMemo, useRef, useState, type ChangeEvent, type PointerEvent as ReactPointerEvent } from "react"
 import {
   ArrowDownToLine, Check, CheckSquare2, ChevronLeft, Copy, File, FileText, Folder,
   FolderOpen, Grid2X2, HardDrive, List, MoreHorizontal, Move, Pencil, Plus, Search,
@@ -14,6 +14,8 @@ type Sheet = "new" | "sort" | "actions" | "rename" | "move" | "delete" | "previe
 
 const ENTRIES_KEY = "evolingo.space.v1"
 const BLOBS_KEY = "evolingo.space-blobs.v1"
+const VIEW_KEY = "evolingo.library.view.v1"
+const SORT_KEY = "evolingo.library.sort.v1"
 const MAX_FILE_SIZE = 2 * 1024 * 1024
 const SORT_LABELS: Record<SortKey, string> = {
   date: "Legutóbbi", name: "Név szerint", size: "Méret szerint", type: "Típus szerint",
@@ -50,6 +52,7 @@ export default function LibrarySpace() {
   const searchInput = useRef<HTMLInputElement>(null)
   const sheetRef = useRef<HTMLDivElement>(null)
   const longPress = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const pointerOrigin = useRef<{ x: number; y: number } | null>(null)
   const suppressClick = useRef(false)
   const sheetTouchY = useRef<number | null>(null)
   const [entries, setEntries] = useState<SpaceEntry[]>([])
@@ -66,6 +69,22 @@ export default function LibrarySpace() {
   const [loading, setLoading] = useState(true)
   const [storageUsed, setStorageUsed] = useState<number | null>(null)
   const [storageTotal, setStorageTotal] = useState<number | null>(null)
+  useEffect(() => {
+    try {
+      const v = localStorage.getItem(VIEW_KEY)
+      if (v === "list" || v === "grid") setView(v)
+      const o = localStorage.getItem(SORT_KEY)
+      if (o === "date" || o === "name" || o === "size" || o === "type") setSort(o)
+    } catch {}
+  }, [])
+  const changeView = (next: "list" | "grid") => {
+    setView(next)
+    try { localStorage.setItem(VIEW_KEY, next) } catch {}
+  }
+  const changeSort = (next: SortKey) => {
+    setSort(next)
+    try { localStorage.setItem(SORT_KEY, next) } catch {}
+  }
 
   useEffect(() => {
     try {
@@ -249,8 +268,8 @@ export default function LibrarySpace() {
       <div className="library-controls-actions">
         <button className="library-sort-button" type="button" aria-label={`Rendezés: ${SORT_LABELS[sort]}`} onClick={() => setSheet("sort")}><SlidersHorizontal size={17} strokeWidth={1.8} /><span>{SORT_LABELS[sort]}</span></button>
         <div className="library-view-switch" role="group" aria-label="Megjelenítés">
-          <button type="button" aria-label="Listanézet" aria-pressed={view === "list"} className={view === "list" ? "is-active" : ""} onClick={() => setView("list")}><List size={19} strokeWidth={1.8} /></button>
-          <button type="button" aria-label="Rácsnézet" aria-pressed={view === "grid"} className={view === "grid" ? "is-active" : ""} onClick={() => setView("grid")}><Grid2X2 size={18} strokeWidth={1.8} /></button>
+          <button type="button" aria-label="Listanézet" aria-pressed={view === "list"} className={view === "list" ? "is-active" : ""} onClick={() => changeView("list")}><List size={19} strokeWidth={1.8} /></button>
+          <button type="button" aria-label="Rácsnézet" aria-pressed={view === "grid"} className={view === "grid" ? "is-active" : ""} onClick={() => changeView("grid")}><Grid2X2 size={18} strokeWidth={1.8} /></button>
         </div>
       </div>
     </div>
@@ -266,7 +285,7 @@ export default function LibrarySpace() {
       <button type="button" disabled={!selected.size} aria-label="Kijelöltek törlése" onClick={() => setSheet("delete")}><Trash2 size={20} /></button>
     </div>}
 
-    {loading ? <div className="library-loading" role="status"><span /> <span /> <span /></div> : visible.length ? <div className={`library-files ${view === "grid" ? "is-grid" : "is-list"}`} onScroll={() => searchInput.current?.blur()}>
+    {loading ? <div className="library-loading" role="status"><span /> <span /> <span /></div> : visible.length ? <div className={`library-files ${view === "grid" ? "is-grid" : "is-list"}`}>
       {visible.map(entry => <article className={`library-file ${selected.has(entry.id) ? "is-selected" : ""}`} key={entry.id}>
         <button className="library-file-open" type="button" aria-pressed={selectionMode ? selected.has(entry.id) : undefined} onPointerDown={() => beginLongPress(entry)} onPointerUp={cancelLongPress} onPointerCancel={cancelLongPress} onPointerLeave={cancelLongPress} onClick={() => openEntry(entry)}>
           <span className="library-file-icon"><FileIcon kind={entry.kind} /></span>
@@ -298,7 +317,7 @@ export default function LibrarySpace() {
         </div>}
 
         {sheet === "sort" && <div className="library-sheet-actions">
-          {([['name', 'Név'], ['date', 'Módosítás dátuma'], ['size', 'Méret'], ['type', 'Típus']] as [SortKey, string][]).map(([value, label]) => <button type="button" key={value} aria-pressed={sort === value} onClick={() => { setSort(value); setSheet(null) }}><span><strong>{label}</strong></span>{sort === value && <Check size={19} />}</button>)}
+          {([['name', 'Név'], ['date', 'Módosítás dátuma'], ['size', 'Méret'], ['type', 'Típus']] as [SortKey, string][]).map(([value, label]) => <button type="button" key={value} aria-pressed={sort === value} onClick={() => { changeSort(value); setSheet(null) }}><span><strong>{label}</strong></span>{sort === value && <Check size={19} />}</button>)}
           <button type="button" onClick={() => { setSelectionMode(true); setSheet(null) }}><CheckSquare2 size={20} /><span><strong>Több elem kijelölése</strong></span></button>
         </div>}
 
