@@ -222,8 +222,22 @@ export default function LibrarySpace() {
     setSheet(null); setActive(null)
   }
 
+  const isDescendantOf = (folderId: string, parentId: string) => {
+    const visited = new Set<string>()
+    let cursor: string | undefined = folderId
+    while (cursor && !visited.has(cursor)) {
+      if (cursor === parentId) return true
+      visited.add(cursor)
+      cursor = entries.find(item => item.id === cursor)?.parent
+    }
+    return false
+  }
   const moveTo = (parent?: string) => {
     if (!active) return
+    if (active.kind === "folder" && parent && isDescendantOf(parent, active.id)) {
+      setNotice("Mappa nem helyezhető a saját almappájába.")
+      return
+    }
     persist(entries.map(item => item.id === active.id ? { ...item, parent, modifiedAt: Date.now() } : item))
     setSheet(null); setActive(null); setNotice("Elem áthelyezve.")
   }
@@ -261,7 +275,7 @@ export default function LibrarySpace() {
   }
   const openActions = (entry: SpaceEntry) => { setActive(entry); setSheet("actions") }
   const openRename = () => { if (active) setDraftName(active.name); setSheet("rename") }
-  const folders = entries.filter(item => item.kind === "folder" && item.id !== active?.id)
+  const folders = entries.filter(item => item.kind === "folder" && item.id !== active?.id && (active?.kind !== "folder" || !isDescendantOf(item.id, active.id)))
   const hasRealStorage = storageUsed != null && storageTotal != null && storageTotal > 0
 
   return <div className="ref-space library-space">
