@@ -78,20 +78,34 @@ async function providerCompletion(apiKey: string, messages: Message[], system: s
   return answer.trim()
 }
 
+function generalVisualFallback(question: string): IntelligentUI | null {
+  const intent = classifyVisualIntent(question)
+  if (intent === "illustration") return { version: "1", blocks: [{
+    id: "eu-illustration", type: "illustration",
+    props: { subject: "european_union", title: "Az Európai Unió",
+      caption: "A kék zászlón tizenkét aranycsillag alkot kört. A csillagok száma nem a tagállamok számát jelöli." },
+  }] }
+  if (intent === "live_time") return { version: "1", blocks: [{
+    id: "live-clock", type: "live_time",
+    props: { title: "Pontos idő", timeZone: "Europe/Bucharest", label: "Románia" },
+  }] }
+  return null
+}
+
 async function optionalUI(apiKey: string, question: string, reply: string): Promise<IntelligentUI | null> {
   if (!UI_ENABLED || !shouldPlanVisuals(question)) return null
   const prompt = "Kérés: " + question.slice(0, 1100) + "\nVálasz: " + reply.slice(0, 2300) + "\nJavasolt megjelenítés: " + getVisualSelectionHint(question) + "\nCsak JSON legyen az eredmény."
   try {
     const raw = await providerCompletion(apiKey, [{ role: "user", content: prompt }], uiInstructions, 1300, 8000)
     const parsed = parseModelUI(raw)
-    if (parsed) return parsed.blocks.length ? parsed : null
+    if (parsed) return parsed.blocks.length ? parsed : generalVisualFallback(question)
     // Bounded retry on schema failure, never a second request on a valid empty result.
     const retry = await providerCompletion(apiKey, [{ role: "user", content: prompt + "\nAz előző válasz formátuma hibás volt. Javítsd ki a JSON-szerkezetet, egyéb szöveg nélkül." }], uiInstructions, 900, 4000)
     const safe = parseModelUI(retry)
-    return safe?.blocks.length ? safe : null
+    return safe?.blocks.length ? safe : generalVisualFallback(question)
   } catch (error) {
     console.error("[chat] optional UI unavailable", error instanceof Error ? error.name : "unknown")
-    return null
+    return generalVisualFallback(question)
   }
 }
 
