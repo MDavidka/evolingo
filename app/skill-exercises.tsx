@@ -98,7 +98,7 @@ function ErrorPanel({ message, retry, onExit }: { message: string; retry: () => 
     <span className="skill-error-icon"><RotateCcw size={24} /></span>
     <h2>Most nem sikerült</h2>
     <p>{message}</p>
-    <ArcButton type="button" variant="primary" className="skill-button-primary evo-arc-primary" onClick={retry}>Újrapróbálom</ArcButton>
+    <ArcButton type="button" variant="primary" className="skill-button-primary evo-arc-primary evo-wide-action" onClick={retry}>Újrapróbálom</ArcButton>
     <button type="button" className="skill-button-text" onClick={onExit}>Vissza az útvonalra</button>
   </div>
 }
@@ -108,7 +108,7 @@ function CompletePanel({ mode, onExit, alreadyCompleted }: { mode: SkillMode; on
     <h2>Gyakorlás kész!</h2>
     <p>{mode === "conversation" ? "Mindhárom kérdésre megfelelően válaszoltál." : mode === "vocabulary" ? "Végignézted a szókártyákat. A bizonytalan szavakat érdemes ismételni." : "Sikeres B2 fogalmazás!"}</p>
     <div className="skill-complete-points"><Star size={17} fill="currentColor" />{alreadyCompleted ? "Már teljesítetted · gyakorló kör" : "+2 csillag · +10 XP"}</div>
-    <ArcButton type="button" variant="primary" className="skill-button-primary evo-arc-primary" onClick={onExit}>Vissza az útvonalra <ArrowRight size={18} /></ArcButton>
+    <ArcButton type="button" variant="primary" className="skill-button-primary evo-arc-primary evo-wide-action" onClick={onExit}>Vissza az útvonalra <ArrowRight size={18} /></ArcButton>
   </div>
 }
 
@@ -359,8 +359,8 @@ export default function SkillExercise({ mode, lesson, alreadyCompleted, onExit, 
         </div>}
         <div className="skill-footer">
           {answerFeedback?.accepted
-            ? <ArcButton type="button" variant="primary" className="skill-button-primary evo-arc-primary" onClick={advanceQuestion}>{questionIndex === questions.length - 1 ? "Befejezés" : "Következő kérdés"} <ChevronRight size={19} /></ArcButton>
-            : <ArcButton type="button" variant="primary" className="skill-button-primary evo-arc-primary" loading={grading} disabled={!answer.trim() || listening} onClick={() => { void gradeConversation() }}>{grading ? <LoaderCircle className="skill-spin" size={19} /> : <Check size={19} />}{grading ? "Ellenőrzés…" : "Válasz ellenőrzése"}</ArcButton>}
+            ? <ArcButton type="button" variant="primary" className="skill-button-primary evo-arc-primary evo-wide-action" onClick={advanceQuestion}>{questionIndex === questions.length - 1 ? "Befejezés" : "Következő kérdés"} <ChevronRight size={19} /></ArcButton>
+            : <ArcButton type="button" variant="primary" className="skill-button-primary evo-arc-primary evo-wide-action" loading={grading} disabled={!answer.trim() || listening} onClick={() => { void gradeConversation() }}>{grading ? <LoaderCircle className="skill-spin" size={19} /> : <Check size={19} />}{grading ? "Ellenőrzés…" : "Válasz ellenőrzése"}</ArcButton>}
         </div>
       </div>
       : mode === "vocabulary" ? <div className="skill-body">
@@ -403,7 +403,7 @@ export default function SkillExercise({ mode, lesson, alreadyCompleted, onExit, 
         <div className="skill-vocab-score">{knownCount} ismert · {cards.length - wordIndex} hátralévő</div>
         <div className="skill-footer skill-vocab-buttons">
           <button type="button" className="skill-button-outline" onClick={() => chooseWord(false)}><ArrowLeft size={19} /> Még nem</button>
-          <ArcButton type="button" variant="primary" className="skill-button-primary evo-arc-primary" onClick={() => chooseWord(true)}>Tudtam <ArrowRight size={19} /></ArcButton>
+          <ArcButton type="button" variant="primary" className="skill-button-primary evo-arc-primary evo-wide-action" onClick={() => chooseWord(true)}>Tudtam <ArrowRight size={19} /></ArcButton>
         </div>
       </div>
       : <div className="skill-body skill-essay-body">
@@ -431,8 +431,8 @@ export default function SkillExercise({ mode, lesson, alreadyCompleted, onExit, 
         </div>}
         <div className="skill-footer">
           {essayFeedback?.accepted
-            ? <ArcButton type="button" variant="primary" className="skill-button-primary evo-arc-primary" onClick={finish}><CheckCircle2 size={19} /> Feladat befejezése</ArcButton>
-            : <ArcButton type="button" variant="primary" className="skill-button-primary evo-arc-primary" loading={grading} disabled={wordsIn(essay) < 120} onClick={() => { void gradeEssay() }}>{grading ? <LoaderCircle className="skill-spin" size={19} /> : <Sparkles size={19} />}{grading ? "AI értékelés…" : essayFeedback ? "Újraértékelés" : "Esszé értékelése"}</ArcButton>}
+            ? <ArcButton type="button" variant="primary" className="skill-button-primary evo-arc-primary evo-wide-action" onClick={finish}><CheckCircle2 size={19} /> Feladat befejezése</ArcButton>
+            : <ArcButton type="button" variant="primary" className="skill-button-primary evo-arc-primary evo-wide-action" loading={grading} disabled={wordsIn(essay) < 120} onClick={() => { void gradeEssay() }}>{grading ? <LoaderCircle className="skill-spin" size={19} /> : <Sparkles size={19} />}{grading ? "AI értékelés…" : essayFeedback ? "Újraértékelés" : "Esszé értékelése"}</ArcButton>}
         </div>
       </div>}
   </div>
