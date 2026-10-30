@@ -31,7 +31,7 @@ const replyPrompt = [
 function uiCandidate(value: string) {
   const input = value.toLocaleLowerCase("hu")
   if (/csak (rövid|szöveges)|only text|no ui|felület nélkül/.test(input)) return false
-  return /nyelvtan|igeidő|present |past |future |grammar|tense|különbség|hasonlít|összehasonl|gyakorol|teszt|kvíz|quiz|szókincs|szavak|szót|tanulókárty|flashcard|szótanul|terv|órarend|idővonal|timeline|példamondat|erasmus|magyarázd|magyarázat|taníts|tanulás|példa/.test(input)
+  return /nyelvtan|igeidő|present |past |future |grammar|tense|különbség|hasonlít|összehasonl|gyakorol|teszt|kvíz|quiz|szókincs|szavak|szót|tanulókárty|flashcard|szótanul|terv|órarend|idővonal|timeline|példamondat|erasmus|magyarázd|magyarázat|taníts|tanulás|példa|diagram|grafikon|statisztik|chart|adatvizual|oszlopdiagram|kördiagram/.test(input)
 }
 const uiInstructions = [
   'Csak érvényes JSON objektumot adj meg, markdown vagy kód nélkül.',
@@ -46,6 +46,9 @@ const uiInstructions = [
   '{"id":"timeline-1","type":"tense_timeline","props":{"title":"Idővonal","steps":[{"phase":"past","label":"Múlt","detail":"Esemény"},{"phase":"present","label":"Jelen","detail":"Eredmény"}]}}',
   '{"id":"plan-1","type":"study_plan","props":{"title":"Heti terv","days":[{"day":"Hétfő","task":"15 perc tanulás"}]}}',
   '{"id":"concept-1","type":"concept_card","props":{"title":"Fontos szabály","description":"Rövid, hasznos magyarázat.","icon":"idea","badge":"Tipp"}}',
+  '{"id":"chart-1","type":"chart_card","props":{"title":"Példa grafikon","chartType":"bar","source":"example","unit":"pont","points":[{"label":"A","value":8},{"label":"B","value":13}]}}',
+  'chartType csak bar, line vagy donut lehet. A forrás mindig source: example, és a kártya szemléltető adatok feliratot kap. Csak akkor kérj grafikont, ha a felhasználó példadiagramot vagy összehasonlító számsort kér.',
+  'SOHA ne állítsd, hogy a modell személyes tanulási haladási statisztikákat ismer. Nincs jogosultság hitelesített értékek előállítására. A chart_card source: verified kizárólag a kliens megbízható adataiból keletkezhet.',
   'A progress_bars típus NEM engedélyezett a modell számára, mert hitelesített felhasználói adatot igényel.',
   'Ne adj meg HTML-t, JS-t, JSX-et, URL-t, külső műveleteket, szerverhívásokat vagy személyes statisztikákat.',
   'Legfeljebb 12 tanulókártya, 8 összehasonlító sor, 7 nap, 5 válasz, 5 lépés és 5 példamondat legyen.',
@@ -56,7 +59,7 @@ async function providerCompletion(apiKey: string, messages: Message[], system: s
   const response = await fetch(API_URL, {
     method: "POST",
     headers: { Authorization: "Bearer " + apiKey, "Content-Type": "application/json" },
-    body: JSON.stringify({ model: MODEL, messages: [{ role: "system", content: system }, ...messages], temperature: 0.5, max_tokens: maxTokens, stream: false }),
+    body: JSON.stringify({ model: MODEL, messages: [{ role: "system", content: system }, ...messages], temperature: 0.5, max_tokens: maxTokens, stream: false, ...(MODEL.startsWith("nvidia/nemotron-3.5-") ? { chat_template_kwargs: { enable_thinking: false } } : {}) }),
     cache: "no-store",
     signal: AbortSignal.timeout(timeout),
   })
@@ -98,6 +101,7 @@ async function streamProviderText(
       temperature: 0.7,
       max_tokens: 1700,
       stream: true,
+      ...(MODEL.startsWith("nvidia/nemotron-3.5-") ? { chat_template_kwargs: { enable_thinking: false } } : {}),
     }),
     cache: "no-store",
     signal: AbortSignal.timeout(30000),
