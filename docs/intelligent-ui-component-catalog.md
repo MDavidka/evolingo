@@ -61,6 +61,16 @@ A régebbi Tanulás / Erasmus témák **helyi önellenőrző feladatai** tovább
 
 **Automatikus ellenőrzéshez hozzáadott tesztek:** `quiz-security.test.mjs` (titkosság, tokenhamisítás, érvényesség, hibás adat), `orchestrator.test.mjs` (szándékválasztás, kalkulátor), valamint a korábbi sématesztek. A Vercel production build eredménye **nem bizonyítja**, hogy az összes teszt, az iPhone VoiceOver és az éles NVIDIA API-válasz ellenőrzése is sikeres.
 
+## Általános vizuális intelligencia — újabb fázis
+
+A vizuális válaszok már **nem kizárólag oktatási kulcsszavakra** aktiválódnak. Az orchestrátor felismeri az általános magyarázó kérdéseket (például „Mi a fotoszintézis?”), és releváns `concept_card` vagy más engedélyezett vizuális elemet javasol. A rövid üdvözlés és a kifejezetten csak szöveget kérő üzenet továbbra is szöveges marad. Az általános magyarázatokhoz használt modellalapú vizuális elemek **nem garantáltak**, mert a második modellkérés hibázhat.
+
+**Képes EU-magyarázat:** a „Mi az EU?” és „What is the European Union?” kérdésekhez a rendszer előre ellenőrzött Wikimedia Commons EU-zászlóillusztrációt jelenít meg az `illustration` blokkal. Az AI nem adhat tetszőleges kép-URL-t; a megengedett témakör jelenleg kizárólag `european_union`. Ez a fázis **nem általános webes képkereső**: más témákhoz egyelőre a meglévő fogalomkártyák, idővonalak és táblázatok használhatók.
+
+**Élő idő:** a `live_time` komponens egy másodpercenként frissülő, az eszköz idején alapuló, IANA-időzónás órát jelenít meg. Az időzónák engedélyezett listája: Europe/Bucharest, Europe/London, Europe/Paris, UTC. A „Mennyi az idő?” kéréshez az alapértelmezett időzóna Europe/Bucharest. Az óra **nem hitelesített szerveridő-forrás**, ezért az eszköz hibás órabeállításai befolyásolhatják.
+
+**A megjelenítés:** minden új elem az eredeti AI chat üzenetébe kerül, a már meglévő szövegstream után. Az `illustration` és `live_time` nem módosít leckepontokat, nem hív külső AI képgenerátort, és nem futtat modell által írt kódot.
+
 ## A modellel való együttműködés
 
 1. Általános kérésnél az eredeti modellvégpont SSE-ként fokozatosan továbbítja a magyar szöveges választ. Kvízkérésnél először csak semleges bevezetőszöveg, majd a megoldókulcs nélküli kvízblokk jelenik meg.
