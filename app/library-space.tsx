@@ -267,8 +267,8 @@ export default function LibrarySpace() {
     </div>}
 
     {loading ? <div className="library-loading" role="status"><span /> <span /> <span /></div> : visible.length ? <div className={`library-files ${view === "grid" ? "is-grid" : "is-list"}`} onScroll={() => searchInput.current?.blur()}>
-      {visible.map(entry => <article className={`library-file ${selected.has(entry.id) ? "is-selected" : ""}`} key={entry.id} onPointerDown={() => beginLongPress(entry)} onPointerUp={cancelLongPress} onPointerCancel={cancelLongPress} onPointerLeave={cancelLongPress}>
-        <button className="library-file-open" type="button" aria-pressed={selectionMode ? selected.has(entry.id) : undefined} onClick={() => openEntry(entry)}>
+      {visible.map(entry => <article className={`library-file ${selected.has(entry.id) ? "is-selected" : ""}`} key={entry.id}>
+        <button className="library-file-open" type="button" aria-pressed={selectionMode ? selected.has(entry.id) : undefined} onPointerDown={() => beginLongPress(entry)} onPointerUp={cancelLongPress} onPointerCancel={cancelLongPress} onPointerLeave={cancelLongPress} onClick={() => openEntry(entry)}>
           <span className="library-file-icon"><FileIcon kind={entry.kind} /></span>
           <span className="library-file-copy"><strong>{entry.name}</strong><small>{entry.kind === "folder" ? `${entries.filter(item => item.parent === entry.id).length} elem` : `${formatSize(entry.size)} · ${formatDate(entry.modifiedAt)}`}</small></span>
           {selectionMode && <span className="library-check" aria-hidden="true">{selected.has(entry.id) && <Check size={15} />}</span>}
@@ -298,7 +298,7 @@ export default function LibrarySpace() {
         </div>}
 
         {sheet === "sort" && <div className="library-sheet-actions">
-          {([['name', 'Név'], ['date', 'Módosítás dátuma'], ['size', 'Méret'], ['type', 'Típus']] as [SortKey, string][]).map(([value, label]) => <button type="button" key={value} onClick={() => { setSort(value); setSheet(null) }}><SlidersHorizontal size={20} /><span><strong>{label}</strong></span>{sort === value && <Check size={19} />}</button>)}
+          {([['name', 'Név'], ['date', 'Módosítás dátuma'], ['size', 'Méret'], ['type', 'Típus']] as [SortKey, string][]).map(([value, label]) => <button type="button" key={value} aria-pressed={sort === value} onClick={() => { setSort(value); setSheet(null) }}><span><strong>{label}</strong></span>{sort === value && <Check size={19} />}</button>)}
           <button type="button" onClick={() => { setSelectionMode(true); setSheet(null) }}><CheckSquare2 size={20} /><span><strong>Több elem kijelölése</strong></span></button>
         </div>}
 
