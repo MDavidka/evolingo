@@ -17,9 +17,10 @@ A modelltől származó HTML/JS/JSX/CSS soha nem kerül végrehajtásra, és a U
 | Típus | Használat | Felhasználói interakció | Biztonsági korlát |
 | --- | --- | --- | --- |
 | `chart_card` | Mobilra méretezett oszlop-, vonal- és kördiagram | Adatpont választása, részletes számlista | Modell csak `example` forrást kérhet; `verified` kizárólag valódi leckeadatból |
+| `study_calculator` | Napi és heti tanulási idő kiszámítása | Élő csúszkák, újraszámítás, alapértékek visszaállítása | Csak előre ellenőrzött szorzás, nincs `eval` vagy szerveroldali állapotváltoztatás |
 | `concept_card` | Rövid vizuális fogalommagyarázat | Fix Lucide ikon, oktatási jelvény | Ellenőrzött ikonválaszték; nincs fiókstátusz-állítás |
 | `grammar_rule` | Nyelvtani szabály és példák | Olvasás | 5 példa |
-| `quiz_choice` | Feleletválasztás és visszajelzés | Válasz, újrapróbálás | 2–5 válasz |
+| `quiz_choice` | Feleletválasztás és visszajelzés | Kiválasztás, szerveroldali ellenőrzés, újrapróbálás | A kliens előre csak titkosított kvízjegyet kap, nem megoldókulcsot |
 | `vocabulary_flashcard` | Kétnyelvű szógyakorlás | Megfordítás, előző/következő | 1–12 kártya |
 | `comparison_table` | Két fogalom összehasonlítása | Olvasás | 1–8 sor |
 | `tense_timeline` | Időrend vagy nyelvtani igeidő | Lépésválasztás | 2–5 lépés |
@@ -46,9 +47,23 @@ A közzétett terv javasolt **Vercel AI SDK / Zod / Recharts / shadcn / Motion**
 
 **Még hiányzik:** képi és fájlbemenet a chatben; AI alapú szabad szöveges válaszértékelés; automatikus spaced repetition; szerveroldali, felhasználóhoz kötött mastery-szinkron; heti aktivitástörténet; teljes mobilos és VoiceOver-eszközteszt.
 
+## 2. fejlesztési fázis — biztonságos kvízek és élő kalkulátor
+
+**Új kvíz API:** `POST /api/chat/quiz`. Az AI-modell eredeti kvízleírását (`correctIndex`, `explanation`) kizárólag a szerver ellenőrzi, majd AES-256-GCM-mel zárt, 72 óráig érvényes `ticket` kerül a böngészőbe. A felhasználó válasza az ellenőrző végpontra érkezik; az eredményben csak **az ellenőrzés után** szerepel a megoldás és az indoklás. A végpont same-origin ellenőrzést, hosszkorlátot és alap szintű kérésszám-korlátot használ. A token nem felhasználói bejelentkezés és nem jogosít hivatalos pontváltoztatásra.
+
+A régebbi Tanulás / Erasmus témák **helyi önellenőrző feladatai** továbbra is az eddigi, kizárólag kliensoldali visszajelzést adják; ez nem hivatalos szerveroldali pontozás. A modell által az AI chatben mostantól generált új kvízeknél a helyes válasz nem kerül az induló kliens-JSON-ba. Kvízkéréskor a szöveges bevezető szándékosan **nem közli a megoldást**, a szerver ellenőrzése után megjelenik a teljes magyarázat.
+
+**Titkosítás:** előnyben részesített konfiguráció: `EVO_VISUAL_QUIZ_SECRET` (minimum 16 karakter; ajánlott hosszú, véletlen kulcs). Amíg ez nincs külön beállítva, a szerver a már meglévő `EVO_AI` kulcsból külön névterű SHA-256 kulcsot származtat; a szolgáltatói kulcs cseréje ekkor érvényteleníti a korábbi kvízjegyeket. Titok nélkül a kvíz nem használható, de az egyszerű szöveges válasz továbbra is működik. A kvíz-próbálkozások nem írnak adatbázist.
+
+**Új tanulásiidő-kalkulátor:** `study_calculator` típus; 5–120 napi perc (5 perces lépés), 1–7 nap/hét és 1–12 hét. A számítást az alkalmazás saját, tesztelhető függvénye végzi, így a modell nem adhat át végrehajtható matematikai kódot. Az aktuális értékek az adott böngészőfül `sessionStorage` tárhelyén mentődnek. A számított idő nem valós tanulmányi statisztika, ezért külön jelzést kap.
+
+**Válasz-orchestrátor:** `orchestrator.ts` tartalmazza a megengedett komponensek listáját, az alapvető szándékfelismerést és a modell számára küldött megjelenítési javaslatot. Az olyan kérés, hogy „csak szöveggel válaszolj”, nem indítja el a második UI-generálást. Az eredeti NVIDIA NIM API, a működő útvonalak és a Tanulás kezdőoldal változatlanok.
+
+**Automatikus ellenőrzéshez hozzáadott tesztek:** `quiz-security.test.mjs` (titkosság, tokenhamisítás, érvényesség, hibás adat), `orchestrator.test.mjs` (szándékválasztás, kalkulátor), valamint a korábbi sématesztek. A Vercel production build eredménye **nem bizonyítja**, hogy az összes teszt, az iPhone VoiceOver és az éles NVIDIA API-válasz ellenőrzése is sikeres.
+
 ## A modellel való együttműködés
 
-1. Az eredeti modellvégpont SSE-ként fokozatosan továbbítja a magyar szöveges választ.
+1. Általános kérésnél az eredeti modellvégpont SSE-ként fokozatosan továbbítja a magyar szöveges választ. Kvízkérésnél először csak semleges bevezetőszöveg, majd a megoldókulcs nélküli kvízblokk jelenik meg.
 2. Egy gyors témaszűrő eldönti, hogy a kérés alkalmas-e tanulási UI-ra; ez költség- és késleltetésvédelmi szűrő.
 3. Ha igen, a modell **külön kérésben** megkísérel legfeljebb két szabályosan strukturált UI-blokkot összeállítani.
 4. A szerver ellenőrzi a szigorú sémát, majd csak a megfelelő blokkokat továbbítja.
@@ -63,7 +78,7 @@ Az NVIDIA-kompatibilis modellvégpontnál nem feltételezzük, hogy a natív Ope
 - Az adatbázis, a leckehaladás, a profil és a jogosultságok nincsenek automatikusan elérhetővé téve a modellnek.
 - Modellgenerált statisztikából nem készülhet haladási diagram.
 - Nincs AI-indította adatbázisírás, fájlfeltöltés vagy külső szolgáltatóhoz csatlakozás.
-- A chat és a tanulási terv jelölései az aktuális böngészőfül `sessionStorage` területén maradnak; ez nem felhős szinkronizáció.
+- A chat, a tanulási terv és a kalkulátor az aktuális böngészőfül `sessionStorage` területén marad; a kvíz-próbálkozás és a tanulókártyák saját értékelése helyi `localStorage` adat. Egyik sem felhős szinkronizáció.
 - A modell válasza tévedhet, különösen kvízhelyesség esetén; a válaszadás tanulási segédlet, nem ellenőrzött oktatási vizsga.
 
 ## Mintakérések
