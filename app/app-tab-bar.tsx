@@ -103,7 +103,7 @@ export default function AppTabBar({ activeTab, onSelect, avatarImage, userName }
   const visibleChats = grouped.map(group => ({ ...group, items: group.items.filter(chat => !query.trim() || chat.title.toLocaleLowerCase("hu").includes(query.trim().toLocaleLowerCase("hu"))) })).filter(group => group.items.length)
   const usernameInitials = userName.trim().split(/\s+/).slice(0, 2).map(part => part[0]).join("").toLocaleUpperCase("hu") || "EV"
 
-  return <div className="evo-sidebar-host">
+  return <div className="evo-sidebar-host">\n    {activeTab !== "profile" && <button type="button" className="evo-global-profile-button" onClick={onProfile} aria-label={`${userName} profilja`}>{avatarImage ? <img src={avatarImage} alt="" /> : <span>{usernameInitials}</span>}</button>}
     <div className={`evo-morph-anchor ${open ? "is-sidebar-open" : ""}`}>
       <button ref={trigger} type="button" className="evo-morph-toggle" aria-label={open ? "Menü bezárása" : "Menü megnyitása"} aria-expanded={open} onClick={() => open ? close() : show()}><PanelLeft size={22} /></button>
     </div>
