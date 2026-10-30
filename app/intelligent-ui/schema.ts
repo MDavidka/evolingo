@@ -11,8 +11,10 @@ export type ConceptCardBlock = { id: string; type: "concept_card"; props: { titl
 export type ChartCardBlock = { id: string; type: "chart_card"; props: { title: string; chartType: "bar" | "line" | "donut"; source: "example" | "verified"; unit?: string; points: { label: string; value: number }[] } }
 /** Pure, client-side calculation: no generated executable expressions. */
 export type StudyCalculatorBlock = { id: string; type: "study_calculator"; props: { title: string; dailyMinutes: number; daysPerWeek: number; weeks: number } }
+export type IllustrationBlock = { id: string; type: "illustration"; props: { subject: "european_union"; title: string; caption: string } }
+export type LiveTimeBlock = { id: string; type: "live_time"; props: { title: string; timeZone: "Europe/Bucharest" | "Europe/London" | "Europe/Paris" | "UTC"; label: string } }
 export type ProgressBarsBlock = { id: string; type: "progress_bars"; props: { title: string; items: { label: string; value: number; max: number }[] } }
-export type IntelligentBlock = GrammarRuleBlock | QuizChoiceBlock | PublicQuizChoiceBlock | VocabularyFlashcardBlock | ComparisonTableBlock | TenseTimelineBlock | StudyPlanBlock | ConceptCardBlock | ChartCardBlock | StudyCalculatorBlock | ProgressBarsBlock
+export type IntelligentBlock = GrammarRuleBlock | QuizChoiceBlock | PublicQuizChoiceBlock | VocabularyFlashcardBlock | ComparisonTableBlock | TenseTimelineBlock | StudyPlanBlock | ConceptCardBlock | ChartCardBlock | StudyCalculatorBlock | IllustrationBlock | LiveTimeBlock | ProgressBarsBlock
 export type IntelligentUI = { version: "1"; blocks: IntelligentBlock[] }
 
 type Obj = Record<string, unknown>
@@ -51,6 +53,8 @@ function blockValid(b: unknown, allowProgress: boolean, allowVerifiedCharts: boo
       txt(p.title, 100) && typeof p.dailyMinutes === "number" && Number.isInteger(p.dailyMinutes) && p.dailyMinutes >= 5 && p.dailyMinutes <= 120 && p.dailyMinutes % 5 === 0 &&
       typeof p.daysPerWeek === "number" && Number.isInteger(p.daysPerWeek) && p.daysPerWeek >= 1 && p.daysPerWeek <= 7 &&
       typeof p.weeks === "number" && Number.isInteger(p.weeks) && p.weeks >= 1 && p.weeks <= 12
+    case "illustration": return keys(p, ["subject", "title", "caption"]) && p.subject === "european_union" && txt(p.title, 100) && txt(p.caption, 220)
+    case "live_time": return keys(p, ["title", "timeZone", "label"]) && txt(p.title, 100) && ["Europe/Bucharest", "Europe/London", "Europe/Paris", "UTC"].includes(String(p.timeZone)) && txt(p.label, 100)
     case "progress_bars": return allowProgress && keys(p, ["title", "items"]) && txt(p.title, 100) && rows(p.items, 1, 8, v => keys(v, ["label", "value", "max"]) && txt(v.label, 90) && typeof v.value === "number" && typeof v.max === "number" && Number.isFinite(v.max) && Number.isFinite(v.value) && v.max > 0 && v.max <= 1000000 && v.value >= 0 && v.value <= v.max)
     default: return false
   }
