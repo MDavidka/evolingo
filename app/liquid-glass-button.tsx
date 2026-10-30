@@ -34,7 +34,7 @@ export const LiquidGlassButton = forwardRef<HTMLButtonElement, LiquidGlassButton
   }
 )
 
-export type LiquidGlassIconButtonProps = Omit<LiquidGlassButtonProps, "children" | "size" | "trailingIcon"> & { "aria-label": string; size?: "icon" | "compact" }
+export type LiquidGlassIconButtonProps = Omit<LiquidGlassButtonProps, "size" | "trailingIcon"> & { "aria-label": string; size?: "icon" | "compact" }
 export const LiquidGlassIconButton = forwardRef<HTMLButtonElement, LiquidGlassIconButtonProps>(
   function LiquidGlassIconButton({ size = "icon", ...props }, ref) {
     return <LiquidGlassButton {...props} ref={ref} size={size} />
