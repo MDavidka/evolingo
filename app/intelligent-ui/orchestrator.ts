@@ -30,7 +30,7 @@ export function classifyVisualIntent(query: string): VisualIntent {
     return "quiz"
   if (/tanulokartya|szokartya|flashcard|szavakat tanul|szokincs|szotanul|tanits meg.*szot/.test(text))
     return "flashcards"
-  if (/kalkulator|naponta.*perc|heti.*perc|perc.*het|tanulasi ido|mennyi.*(?:tanul|ora|perc)|hany perc/.test(text) &&
+  if (/kalkulator|naponta.*perc|napi.*perc|heti.*perc|perc.*tanul|perc.*het|tanulasi ido|mennyi.*(?:tanul|ora|perc)|hany perc/.test(text) &&
       /tanul|perc|ora|nap|het/.test(text))
     return "calculator"
   if (/grafikon|diagram|oszlopdiagram|kordiagram|chart|statisztika|trend|adatvizual/.test(text))
