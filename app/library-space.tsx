@@ -194,12 +194,41 @@ export default function LibrarySpace() {
   }
 
   const duplicate = (entry: SpaceEntry) => {
-    const id = crypto.randomUUID()
+    // Duplicating a folder must include all nested items and their local file blobs.
+    const originals: SpaceEntry[] = [entry]
+    const seen = new Set([entry.id])
+    for (let i = 0; i < originals.length; i++) {
+      if (originals[i].kind !== "folder") continue
+      for (const child of entries) {
+        if (child.parent === originals[i].id && !seen.has(child.id)) {
+          originals.push(child)
+          seen.add(child.id)
+        }
+      }
+    }
+    const ids = new Map(originals.map(item => [item.id, crypto.randomUUID()]))
     const dot = entry.name.lastIndexOf(".")
-    const name = dot > 0 ? `${entry.name.slice(0, dot)} másolat${entry.name.slice(dot)}` : `${entry.name} másolat`
-    const copy = { ...entry, id, name, modifiedAt: Date.now() }
-    if (entry.kind !== "folder") { const blobs = readBlobs(); if (blobs[entry.id]) { blobs[id] = blobs[entry.id]; localStorage.setItem(BLOBS_KEY, JSON.stringify(blobs)) } }
-    persist([...entries, copy]); setSheet(null); setNotice("Másolat létrehozva.")
+    const copyName = dot > 0 ? entry.name.slice(0, dot) + " másolat" + entry.name.slice(dot) : entry.name + " másolat"
+    const copies: SpaceEntry[] = originals.map(item => ({
+      ...item,
+      id: ids.get(item.id)!,
+      parent: item.id === entry.id ? entry.parent : ids.get(item.parent || ""),
+      name: item.id === entry.id ? copyName : item.name,
+      modifiedAt: Date.now(),
+    }))
+    try {
+      const blobs = readBlobs()
+      for (const item of originals) {
+        const source = blobs[item.id]
+        if (source) blobs[ids.get(item.id)!] = source
+      }
+      localStorage.setItem(BLOBS_KEY, JSON.stringify(blobs))
+      persist([...entries, ...copies])
+      setSheet(null)
+      setNotice("Másolat létrehozva.")
+    } catch {
+      setNotice("Nincs elég hely a másolat mentéséhez.")
+    }
   }
 
   const share = async (entry: SpaceEntry) => {
