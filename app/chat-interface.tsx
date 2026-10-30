@@ -200,6 +200,32 @@ export default function ChatInterface() {
     }
   }
 
+  async function chooseAttachment(file: File | undefined) {
+    if (!file) return
+    setError("")
+    const image = IMAGE_TYPES.some(type => type === file.type)
+    const textFile = TEXT_EXTENSIONS.some(ext => file.name.toLowerCase().endsWith(ext))
+    if (!image && !textFile) { setError("Nem támogatott fájltípus."); return }
+    if (file.size > (image ? MAX_IMAGE_BYTES : MAX_TEXT_BYTES)) {
+      setError(image ? "A kép legfeljebb 2 MB lehet." : "A szövegfájl legfeljebb 96 KB lehet.")
+      return
+    }
+    if (image) {
+      const reader = new FileReader()
+      reader.onload = () => {
+        if (typeof reader.result === "string") setAttachment({ kind: "image", name: file.name, mime: file.type, data: reader.result })
+      }
+      reader.onerror = () => setError("A kép nem olvasható.")
+      reader.readAsDataURL(file)
+    } else {
+      try {
+        const value = (await file.text()).slice(0, 12000)
+        if (!value.trim()) { setError("A fájl üres."); return }
+        setAttachment({ kind: "text", name: file.name, mime: "text/plain", data: value })
+      } catch { setError("A fájl nem olvasható.") }
+    }
+  }
+
   function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
     void send(draft)
