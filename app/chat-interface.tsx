@@ -5,6 +5,7 @@ import { ArrowUp, Check, Copy, Sparkles, Plus, Mic, ChevronDown } from "lucide-r
 import IntelligentResponse from "./intelligent-ui/renderer"
 import ChatRichText from "./chat-rich-text"
 import { validateIntelligentUI, type IntelligentUI } from "./intelligent-ui/schema"
+import { MAX_IMAGE_BYTES, MAX_TEXT_BYTES, IMAGE_TYPES, TEXT_EXTENSIONS, type ChatAttachment } from "./chat-attachments"
 
 type ChatMessage = { role: "user" | "assistant"; content: string; id?: string; ui?: IntelligentUI }
 const SESSION_KEY = "evolingo.chat.session.v1"
@@ -12,6 +13,8 @@ const SESSION_KEY = "evolingo.chat.session.v1"
 export default function ChatInterface() {
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [draft, setDraft] = useState("")
+  const [attachment, setAttachment] = useState<ChatAttachment | null>(null)
+  const fileInput = useRef<HTMLInputElement>(null)
   const [busy, setBusy] = useState(false)
   const [enhancing, setEnhancing] = useState(false)
   const [streaming, setStreaming] = useState(false)
@@ -84,13 +87,15 @@ export default function ChatInterface() {
 
   async function send(text: string) {
     const content = text.trim()
-    if (!content || busy || enhancing) return
-    const next: ChatMessage[] = [...messages, { id: crypto.randomUUID(), role: "user", content }]
+    if ((!content && !attachment) || busy || enhancing) return
+    const next: ChatMessage[] = [...messages, { id: crypto.randomUUID(), role: "user", content: content || "Elemezd a csatolt fájlt.", ...(attachment ? { attachmentName: attachment.name } : {}) }]
     const assistantId = crypto.randomUUID()
     setMessages(next)
     window.dispatchEvent(new CustomEvent("evolingo:chat-message-sent"))
     input.current?.blur()
     setDraft("")
+    const sentAttachment = attachment
+    setAttachment(null)
     setBusy(true)
     setError("")
     if (input.current) input.current.style.height = "auto"
@@ -142,7 +147,7 @@ export default function ChatInterface() {
       const response = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages: next.slice(-12).map(({ role, content }) => ({ role, content })), interactive: true }),
+        body: JSON.stringify({ messages: next.slice(-12).map(({ role, content }) => ({ role, content })), interactive: true, attachment: sentAttachment }),
         cache: "no-store",
       })
       if (!response.ok) {
