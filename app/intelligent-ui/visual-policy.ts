@@ -1,6 +1,6 @@
-import type { IntelligentUI, QuizChoiceBlock } from "./schema"
-import { validateIntelligentUI } from "./schema"
-import { issueQuizTicket } from "./quiz-security"
+import type { IntelligentUI, QuizChoiceBlock } from "./schema.ts"
+import { validateIntelligentUI } from "./schema.ts"
+import { issueQuizTicket } from "./quiz-security.ts"
 
 /**
  * Server boundary: authored quizzes are converted into safe browser DTOs.
