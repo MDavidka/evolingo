@@ -59,3 +59,5 @@ export function parseModelUI(raw: string): IntelligentUI | null {
   }
   return null
 }
+
+// Visual Intelligence: reusable chart support follows the existing allowlist.
