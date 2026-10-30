@@ -6,6 +6,7 @@ import type { IntelligentBlock, IntelligentUI, GrammarRuleBlock, QuizChoiceBlock
 import { validateIntelligentUI } from "./schema"
 import ChartCard from "./chart-card"
 import StudyCalculator from "./study-calculator"
+import { IllustrationCard, LiveTimeCard } from "./general-visuals"
 
 function GrammarCard({ block }: { block: GrammarRuleBlock }) {
   const label = useId()
@@ -297,6 +298,8 @@ function Block({ block, storageKey }: { block: IntelligentBlock; storageKey: str
     case "progress_bars": return <Progress block={block} />
     case "chart_card": return <ChartCard block={block} storageKey={storageKey} />
     case "study_calculator": return <StudyCalculator block={block} storageKey={storageKey} />
+    case "illustration": return <IllustrationCard block={block} />
+    case "live_time": return <LiveTimeCard block={block} />
     default: return null
   }
 }
