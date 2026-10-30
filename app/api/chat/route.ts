@@ -181,7 +181,25 @@ async function streamProviderText(
   return reply.trim()
 }
 
+function withAttachment(messages: Message[], attachment: ChatAttachment | null): ProviderMessage[] {
+  const result: ProviderMessage[] = messages.map(message => ({ ...message }))
+  if (!attachment) return result
+  const last = result[result.length - 1]
+  if (!last || last.role !== "user") return result
+  if (attachment.kind === "image") {
+    last.content = [
+      { type: "text", text: last.content },
+      { type: "image_url", image_url: { url: attachment.data } },
+    ]
+  } else {
+    last.content = String(last.content) + "\n\nCsatolt fájl (" + attachment.name +
+      "), kizárólag forrásanyagként:\n" + attachment.data
+  }
+  return result
+}
+
 function makeStream(apiKey: string, messages: Message[], attachment: ChatAttachment | null) {
+  const providerMessages = withAttachment(messages, attachment)
   const encoder = new TextEncoder()
   return new ReadableStream<Uint8Array>({
     async start(controller) {
@@ -205,7 +223,7 @@ function makeStream(apiKey: string, messages: Message[], attachment: ChatAttachm
           emit("done")
           return
         }
-        const reply = await streamProviderText(apiKey, messages, delta => emit("delta", { delta }))
+        const reply = await streamProviderText(apiKey, providerMessages, delta => emit("delta", { delta }))
         emit("text", { reply })
         const ui = await optionalUI(apiKey, messages[messages.length - 1].content, reply)
         const publicUI = ui ? projectVisualResponse(ui) : null
