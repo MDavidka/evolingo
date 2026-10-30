@@ -51,3 +51,28 @@ test("schema validates only bounded, deterministic calculator fields", () => {
     ...block, props: { ...block.props, expression: "eval('unsafe code')" },
   }] }), null)
 })
+
+test("general-knowledge questions trigger creative visual planning", () => {
+  assert.equal(classifyVisualIntent("Mi az EU?"), "illustration")
+  assert.equal(classifyVisualIntent("What is the European Union?"), "illustration")
+  assert.equal(classifyVisualIntent("Mi a fotoszintézis?"), "explain")
+  assert.equal(classifyVisualIntent("Mennyi az idő?"), "live_time")
+  assert.equal(shouldPlanVisuals("Hogyan működik a szív?"), true)
+  assert.equal(shouldPlanVisuals("Szia!"), false)
+})
+
+test("curated image and live clock cannot accept arbitrary URLs or zones", () => {
+  const eu = { id: "eu1", type: "illustration", props: {
+    subject: "european_union", title: "EU", caption: "Európai Unió zászlaja",
+  } }
+  const clock = { id: "clock1", type: "live_time", props: {
+    title: "Pontos idő", timeZone: "Europe/Bucharest", label: "Románia",
+  } }
+  assert.ok(validateIntelligentUI({ version: "1", blocks: [eu, clock] }))
+  assert.equal(validateIntelligentUI({ version: "1", blocks: [{
+    ...eu, props: { ...eu.props, imageUrl: "https://attacker.example/x.svg" },
+  }] }), null)
+  assert.equal(validateIntelligentUI({ version: "1", blocks: [{
+    ...clock, props: { ...clock.props, timeZone: "Invalid/Zone" },
+  }] }), null)
+})
