@@ -274,7 +274,7 @@ export default function ChatInterface() {
     <div className="evo-chat-bottom">
       {error && <div className="evo-chat-error" role="alert">{error}<button type="button" onClick={() => setError("")} aria-label="Hibaüzenet bezárása">×</button></div>}
       <div className="evo-composer-surface">
-      {attachment && <div className="evo-chat-attachment-preview"><span>{attachment.name}</span><button type="button" onClick={() => setAttachment(null)} aria-label="Melléklet eltávolítása">×</button></div>}
+      {attachment && <div className="evo-chat-attachment-preview">{attachment.kind === "image" && <img src={attachment.data} alt="Csatolt kép előnézete" style={{ width: 42, height: 42, borderRadius: 10, objectFit: "cover" }} />}<span>{attachment.name}</span><button type="button" onClick={() => setAttachment(null)} aria-label="Melléklet eltávolítása">×</button></div>}
       <input ref={fileInput} type="file" accept="image/jpeg,image/png,image/webp,.txt,.md,.csv,.json,.tsv" hidden onChange={event => { void chooseAttachment(event.target.files?.[0]); event.target.value = "" }} />
       <form onSubmit={submit} className="evo-chat-composer">
         <button type="button" className="evo-chat-attach" aria-label="Kép vagy fájl csatolása" title="Kép vagy fájl csatolása" onClick={() => fileInput.current?.click()} disabled={busy || enhancing}><Plus size={21} /></button><textarea ref={input} value={draft} onChange={event => { setDraft(event.target.value); resizeInput() }} onKeyDown={keyDown} rows={1} maxLength={4000} aria-label="Üzenet írása" placeholder="Írj egy üzenetet..." />
