@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState, type KeyboardEvent as ReactKeyboardEvent, type TouchEvent as ReactTouchEvent } from "react"
 import { PanelLeft, X, Plus, MoreHorizontal, Pencil, Trash2, Search, Library, FolderKanban, Puzzle, PenSquare, Lightbulb } from "lucide-react"
+import { LiquidGlassIconButton } from "./liquid-glass-button"
 import { deleteChatSession, notifyChatSessionAction, readChatSessions, renameChatSession, type ChatSession } from "./chat-sessions"
 
 export type AppTab = "learn" | "ai" | "files" | "tools" | "profile" | "brainstorm"
@@ -103,9 +104,9 @@ export default function AppTabBar({ activeTab, onSelect, avatarImage, userName }
   const visibleChats = grouped.map(group => ({ ...group, items: group.items.filter(chat => !query.trim() || chat.title.toLocaleLowerCase("hu").includes(query.trim().toLocaleLowerCase("hu"))) })).filter(group => group.items.length)
   const usernameInitials = userName.trim().split(/\s+/).slice(0, 2).map(part => part[0]).join("").toLocaleUpperCase("hu") || "EV"
 
-  return <div className="evo-sidebar-host">\n    {activeTab !== "profile" && <button type="button" className="evo-global-profile-button" onClick={onProfile} aria-label={`${userName} profilja`}>{avatarImage ? <img src={avatarImage} alt="" /> : <span>{usernameInitials}</span>}</button>}
+  return <div className="evo-sidebar-host">\n    {activeTab !== "profile" && <LiquidGlassIconButton className="evo-global-profile-button" onClick={onProfile} aria-label={`${userName} profilja`}>{avatarImage ? <img src={avatarImage} alt="" /> : <span>{usernameInitials}</span>}</LiquidGlassIconButton>}
     <div className={`evo-morph-anchor ${open ? "is-sidebar-open" : ""}`}>
-      <button ref={trigger} type="button" className="evo-morph-toggle" aria-label={open ? "Menü bezárása" : "Menü megnyitása"} aria-expanded={open} onClick={() => open ? close() : show()}><PanelLeft size={22} /></button>
+      <LiquidGlassIconButton ref={trigger} className="evo-morph-toggle" icon={PanelLeft} aria-label={open ? "Menü bezárása" : "Menü megnyitása"} aria-expanded={open} onClick={() => open ? close() : show()} />
     </div>
     {open && <>
       <button className="evo-sidebar-backdrop" type="button" aria-label="Menü bezárása" onClick={close} />
