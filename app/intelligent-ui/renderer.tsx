@@ -5,6 +5,7 @@ import { ArrowLeft, ArrowRight, Check, RotateCcw, Volume2, Lightbulb, BookOpen, 
 import type { IntelligentBlock, IntelligentUI, GrammarRuleBlock, QuizChoiceBlock, PublicQuizChoiceBlock, VocabularyFlashcardBlock, ComparisonTableBlock, TenseTimelineBlock, StudyPlanBlock, ConceptCardBlock, ProgressBarsBlock } from "./schema"
 import { validateIntelligentUI } from "./schema"
 import ChartCard from "./chart-card"
+import StudyCalculator from "./study-calculator"
 
 function GrammarCard({ block }: { block: GrammarRuleBlock }) {
   const label = useId()
@@ -295,6 +296,7 @@ function Block({ block, storageKey }: { block: IntelligentBlock; storageKey: str
     case "concept_card": return <Concept block={block} />
     case "progress_bars": return <Progress block={block} />
     case "chart_card": return <ChartCard block={block} storageKey={storageKey} />
+    case "study_calculator": return <StudyCalculator block={block} storageKey={storageKey} />
     default: return null
   }
 }
