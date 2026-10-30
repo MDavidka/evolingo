@@ -76,10 +76,15 @@ async function providerCompletion(apiKey: string, messages: Message[], system: s
 
 async function optionalUI(apiKey: string, question: string, reply: string): Promise<IntelligentUI | null> {
   if (!UI_ENABLED || !uiCandidate(question)) return null
+  const prompt = "Kérés: " + question.slice(0, 1100) + "\nVálasz: " + reply.slice(0, 2300) + "\nCsak JSON legyen az eredmény."
   try {
-    const prompt = "Kérés: " + question.slice(0, 1100) + "\nVálasz: " + reply.slice(0, 2300) + "\nCsak JSON legyen az eredmény."
-    const raw = await providerCompletion(apiKey, [{ role: "user", content: prompt }], uiInstructions, 1300, 12000)
-    return parseModelUI(raw)
+    const raw = await providerCompletion(apiKey, [{ role: "user", content: prompt }], uiInstructions, 1300, 8000)
+    const parsed = parseModelUI(raw)
+    if (parsed) return parsed.blocks.length ? parsed : null
+    // Bounded retry on schema failure, never a second request on a valid empty result.
+    const retry = await providerCompletion(apiKey, [{ role: "user", content: prompt + "\nAz előző válasz formátuma hibás volt. Javítsd ki a JSON-szerkezetet, egyéb szöveg nélkül." }], uiInstructions, 900, 4000)
+    const safe = parseModelUI(retry)
+    return safe?.blocks.length ? safe : null
   } catch (error) {
     console.error("[chat] optional UI unavailable", error instanceof Error ? error.name : "unknown")
     return null
