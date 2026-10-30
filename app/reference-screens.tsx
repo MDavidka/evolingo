@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, type ChangeEvent, type ReactNode } from "react"
 import ChatInterface from "./chat-interface"
+import GlobalHeader from "./global-header"
 import IntelligentResponse from "./intelligent-ui/renderer"
 import { buildLessonOverview } from "./intelligent-ui/lesson-overview"
 import ToolsHub from "./tools-hub"
@@ -55,42 +56,6 @@ function Avatar({ name, src, fallback }: { name: string; src: string; fallback: 
   return <span className="ref-avatar">{src ? <img src={src} alt={name} /> : <span className="ref-avatar-fallback"><img src={fallback} alt="" /></span>}</span>
 }
 
-function Header({ name, avatarImage, avatarFallback, onProfile, onHome, onSelectCourse, topics, selectedTopicId, showCourse, courseName }: {
-  name: string; avatarImage: string; avatarFallback: string; onProfile: () => void; onHome: () => void
-  onSelectCourse: (id: number) => void; topics: TopicData[]; selectedTopicId: number | null
-  showCourse: boolean; courseName?: string
-}) {
-  const [courseOpen, setCourseOpen] = useState(false)
-  const courseRef = useRef<HTMLDivElement>(null)
-  useEffect(() => {
-    const dismiss = (event: PointerEvent) => {
-      if (!courseRef.current?.contains(event.target as Node)) setCourseOpen(false)
-    }
-    const escape = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setCourseOpen(false)
-    }
-    document.addEventListener("pointerdown", dismiss)
-    document.addEventListener("keydown", escape)
-    return () => { document.removeEventListener("pointerdown", dismiss); document.removeEventListener("keydown", escape) }
-  }, [])
-  return <header className="ref-topbar">
-    {showCourse && <div className="ref-course-wrap" ref={courseRef}>
-      <button className="ref-course" type="button" aria-haspopup="menu" aria-expanded={courseOpen} onClick={() => setCourseOpen(value => !value)}>
-        <GraduationCap size={20} strokeWidth={1.8} /><strong>{courseName || "Témáim"}</strong><span className="ref-course-chevron"><ChevronsUpDown size={13} /></span>
-      </button>
-      {courseOpen && <div className="ref-course-menu" role="menu" aria-label="Téma kiválasztása">
-        <span className="ref-course-menu-label">Jelenlegi téma</span>
-        {topics.map(topic => <button key={topic.id} className="ref-course-choice" type="button" role="menuitem" onClick={() => { setCourseOpen(false); onSelectCourse(topic.id) }}>
-          <GraduationCap size={17} /> {topic.title} {(selectedTopicId === topic.id || (selectedTopicId === null && topics[0]?.id === topic.id)) && <Check size={17} />}
-        </button>)}
-        <button className="ref-course-choice" type="button" role="menuitem" onClick={() => { setCourseOpen(false); onHome() }}>
-          <BookOpen size={17} /> Összes téma
-        </button>
-      </div>}
-    </div>}
-    <button className="ref-profile-shortcut" type="button" onClick={() => { setCourseOpen(false); onProfile() }} aria-label="Profil megnyitása"><Avatar name={name} src={avatarImage} fallback={avatarFallback} /></button>
-  </header>
-}
 
 let savedLearningScroll = 0
 
@@ -365,7 +330,7 @@ export default function ReferenceScreens(props: Props) {
 
   if (view === "auth") return <main className="ref-app ref-view-auth">{content}</main>
   return <main className={`ref-app ref-view-${view}`}>
-    <Header key={view} name={userName} avatarImage={avatarImage} avatarFallback={avatarFallback} onProfile={() => onView("profile")} onHome={() => onView("home")} onSelectCourse={id => { setSelectedTopicId(id); onView("topic") }} topics={topics} selectedTopicId={selectedTopicId} showCourse={view === "home" || view === "topic"} courseName={selectedTopicId === -1 ? "Összes lecke" : selectedTopic?.title} />
+    <GlobalHeader name={userName} avatarImage={avatarImage} avatarFallback={avatarFallback} onNavigate={onView} title={view === "chat" ? "AI Chat" : view === "space" ? "Fájlok" : view === "utility" ? "Eszközök" : view === "profile" ? "Profil" : view === "selector" ? "Lecke" : "Tanulás"} />
     {content}
   </main>
 }

@@ -1,0 +1,12 @@
+.evo-global-header{height:56px;min-height:56px;display:grid;grid-template-columns:44px minmax(0,1fr) 44px;align-items:center;gap:8px;padding:0 16px;background:#fff;color:#202127;position:relative;z-index:30;box-sizing:border-box}
+.evo-global-action{width:44px;height:44px;border:0;border-radius:14px;background:transparent;color:#202127;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0}
+.evo-global-action:active,.evo-global-action:hover{background:#f5f5f7}
+.evo-global-action:focus-visible,.evo-global-nav-item:focus-visible{outline:2px solid #202127;outline-offset:2px}
+.evo-global-title{text-align:center;font-size:17px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.evo-global-avatar{width:34px;height:34px;border-radius:50%;overflow:hidden;display:flex;align-items:center;justify-content:center;background:#f5f5f7}
+.evo-global-avatar img{width:100%;height:100%;object-fit:cover}
+.evo-global-overlay{position:fixed;inset:0;background:rgba(0,0,0,.32);z-index:1000;display:flex}
+.evo-global-drawer{width:min(320px,85vw);height:100%;padding:calc(16px + env(safe-area-inset-top,0px)) 16px calc(16px + env(safe-area-inset-bottom,0px));box-sizing:border-box;background:#fff;box-shadow:8px 0 40px #00000014}
+.evo-global-drawer-head{display:flex;align-items:center;justify-content:space-between;min-height:48px;margin-bottom:20px;font-size:20px}
+.evo-global-nav-item{display:flex;align-items:center;gap:14px;width:100%;min-height:50px;padding:0 14px;border:none;border-radius:14px;background:transparent;color:#202127;font:inherit;font-weight:500;text-align:left;cursor:pointer}
+.evo-global-nav-item:active,.evo-global-nav-item:hover{background:#f5f5f7}
