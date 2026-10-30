@@ -9,7 +9,7 @@ type Role = "user" | "assistant"
 type Message = { role: Role; content: string }
 
 const API_URL = "https://integrate.api.nvidia.com/v1/chat/completions"
-const MODEL = process.env.EVO_AI_MODEL?.trim() || "deepseek-ai/deepseek-v4.1-flash"
+const MODEL = process.env.EVO_AI_MODEL?.trim() || "minimaxai/minimax-m3.1-flash"
 const rateLimits = new Map<string, { count: number; resetAt: number }>()
 const headers = { "Cache-Control": "no-store", "X-Content-Type-Options": "nosniff" }
 
