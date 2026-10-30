@@ -369,8 +369,8 @@ export default function LibrarySpace() {
     {notice && <div className="library-toast" role="status">{notice}<button type="button" aria-label="Bezárás" onClick={() => setNotice("")}><X size={16} /></button></div>}
 
     {sheet && <div className="library-sheet-backdrop" onPointerDown={event => { if (event.target === event.currentTarget) setSheet(null) }}>
-      <div ref={sheetRef} className={`library-sheet library-sheet--${sheet}`} role="dialog" aria-modal="true" aria-label={sheet === "new" ? "Új elem" : sheet === "sort" ? "Rendezés" : sheet === "preview" ? "Fájl előnézete" : "Fájlműveletek"} onTouchStart={event => { sheetTouchY.current = event.touches[0]?.clientY ?? null }} onTouchEnd={event => { const start = sheetTouchY.current; sheetTouchY.current = null; if (start != null && (event.changedTouches[0]?.clientY ?? start) - start > 80) setSheet(null) }}>
-        <div className="library-sheet-handle" aria-hidden="true" />
+      <div ref={sheetRef} className={`library-sheet library-sheet--${sheet}`} role="dialog" aria-modal="true" aria-label={sheet === "new" ? "Új elem" : sheet === "sort" ? "Rendezés" : sheet === "preview" ? "Fájl előnézete" : "Fájlműveletek"}>
+        <div className="library-sheet-handle" aria-hidden="true" onTouchStart={event => { sheetTouchY.current = event.touches[0]?.clientY ?? null }} onTouchEnd={event => { const start = sheetTouchY.current; sheetTouchY.current = null; if (start != null && (event.changedTouches[0]?.clientY ?? start) - start > 80) setSheet(null) }} />
         <div className="library-sheet-heading"><h2>{sheet === "new" ? "Új elem" : sheet === "sort" ? "Rendezés" : sheet === "rename" ? "Átnevezés" : sheet === "move" ? "Áthelyezés" : sheet === "delete" ? "Törlés" : sheet === "preview" ? active?.name : active?.name}</h2><button type="button" aria-label="Bezárás" onClick={() => setSheet(null)}><X size={20} /></button></div>
 
         {sheet === "new" && <div className="library-sheet-actions">
