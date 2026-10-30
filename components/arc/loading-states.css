@@ -1,0 +1,15 @@
+.arc-skeleton-list{display:grid;gap:10px;width:100%}
+.arc-skeleton{display:block;position:relative;overflow:hidden;border-radius:10px;background:var(--skeleton,#e8eaed)}
+.arc-skeleton::after{position:absolute;inset:0;transform:translateX(-100%);background:linear-gradient(90deg,transparent,rgba(255,255,255,.55),transparent);animation:arc-skeleton-pulse 1.2s ease-in-out infinite;content:""}
+.arc-skeleton-row{height:56px;width:100%;border-radius:14px}
+.arc-skeleton-card{height:132px;width:100%;border-radius:18px}
+.arc-skeleton-avatar{width:44px;height:44px;border-radius:50%}
+.arc-skeleton-text{height:14px;width:72%;border-radius:999px}
+.arc-empty-state{display:flex;align-items:center;flex-direction:column;gap:8px;padding:32px 20px;text-align:center;color:var(--evo-headline,#202123)}
+.arc-empty-state-icon{display:grid;place-items:center;width:44px;height:44px;margin-bottom:4px;border:1px solid var(--evo-silver,#e6e7e8);border-radius:14px;color:var(--evo-secondary,#667085)}
+.arc-empty-state p{max-width:380px;margin:0;color:var(--evo-secondary,#667085);font-size:var(--evo-size-support);line-height:1.5}
+.arc-empty-state-action{margin-top:6px}
+@keyframes arc-skeleton-pulse{to{transform:translateX(100%)}}
+@keyframes arc-spinner{to{transform:rotate(360deg)}}
+.arc-save-spinner{animation:arc-spinner .8s linear infinite}
+@media(prefers-reduced-motion:reduce){.arc-skeleton::after{display:none}.arc-save-spinner{animation:none}}

@@ -1,0 +1,19 @@
+:root {
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-lg: 18px;
+  --radius-pill: 999px;
+  --space-page: 20px;
+  --btn-h: 48px;
+  --evo-accent: #ff7900;
+  --evo-accent-soft: #fff3e6;
+  --color-primary: var(--evo-accent);
+  --color-accent: var(--evo-accent);
+  --color-surface: #fff;
+  --color-border: #e8ebf0;
+  --color-muted: #78818f;
+
+  /* Keep ARC primitives aligned with the shared product controls. */
+  --radius-control: var(--radius-pill);
+  --control-height-md: var(--btn-h);
+}

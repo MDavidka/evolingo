@@ -40,7 +40,7 @@ export default function ChartCard({ block, storageKey }: { block: ChartCardBlock
 
   return <section className="evo-iui-block evo-visual-chart" aria-labelledby={labelId}>
     <div className="evo-iui-flex-heading">
-      <div><p className="evo-iui-kicker">Adatvizualizáció</p><h3 id={labelId}>{block.props.title}</h3></div>
+      <div><p className="evo-iui-kicker">Haladás</p><h3 id={labelId}>{block.props.title}</h3></div>
       <span className="evo-visual-chart-kind" aria-hidden="true">
         {block.props.chartType === "bar" ? <BarChart3 size={20} /> :
           block.props.chartType === "line" ? <ChartNoAxesCombined size={20} /> : <ChartPie size={20} />}
@@ -58,12 +58,12 @@ export default function ChartCard({ block, storageKey }: { block: ChartCardBlock
             const segment = (point.value / total) * circumference
             const offset = consumed
             consumed += segment
-            return <circle key={index} r={radius} fill="none" stroke={colors[index]} strokeWidth={selected === index ? 27 : 23}
+            return <circle key={index} r={radius} fill="none" stroke={colors[index]} strokeWidth={1.75}
               strokeDasharray={segment + " " + (circumference - segment)} strokeDashoffset={-offset} strokeLinecap="butt" />
           })}
         </g>
         <text x="160" y="87" textAnchor="middle" fontSize="21" fontWeight="650" fill="#202127">{total ? nf.format(selectedPoint.value / total * 100) + "%" : "0%"}</text>
-        <text x="160" y="108" textAnchor="middle" fontSize="11" fill="#8e8e93">{selectedPoint.label.slice(0, 23)}</text>
+        <text x="160" y="108" textAnchor="middle" fontSize="12" fill="#5b6472">{selectedPoint.label.slice(0, 23)}</text>
       </svg> :
       <svg className="evo-visual-chart-svg" viewBox={"0 0 " + width + " " + height} role="img" aria-label={block.props.title + ": " + ariaDescription}>
         {[0, 0.5, 1].map((ratio, index) => <line key={index} x1="8" x2="312" y1={bottom - ratio * track} y2={bottom - ratio * track} stroke="#e8eaf0" strokeDasharray={ratio === 0 ? undefined : "3 4"} />)}
@@ -78,7 +78,7 @@ export default function ChartCard({ block, storageKey }: { block: ChartCardBlock
           {points.map((point, index) => <circle key={index} cx={pointX(index)} cy={valueY(point.value)}
             r={selected === index ? 6 : 4} fill={selected === index ? "#536f94" : "#fff"} stroke="#7086a4" strokeWidth="2" />)}
         </>}
-        {points.map((point, index) => <text key={index} x={pointX(index)} y="164" textAnchor="middle" fontSize="10" fill="#697485">{point.label.slice(0, Math.max(3, Math.floor(gap / 9)))}</text>)}
+        {points.map((point, index) => <text key={index} x={pointX(index)} y="164" textAnchor="middle" fontSize="12" fill="#5b6472">{point.label.slice(0, Math.max(3, Math.floor(gap / 9)))}</text>)}
       </svg>
     }
 
@@ -89,8 +89,5 @@ export default function ChartCard({ block, storageKey }: { block: ChartCardBlock
       </button>)}
     </div>
     <p className="evo-visual-chart-value" role="status"><strong>{selectedPoint.label}</strong><span>{nf.format(selectedPoint.value)}{unit}</span></p>
-    <details className="evo-visual-chart-data"><summary>Adatok megtekintése</summary>
-      <ul>{points.map((point, index) => <li key={index}><span>{point.label}</span><strong>{nf.format(point.value)}{unit}</strong></li>)}</ul>
-    </details>
   </section>
 }

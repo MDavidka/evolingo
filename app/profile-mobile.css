@@ -27,7 +27,7 @@
   line-height: 1.12 !important;
   overflow-wrap: anywhere;
 }
-.profile-page .profile-handle { margin-top: 4px !important; font-size: 13px !important; }
+.profile-page .profile-handle { margin-top: 4px !important; font-size: 0.8125rem !important; }
 .profile-page .profile-streak-badge,
 .profile-page .profile-banner-settings { top: max(12px, env(safe-area-inset-top)) !important; }
 .profile-page .profile-streak-badge { left: 14px !important; min-height: 44px !important; }
@@ -56,7 +56,7 @@
 .profile-page .profile-social-stat .profile-stat-icon { margin: 0 !important; }
 .profile-page .profile-social-stat > strong { font-size: clamp(19px, 5.7vw, 24px) !important; }
 .profile-page .profile-social-stat > span:not(.profile-stat-icon) {
-  font-size: clamp(9px, 2.8vw, 11px) !important;
+  font-size: clamp(12px, 2.8vw, 12px) !important;
   line-height: 1.25 !important;
   overflow-wrap: anywhere;
 }

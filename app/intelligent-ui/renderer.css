@@ -19,7 +19,7 @@
 }
 .evo-iui-block h3 {
   margin: 4px 0 14px;
-  font-size: 17px;
+  font-size: 1.0625rem;
   line-height: 1.4;
   font-weight: 650;
   color: #202127;
@@ -28,8 +28,8 @@
 }
 .evo-iui-block .evo-iui-kicker {
   margin: 0;
-  color: #8e8e93;
-  font-size: 12px;
+  color: #5b6472;
+  font-size: 0.75rem;
   line-height: 18px;
   letter-spacing: .015em;
   font-weight: 500;
@@ -46,71 +46,71 @@
 .evo-iui-block button:disabled { cursor: default; opacity: .45; }
 .evo-iui-flex-heading { display:flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
 .evo-iui-flex-heading > div { min-width: 0; }
-.evo-iui-count { flex: none; color: #8e8e93; font-size: 12px; font-variant-numeric: tabular-nums; }
-.evo-iui-rule { padding: 14px; border-radius: 14px; margin: 0 0 12px; background: #f5f5f7; color: #343740; font-size: 15px; line-height: 1.55; overflow-wrap:anywhere; }
+.evo-iui-count { flex: none; color: #5b6472; font-size: 0.75rem; font-variant-numeric: tabular-nums; }
+.evo-iui-rule { padding: 14px; border-radius: 14px; margin: 0 0 12px; background: #f5f5f7; color: #343740; font-size: 0.9375rem; line-height: 1.55; overflow-wrap:anywhere; }
 .evo-iui-examples { display: flex; flex-direction: column; gap: 8px; }
-.evo-iui-examples p { margin: 0; padding: 10px 12px; border-left: 2px solid #d2d8e0; color: #555e6b; font-size: 14px; line-height: 1.5; overflow-wrap:anywhere; }
+.evo-iui-examples p { margin: 0; padding: 10px 12px; border-left: 2px solid #d2d8e0; color: #555e6b; font-size: 0.875rem; line-height: 1.5; overflow-wrap:anywhere; }
 .evo-iui-choices { display: flex; flex-direction: column; gap: 9px; }
 .evo-iui-choices button {
   display: flex; align-items: center; gap: 11px; text-align: left;
   width: 100%; min-width: 0; min-height: 52px; padding: 9px 12px;
   border: 1px solid #e5e5ea; border-radius: 15px;
-  background: #fff; color: #202127; font-size: 14px; line-height: 1.35;
+  background: #fff; color: #202127; font-size: 0.875rem; line-height: 1.35;
   white-space: normal; overflow-wrap:anywhere;
 }
-.evo-iui-choices button > span { display: grid; place-items: center; flex: 0 0 30px; height: 30px; border-radius: 9px; background: #f5f5f7; color: #676e79; font-size: 12px; font-weight: 600; }
+.evo-iui-choices button > span { display: grid; place-items: center; flex: 0 0 30px; height: 30px; border-radius: 9px; background: #f5f5f7; color: #676e79; font-size: 0.75rem; font-weight: 600; }
 .evo-iui-choices button.is-correct { border-color: #75a585; background: #f4faf5; }
 .evo-iui-choices button.is-incorrect { border-color: #d4a5a5; background: #fff7f7; }
 .evo-iui-choices button > svg { margin-left:auto; flex:none; color: #3b8051; }
 .evo-iui-feedback { margin-top: 14px; border-radius: 14px; padding: 12px; background: #f5f5f7; }
-.evo-iui-feedback strong { display:block; font-size: 14px; font-weight: 650; }
-.evo-iui-feedback p { margin: 5px 0 9px; font-size: 13px; line-height: 1.5; color: #606671; }
-.evo-iui-feedback button { display:inline-flex; align-items:center; gap:6px; min-height:44px; padding:0 8px; border:0; background:transparent; font-size:13px; font-weight:600; color:#3f4a5b; }
+.evo-iui-feedback strong { display:block; font-size: 0.875rem; font-weight: 650; }
+.evo-iui-feedback p { margin: 5px 0 9px; font-size: 0.8125rem; line-height: 1.5; color: #606671; }
+.evo-iui-feedback button { display:inline-flex; align-items:center; gap:6px; min-height:44px; padding:0 8px; border:0; background:transparent; font-size:0.8125rem; font-weight:600; color:#3f4a5b; }
 .evo-iui-flashcard {
   display: flex; width:100%; min-height:180px; flex-direction: column; align-items:center; justify-content:center;
   padding:18px; gap: 10px; border:1px solid #e5e5ea; border-radius:17px; background:#f5f5f7;
   color:#202127; text-align:center; overflow-wrap:anywhere;
 }
-.evo-iui-flashcard small, .evo-iui-flashcard em { color:#8e8e93; font-size:12px; font-style:normal; }
+.evo-iui-flashcard small, .evo-iui-flashcard em { color:#5b6472; font-size:0.75rem; font-style:normal; }
 .evo-iui-flashcard strong { font-size: clamp(20px, 6vw, 26px); font-weight: 650; line-height: 1.25; }
-.evo-iui-flashcard > span { font-size: 13px; line-height: 1.4; color: #616673; }
-.evo-iui-pager { display:flex; align-items:center; justify-content:space-between; margin-top:12px; color:#8e8e93; font-size:13px; }
+.evo-iui-flashcard > span { font-size: 0.8125rem; line-height: 1.4; color: #616673; }
+.evo-iui-pager { display:flex; align-items:center; justify-content:space-between; margin-top:12px; color:#5b6472; font-size:0.8125rem; }
 .evo-iui-pager button { display:grid; place-items:center; width:44px; height:44px; border:1px solid #e5e5ea; border-radius:50%; background:#fff; color:#202127; }
 .evo-iui-comparison { border:1px solid #e5e5ea; border-radius:14px; overflow:hidden; }
 .evo-iui-comparison-head, .evo-iui-comparison-row { display:grid; grid-template-columns: minmax(60px,.8fr) repeat(2,minmax(0,1fr)); gap: 0; }
 .evo-iui-comparison-head { background:#f5f5f7; }
 .evo-iui-comparison-row + .evo-iui-comparison-row { border-top:1px solid #e5e5ea; }
-.evo-iui-comparison-head > *, .evo-iui-comparison-row > * { min-width:0; margin:0; padding:11px 8px; font-size:12px; line-height:1.45; overflow-wrap:anywhere; }
+.evo-iui-comparison-head > *, .evo-iui-comparison-row > * { min-width:0; margin:0; padding:11px 8px; font-size:0.75rem; line-height:1.45; overflow-wrap:anywhere; }
 .evo-iui-comparison-head strong { font-weight: 650; }
 .evo-iui-comparison-row strong { font-weight: 550; color:#424852; }
 .evo-iui-comparison-row span { color:#646a75; }
 .evo-iui-timeline-tabs { position:relative; display:flex; flex-wrap:wrap; gap:7px; padding:4px; border-radius:14px; background:#f5f5f7; }
-.evo-iui-timeline-tabs button { flex: 1 1 auto; min-width:0; min-height:44px; padding:8px; border:0; border-radius:11px; color:#747b87; background:transparent; font-size:12px; line-height:1.2; }
+.evo-iui-timeline-tabs button { flex: 1 1 auto; min-width:0; min-height:44px; padding:8px; border:0; border-radius:11px; color:#747b87; background:transparent; font-size:0.75rem; line-height:1.2; }
 .evo-iui-timeline-tabs button.is-active { color:#202127; background:#fff; }
 .evo-iui-timeline-description { margin-top:13px; padding:12px; border-radius:14px; border:1px solid #e5e5ea; }
-.evo-iui-timeline-description span { color:#8e8e93; font-size:12px; }
-.evo-iui-timeline-description p { margin:5px 0 0; color:#343c49; line-height:1.5; font-size:14px; overflow-wrap:anywhere; }
+.evo-iui-timeline-description span { color:#5b6472; font-size:0.75rem; }
+.evo-iui-timeline-description p { margin:5px 0 0; color:#343c49; line-height:1.5; font-size:0.875rem; overflow-wrap:anywhere; }
 .evo-iui-plan { display:flex; flex-direction:column; border-top:1px solid #e5e5ea; }
 .evo-iui-plan label { display:flex; align-items:flex-start; gap:12px; min-height:62px; padding:12px 2px; border-bottom:1px solid #e5e5ea; cursor:pointer; }
 .evo-iui-plan label input { position:absolute; width:1px; height:1px; opacity:0; }
 .evo-iui-plan label input:focus-visible + .evo-iui-check { outline:2px solid #5c7394; outline-offset:3px; }
-.evo-iui-check { display:grid; flex:0 0 24px; width:24px; height:24px; place-items:center; margin-top:1px; border:1.5px solid #c3c8d0; border-radius:8px; color:#fff; background:#fff; }
+.evo-iui-check { display:grid; flex:0 0 24px; width:24px; height:24px; place-items:center; margin-top:1px; border:1.5px solid #c3c8d0; border-radius:8px; color:#5b6472; background:#fff; }
 .evo-iui-plan label input:checked + .evo-iui-check { border-color:#343a45; background:#343a45; }
 .evo-iui-plan label > span:last-child { display:flex; flex-direction:column; min-width:0; gap:4px; }
-.evo-iui-plan label strong { color:#242830; font-size:14px; font-weight:600; }
-.evo-iui-plan label small { color:#747b85; font-size:13px; line-height:1.5; overflow-wrap:anywhere; }
-.evo-iui-hint { margin:12px 0 0; color:#8e8e93; font-size:12px; line-height:1.4; }
+.evo-iui-plan label strong { color:#242830; font-size:0.875rem; font-weight:600; }
+.evo-iui-plan label small { color:#747b85; font-size:0.8125rem; line-height:1.5; overflow-wrap:anywhere; }
+.evo-iui-hint { margin:12px 0 0; color:#5b6472; font-size:0.75rem; line-height:1.4; }
 .evo-iui-progress { display:flex; flex-direction:column; gap:14px; }
-.evo-iui-progress > div > div { display:flex; justify-content:space-between; gap:10px; margin-bottom:6px; font-size:13px; }
+.evo-iui-progress > div > div { display:flex; justify-content:space-between; gap:10px; margin-bottom:6px; font-size:0.8125rem; }
 .evo-iui-progress strong { font-weight:550; }
-.evo-iui-progress span { font-variant-numeric:tabular-nums; color:#8e8e93; }
+.evo-iui-progress span { font-variant-numeric:tabular-nums; color:#5b6472; }
 .evo-iui-progress progress { display:block; width:100%; height:7px; appearance:none; border:0; border-radius:99px; background:#e5e5ea; }
 .evo-iui-progress progress::-webkit-progress-bar { background:#e5e5ea; border-radius:99px; }
 .evo-iui-progress progress::-webkit-progress-value { background:#6b7d95; border-radius:99px; }
 .evo-iui-progress progress::-moz-progress-bar { background:#6b7d95; border-radius:99px; }
 @media (max-width:360px) {
   .evo-iui-block { padding:13px; }
-  .evo-iui-comparison-head > *, .evo-iui-comparison-row > * { padding:9px 6px; font-size:11px; }
+  .evo-iui-comparison-head > *, .evo-iui-comparison-row > * { padding:9px 6px; font-size:.75rem; }
 }
 @media (prefers-reduced-motion: reduce) { .evo-iui-block button { transition:none !important; } }
 
@@ -124,7 +124,7 @@
   border-radius: 999px;
   background: rgba(255,255,255,.84);
   color: #767e8a;
-  font-size: 12px;
+  font-size: 0.75rem;
   line-height: 1.5;
 }
 
@@ -155,14 +155,14 @@
   padding: 5px 10px;
   background: #f7f8fa;
   color: #686f7b;
-  font-size: 12px;
+  font-size: 0.75rem;
   font-weight: 550;
 }
 .evo-iui-concept h3 { margin: 14px 0 8px; }
 .evo-iui-concept > p {
   margin: 0;
   color: #5e6572;
-  font-size: 14px;
+  font-size: 0.875rem;
   line-height: 1.55;
   overflow-wrap: anywhere;
 }
@@ -170,22 +170,22 @@
 /* Visual Intelligence charts: responsive, calm iOS-style and fully accessible. */
 .evo-visual-chart { container-type: inline-size; }
 .evo-visual-chart .evo-visual-chart-kind { display:grid; width:38px; height:38px; flex:none; place-items:center; color:#667990; background:#f5f5f7; border-radius:12px; }
-.evo-visual-chart .evo-visual-chart-source { color:#8e8e93; font-size:12px; margin:-4px 0 10px; }
+.evo-visual-chart .evo-visual-chart-source { color:#5b6472; font-size:0.75rem; margin:-4px 0 10px; }
 .evo-visual-chart .evo-visual-chart-svg { display:block; width:100%; max-width:100%; height:auto; overflow:visible; }
 .evo-visual-chart .evo-visual-chart-selection { display:flex; flex-wrap:wrap; align-items:center; gap:7px; margin:12px 0; }
-.evo-visual-chart .evo-visual-chart-selection button { min-height:37px; padding:8px 11px; border:1px solid #e5e5ea; border-radius:12px; background:#fff; color:#657082; font-size:12px; line-height:1.25; text-align:center; overflow-wrap:anywhere; }
+.evo-visual-chart .evo-visual-chart-selection button { min-height:37px; padding:8px 11px; border:1px solid #e5e5ea; border-radius:12px; background:#fff; color:#657082; font-size:0.75rem; line-height:1.25; text-align:center; overflow-wrap:anywhere; }
 .evo-visual-chart .evo-visual-chart-selection button.is-active { color:#202127; border-color:#b0bfd0; background:#edf2f7; }
-.evo-visual-chart .evo-visual-chart-value { display:flex; align-items:baseline; justify-content:space-between; gap:8px; margin:12px 0 0; padding:12px 0 0; border-top:1px solid #e5e5ea; font-size:13px; color:#66717d; }
+.evo-visual-chart .evo-visual-chart-value { display:flex; align-items:baseline; justify-content:space-between; gap:8px; margin:12px 0 0; padding:12px 0 0; border-top:1px solid #e5e5ea; font-size:0.8125rem; color:#66717d; }
 .evo-visual-chart .evo-visual-chart-value strong { color:#303943; font-weight:600; }
 .evo-visual-chart .evo-visual-chart-value span { font-variant-numeric:tabular-nums; font-weight:650; color:#252830; }
 .evo-visual-chart .evo-visual-chart-data { margin-top:13px; }
-.evo-visual-chart .evo-visual-chart-data summary { color:#687588; font-size:12px; cursor:pointer; min-height:44px; display:flex; align-items:center; }
+.evo-visual-chart .evo-visual-chart-data summary { color:#687588; font-size:0.75rem; cursor:pointer; min-height:44px; display:flex; align-items:center; }
 .evo-visual-chart .evo-visual-chart-data ul { margin:0; padding:0; list-style:none; }
-.evo-visual-chart .evo-visual-chart-data li { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:8px 0; border-top:1px solid #eef0f3; font-size:12px; line-height:1.45; color:#687588; }
+.evo-visual-chart .evo-visual-chart-data li { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:8px 0; border-top:1px solid #eef0f3; font-size:0.75rem; line-height:1.45; color:#687588; }
 .evo-visual-chart .evo-visual-chart-data li strong { color:#343d48; font-weight:600; font-variant-numeric:tabular-nums; }
 @container (max-width:270px) {
   .evo-visual-chart .evo-visual-chart-selection { gap:5px; }
-  .evo-visual-chart .evo-visual-chart-selection button { padding:7px 8px; font-size:11px; }
+  .evo-visual-chart .evo-visual-chart-selection button { padding:7px 8px; font-size:.75rem; }
 }
 
 /* Three production learning interactions: deliberate selection, mastery and touch. */
@@ -198,26 +198,26 @@
 .evo-iui-quiz .evo-iui-check-answer {
   display:flex; justify-content:center; align-items:center; width:100%; min-height:47px;
   margin-top:14px; border:0; border-radius:999px; background:#252830; color:#fff;
-  font-size:14px; font-weight:620;
+  font-size:0.875rem; font-weight:620;
 }
 .evo-iui-quiz .evo-iui-check-answer:disabled { opacity:.35; }
 .evo-iui-vocabulary .evo-iui-flashcard { touch-action:pan-y; -webkit-user-select:none; user-select:none; }
 .evo-iui-vocabulary .evo-iui-pager .evo-iui-pronounce {
   display:flex; align-items:center; justify-content:center; gap:7px;
   width:auto; min-width:100px; height:44px; padding:0 12px; border-radius:999px; background:#f5f5f7; border:0;
-  color:#4e5e72; font-size:13px;
+  color:#4e5e72; font-size:0.8125rem;
 }
 .evo-iui-vocabulary .evo-iui-mastery { margin-top:15px; padding-top:13px; border-top:1px solid #e5e5ea; }
-.evo-iui-vocabulary .evo-iui-mastery-heading { display:flex; align-items:center; justify-content:space-between; gap:10px; font-size:12px; color:#8e8e93; }
+.evo-iui-vocabulary .evo-iui-mastery-heading { display:flex; align-items:center; justify-content:space-between; gap:10px; font-size:0.75rem; color:#5b6472; }
 .evo-iui-vocabulary .evo-iui-mastery-heading strong { color:#333b47; font-variant-numeric:tabular-nums; }
 .evo-iui-vocabulary .evo-iui-mastery progress { display:block; width:100%; height:6px; margin:9px 0 14px; appearance:none; background:#e5e5ea; border:0; border-radius:999px; }
 .evo-iui-vocabulary .evo-iui-mastery progress::-webkit-progress-bar { background:#e5e5ea; border-radius:999px; }
 .evo-iui-vocabulary .evo-iui-mastery progress::-webkit-progress-value { background:#6685a2; border-radius:999px; }
 .evo-iui-vocabulary .evo-iui-mastery progress::-moz-progress-bar { background:#6685a2; border-radius:999px; }
 .evo-iui-vocabulary .evo-iui-mastery-actions { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
-.evo-iui-vocabulary .evo-iui-mastery-actions button { display:flex; align-items:center; justify-content:center; gap:7px; min-height:47px; padding:9px; border:1px solid #e5e5ea; border-radius:999px; font-size:13px; color:#454d59; background:#fff; }
+.evo-iui-vocabulary .evo-iui-mastery-actions button { display:flex; align-items:center; justify-content:center; gap:7px; min-height:47px; padding:9px; border:1px solid #e5e5ea; border-radius:999px; font-size:0.8125rem; color:#454d59; background:#fff; }
 .evo-iui-vocabulary .evo-iui-mastery-actions button:last-child { color:#fff; background:#252830; border-color:#252830; }
-.evo-iui-vocabulary .evo-iui-mastery > p { margin:12px 0 0; color:#8e8e93; font-size:11px; line-height:1.5; }
+.evo-iui-vocabulary .evo-iui-mastery > p { margin:12px 0 0; color:#5b6472; font-size:.75rem; line-height:1.5; }
 
 /* Secure practice feedback and live, local-only study calculator. */
 .evo-iui-quiz .evo-iui-quiz-error {
@@ -226,13 +226,13 @@
   border-radius: 12px;
   background: #fff3f3;
   color: #8f3838;
-  font-size: 13px;
+  font-size: 0.8125rem;
   line-height: 1.5;
 }
 .evo-iui-quiz .evo-iui-quiz-note {
   margin: 12px 0 0;
   color: #7e8590;
-  font-size: 12px;
+  font-size: 0.75rem;
   line-height: 1.5;
 }
 .evo-iui-study-calculator .evo-iui-calculator-controls {
@@ -255,13 +255,13 @@
 .evo-iui-study-calculator .evo-iui-calculator-field strong {
   min-width: 0;
   color: #30343d;
-  font-size: 14px;
+  font-size: 0.875rem;
   line-height: 1.4;
   font-weight: 580;
 }
 .evo-iui-study-calculator .evo-iui-calculator-field output {
   flex: none;
-  font-size: 14px;
+  font-size: 0.875rem;
   line-height: 1.4;
   font-weight: 650;
   color: #465a70;
@@ -293,7 +293,7 @@
 .evo-iui-study-calculator .evo-iui-calculator-result > small {
   display: block;
   color: #808792;
-  font-size: 13px;
+  font-size: 0.8125rem;
   line-height: 1.4;
 }
 .evo-iui-study-calculator .evo-iui-calculator-result > strong {
@@ -310,7 +310,7 @@
   display: block;
   margin: 10px 0 0;
   color: #646b76;
-  font-size: 13px;
+  font-size: 0.8125rem;
   line-height: 1.5;
   overflow-wrap: anywhere;
 }
@@ -325,8 +325,8 @@
 .evo-iui-study-calculator .evo-iui-calculator-bottom p {
   flex: 1 1 160px;
   margin: 0;
-  color: #8e8e93;
-  font-size: 12px;
+  color: #5b6472;
+  font-size: 0.75rem;
   line-height: 1.4;
 }
 .evo-iui-study-calculator .evo-iui-calculator-bottom button {
@@ -340,7 +340,7 @@
   border-radius: 999px;
   color: #505864;
   background: #fff;
-  font-size: 13px;
+  font-size: 0.8125rem;
   font-weight: 580;
 }
 .evo-iui-visually-hidden {
@@ -372,10 +372,10 @@
 }
 .evo-iui-illustration figcaption { display: block; }
 .evo-iui-illustration figcaption p:not(.evo-iui-kicker) {
-  font-size: 14px; line-height: 1.6; color: #515968; margin: 8px 0;
+  font-size: 0.875rem; line-height: 1.6; color: #515968; margin: 8px 0;
 }
 .evo-iui-illustration figcaption small,
-.evo-iui-live-time > small { display: block; margin-top: 10px; font-size: 11px; color: #858b97; line-height: 1.5; }
+.evo-iui-live-time > small { display: block; margin-top: 10px; font-size: .75rem; color: #858b97; line-height: 1.5; }
 .evo-iui-live-time .evo-iui-live-time-display {
   display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 14px;
   margin: 17px 0 10px; padding: 20px 16px; border-radius: 18px; background: #f4f5f7;
@@ -384,8 +384,8 @@
   font-size: clamp(29px, 8vw, 42px); font-weight: 680; line-height: 1.2;
   font-variant-numeric: tabular-nums; letter-spacing: -.04em; color: #242831;
 }
-.evo-iui-live-time .evo-iui-live-time-display span { font-size: 13px; color: #737c8b; }
-.evo-iui-live-time > p { margin: 0; color: #555e6d; font-size: 14px; }
+.evo-iui-live-time .evo-iui-live-time-display span { font-size: 0.8125rem; color: #737c8b; }
+.evo-iui-live-time > p { margin: 0; color: #555e6d; font-size: 0.875rem; }
 @media (max-width: 350px) {
   .evo-iui-illustration .evo-iui-illustration-art { margin-left: -12px; margin-right: -12px; }
 }

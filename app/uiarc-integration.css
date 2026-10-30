@@ -1,0 +1,70 @@
+/* Arc UI motion and controls, tuned to Evölingo's fox-orange visual identity. */
+.app-shell .evo-arc-primary.evo-arc-primary {
+  color: #fff;
+  background: var(--orange, #ff7900);
+  border-color: var(--orange, #ff7900);
+}
+.app-shell .evo-arc-primary.evo-arc-primary:disabled,
+.app-shell .evo-arc-primary.evo-arc-primary[aria-disabled="true"] {
+  color: #5b6472;
+  background: #ededed;
+  border-color: #5b6472;
+  opacity: 1;
+}
+.app-shell .primary-action.evo-arc-primary,
+.app-shell .skill-button-primary.evo-arc-primary {
+  width: 100%;
+  min-height: 54px;
+  border-radius: 15px;
+  padding: 0 18px;
+  font: inherit;
+  font-size: 0.9375rem;
+  font-weight: 850;
+}
+.app-shell .evo-chat-send.evo-arc-primary {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 39px;
+  min-width: 39px;
+  min-height: 39px;
+  height: 39px;
+  margin: 0;
+  padding: 0;
+  border-radius: 50%;
+}
+.app-shell .evo-chat-send.evo-arc-primary:disabled,
+.app-shell .evo-chat-send.evo-arc-primary[aria-disabled="true"] {
+  color: #5b6472;
+  background: #e9e9e9;
+  border-color: #5b6472;
+}
+.app-shell :is(.lesson-card, .world-card, .rank-row, .welcome-card, .evo-tools-creation-card, .evo-profile-stat) {
+  transition: transform var(--duration-fast, 160ms) var(--ease-standard, ease),
+    border-color var(--duration-fast, 160ms) var(--ease-standard, ease),
+    box-shadow var(--duration-fast, 160ms) var(--ease-standard, ease);
+}
+@media (hover: hover) and (pointer: fine) {
+  .app-shell :is(.lesson-card, .world-card, .evo-tools-creation-card):hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-raised, 0 6px 18px #00000010);
+  }
+}
+.app-shell .task-node .task-dot {
+  transition: transform var(--duration-spring, 580ms) var(--ease-spring, cubic-bezier(.22,1,.36,1)),
+    background-color var(--duration-fast, 160ms) var(--ease-standard, ease);
+}
+.app-shell .task-node.active .task-dot { animation: arc-ready-settle 520ms var(--ease-enter, cubic-bezier(.16,1,.3,1)) both; }
+@keyframes arc-ready-settle {
+  0% { transform: scale(.9); }
+  65% { transform: scale(1.045); }
+  100% { transform: scale(1); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .app-shell *, .app-shell *::before, .app-shell *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: .01ms !important;
+  }
+}

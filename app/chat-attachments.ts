@@ -29,8 +29,9 @@ export function validateAttachment(input: unknown): ChatAttachment | null {
       bytes.subarray(0, 4).toString("ascii") === "RIFF" && bytes.subarray(8, 12).toString("ascii") === "WEBP"
     return magic ? a as ChatAttachment : null
   }
+  const name = a.name
   if (a.kind === "text" && a.mime === "text/plain" &&
-      TEXT_EXTENSIONS.some(ext => a.name.toLowerCase().endsWith(ext)) &&
+      typeof name === "string" && TEXT_EXTENSIONS.some(ext => name.toLowerCase().endsWith(ext)) &&
       a.data.length > 0 && a.data.length <= 12000 && !/[\u0000-\u0008]/.test(a.data)) return a as ChatAttachment
   return null
 }

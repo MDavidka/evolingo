@@ -4,3 +4,8 @@ out/
 next-env.d.ts
 AGENTS.md
 .vercel/
+
+.env*.local
+
+.dev-runtime/
+tsconfig.tsbuildinfo

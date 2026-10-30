@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react"
 import { ActionSwap } from "../components/arc/action-swap/action-swap"
 import { Button } from "../components/ui/button"
 import { Separator } from "../components/ui/separator"
+import UnifiedSheet from "./unified-sheet"
 import {
   BookOpen, Check, ChevronDown, ChevronRight, Clock3, Compass, Crown, Flame,
   Flag, Gem, Heart, LayoutGrid, LockKeyhole, Medal, Pencil, Settings, Share, Sparkles, Star, Target,
@@ -57,29 +58,13 @@ function shortJoinDate(value?: string | null) {
 }
 
 function BottomSheet({ title, onClose, children }: { title: string; onClose: () => void; children: React.ReactNode }) {
-  useEffect(() => {
-    const onKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape") onClose()
-    }
-    const previous = document.body.style.overflow
-    document.body.style.overflow = "hidden"
-    document.addEventListener("keydown", onKey)
-    return () => {
-      document.removeEventListener("keydown", onKey)
-      document.body.style.overflow = previous
-    }
-  }, [onClose])
-
-  return <div className="evo-sheet-backdrop" onMouseDown={event => { if (event.target === event.currentTarget) onClose() }}>
-    <section className="evo-sheet" role="dialog" aria-modal="true" aria-label={title}>
-      <span className="evo-sheet-grabber" aria-hidden="true" />
+  return <UnifiedSheet backdropClassName="evo-sheet-backdrop" sheetClassName="evo-sheet" labelledBy="evo-sheet-title" onClose={onClose}>
       <div className="evo-sheet-head">
-        <h2>{title}</h2>
-        <button type="button" onClick={onClose} aria-label="Bezárás"><X size={22} strokeWidth={1.7} /></button>
+        <h2 id="evo-sheet-title">{title}</h2>
+        <button type="button" onClick={onClose} aria-label="Bezárás"><X size={22} strokeWidth={1.75} /></button>
       </div>
       {children}
-    </section>
-  </div>
+  </UnifiedSheet>
 }
 
 function BadgeTile({ badge, onClick, fresh = false, compact = false }: {
@@ -98,8 +83,8 @@ function BadgeTile({ badge, onClick, fresh = false, compact = false }: {
         <circle cx="36" cy="36" r="34" />
         <circle className="evo-badge-ring-progress" cx="36" cy="36" r="34" style={{ strokeDasharray: (badge.percent / 100 * 213.63) + " 213.63" }} />
       </svg>}
-      <Icon size={32} strokeWidth={1.7} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" />
-      {!badge.earned && !badge.inProgress && <LockKeyhole className="evo-badge-mini-lock" size={12} strokeWidth={1.7} aria-hidden="true" />}
+      <Icon size={32} strokeWidth={1.75} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" />
+      {!badge.earned && !badge.inProgress && <LockKeyhole className="evo-badge-mini-lock" size={12} strokeWidth={1.75} aria-hidden="true" />}
     </span>
     <span className="evo-profile-badge-label">{badge.label}</span>
   </>
@@ -281,10 +266,10 @@ export default function ProfileDashboard({
 
   return <div className="evo-profile-dashboard">
     <header className="evo-profile-topbar" aria-label="Profil navigáció">
-      <span className="evo-profile-wordmark" aria-label="Evölingo">evölingo</span>
+      <span className="evo-profile-wordmark" aria-label="Evölingo">Evölingo</span>
       <span className={"evo-profile-collapsed-title" + (collapsed ? " is-visible" : "")} aria-hidden="true">Profil</span>
       <Button variant="ghost" size="icon" className="evo-profile-settings" aria-label="Profilbeállítások" onClick={onEdit}>
-        <Settings size={20} strokeWidth={1.8} aria-hidden="true" />
+        <Settings size={20} strokeWidth={1.75} aria-hidden="true" />
       </Button>
     </header>
 
@@ -292,7 +277,7 @@ export default function ProfileDashboard({
       <h1>Profil</h1>
       <button type="button" className="evo-profile-course" aria-label="Tanfolyamválasztás: erasmus" onClick={() => setCourseOpen(true)}>
         <img src="https://flagcdn.com/w80/gb.png" alt="" width={21} height={21} />
-        <span>erasmus</span><ChevronDown size={14} strokeWidth={1.7} aria-hidden="true" />
+        <span>erasmus</span><ChevronDown size={14} strokeWidth={1.75} aria-hidden="true" />
       </button>
     </div>
 
@@ -306,18 +291,18 @@ export default function ProfileDashboard({
       </div>
       <div className="evo-profile-avatar-ring" aria-label="Profilkép">
         <span className="evo-profile-avatar-inner">
-          {avatarImageSrc ? <img src={avatarImageSrc} alt="" /> : avatar === "book" ? <BookOpen size={29} strokeWidth={1.7} /> : avatar === "star" ? <Star size={29} strokeWidth={1.7} /> : <Sparkles size={29} strokeWidth={1.7} />}
+          {avatarImageSrc ? <img src={avatarImageSrc} alt="" /> : avatar === "book" ? <BookOpen size={29} strokeWidth={1.75} /> : avatar === "star" ? <Star size={29} strokeWidth={1.75} /> : <Sparkles size={29} strokeWidth={1.75} />}
         </span>
       </div>
     </section>
 
     <div className="evo-profile-actions">
       <Button variant="default" className="evo-profile-edit" onClick={onEdit}>
-        <Pencil size={17} strokeWidth={1.8} aria-hidden="true" />
+        <Pencil size={17} strokeWidth={1.75} aria-hidden="true" />
         <span>Profil szerkesztése</span>
       </Button>
       <Button variant="outline" size="icon" className="evo-profile-share" onClick={() => { void shareProfile() }} aria-label="Profil megosztása" title="Profil megosztása">
-        <Share size={20} strokeWidth={1.8} aria-hidden="true" />
+        <Share size={20} strokeWidth={1.75} aria-hidden="true" />
       </Button>
     </div>
     {shareNotice && <p className="evo-profile-share-status" role="status">{shareNotice}</p>}
@@ -326,24 +311,24 @@ export default function ProfileDashboard({
     <section className="evo-profile-stats" aria-label="Profilstatisztikák">
       <button type="button" className={"evo-profile-stat" + (hasStudiedToday && streak > 0 ? " is-active" : "")} onClick={onStreakSettings} aria-label={streak + " nap sorozat. Napi cél beállításai."}>
         <strong>{formatNumber(streak)}</strong>
-        <span><Flame size={14} strokeWidth={1.7} aria-hidden="true" /> Nap sorozat</span>
+        <span><Flame size={14} strokeWidth={1.75} aria-hidden="true" /> Nap sorozat</span>
       </button>
       <div className="evo-profile-stat">
         <strong>{formatNumber(stars)}</strong>
-        <span><Star size={14} strokeWidth={1.7} aria-hidden="true" /> Csillag</span>
+        <span><Star size={14} strokeWidth={1.75} aria-hidden="true" /> Csillag</span>
       </div>
       <div className="evo-profile-stat">
         <strong>{formatNumber(completedCount)}</strong>
-        <span><BookOpen size={14} strokeWidth={1.7} aria-hidden="true" /> Lecke</span>
+        <span><BookOpen size={14} strokeWidth={1.75} aria-hidden="true" /> Lecke</span>
       </div>
     </section>
 
     <div className="evo-profile-secondary-stats">
       <span>{formatNumber(xp)} XP összesen</span>
       <button type="button" onClick={onFriendsClick} aria-label={friendCount + " barát. Barátok megnyitása."}>
-        <Users size={16} strokeWidth={1.7} aria-hidden="true" />
+        <Users size={16} strokeWidth={1.75} aria-hidden="true" />
         {formatNumber(friendCount)} barát
-        <ChevronRight size={15} strokeWidth={1.7} aria-hidden="true" />
+        <ChevronRight size={15} strokeWidth={1.75} aria-hidden="true" />
       </button>
     </div>
 
@@ -363,8 +348,8 @@ export default function ProfileDashboard({
           size="sm"
           value={badgeView}
           states={[
-            { id: "featured", label: "Kiemelt", icon: <Medal size={16} strokeWidth={1.8} />, tone: "quiet" },
-            { id: "all", label: "Összes", icon: <LayoutGrid size={16} strokeWidth={1.8} />, tone: "neutral" },
+            { id: "featured", label: "Kiemelt", icon: <Medal size={16} strokeWidth={1.75} />, tone: "quiet" },
+            { id: "all", label: "Összes", icon: <LayoutGrid size={16} strokeWidth={1.75} />, tone: "neutral" },
           ]}
           onValueChange={id => setBadgeView(id === "all" ? "all" : "featured")}
           aria-label={badgeView === "all" ? "Váltás a kiemelt jelvényekre" : "Összes jelvény megjelenítése"}
@@ -401,7 +386,7 @@ export default function ProfileDashboard({
 
     {courseOpen && <BottomSheet title="Tanfolyamválasztás" onClose={() => setCourseOpen(false)}>
       <button className="evo-course-option" type="button" onClick={() => setCourseOpen(false)}>
-        <img src="https://flagcdn.com/w80/gb.png" alt="" width={24} height={24} /><span><strong>erasmus</strong><small>Angol · jelenlegi tanfolyam</small></span><Check size={20} strokeWidth={1.7} aria-hidden="true" />
+        <img src="https://flagcdn.com/w80/gb.png" alt="" width={24} height={24} /><span><strong>erasmus</strong><small>Angol · jelenlegi tanfolyam</small></span><Check size={20} strokeWidth={1.75} aria-hidden="true" />
       </button>
     </BottomSheet>}
 

@@ -11,7 +11,7 @@
   width: 100%;
   min-width: 0;
   color: #202127;
-  font-size: 15px;
+  font-size: 0.9375rem;
   line-height: 1.65;
   -webkit-font-smoothing: antialiased;
 }
@@ -25,7 +25,7 @@
 .evo-rich-text h3 {
   margin: 22px 0 10px;
   color: #202127;
-  font-size: 19px;
+  font-size: 1.1875rem;
   line-height: 1.35;
   letter-spacing: -.3px;
   font-weight: 670;
@@ -33,7 +33,7 @@
 .evo-rich-text h4 {
   margin: 18px 0 9px;
   color: #252830;
-  font-size: 16px;
+  font-size: 1rem;
   line-height: 1.4;
   font-weight: 650;
 }
@@ -64,7 +64,7 @@
   padding-left: 23px;
 }
 .evo-rich-text li { padding-left: 3px; margin: 5px 0; overflow-wrap: anywhere; }
-.evo-rich-text li::marker { color: #8e8e93; }
+.evo-rich-text li::marker { color: #5b6472; }
 .evo-rich-text hr {
   height: 1px;
   margin: 21px 0;
@@ -75,7 +75,7 @@
   padding: 2px 5px;
   border-radius: 6px;
   background: #f1f2f5;
-  font: 12.5px/1.5 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font: 0.78125rem/1.5 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   color: #4b5565;
   overflow-wrap: anywhere;
 }
@@ -97,7 +97,7 @@
   white-space: pre;
   word-break: normal;
   overflow-wrap: normal;
-  font-size: 12px;
+  font-size: 0.75rem;
   line-height: 1.5;
 }
 .evo-rich-text .evo-rich-image {
@@ -132,7 +132,7 @@
   padding: 10px 11px;
   border-bottom: 1px solid #e5e5ea;
   color: #404652;
-  font-size: 13px;
+  font-size: 0.8125rem;
   line-height: 1.5;
   vertical-align: top;
 }
@@ -145,9 +145,9 @@
 .evo-rich-text tr td + td,
 .evo-rich-text tr th + th { border-left: 1px solid #ececf0; }
 @media (max-width: 360px) {
-  .evo-rich-text { font-size: 14px; }
-  .evo-rich-text h3 { font-size: 18px; }
-  .evo-rich-text th, .evo-rich-text td { padding: 9px 8px; font-size: 12px; }
+  .evo-rich-text { font-size: 0.875rem; }
+  .evo-rich-text h3 { font-size: 1.125rem; }
+  .evo-rich-text th, .evo-rich-text td { padding: 9px 8px; font-size: 0.75rem; }
 }
 @media (prefers-reduced-motion: reduce) {
   .evo-rich-text *, .evo-rich-text *::before, .evo-rich-text *::after { scroll-behavior: auto !important; }
