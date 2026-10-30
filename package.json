@@ -7,7 +7,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "test": "node --experimental-strip-types --test app/intelligent-ui/schema.test.mjs",
+    "test": "node --experimental-strip-types --test app/intelligent-ui/*.test.mjs",
     "typecheck": "tsc --noEmit"
   },
   "repository": {
