@@ -6,8 +6,8 @@
  * Does NOT award official lesson scores or mutate any student records.
  */
 import { createCipheriv, createDecipheriv, createHash, randomBytes } from "node:crypto"
-import type { QuizChoiceBlock, PublicQuizChoiceBlock } from "./schema"
-import { validateIntelligentUI } from "./schema"
+import type { QuizChoiceBlock, PublicQuizChoiceBlock } from "./schema.ts"
+import { validateIntelligentUI } from "./schema.ts"
 
 const VERSION = 1
 const LIFETIME_MS = 72 * 60 * 60 * 1000
