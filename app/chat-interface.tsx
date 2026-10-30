@@ -29,7 +29,7 @@ export default function ChatInterface() {
         const safe = parsed.slice(-16).filter((item): item is ChatMessage =>
           !!item && typeof item === "object" && (item.role === "user" || item.role === "assistant") &&
           typeof item.content === "string" && item.content.length <= 30000
-        ).map(item => ({ ...item, ui: item.ui ? validateIntelligentUI(item.ui) ?? undefined : undefined }))
+        ).map(item => ({ ...item, ui: item.ui ? validateIntelligentUI(item.ui, { allowPublicQuizzes: true }) ?? undefined : undefined }))
         setMessages(safe)
       }
     } catch { /* Keep empty conversation when session data is unavailable. */ }
@@ -130,7 +130,7 @@ export default function ChatInterface() {
           setBusy(false)
           setEnhancing(true)
         } else if (event.type === "ui" && event.ui) {
-          const ui = validateIntelligentUI(event.ui)
+          const ui = validateIntelligentUI(event.ui, { allowPublicQuizzes: true })
           if (ui) setMessages(old => old.map(msg => msg.id === assistantId ? { ...msg, ui } : msg))
         } else if (event.type === "error") {
           setError(answered ? "A válasz megszakadt; a már megjelent szöveg megmaradt." : event.error || "Az AI jelenleg nem válaszol. Próbáld újra.")
