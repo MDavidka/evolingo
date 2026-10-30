@@ -253,11 +253,17 @@ export async function POST(request: NextRequest) {
 
   let messages: Message[]
   let interactive = false
+  let attachment: ChatAttachment | null = null
   try {
     const raw = await request.text()
-    if (raw.length > 30_000) return fail("Az üzenet túl hosszú.", 413)
+    if (raw.length > 3_100_000) return fail("Az üzenet túl hosszú.", 413)
     const body: unknown = JSON.parse(raw)
     if (!body || typeof body !== "object" || !("messages" in body)) return fail("Hiányzó üzenetek.", 400)
+    const rawAttachment = (body as { attachment?: unknown }).attachment
+    if (rawAttachment != null) {
+      attachment = validateAttachment(rawAttachment)
+      if (!attachment) return fail("Nem támogatott vagy túl nagy melléklet.", 400)
+    }
     const list = (body as { messages?: unknown }).messages
     interactive = (body as { interactive?: unknown }).interactive === true
     if (!Array.isArray(list) || list.length === 0 || list.length > 12) return fail("Érvénytelen beszélgetés.", 400)
@@ -272,7 +278,7 @@ export async function POST(request: NextRequest) {
     return fail("Érvénytelen üzenetformátum.", 400)
   }
 
-  if (interactive) return new Response(makeStream(apiKey, messages), {
+  if (interactive) return new Response(makeStream(apiKey, messages, attachment), {
     headers: { ...headers, "Content-Type": "text/event-stream; charset=utf-8", "X-Accel-Buffering": "no" },
   })
 
@@ -284,7 +290,7 @@ export async function POST(request: NextRequest) {
         model: MODEL,
         messages: [
           { role: "system", content: replyPrompt },
-          ...messages,
+          ...withAttachment(messages, attachment),
         ],
         temperature: 0.7,
         max_tokens: 1200,
