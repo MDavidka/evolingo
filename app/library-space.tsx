@@ -3,7 +3,7 @@
 import { LiquidGlassButton } from "./liquid-glass-button"
 import { useEffect, useMemo, useRef, useState, type ChangeEvent, type PointerEvent as ReactPointerEvent } from "react"
 import {
-  ArrowDownToLine, Check, CheckSquare2, ChevronLeft, Copy, File, FileText, Folder,
+  ArrowDownToLine, ArrowUpRight, Check, CheckSquare2, ChevronLeft, Copy, File, FileText, Folder,
   FolderOpen, Grid2X2, HardDrive, List, MoreHorizontal, Move, Pencil, Plus, Search,
   Share2, SlidersHorizontal, Trash2, Upload, X,
 } from "lucide-react"
@@ -362,7 +362,7 @@ export default function LibrarySpace() {
       <h2>{query ? "Nincs találat" : folder ? "Ez a mappa üres" : "Még nincsenek fájljaid"}</h2>
       <p>{query ? "Próbálj más kifejezést, vagy töröld a keresést." : "Tölts fel egy dokumentumot, vagy rendezd mappákba a fájljaidat."}</p>
       {query ? <button className="library-empty-clear" type="button" onClick={() => setQuery("")}>Keresés törlése</button> : <div className="library-empty-actions">
-        <button className="library-empty-upload" type="button" onClick={() => filePicker.current?.click()}><Upload size={18} /> Fájl feltöltése</button>
+        <button className="library-empty-upload evo-wide-action" type="button" onClick={() => filePicker.current?.click()}>Fájl feltöltése <ArrowUpRight size={20} aria-hidden="true" /></button>
         <button className="library-empty-folder" type="button" onClick={() => { setDraftName(""); setSheet("new") }}><Folder size={18} /> Új mappa</button>
       </div>}
     </div>}
@@ -393,7 +393,7 @@ export default function LibrarySpace() {
           <button className="is-destructive" type="button" onClick={() => setSheet("delete")}><Trash2 size={20} /><span><strong>Törlés</strong></span></button>
         </div>}
 
-        {sheet === "rename" && <form className="library-form" onSubmit={event => { event.preventDefault(); rename() }}><label htmlFor="library-rename">Új név</label><input id="library-rename" value={draftName} onChange={event => setDraftName(event.target.value)} maxLength={120} /><button type="submit" disabled={!draftName.trim()}>Mentés</button></form>}
+        {sheet === "rename" && <form className="library-form" onSubmit={event => { event.preventDefault(); rename() }}><label htmlFor="library-rename">Új név</label><input id="library-rename" value={draftName} onChange={event => setDraftName(event.target.value)} maxLength={120} /><button className="evo-wide-action" type="submit" disabled={!draftName.trim()}>Mentés <ArrowUpRight size={20} aria-hidden="true" /></button></form>}
 
         {sheet === "move" && <div className="library-sheet-actions"><button type="button" onClick={() => moveTo()}><FolderOpen size={20} /><span><strong>Saját fájlok</strong><small>Gyökérmappa</small></span></button>{folders.map(item => <button type="button" key={item.id} onClick={() => moveTo(item.id)}><Folder size={20} /><span><strong>{item.name}</strong></span></button>)}</div>}
 
