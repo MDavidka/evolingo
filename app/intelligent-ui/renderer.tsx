@@ -127,9 +127,17 @@ function QuizCard({ block, storageKey }: { block: QuizChoiceBlock | PublicQuizCh
 function Flashcard({ block, storageKey }: { block: VocabularyFlashcardBlock; storageKey: string }) {
   const [index, setIndex] = useState(0)
   const [flipped, setFlipped] = useState(false)
+  const [finePointer, setFinePointer] = useState(false)
   const [mastery, setMastery] = useState<Record<number, boolean>>({})
   const label = useId()
   const swipeOrigin = useRef<{ x: number; y: number } | null>(null)
+  useEffect(() => {
+    const query = window.matchMedia("(pointer: fine)")
+    const update = () => setFinePointer(query.matches)
+    update()
+    query.addEventListener("change", update)
+    return () => query.removeEventListener("change", update)
+  }, [])
   const swiped = useRef(false)
   const cards = block.props.cards
   const current = cards[index]
@@ -184,7 +192,7 @@ function Flashcard({ block, storageKey }: { block: VocabularyFlashcardBlock; sto
   }
 
   return <section className="evo-iui-block evo-iui-vocabulary" aria-labelledby={label}>
-    <div className="evo-iui-flex-heading"><div><p className="evo-iui-kicker">Tanulókártyák</p><h3 id={label}>{block.props.title}</h3></div><span className="evo-iui-count">{index + 1} / {cards.length}</span></div>
+    <div className="evo-iui-flex-heading"><div><p className="evo-iui-kicker">Szókártyák</p><h3 id={label}>{block.props.title}</h3></div><span className="evo-iui-count">{index + 1} / {cards.length}</span></div>
     <button type="button" className="evo-iui-flashcard" aria-label={flipped ? "Vissza a szóhoz" : "Jelentés megjelenítése"}
       onClick={() => { if (swiped.current) { swiped.current = false; return } setFlipped(v => !v) }}
       onTouchStart={event => { const touch = event.touches[0]; if (touch) swipeOrigin.current = { x: touch.clientX, y: touch.clientY } }}
@@ -192,7 +200,7 @@ function Flashcard({ block, storageKey }: { block: VocabularyFlashcardBlock; sto
       <small>{flipped ? "Jelentés" : "Kifejezés"}</small>
       <strong>{flipped ? current.back : current.front}</strong>
       {flipped && current.example && <span>{current.example}</span>}
-      <em>Érintsd meg a megfordításhoz · Húzd oldalra a váltáshoz</em>
+      <em>{finePointer ? "Kattints a megfordításhoz · Használd a nyilakat a váltáshoz" : "Érintsd meg a megfordításhoz · Húzd oldalra a váltáshoz"}</em>
     </button>
     <div className="evo-iui-pager">
       <button type="button" disabled={index === 0} aria-label="Előző kártya" onClick={() => go(index - 1)}><ArrowLeft size={19} /></button>

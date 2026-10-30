@@ -6,8 +6,8 @@
 body .app-shell:has(.profile-page),
 body .screen-content:has(.profile-page),
 body .profile-page {
-  background: #fff !important;
-  color: #080808 !important;
+  background: var(--evo-bg) !important;
+  color: var(--evo-text) !important;
 }
 body .app-shell:has(.profile-page) {
   width: 100% !important;
@@ -69,10 +69,10 @@ body .profile-page .profile-language-pill {
   padding: 5px 16px 5px 7px !important;
   border-radius: 999px !important;
   border: 0 !important;
-  background: #fff !important;
-  color: #070707 !important;
-  box-shadow: 0 5px 30px rgba(27, 33, 48, .065) !important;
-  font-size: 16px !important;
+  background: var(--evo-bg) !important;
+  color: var(--evo-text) !important;
+  box-shadow: none !important;
+  font-size: var(--evo-size-body) !important;
   line-height: 1 !important;
 }
 body .profile-page .profile-language-pill img {
@@ -82,9 +82,9 @@ body .profile-page .profile-language-pill img {
   object-fit: cover !important;
 }
 body .profile-page .profile-language-pill strong {
-  color: #0b0b0b !important;
-  font-size: 16px !important;
-  font-weight: 750 !important;
+  color: var(--evo-text) !important;
+  font-size: var(--evo-size-body) !important;
+  font-weight: 700 !important;
   letter-spacing: -.025em !important;
   white-space: nowrap !important;
 }
@@ -98,8 +98,8 @@ body .profile-page .profile-reference-controls {
   border: 0 !important;
   border-radius: 999px !important;
   overflow: hidden !important;
-  background: #fff !important;
-  box-shadow: 0 5px 30px rgba(27, 33, 48, .065) !important;
+  background: var(--evo-bg) !important;
+  box-shadow: none !important;
 }
 body .profile-page .profile-reference-controls button {
   position: static !important;
@@ -114,7 +114,7 @@ body .profile-page .profile-reference-controls button {
   border: 0 !important;
   border-radius: 0 !important;
   background: transparent !important;
-  color: #050505 !important;
+  color: var(--evo-text) !important;
   box-shadow: none !important;
 }
 body .profile-page .profile-reference-controls button + button {
@@ -123,8 +123,8 @@ body .profile-page .profile-reference-controls button + button {
 body .profile-page .profile-reference-controls svg {
   width: 23px !important;
   height: 23px !important;
-  color: #080808 !important;
-  stroke-width: 2.7 !important;
+  color: var(--evo-text) !important;
+  stroke-width: 1.75 !important;
 }
 
 /* Name / handle on left, smaller round avatar on right. */
@@ -152,9 +152,9 @@ body .profile-page .profile-reference-identity .profile-display-name {
   max-width: 100% !important;
   margin: 0 !important;
   padding: 0 !important;
-  color: #050505 !important;
-  font-size: clamp(29px, 8.8vw, 35px) !important;
-  font-weight: 840 !important;
+  color: var(--evo-text) !important;
+  font-size: var(--evo-size-title) !important;
+  font-weight: 700 !important;
   letter-spacing: -.035em !important;
   line-height: 1.08 !important;
   overflow: hidden !important;
@@ -163,9 +163,9 @@ body .profile-page .profile-reference-identity .profile-display-name {
 }
 body .profile-page .profile-reference-identity .profile-handle {
   margin: 10px 0 0 !important;
-  color: #242424 !important;
-  font-size: 13px !important;
-  font-weight: 420 !important;
+  color: var(--evo-text) !important;
+  font-size: var(--evo-size-meta) !important;
+  font-weight: 400 !important;
   line-height: 18px !important;
   overflow: hidden !important;
   text-overflow: ellipsis !important;
@@ -198,8 +198,8 @@ body .profile-page .profile-reference-identity .large-avatar .avatar-emoji {
   width: 100% !important;
   height: 100% !important;
   place-items: center !important;
-  background: #f6f6f7 !important;
-  font-size: 31px !important;
+  background: var(--evo-bg) !important;
+  font-size: var(--evo-size-title) !important;
 }
 
 /* Two softly raised secondary action pills, precisely spaced as in the reference. */
@@ -225,17 +225,17 @@ body .profile-page .profile-reference-action {
   padding: 0 8px !important;
   border: 0 !important;
   border-radius: 999px !important;
-  background: #fff !important;
-  box-shadow: 0 6px 28px rgba(23, 27, 40, .065) !important;
-  color: #101010 !important;
-  font-size: clamp(15px, 4.5vw, 17px) !important;
-  font-weight: 440 !important;
+  background: var(--evo-bg) !important;
+  box-shadow: none !important;
+  color: var(--evo-text) !important;
+  font-size: var(--evo-size-body) !important;
+  font-weight: 400 !important;
   line-height: 1.2 !important;
   text-align: center !important;
   white-space: nowrap !important;
 }
 body .profile-page .profile-reference-action--wide {
-  font-weight: 800 !important;
+  font-weight: 700 !important;
 }
 
 /* The reference is intentionally sparse: no progress and stats cards on this screen. */
@@ -264,15 +264,15 @@ body .profile-page .profile-badges-heading {
 }
 body .profile-page .profile-badges-heading h2 {
   margin: 0 !important;
-  color: #0b0b0b !important;
-  font-size: 17px !important;
+  color: var(--evo-text) !important;
+  font-size: var(--evo-size-row) !important;
   line-height: 23px !important;
-  font-weight: 820 !important;
+  font-weight: 700 !important;
   letter-spacing: -.035em !important;
 }
 body .profile-page .profile-badges-heading > span {
-  color: #c5c5c6 !important;
-  font-size: 16px !important;
+  color: var(--evo-action) !important;
+  font-size: var(--evo-size-body) !important;
   letter-spacing: 1px !important;
   line-height: 15px !important;
 }
@@ -363,13 +363,13 @@ body .profile-page .profile-badge > span:last-child {
   margin: 0 !important;
   padding: 3px 4px !important;
   transform: translateX(-50%) !important;
-  border: 1px solid rgba(255, 255, 255, .13) !important;
-  border-radius: 7px !important;
-  background: #515154 !important;
-  color: #fff !important;
-  box-shadow: 0 2px 0 rgba(23, 23, 24, .40) !important;
-  font-size: 9px !important;
-  font-weight: 830 !important;
+  border: 1px solid color-mix(in srgb, var(--evo-bg) 25%, transparent) !important;
+  border-radius: 6px !important;
+  background: var(--evo-text-secondary) !important;
+  color: var(--evo-bg) !important;
+  box-shadow: none !important;
+  font-size: var(--evo-size-meta) !important;
+  font-weight: 700 !important;
   line-height: 10px !important;
   letter-spacing: -.02em !important;
   text-align: center !important;
@@ -394,10 +394,10 @@ body .app-shell:has(.profile-page) .bottom-nav {
   padding: 6px !important;
   transform: translateX(-50%) !important;
   gap: 0 !important;
-  border: 2px solid #f7f7f8 !important;
+  border: 2px solid var(--evo-bg) !important;
   border-radius: 999px !important;
-  background: #eceef2 !important;
-  box-shadow: 0 5px 20px rgba(24, 32, 45, .075) !important;
+  background: var(--evo-surface) !important;
+  box-shadow: none !important;
 }
 body .app-shell:has(.profile-page) .bottom-nav button {
   position: relative !important;
@@ -412,19 +412,19 @@ body .app-shell:has(.profile-page) .bottom-nav button {
   border-radius: 999px !important;
   background: transparent !important;
   box-shadow: none !important;
-  color: #41434a !important;
-  font-size: clamp(10px, 2.9vw, 12px) !important;
-  font-weight: 660 !important;
+  color: var(--evo-text-secondary) !important;
+  font-size: var(--evo-size-meta) !important;
+  font-weight: 650 !important;
 }
 body .app-shell:has(.profile-page) .bottom-nav button.active {
-  background: #fff !important;
-  color: #111 !important;
-  box-shadow: 0 5px 15px rgba(22, 28, 38, .07) !important;
+  background: var(--evo-bg) !important;
+  color: var(--evo-text) !important;
+  box-shadow: none !important;
 }
 body .app-shell:has(.profile-page) .bottom-nav button > svg {
   width: 25px !important;
   height: 25px !important;
-  stroke-width: 2.1 !important;
+  stroke-width: 1.75 !important;
 }
 body .app-shell:has(.profile-page) .bottom-nav button > .learn-user-avatar {
   width: 25px !important;
@@ -432,16 +432,16 @@ body .app-shell:has(.profile-page) .bottom-nav button > .learn-user-avatar {
 }
 body .app-shell:has(.profile-page) .bottom-nav .nav-selection-indicator {
   border-radius: 999px !important;
-  background: rgba(255, 255, 255, .9) !important;
-  box-shadow: 0 4px 12px rgba(24, 32, 45, .04) !important;
+  background: color-mix(in srgb, var(--evo-bg) 100%, transparent) !important;
+  box-shadow: none !important;
 }
 @media (max-width: 360px) {
   body .screen-content:has(.profile-page) { padding-right: 14px !important; padding-left: 14px !important; }
   body .profile-page .profile-reference-topbar { padding-inline: 7px !important; }
   body .profile-page .profile-reference-identity { margin-inline: 13px !important; }
-  body .profile-page .profile-reference-identity .profile-display-name { font-size: 29px !important; }
+  body .profile-page .profile-reference-identity .profile-display-name { font-size: var(--evo-size-hero) !important; }
   body .profile-page .profile-reference-actions { margin-inline: 3px !important; gap: 10px !important; }
-  body .profile-page .profile-reference-action { font-size: 14px !important; }
+  body .profile-page .profile-reference-action { font-size: var(--evo-size-support) !important; }
   body .profile-page .profile-badges-heading { margin-left: 26px !important; }
 }
 @media (max-height: 650px) {

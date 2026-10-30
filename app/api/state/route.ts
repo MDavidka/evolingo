@@ -29,7 +29,7 @@ type UserDocument = {
 }
 
 const allowed = new Set([
-  "userName", "avatar", "notifications", "compactMode", "theme", "avatarImage", "bannerImage",
+  "userName", "avatar", "notifications", "compactMode", "theme", "avatarImage", "bannerImage", "showOnLeaderboard",
   "readLessons", "completedLessons", "answeredTasks", "xp", "stars", "purchasedItems", "lives",
   "friends", "friendRequests", "dailyStreak", "lastStudyDate", "todayActivityCount", "activityDate", "dailyGoal",
   "createdAt", "updatedAt", "clientUpdatedAt",
@@ -101,6 +101,7 @@ export async function PATCH(request: NextRequest) {
       if (key === "userName" && (typeof value !== "string" || value.trim().length < 1 || value.length > 32)) continue
       if (key === "avatar" && (typeof value !== "string" || !["fox","book","star","spark"].includes(value))) continue
       if (["notifications","compactMode"].includes(key) && typeof value !== "boolean") continue
+      if (key === "showOnLeaderboard" && typeof value !== "boolean") continue
       if (key === "theme" && !["mist","sage"].includes(String(value))) continue
       if (["xp","stars"].includes(key) && (typeof value !== "number" || !Number.isInteger(value) || value < 0 || value > 100000000)) continue
       if (["dailyStreak", "todayActivityCount"].includes(key) && (typeof value !== "number" || !Number.isInteger(value) || value < 0 || value > 100000)) continue

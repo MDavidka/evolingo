@@ -1,126 +1,58 @@
-/* Mobile-first conversation screen: one visual viewport, one scroll container. */
-html, body { max-width: 100%; overflow-x: clip; }
-.app-shell.reference-shell:has(.ref-view-chat),
-.app-shell.reference-shell > .screen-content:has(.ref-view-chat) {
-  height: var(--evo-chat-visual-height, 100dvh) !important;
-  min-height: 0 !important;
-  padding: 0 !important;
-  overflow: hidden !important;
+/* The chat owns its viewport; only its message list scrolls. */
+html:has(.ref-view-chat) {
+  isolation: isolate;
+  background: #fff;
 }
-body:has(.ref-view-chat) { overflow: hidden !important; }
+html:has(.ref-view-chat)::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  height: 100lvh;
+  z-index: -1;
+  pointer-events: none;
+  background: linear-gradient(180deg, #ffffff 0%, #ffffff 28%, #f9faff 42%, #dce3ef 67%, #9cacc9 100%);
+}
+html, body { max-width: 100%; overflow-x: clip; }
+html:has(.ref-view-chat),
+body:has(.ref-view-chat),
+body:has(.ref-view-chat) .app-shell.reference-shell,
+body:has(.ref-view-chat) .app-shell.reference-shell > .screen-content {
+  width: 100%;
+  height: var(--evo-chat-visual-height, 100dvh);
+  min-height: 0;
+  max-height: var(--evo-chat-visual-height, 100dvh);
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+body:has(.ref-view-chat) { touch-action: pan-y; background: transparent !important; }
+.app-shell.reference-shell:has(.ref-view-chat),
+.app-shell.reference-shell > .screen-content:has(.ref-view-chat),
+.app-shell.reference-shell .screen-content:has(.ref-view-chat) { padding: 0 !important; background: transparent !important; }
 .ref-app.ref-view-chat {
   width: 100%;
   max-width: 520px;
   min-height: 0;
   height: var(--evo-chat-visual-height, 100dvh);
+  max-height: var(--evo-chat-visual-height, 100dvh);
   padding: 0;
   overflow: hidden;
-  background: #fff;
+  background: transparent !important;
 }
 .ref-view-chat > .ref-topbar {
   position: fixed;
   z-index: 24;
-  top: var(--evo-chat-visual-top, 0px);
+  top: 0;
   left: 50%;
-  transform: translateX(-50%);
+  transform: translate3d(-50%, var(--evo-chat-visual-top, 0px), 0);
   width: min(100%, 520px);
-  height: calc(env(safe-area-inset-top, 0px) + 70px);
-  align-items: flex-end;
-  padding: env(safe-area-inset-top, 0px) 22px 8px;
-  background: #fff;
-}
-.evo-chat-frame {
-  position: fixed;
-  z-index: 20;
-  top: var(--evo-chat-visual-top, 0px);
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  flex-direction: column;
-  width: min(100%, 520px);
-  height: var(--evo-chat-visual-height, 100dvh);
-  min-height: 0;
-  padding: calc(env(safe-area-inset-top, 0px) + 75px) clamp(16px, 5vw, 26px) var(--evo-chat-bottom, 16px);
-  background: #fff;
-  color: #171717;
-  overflow: hidden;
-}
-.evo-chat-toolbar { display:flex; align-items:center; justify-content:space-between; gap:12px; flex:none; padding: 6px 1px 13px; border-bottom:1px solid #f1f1f1; }
-.evo-chat-title { display:flex; flex-direction:column; gap:3px; min-width:0; }
-.evo-chat-title strong { font-size: 17px; font-weight: 670; letter-spacing: -.35px; }
-.evo-chat-title span { font-size: 12px; color: #8d8d8d; }
-.ref-view-chat .evo-chat-new { display:grid; place-items:center; width:44px; height:44px; flex:none; border:1px solid #ececec; border-radius:14px; background:#fff; color:#343434; }
-.ref-view-chat .evo-chat-new:disabled { opacity:.4; }
-.evo-chat-messages { flex:1 1 auto; min-height:0; overflow-y:auto; overflow-x:hidden; overscroll-behavior:contain; -webkit-overflow-scrolling:touch; scrollbar-width:thin; }
-.evo-chat-welcome { display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:100%; padding: 28px 2px 34px; text-align:center; }
-.evo-chat-mark { display:grid; place-items:center; width:54px; height:54px; border:1px solid #ececec; border-radius:19px; background:#fafafa; }
-.evo-chat-welcome h1 { margin:22px 0 8px; font-size:clamp(26px, 7vw, 33px); font-weight:700; line-height:1.2; letter-spacing:-1px; }
-.evo-chat-welcome p { max-width:320px; margin:0; color:#828282; font-size:14px; line-height:1.55; }
-.evo-chat-prompts { display:grid; gap:9px; width:100%; max-width:360px; margin-top:30px; }
-.ref-view-chat .evo-chat-prompts button { width:100%; min-height:48px; padding:12px 16px; border:1px solid #e9e9e9; border-radius:16px; background:#fff; text-align:left; font-size:13px; line-height:1.35; color:#3c3c3c; }
-.evo-chat-thread { display:flex; flex-direction:column; gap:24px; padding:22px 0 24px; }
-.evo-chat-entry { display:flex; gap:10px; max-width:100%; align-items:flex-start; }
-.evo-chat-entry--user { justify-content:flex-end; }
-.evo-chat-entry-main { min-width:0; max-width:calc(100% - 36px); }
-.evo-chat-entry--user .evo-chat-entry-main { max-width:87%; }
-.evo-chat-bubble { white-space:pre-wrap; overflow-wrap:anywhere; font-size:15px; line-height:1.65; }
-.evo-chat-entry--user .evo-chat-bubble { padding:11px 15px; border-radius:20px 20px 5px 20px; background:#f1f1f1; }
-.evo-chat-entry--assistant .evo-chat-bubble { padding:5px 0; color:#242424; }
-.evo-chat-small-mark { display:grid; place-items:center; width:25px; height:25px; flex:none; margin-top:4px; border:1px solid #ebebeb; border-radius:9px; background:#fafafa; }
-.ref-view-chat .evo-chat-copy { display:flex; align-items:center; gap:7px; min-height:36px; margin-top:4px; padding:0 2px; color:#858585; font-size:12px; }
-.evo-chat-thinking { display:inline-flex; align-items:center; min-height:32px; color:#929292; font-size:13px; }
-.evo-chat-dots { display:inline-block; animation:evoChatPulse 1.2s ease-in-out infinite; }
-@keyframes evoChatPulse { 50% { opacity:.25; } }
-.evo-chat-bottom { flex:0 0 auto; min-width:0; padding-top:11px; background:#fff; }
-.evo-chat-error { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:9px; padding:9px 12px; border:1px solid #f2d8d8; border-radius:12px; background:#fff8f8; color:#9d3636; font-size:12px; line-height:1.4; }
-.ref-view-chat .evo-chat-error button { display:grid; place-items:center; width:30px; min-width:30px; height:30px; font-size:18px; color:inherit; }
-.evo-chat-composer { display:flex; align-items:flex-end; gap:10px; min-height:55px; padding:8px 8px 8px 16px; border:1px solid #e7e7e7; border-radius:26px; background:#fff; box-shadow:0 2px 14px #00000008; }
-.evo-chat-composer:focus-within { border-color:#bcbcbc; }
-.ref-view-chat .evo-chat-composer textarea { display:block; flex:1; min-width:0; min-height:37px; max-height:144px; padding:8px 0; margin:0; resize:none; border:0; outline:0; background:transparent; color:#171717; font:inherit; font-size:16px; line-height:21px; overflow-y:auto; }
-.evo-chat-composer textarea::placeholder { color:#989898; }
-.ref-view-chat .evo-chat-send { display:grid; place-items:center; width:39px; min-width:39px; height:39px; margin:0; border:0; border-radius:50%; color:#fff; background:#242424; }
-.ref-view-chat .evo-chat-send:disabled { background:#e9e9e9; color:#a2a2a2; }
-.evo-chat-disclaimer { margin:8px 0 0; color:#aaa; text-align:center; font-size:10px; line-height:1.35; }
-@media (max-width: 370px) {
-  .evo-chat-frame { padding-left:14px; padding-right:14px; }
-  .evo-chat-welcome { padding-top:12px; padding-bottom:12px; }
-  .evo-chat-prompts { gap:7px; margin-top:16px; }
-}
-@media (max-height: 620px) {
-  .evo-chat-welcome { justify-content:flex-start; padding-top:14px; }
-  .evo-chat-welcome h1 { margin-top:12px; font-size:25px; }
-  .evo-chat-prompts { margin-top:14px; }
-  .evo-chat-disclaimer { display:none; }
-}
-@media (prefers-reduced-motion: reduce) { .evo-chat-dots { animation:none; } }
-
-/* Discoverable AI entry on the topic index. */
-.ref-view-home .evo-ai-shortcut { display:flex; align-items:center; gap:12px; width:100%; min-height:70px; margin:12px 0 10px; padding:12px 14px; border:1px solid #e8e8e8; border-radius:17px; background:#fff; text-align:left; }
-.evo-ai-shortcut-icon { display:grid; width:42px; height:42px; flex:none; place-items:center; border-radius:13px; background:#f5f5f5; color:#262626; }
-.evo-ai-shortcut > span:nth-child(2) { display:flex; min-width:0; flex:1; flex-direction:column; gap:4px; }
-.evo-ai-shortcut strong { font-size:14px; font-weight:650; letter-spacing:-.2px; }
-.evo-ai-shortcut small { color:#8a8a8a; font-size:12px; }
-.evo-ai-shortcut-arrow { color:#858585; flex:none; }
-
-/* Anchor composer to the actual bottom edge of the visual viewport. */
-.ref-view-chat .evo-chat-frame{padding-bottom:calc(8px + env(safe-area-inset-bottom,0px))!important;}
-.ref-view-chat .evo-chat-bottom{margin-top:auto!important;padding:0!important;background:transparent!important;}
-.ref-view-chat .evo-chat-composer textarea{font-size:16px!important;}
-
-
-/* Reference-accurate AI home: no course picker, isolated top-right profile,
-   a clear white canvas and an input resting on the iPhone safe-area edge. */
-.ref-view-chat > .ref-topbar {
+  height: calc(env(safe-area-inset-top, 0px) + 106px);
   align-items: flex-start !important;
   justify-content: flex-end !important;
-  height: calc(env(safe-area-inset-top, 0px) + 106px) !important;
-  padding: calc(env(safe-area-inset-top, 0px) + 22px) 23px 0 !important;
+  padding: calc(env(safe-area-inset-top, 0px) + 24px) 23px 0 !important;
   background: transparent !important;
   pointer-events: none;
 }
-.ref-view-chat > .ref-topbar .ref-course-wrap {
-  display: none !important;
-}
+.ref-view-chat > .ref-topbar .ref-course-wrap { display: none !important; }
 .ref-view-chat > .ref-topbar .ref-profile-shortcut {
   display: grid;
   place-items: center;
@@ -130,200 +62,366 @@ body:has(.ref-view-chat) { overflow: hidden !important; }
   pointer-events: auto;
   touch-action: manipulation;
 }
-.ref-view-chat > .ref-topbar .ref-profile-shortcut .ref-avatar {
-  width: 44px;
-  height: 44px;
-}
-.app-shell.reference-shell:has(.ref-view-chat) .evo-chat-frame {
-  height: var(--evo-chat-visual-height, 100dvh) !important;
-  min-height: 0 !important;
-  padding-top: calc(env(safe-area-inset-top, 0px) + 110px) !important;
-}
-.ref-view-chat .evo-chat-bottom {
-  margin-top: auto !important;
-  padding-top: 0 !important;
-  background: transparent !important;
-}
-.ref-view-chat .evo-chat-composer {
-  width: 100% !important;
-  min-height: 56px !important;
-  border-radius: 999px !important;
-  box-shadow: 0 3px 22px rgba(30,49,78,.08) !important;
-}
-.ref-view-chat .evo-chat-composer textarea {
-  font-size: 16px !important;
-  line-height: 22px;
-}
-.ref-view-chat .evo-chat-toolbar {
-  padding-left: 74px;
-  padding-right: 60px;
-  background: transparent !important;
-}
-@media (max-width: 360px) {
-  .ref-view-chat > .ref-topbar { padding-right: 18px !important; }
-  .ref-view-chat .evo-chat-toolbar { padding-left: 62px; padding-right: 52px; }
-}
+.ref-view-chat > .ref-topbar .ref-profile-shortcut .ref-avatar { width: 44px; height: 44px; }
 
-/* Match the gradient through the keyboard transition instead of showing a white
-   strip where the visual viewport ends. The keyboard itself remains native. */
-html:has(.ref-view-chat),
-body:has(.ref-view-chat),
-body:has(.ref-view-chat) .app-shell,
-body:has(.ref-view-chat) .screen-content,
-.ref-app.ref-view-chat {
-  background: #90a4c3 !important;
-}
-.ref-view-chat .evo-chat-toolbar {
-  min-height: 50px;
-  justify-content: flex-end;
-  padding-left: 0;
-  padding-right: 0;
-}
-.ref-view-chat .evo-chat-title {
-  display: none !important;
-}
-.ref-view-chat .evo-chat-bottom {
-  padding-bottom: 0 !important;
-}
-.ref-view-chat .evo-chat-frame {
-  background-attachment: local !important;
-}
-
-/* Screenshot 6410: compact bottom composer, symmetrical avatar/menu alignment. */
-.app-shell.reference-shell:has(.ref-view-chat) .evo-chat-frame {
-  padding-left: 22px !important;
-  padding-right: 22px !important;
-  padding-bottom: max(22px, env(safe-area-inset-bottom, 0px)) !important;
-}
-.ref-view-chat .evo-chat-composer {
-  min-height: 52px !important;
-  padding: 5px 7px 5px 11px !important;
-  gap: 5px !important;
-  border-radius: 999px !important;
-  background: rgba(255,255,255,.92) !important;
-  border: 1px solid rgba(255,255,255,.88) !important;
-}
-.ref-view-chat .evo-chat-composer textarea {
-  min-height: 34px !important;
-  padding: 6px 0 !important;
-}
-.ref-view-chat .evo-chat-send {
-  width: 37px !important;
-  min-width: 37px !important;
-  height: 37px !important;
-}
-.ref-view-chat > .ref-topbar {
-  padding-top: calc(env(safe-area-inset-top, 0px) + 24px) !important;
-  padding-right: 23px !important;
-}
-@media (max-width: 360px) {
-  .app-shell.reference-shell:has(.ref-view-chat) .evo-chat-frame {
-    padding-left: 14px !important;
-    padding-right: 14px !important;
-  }
-}
-
-/* Keep chat content slightly higher after removing the floating new-chat action. */
-.ref-view-chat .evo-chat-messages {
-  padding-top: 0 !important;
-}
-.ref-view-chat .evo-chat-thread {
-  margin-top: -14px !important;
-}
-
-/* Mobile scroll performance: scroll only the message list, not the full app. */
-.ref-view-chat .evo-chat-frame {
-  display: flex !important;
-  flex-direction: column !important;
-  overflow: hidden !important;
-  min-height: 0 !important;
-  max-height: var(--evo-chat-visual-height, 100dvh) !important;
+/* Layer order: bottom 2 < frame 20 < header 24 < menu anchor 100 < modals 1000.
+   The menu remains hidden while the textarea is focused. */
+.evo-chat-frame {
+  --evo-chat-bottom-pad: max(14px, env(safe-area-inset-bottom, 0px));
+  position: fixed;
+  z-index: 20;
+  top: 0;
+  left: 50%;
+  width: min(100%, var(--app-max-width, 520px));
+  height: var(--evo-chat-visual-height, 100dvh);
+  transform: translate3d(-50%, var(--evo-chat-visual-top, 0px), 0);
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  padding: calc(env(safe-area-inset-top, 0px) + 110px) 22px 0;
+  overflow: hidden;
   overscroll-behavior: none;
+  touch-action: pan-y;
+  color: #171717;
+  isolation: isolate;
+  background: transparent !important;
 }
-.ref-view-chat .evo-chat-messages {
-  flex: 1 1 auto !important;
-  min-height: 0 !important;
-  overflow-x: hidden !important;
-  overflow-y: auto !important;
+.evo-chat-toolbar { display:flex; align-items:center; justify-content:flex-end; gap:12px; flex:none; min-height:50px; padding:6px 0 13px; border-bottom:1px solid #f1f1f1; background:transparent!important; }
+.evo-chat-title { display:flex; flex-direction:column; gap:3px; min-width:0; }
+.evo-chat-title strong { font-size:1.0625rem; font-weight:670; letter-spacing:-.35px; }
+.evo-chat-title span { font-size:0.75rem; color:#5b6472; }
+.evo-chat-title { display:none !important; }
+.ref-view-chat .evo-chat-new { display:grid; place-items:center; width:44px; height:44px; flex:none; border:1px solid #ececec; border-radius:14px; background:#fff; color:#343434; }
+.ref-view-chat .evo-chat-new:disabled { opacity:.4; }
+.evo-chat-messages {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
   -webkit-overflow-scrolling: touch;
-  overscroll-behavior-y: contain;
+  scrollbar-width: none;
   overflow-anchor: auto;
   touch-action: pan-y;
 }
-.ref-view-chat .evo-chat-bottom {
-  flex: 0 0 auto !important;
-  min-width: 0 !important;
+.evo-chat-messages::-webkit-scrollbar { display:none; }
+.evo-chat-welcome { display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:100%; padding:28px 2px 34px; text-align:center; }
+.evo-chat-mark { display:grid; place-items:center; width:68px; height:68px; margin-inline:auto; border:0; border-radius:19px; background:transparent; }
+.evo-chat-mark img { width:100%; height:100%; object-fit:contain; }
+.evo-chat-welcome h1 { margin:22px 0 8px; font-size:1.625rem; font-weight:700; line-height:1.2; letter-spacing:-.8px; }
+.evo-chat-welcome p { max-width:320px; margin:0; color:#6b7280; font-size:0.875rem; line-height:1.55; }
+.evo-chat-prompts { display:grid; gap:9px; width:100%; max-width:360px; margin-top:30px; }
+.ref-view-chat .evo-chat-prompts button { width:100%; min-height:48px; padding:12px 16px; border:1px solid #e9e9e9; border-radius:16px; background:#fff; text-align:left; font-size:0.8125rem; line-height:1.35; color:#3c3c3c; }
+.evo-chat-thread { display:flex; flex-direction:column; gap:24px; padding:8px 0 24px; margin-top:-14px; }
+.evo-chat-entry { display:flex; gap:10px; max-width:100%; align-items:flex-start; }
+.evo-chat-entry--assistant { gap:0; }
+.evo-chat-entry--user { justify-content:flex-end; }
+.evo-chat-entry-main { min-width:0; max-width:calc(100% - 36px); }
+.evo-chat-entry--user .evo-chat-entry-main { max-width:87%; }
+.evo-chat-bubble { white-space:pre-wrap; overflow-wrap:anywhere; font-size:0.9375rem; line-height:1.65; }
+.evo-chat-entry--user .evo-chat-bubble { padding:11px 15px; border-radius:20px; background:#f1f1f1; }
+.evo-chat-entry--assistant .evo-chat-bubble { padding:5px 0; color:#242424; background:transparent!important; box-shadow:none!important; }
+.ref-view-chat .evo-chat-copy { display:flex; align-items:center; gap:7px; min-height:36px; margin-top:4px; padding:0 2px; color:#5b6472; font-size:0.75rem; }
+.evo-chat-thinking { display:inline-flex; align-items:center; min-height:32px; color:#5b6472; font-size:0.8125rem; }
+.evo-chat-dots { display:inline-block; animation:evoChatPulse 1.2s ease-in-out infinite; }
+@keyframes evoChatPulse { 50% { opacity:.25; } }
+.evo-chat-bottom {
+  position: relative;
+  z-index: 2;
+  flex: 0 0 auto;
+  min-width: 0;
+  padding-top: 0;
+  padding-bottom: var(--evo-chat-bottom-pad);
+  background: transparent;
+  overscroll-behavior: none;
 }
-.ref-view-chat .evo-chat-composer textarea {
+.evo-keyboard-open:has(.ref-view-chat) .evo-chat-frame { --evo-chat-bottom-pad: 8px; }
+.evo-chat-frame,.evo-chat-bottom { background: transparent !important; }
+.app-shell.reference-shell .ref-modal-backdrop { z-index: 1000; }
+.evo-chat-error { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:9px; padding:9px 12px; border:1px solid #f2d8d8; border-radius:12px; background:#fff8f8; color:#9d3636; font-size:0.75rem; line-height:1.4; }
+.ref-view-chat .evo-chat-error button { display:grid; place-items:center; width:30px; min-width:30px; height:30px; font-size:1.125rem; color:inherit; }
+.ref-view-chat .evo-composer-surface { width:100%; border-radius:26px; background:#fff; box-shadow:0 1px 3px rgba(0,0,0,.04); }
+.evo-chat-composer { display:flex; align-items:flex-end; gap:5px; width:100%; max-width:100%; min-height:56px; padding:5px 7px 5px 11px; border:1px solid #e5e5e8; border-radius:26px; background:#fff; box-shadow:none; -webkit-backdrop-filter:none; backdrop-filter:none; }
+.evo-chat-composer:focus-within { border-color:#c7c7cc; }
+.ref-view-chat .evo-chat-composer textarea { display:block; flex:1; min-width:0; min-height:34px; max-height:144px; padding:6px 0; margin:0; resize:none; border:0; outline:0; background:transparent; color:#171717; font:inherit; font-size:1rem; line-height:22px; overflow-y:auto; touch-action:manipulation; }
+.evo-chat-composer textarea::placeholder { color:#5b6472; }
+.ref-view-chat .evo-chat-send { display:grid; place-items:center; width:37px; min-width:37px; height:37px; margin:0; border:0; border-radius:50%; color:#fff; background:#242424; }
+.ref-view-chat .evo-chat-send:disabled { background:#e9e9e9; color:#5b6472; }
+.evo-chat-disclaimer { margin:8px 0 0; color:#5b6472; text-align:center; font-size:.75rem; line-height:1.35; }
+@media (max-width:390px) { .evo-chat-frame { padding-left:14px; padding-right:14px; } .evo-chat-model { font-size:.75rem; } .evo-chat-composer { gap:4px; } .evo-chat-attach,.evo-chat-mic { width:25px; } }
+@media (max-height:620px) { .evo-chat-welcome { justify-content:flex-start; padding-top:14px; } .evo-chat-welcome h1 { margin-top:12px; font-size:1.5625rem; } .evo-chat-prompts { margin-top:14px; } .evo-chat-disclaimer { display:none; } }
+@media (prefers-reduced-motion:reduce) { .evo-chat-dots { animation:none; } }
+
+/* Sidebar overlays the chat layers (frame 20, header 24, trigger 100) and stays below modals 1000. */
+.evo-sidebar-host .evo-morph-anchor {
+  position: fixed;
+  z-index: 100;
+  top: calc(env(safe-area-inset-top, 0px) + 24px);
+  left: max(calc((100vw - 520px) / 2 + 23px), calc(env(safe-area-inset-left, 0px) + 23px));
+  width: 46px;
+  height: 46px;
+  pointer-events: auto;
+}
+.evo-sidebar-host .evo-morph-toggle {
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  padding: 0;
+  border: 1px solid #e8e9ed;
+  border-radius: 50%;
+  background: #f0f1f4;
+  color: #30343d;
+  box-shadow: 0 2px 12px rgba(34,45,64,.08);
   touch-action: manipulation;
 }
 
-/* Restore the original chat gradient while retaining the scroll and composer fixes. */
-.ref-view-chat .evo-chat-frame {
-  background: linear-gradient(180deg,#fff 0%,#fff 24%,#fcfcfd 36%,#f1f2f6 50%,#dbe0eb 65%,#b6c2d7 81%,#8095b7 100%) !important;
-  overscroll-behavior: none !important;
-  touch-action: pan-y;
+/* Reference AI chat: floating controls, open canvas, and a single-line composer. */
+.ref-view-chat > .ref-topbar {
+  height: calc(env(safe-area-inset-top, 0px) + 88px);
+  padding: calc(env(safe-area-inset-top, 0px) + 18px) 24px 0 !important;
 }
-.ref-view-chat .evo-chat-messages {
-  overscroll-behavior: contain !important;
-  scrollbar-width: none !important;
+.ref-view-chat > .ref-topbar .ref-profile-shortcut,
+.ref-view-chat > .ref-topbar .ref-profile-shortcut .ref-avatar {
+  width: 42px !important;
+  height: 42px !important;
 }
-.ref-view-chat .evo-chat-messages::-webkit-scrollbar { display: none; }
+.evo-sidebar-host .evo-morph-anchor {
+  top: calc(env(safe-area-inset-top, 0px) + 18px);
+  left: max(calc((100vw - 520px) / 2 + 24px), calc(env(safe-area-inset-left, 0px) + 24px));
+  width: 42px;
+  height: 42px;
+}
+.evo-sidebar-host .evo-morph-toggle {
+  width: 42px;
+  height: 42px;
+  border: 0;
+  background: rgba(245, 245, 245, .94);
+  color: #343434;
+  box-shadow: none;
+}
+.evo-chat-frame {
+  padding: calc(env(safe-area-inset-top, 0px) + 88px) 20px 0;
+}
 .ref-view-chat .evo-chat-bottom {
-  overscroll-behavior: none;
-  touch-action: auto;
+  display: flex;
+  justify-content: center;
+  padding: 0 0 max(28px, env(safe-area-inset-bottom, 0px));
 }
 .ref-view-chat .evo-composer-surface {
-  width: 100%;
+  width: min(100%, 468px);
   border-radius: 999px;
-  background: #fff;
-  box-shadow: 0 3px 18px rgba(29,43,69,.08);
+  background: transparent;
+  box-shadow: none;
 }
-.ref-view-chat .evo-chat-composer {
-  background: #fff !important;
-  border: 1px solid #eceef2 !important;
-  -webkit-backdrop-filter: none !important;
-  backdrop-filter: none !important;
+.ref-view-chat .evo-chat-composer,
+.ref-view-chat .evo-chat-composer[data-focused="true"] {
+  display: flex !important;
+  align-items: center !important;
+  gap: 5px !important;
+  min-height: 58px;
+  padding: 7px 8px 7px 12px !important;
+  border: 1px solid rgba(255, 255, 255, .86) !important;
+  border-radius: 999px !important;
+  background: rgba(255, 255, 255, .96) !important;
+  box-shadow: 0 8px 24px rgba(62, 76, 102, .10) !important;
 }
-
-/* AI home only: lock the page and its gradient in place on iOS.
-   Messages remain the sole scrollable surface; the composer stays fixed
-   in the flex layout and the keyboard's visual viewport can still resize. */
-html:has(.ref-view-chat),
-body:has(.ref-view-chat) {
+.ref-view-chat .evo-chat-composer textarea {
+  order: 2;
+  width: auto;
+  min-height: 36px;
+  max-height: 144px;
+  padding: 7px 4px !important;
+  line-height: 22px !important;
+}
+.ref-view-chat .evo-chat-composer-controls {
+  display: contents !important;
+}
+.ref-view-chat .evo-chat-attach {
+  order: 1;
+  width: 34px !important;
+  height: 40px;
+  color: #969ba4;
+}
+.ref-view-chat .evo-chat-model {
+  order: 3;
+  min-height: 38px !important;
+  padding: 0 6px !important;
+  border: 0 !important;
+  background: transparent !important;
+  color: #555961;
+  font-size: .8125rem;
+}
+.ref-view-chat .evo-chat-model-prefix { display: none; }
+.ref-view-chat .evo-chat-mic {
+  order: 4;
+  display: grid;
+  place-items: center;
+  width: 34px !important;
+  height: 40px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #9ca1aa;
+  opacity: 1;
+}
+.ref-view-chat .evo-chat-send {
+  order: 5;
+  width: 42px !important;
+  min-width: 42px !important;
+  height: 42px !important;
+  margin-left: 0 !important;
+  background: #e7e8eb !important;
+  color: #747983 !important;
+}
+.ref-view-chat .evo-chat-send:not(:disabled) {
+  background: #242424 !important;
+  color: #fff !important;
+}
+.evo-keyboard-open:has(.ref-view-chat) .evo-chat-bottom {
+  padding-bottom: 8px;
+}
+@media (max-width: 390px) {
+  .evo-chat-frame { padding-right: 14px; padding-left: 14px; }
+  .ref-view-chat .evo-chat-composer { padding-left: 8px !important; }
+  .ref-view-chat .evo-chat-model { padding-inline: 3px !important; }
+  .ref-view-chat .evo-chat-attach,
+  .ref-view-chat .evo-chat-mic { width: 30px !important; }
+}
+.evo-sidebar-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 190;
   width: 100%;
   height: 100%;
-  overflow: hidden !important;
-  overscroll-behavior: none !important;
+  background: rgba(0,0,0,.35);
+  animation: evo-sidebar-fade-in 180ms ease-out both;
+}
+.evo-sidebar {
+  position: fixed;
+  z-index: 200;
+  inset: 0 auto 0 0;
+  width: min(84vw, 320px);
+  height: 100dvh;
+  overflow: hidden;
+  border-radius: 0 22px 22px 0;
+  background: #fff;
+  color: #222936;
+  box-shadow: 12px 0 38px rgba(20,31,52,.16);
+  animation: evo-sidebar-slide-in 240ms ease-out both;
   touch-action: pan-y;
 }
-body:has(.ref-view-chat) .app-shell.reference-shell,
-body:has(.ref-view-chat) .app-shell.reference-shell > .screen-content {
-  height: 100dvh !important;
-  min-height: 0 !important;
-  max-height: 100dvh !important;
-  overflow: hidden !important;
-  overscroll-behavior: none !important;
-}
-.app-shell.reference-shell .ref-app.ref-view-chat {
-  height: 100dvh !important;
-  min-height: 0 !important;
-  max-height: 100dvh !important;
-  overflow: hidden !important;
-  overscroll-behavior: none !important;
-  padding-bottom: 0 !important;
-}
-.app-shell.reference-shell .ref-view-chat .evo-chat-frame {
-  overflow: hidden !important;
-  overscroll-behavior: none !important;
-}
-.app-shell.reference-shell .ref-view-chat .evo-chat-messages {
-  overflow-y: auto !important;
-  overflow-x: hidden !important;
-  overscroll-behavior-y: contain !important;
-  touch-action: pan-y !important;
-}
-.app-shell.reference-shell .ref-view-chat .evo-chat-bottom {
-  flex-shrink: 0 !important;
-  overscroll-behavior: none !important;
-}
+.evo-sidebar-safe { display:flex; flex-direction:column; height:100%; padding:calc(env(safe-area-inset-top, 0px) + 14px) 17px calc(env(safe-area-inset-bottom, 0px) + 15px); }
+.evo-sidebar-heading { display:flex; align-items:center; justify-content:space-between; min-height:58px; padding:0 2px 8px; color:#111318; }
+.evo-sidebar-brand { font-size:1.375rem; font-weight:680; letter-spacing:-.7px; }
+.evo-sidebar-tools { display:flex; align-items:center; gap:8px; }
+.evo-sidebar-tool { display:grid; place-items:center; width:42px; height:42px; border:1px solid #e4e5e8; border-radius:50%; background:#fff; color:#17191d; box-shadow:0 2px 8px rgba(20,24,34,.035); }
+.evo-sidebar-close { background:#f5f5f6; color:#5b6472; }
+.evo-sidebar-nav { display:grid; gap:2px; padding:5px 0 23px; border-bottom:1px solid #e5e5e7; }
+.evo-sidebar-nav button { display:flex; align-items:center; gap:15px; width:100%; min-height:49px; padding:0 7px; border-radius:11px; color:#131519; text-align:left; font-size:1rem; font-weight:480; letter-spacing:-.15px; }
+.evo-sidebar-nav button svg { flex:none; color:#17191c; }
+.evo-sidebar-nav button:hover,.evo-sidebar-nav button:focus-visible { background:#f5f5f6; }
+.evo-sidebar-recent-heading { display:flex; align-items:center; justify-content:space-between; min-height:48px; margin-top:19px; padding:0 5px; color:#5b6472; font-size:0.75rem; font-weight:650; letter-spacing:.02em; text-transform:uppercase; }
+.evo-sidebar-recent-heading button { display:grid; place-items:center; width:32px; height:32px; border-radius:50%; color:#33383e; }
+.evo-sidebar-recent-heading button:hover { background:#f1f2f3; }
+.evo-sidebar-search { display:flex; align-items:center; gap:8px; min-height:39px; padding:0 10px; margin:0 0 7px; border-radius:12px; background:#f2f2f3; color:#5b6472; }
+.evo-sidebar-search input { min-width:0; width:100%; border:0; outline:0; background:transparent; font-size:0.8125rem; }
+.evo-sidebar-search input::placeholder { color:#5b6472; }
+.evo-sidebar-history { min-height:0; flex:1; overflow:auto; padding:6px 0 10px; overscroll-behavior:contain; }
+.evo-sidebar-history section { margin:0 0 10px; }
+.evo-sidebar-history h3 { margin:0 7px 5px; color:#5b6472; font-size:.75rem; font-weight:550; }
+.evo-sidebar-chat { position:relative; display:flex; align-items:center; min-height:46px; border-radius:12px; }
+.evo-sidebar-chat:hover,.evo-sidebar-chat:focus-within { background:#f4f4f5; }
+.evo-sidebar-chat-title { flex:1; min-width:0; overflow:hidden; padding:8px; text-align:left; text-overflow:ellipsis; white-space:nowrap; color:#15171b; font-size:0.9375rem; font-weight:450; letter-spacing:-.2px; }
+.evo-sidebar-chat-menu { display:grid; place-items:center; width:34px; height:34px; flex:none; color:#737f90; }
+.evo-sidebar-chat-actions { position:absolute; z-index:2; top:34px; right:3px; display:grid; width:140px; padding:5px; border:1px solid #e7eaf0; border-radius:11px; background:#fff; box-shadow:0 8px 22px rgba(30,43,65,.14); }
+.evo-sidebar-chat-actions button { display:flex; align-items:center; gap:8px; min-height:35px; padding:0 8px; border-radius:7px; text-align:left; font-size:0.75rem; }
+.evo-sidebar-chat-actions button:hover { background:#f3f5f8; }
+.evo-sidebar-chat-actions button:last-child { color:#bd4141; }
+.evo-sidebar-empty { margin:10px 7px; color:#5b6472; font-size:0.8125rem; line-height:1.5; }
+.evo-sidebar-footer { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:15px 4px 0; border-top:1px solid #e5e5e7; }
+.evo-sidebar-chat-action { display:inline-flex; align-items:center; justify-content:center; gap:9px; min-width:139px; min-height:52px; padding:0 20px; border:1px solid #4f7fff; border-radius:999px; background:#3868f2; box-shadow:inset 0 1px 0 rgba(255,255,255,.3),0 2px 6px rgba(38,83,210,.2); color:#fff; font-size:1rem; font-weight:650; }
+.evo-sidebar-chat-action:hover { background:#2e5fe9; }
+.evo-sidebar-user-button { display:grid; place-items:center; width:49px; height:49px; overflow:hidden; border:1px solid #e4e5e8; border-radius:50%; background:#fff; color:#5b6472; box-shadow:0 2px 9px rgba(20,24,34,.07); }
+.evo-sidebar-user-button img { width:37px; height:37px; border-radius:50%; object-fit:cover; }
+.evo-sidebar-user-button span { display:grid; place-items:center; width:34px; height:34px; border-radius:50%; background:#f4a019; font-size:0.75rem; font-weight:700; }
+.evo-brainstorm { width:min(100%,760px); height:100%; min-height:0; overflow:auto; margin:0 auto; padding:calc(env(safe-area-inset-top,0px) + 28px) 22px calc(32px + env(safe-area-inset-bottom,0px)); color:#202123; }
+.evo-brainstorm-header { display:flex; align-items:center; gap:14px; margin:10px 0 30px; }
+.evo-brainstorm-icon { display:grid; place-items:center; width:46px; height:46px; flex:none; border:1px solid #ececec; border-radius:15px; background:#fafafa; color:#303030; }
+.evo-brainstorm h1 { margin:0; font-size:1.5625rem; font-weight:650; letter-spacing:-.7px; }
+.evo-brainstorm-header p { margin:5px 0 0; color:#5b6472; font-size:0.8125rem; line-height:1.45; }
+.evo-brainstorm-section { overflow:hidden; border:1px solid #e9e9e9; border-radius:19px; background:#fff; box-shadow:0 4px 20px rgba(0,0,0,.035); }
+.evo-brainstorm-section-title { display:flex; align-items:center; justify-content:space-between; padding:18px 19px; border-bottom:1px solid #eee; }
+.evo-brainstorm-section-title h2 { margin:0; font-size:1rem; font-weight:650; letter-spacing:-.2px; }
+.evo-brainstorm-section-title p { margin:4px 0 0; color:#5b6472; font-size:0.75rem; }
+.evo-brainstorm-section-tools { display:flex; align-items:center; gap:9px; }
+.evo-brainstorm-count { display:grid; width:30px; height:30px; place-items:center; border-radius:50%; background:#f4f4f4; color:#555; font-size:0.75rem; font-weight:600; }
+.evo-brainstorm-add-button { display:grid; width:36px; height:36px; place-items:center; border:1px solid #e6e6e6; border-radius:50%; background:#fff; color:#202123; transition:background .16s ease,transform .16s ease; }
+.evo-brainstorm-add-button:hover { transform:scale(1.04); background:#f7f7f7; }
+.evo-brainstorm-form { display:grid; grid-template-columns:80px 1fr; gap:13px; padding:18px 19px; border-bottom:1px solid #eee; background:#fcfcfc; }
+.evo-brainstorm-form label { display:grid; gap:6px; min-width:0; }
+.evo-brainstorm-form label > span { color:#696969; font-size:.75rem; font-weight:600; }
+.evo-brainstorm-form input,.evo-brainstorm-form textarea { width:100%; min-width:0; padding:10px 11px; border:1px solid #e7e7e7; border-radius:11px; outline:none; background:#fff; color:#202123; font:inherit; font-size:0.8125rem; }
+.evo-brainstorm-form textarea { resize:vertical; line-height:1.5; }
+.evo-brainstorm-form input:focus,.evo-brainstorm-form textarea:focus { border-color:#5b6472; box-shadow:0 0 0 3px #1111110a; }
+.evo-brainstorm-form .evo-brainstorm-icon-field input { min-height:39px; padding:4px; font-size:1.25rem; text-align:center; }
+.evo-brainstorm-form label:nth-child(2),.evo-brainstorm-form label:nth-child(3),.evo-brainstorm-form label:nth-child(4),.evo-brainstorm-form-footer { grid-column:1/-1; }
+.evo-brainstorm-form-footer { display:flex; align-items:center; justify-content:space-between; gap:12px; }
+.evo-brainstorm-form-footer span { color:#5b6472; font-size:.75rem; }
+.evo-brainstorm-form-footer button { min-height:36px; padding:0 14px; border-radius:999px; background:#202123; color:white; font-size:0.75rem; font-weight:600; }
+.evo-brainstorm-form-footer button:disabled { opacity:.45; }
+.evo-brainstorm-list { display:grid; }
+.evo-brainstorm-task { padding:18px 19px 15px; border-bottom:1px solid #ededed; }
+.evo-brainstorm-task:last-child { border-bottom:0; }
+.evo-brainstorm-task.is-approved { background:#fcfcfc; }
+.evo-brainstorm-task-heading { display:flex; align-items:flex-start; gap:12px; }
+.evo-brainstorm-task-icon { display:grid; width:32px; height:32px; flex:none; place-items:center; border:1px solid #ededed; border-radius:10px; background:#fafafa; color:#555; font-size:1.0625rem; }
+.evo-brainstorm-check { display:grid; width:21px; height:21px; flex:none; place-items:center; margin-top:1px; border:1px solid #d0d0d0; border-radius:7px; color:#5b6472; }
+.evo-brainstorm-task.is-approved .evo-brainstorm-check { border-color:#202123; background:#202123; }
+.evo-brainstorm-task-copy { min-width:0; }
+.evo-brainstorm-task h3 { margin:0; font-size:0.9375rem; font-weight:620; letter-spacing:-.15px; }
+.evo-brainstorm-task-copy p { margin:5px 0 0; color:#666; font-size:0.8125rem; line-height:1.5; }
+.evo-brainstorm-file { display:flex; align-items:center; gap:9px; width:100%; min-height:42px; margin:15px 0 0 33px; padding:0 11px; width:calc(100% - 33px); border:1px solid #e9e9e9; border-radius:11px; background:#fafafa; color:#555; text-align:left; }
+.evo-brainstorm-file > span:nth-child(2) { overflow:hidden; flex:1; font-size:0.75rem; text-overflow:ellipsis; white-space:nowrap; }
+.evo-brainstorm-file-action { color:#5b6472; font-size:.75rem; }
+.evo-brainstorm-task-footer { display:flex; align-items:center; justify-content:space-between; gap:10px; margin:13px 0 0 33px; }
+.evo-brainstorm-task-footer small { color:#5b6472; font-size:.75rem; }
+.evo-brainstorm-task-footer > div { display:flex; align-items:center; gap:7px; }
+.evo-brainstorm-approve { min-height:34px; padding:0 13px; border:1px solid #202123; border-radius:999px; background:#202123; color:#fff; font-size:0.75rem; font-weight:600; }
+.evo-brainstorm-task.is-approved .evo-brainstorm-approve { border-color:#5b6472; background:#fff; color:#555; }
+.evo-brainstorm-dismiss { display:grid; width:34px; height:34px; place-items:center; border-radius:50%; color:#5b6472; }
+.evo-brainstorm-empty { display:flex; align-items:center; flex-direction:column; padding:50px 26px; text-align:center; }
+.evo-brainstorm-empty > span { display:grid; width:44px; height:44px; place-items:center; margin-bottom:14px; border:1px solid #ededed; border-radius:14px; color:#5b6472; }
+.evo-brainstorm-empty strong { font-size:0.875rem; font-weight:600; }
+.evo-brainstorm-empty p { max-width:370px; margin:7px 0 0; color:#5b6472; font-size:0.75rem; line-height:1.5; }
+@media (max-width:480px) { .evo-brainstorm { padding-right:14px; padding-left:14px; } .evo-brainstorm-form { grid-template-columns:64px 1fr; gap:10px; padding:15px; } .evo-brainstorm-task { padding-right:14px; padding-left:14px; } .evo-brainstorm-file,.evo-brainstorm-task-footer { margin-left:0; width:100%; } }
+@keyframes evo-sidebar-slide-in { from { transform:translateX(-100%); } to { transform:translateX(0); } }
+@keyframes evo-sidebar-fade-in { from { opacity:0; } to { opacity:1; } }
+@media (max-width:360px) { .evo-sidebar-host .evo-morph-anchor { left:max(14px,env(safe-area-inset-left,0px)); } }
+@media (prefers-reduced-motion:reduce) { .evo-sidebar,.evo-sidebar-backdrop { animation:none; } }
+
+/* Discoverable AI entry on the topic index. */
+.ref-view-home .evo-ai-shortcut { display:flex; align-items:center; gap:12px; width:100%; min-height:70px; margin:12px 0 10px; padding:12px 14px; border:1px solid #e8e8e8; border-radius:17px; background:#fff; text-align:left; }
+.evo-ai-shortcut-icon { display:grid; width:42px; height:42px; flex:none; place-items:center; border-radius:13px; background:#f5f5f5; color:#262626; }
+.evo-ai-shortcut > span:nth-child(2) { display:flex; min-width:0; flex:1; flex-direction:column; gap:4px; }
+.evo-ai-shortcut strong { font-size:0.875rem; font-weight:650; letter-spacing:-.2px; }
+.evo-ai-shortcut small { color:#5b6472; font-size:0.75rem; }
+.evo-ai-shortcut-arrow { color:#5b6472; flex:none; }
+
+.evo-composer-surface { position:relative; }
+.evo-chat-popover { position:absolute; z-index:120; left:8px; bottom:calc(100% + 9px); width:min(300px,calc(100vw - 44px)); padding:7px; border:1px solid #e9e9ec; border-radius:18px; background:#fff; box-shadow:0 12px 38px #17203320; }
+.evo-chat-popover button,.evo-chat-mode-option { display:flex; align-items:center; gap:12px; width:100%; min-height:52px; padding:9px 10px; border:0; border-radius:12px; background:transparent; color:#222; text-align:left; }
+.evo-chat-popover button:hover,.evo-chat-mode-option:hover { background:#f5f5f6; }
+.evo-chat-popover button > span,.evo-chat-mode-option > span { display:grid; min-width:0; gap:3px; }
+.evo-chat-popover strong,.evo-chat-mode-option strong { font-size:14px; font-weight:550; }
+.evo-chat-popover small,.evo-chat-mode-option small { color:#737780; font-size:12px; line-height:1.35; }
+.evo-chat-sheet-backdrop { position:fixed; z-index:1000; inset:0; display:flex; align-items:flex-end; justify-content:center; padding:16px; background:#11182759; }
+.evo-chat-sheet { width:min(100%,520px); max-height:min(75dvh,600px); overflow:auto; padding:18px 14px calc(16px + env(safe-area-inset-bottom)); border:1px solid #e8e8ea; border-radius:22px; background:#fff; box-shadow:0 14px 60px #0002; }
+.evo-chat-sheet-heading { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:0 5px 10px; }
+.evo-chat-sheet-heading h2 { margin:0; color:#202123; font-size:17px; font-weight:620; }
+.evo-chat-sheet-heading button { display:grid; place-items:center; width:36px; height:36px; border:0; border-radius:50%; background:#f3f3f4; color:#444; }
+.evo-chat-mode-option { min-height:64px; }
+.evo-chat-mode-option[aria-pressed="true"] { background:#f4f4f5; }
+.evo-chat-mode-option > svg:last-child { margin-left:auto; }
+.evo-chat-sheet-empty { padding:14px 8px; color:#72757d; font-size:14px; }
+@media (min-width:700px) { .evo-chat-sheet-backdrop { align-items:center; } }

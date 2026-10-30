@@ -13,7 +13,7 @@ type Message = { role: Role; content: string }
 type ProviderMessage = { role: Role; content: unknown }
 
 const API_URL = "https://integrate.api.nvidia.com/v1/chat/completions"
-const MODEL = process.env.EVO_AI_MODEL?.trim() || "nvidia/nemotron-3.5-lightning-30b-a3b"
+const MODEL = process.env.EVO_AI_MODEL?.trim() || "poolside/laguna-xs-2.1"
 const rateLimits = new Map<string, { count: number; resetAt: number }>()
 const headers = { "Cache-Control": "no-store", "X-Content-Type-Options": "nosniff" }
 
@@ -120,13 +120,14 @@ async function streamProviderText(
   apiKey: string,
   messages: ProviderMessage[],
   onDelta: (delta: string) => void,
+  system: string,
 ): Promise<string> {
   const upstream = await fetch(API_URL, {
     method: "POST",
     headers: { Authorization: "Bearer " + apiKey, "Content-Type": "application/json" },
     body: JSON.stringify({
       model: MODEL,
-      messages: [{ role: "system", content: replyPrompt }, ...messages],
+      messages: [{ role: "system", content: system }, ...messages],
       temperature: 0.7,
       max_tokens: 1700,
       stream: true,
@@ -198,7 +199,7 @@ function withAttachment(messages: Message[], attachment: ChatAttachment | null):
   return result
 }
 
-function makeStream(apiKey: string, messages: Message[], attachment: ChatAttachment | null) {
+function makeStream(apiKey: string, messages: Message[], attachment: ChatAttachment | null, system: string) {
   const providerMessages = withAttachment(messages, attachment)
   const encoder = new TextEncoder()
   return new ReadableStream<Uint8Array>({
@@ -223,7 +224,7 @@ function makeStream(apiKey: string, messages: Message[], attachment: ChatAttachm
           emit("done")
           return
         }
-        const reply = await streamProviderText(apiKey, providerMessages, delta => emit("delta", { delta }))
+        const reply = await streamProviderText(apiKey, providerMessages, delta => emit("delta", { delta }), system)
         emit("text", { reply })
         const ui = await optionalUI(apiKey, messages[messages.length - 1].content, reply)
         const publicUI = ui ? projectVisualResponse(ui) : null
@@ -248,12 +249,14 @@ export async function POST(request: NextRequest) {
   rateLimits.set(ip, current)
   if (current.count > 25) return fail("Túl sok kérés érkezett. Próbáld újra néhány perc múlva.", 429)
 
-  const apiKey = process.env.EVO_AI?.trim() || process.env.EVO_Ai?.trim()
+  const apiKey = process.env.EVO_AI?.trim() || process.env.EVO_Ai?.trim() || process.env.NVIDIA_API_KEY?.trim()
   if (!apiKey) return fail("Az AI szolgáltatás nincs beállítva.", 503)
 
   let messages: Message[]
   let interactive = false
   let attachment: ChatAttachment | null = null
+  let approvedTasks: string[] = []
+  let mode: "tutor" | "conversation" | "writing" = "tutor"
   try {
     const raw = await request.text()
     if (raw.length > 3_100_000) return fail("Az üzenet túl hosszú.", 413)
@@ -263,6 +266,16 @@ export async function POST(request: NextRequest) {
     if (rawAttachment != null) {
       attachment = validateAttachment(rawAttachment)
       if (!attachment) return fail("Nem támogatott vagy túl nagy melléklet.", 400)
+    }
+    const rawTasks = (body as { approvedTasks?: unknown }).approvedTasks
+    if (rawTasks != null) {
+      if (!Array.isArray(rawTasks) || rawTasks.length > 20 || rawTasks.some(task => typeof task !== "string" || !task.trim() || task.length > 500)) return fail("Érvénytelen jóváhagyott feladatlista.", 400)
+      approvedTasks = rawTasks.map(task => (task as string).trim())
+    }
+    const requestedMode = (body as { mode?: unknown }).mode
+    if (requestedMode != null) {
+      if (requestedMode !== "tutor" && requestedMode !== "conversation" && requestedMode !== "writing") return fail("Érvénytelen beszélgetési mód.", 400)
+      mode = requestedMode
     }
     const list = (body as { messages?: unknown }).messages
     interactive = (body as { interactive?: unknown }).interactive === true
@@ -278,7 +291,16 @@ export async function POST(request: NextRequest) {
     return fail("Érvénytelen üzenetformátum.", 400)
   }
 
-  if (interactive) return new Response(makeStream(apiKey, messages, attachment), {
+  const modePrompt = mode === "conversation"
+    ? " Beszélgetés módban természetes, kötetlen párbeszédet folytass; igazodj a felhasználó nyelvéhez, és csak kérésre válts tanári magyarázatra."
+    : mode === "writing"
+      ? " Fogalmazás módban segíts szöveget írni, átfogalmazni és javítani; előbb add meg a kész, használható változatot, utána röviden indokold a fontos javításokat."
+      : " Tutor módban taníts türelmesen, érthető példákkal és lépésenkénti magyarázattal."
+  const system = (approvedTasks.length
+    ? replyPrompt + " Jóváhagyott, minden beszélgetésből közös ötletbörze-feladatok: " + approvedTasks.map(task => "- " + task).join(" ") + " Ezeket vedd figyelembe a válaszban, ha kapcsolódnak a kérdéshez. Ne tekintsd őket új üzenetnek, és ne állítsd, hogy már elvégezték őket."
+    : replyPrompt) + modePrompt
+
+  if (interactive) return new Response(makeStream(apiKey, messages, attachment, system), {
     headers: { ...headers, "Content-Type": "text/event-stream; charset=utf-8", "X-Accel-Buffering": "no" },
   })
 
@@ -289,7 +311,7 @@ export async function POST(request: NextRequest) {
       body: JSON.stringify({
         model: MODEL,
         messages: [
-          { role: "system", content: replyPrompt },
+          { role: "system", content: system },
           ...withAttachment(messages, attachment),
         ],
         temperature: 0.7,

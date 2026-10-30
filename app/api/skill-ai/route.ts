@@ -10,7 +10,7 @@ type ChatRole = "system" | "user"
 type ChatMessage = { role: ChatRole; content: string }
 
 const NVIDIA_URL = "https://integrate.api.nvidia.com/v1/chat/completions"
-const MODEL = process.env.EVO_AI_MODEL?.trim() || "minimaxai/minimax-m3.1-flash"
+const MODEL = process.env.EVO_AI_MODEL?.trim() || "poolside/laguna-xs-2.1"
 const WINDOW_MS = 10 * 60 * 1000
 const MAX_REQUESTS_PER_WINDOW = 28
 const throttle = new Map<string, { count: number; resetAt: number }>()
@@ -56,7 +56,7 @@ function wordCount(text: string) {
   return text.trim().split(/\s+/u).filter(Boolean).length
 }
 async function infer(messages: ChatMessage[], maxTokens = 1200): Promise<Record<string, unknown>> {
-  const key = process.env.EVO_Ai?.trim() || process.env.EVO_AI?.trim()
+  const key = process.env.EVO_Ai?.trim() || process.env.EVO_AI?.trim() || process.env.NVIDIA_API_KEY?.trim()
   if (!key) throw new Error("missing_key")
   const candidates = [MODEL]
   let lastError = "upstream"
@@ -118,7 +118,7 @@ function asUser(data: unknown): ChatMessage {
 export async function POST(request: NextRequest) {
   const origin = request.headers.get("origin")
   if (origin && origin !== request.nextUrl.origin) return error("Érvénytelen kérés.", 403)
-  if (!(process.env.EVO_Ai?.trim() || process.env.EVO_AI?.trim())) return error("Az AI gyakorlás jelenleg nincs beállítva (EVO_Ai).", 503)
+  if (!(process.env.EVO_Ai?.trim() || process.env.EVO_AI?.trim() || process.env.NVIDIA_API_KEY?.trim())) return error("Az AI gyakorlás jelenleg nincs beállítva.", 503)
 
   const address = request.headers.get("x-real-ip") || request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown"
   const now = Date.now()

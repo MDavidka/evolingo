@@ -50,7 +50,7 @@
 }
 .evo-tabbar .evo-tab.is-active::before { opacity: 1; transform: scale(1); }
 .evo-tabbar .evo-tab:active .evo-tab-content { transform: scale(.96); }
-.evo-tabbar .evo-tab.is-active { color: #19191b; }
+.evo-tabbar .evo-tab.is-active { color: var(--evo-accent, #ff7900); }
 .evo-tab-content {
   position: relative;
   z-index: 1;
@@ -68,7 +68,7 @@
   display: block;
   max-width: 100%;
   overflow: hidden;
-  font-size: 10px;
+  font-size: .75rem;
   font-weight: 650;
   letter-spacing: -.15px;
   line-height: 1.2;
@@ -106,12 +106,6 @@ body .app-shell.reference-shell > .screen-content.learn-home-content:has(.ref-ap
   padding-bottom: calc(28px + env(safe-area-inset-bottom, 0px)) !important;
 }
 /* The primary navigation is now on the side: do not reserve old bottom-tab space. */
-.app-shell.reference-shell:has(.ref-view-chat) .evo-chat-frame {
-  padding-bottom: max(10px, env(safe-area-inset-bottom, 0px)) !important;
-}
-.app-shell.reference-shell:has(.ref-view-chat):has(textarea:focus) .evo-chat-frame {
-  padding-bottom: var(--evo-chat-bottom, 10px) !important;
-}
 .app-shell:has(input:focus, textarea:focus) > .evo-tabbar {
   opacity: 0;
   visibility: hidden;
@@ -121,8 +115,8 @@ body:has(.ref-modal-backdrop) .evo-tabbar { opacity: 0; pointer-events: none; }
 .ref-course-menu > .ref-course-menu-label {
   display: block;
   padding: 7px 11px 3px;
-  color: #8b8b8b;
-  font-size: 11px;
+  color: #5b6472;
+  font-size: .75rem;
   font-weight: 600;
 }
 .ref-course-menu .ref-course-choice {
@@ -148,12 +142,12 @@ body:has(.ref-modal-backdrop) .evo-tabbar { opacity: 0; pointer-events: none; }
   color: #262626;
 }
 .ref-utility-community-link > svg:first-child { flex: none; color: #5b5b5b; }
-.ref-utility-community-link > span { flex: 1; font-size: 14px; font-weight: 600; }
-.ref-utility-community-link > svg:last-child { color: #9c9c9c; }
+.ref-utility-community-link > span { flex: 1; font-size: 0.875rem; font-weight: 600; }
+.ref-utility-community-link > svg:last-child { color: #5b6472; }
 @media (max-width: 360px) {
   .evo-tabbar { width: calc(100% - 20px) !important; gap: 1px; height: 72px !important; padding: 5px !important; }
   .evo-tabbar .evo-tab { min-height: 58px; }
-  .evo-tab-caption { font-size: 9.5px; }
+  .evo-tab-caption { font-size: .75rem; }
 }
 @media (prefers-reduced-motion: reduce) {
   .evo-tabbar .evo-tab::before, .evo-tab-content { transition: none; }
@@ -203,9 +197,7 @@ body:has(.ref-modal-backdrop) .evo-tabbar { opacity: 0; pointer-events: none; }
   background: transparent !important;
   color: #424d60 !important;
 }
-.evo-tabbar.evo-glass-rail .evo-tab.is-active {
-  color: #171e2d !important;
-}
+.evo-tabbar.evo-glass-rail .evo-tab.is-active { color: var(--evo-accent, #ff7900) !important; }
 .evo-tabbar.evo-glass-rail .evo-tab.is-active::before {
   opacity: 1;
   background: rgba(255,255,255,.96);
@@ -237,7 +229,7 @@ body:has(.ref-modal-backdrop) .evo-tabbar { opacity: 0; pointer-events: none; }
   display: block;
   max-width: 100%;
   overflow: visible;
-  font-size: 9px !important;
+  font-size: .75rem !important;
   font-weight: 600;
   line-height: 12px;
   white-space: nowrap;
@@ -444,11 +436,11 @@ body:has(.ref-modal-backdrop) .evo-tabbar { opacity: 0; pointer-events: none; }
   box-shadow: 0 16px 40px rgba(32,49,79,.14);
   animation: evo-sidebar-bounce .42s cubic-bezier(.2,1.4,.4,1) both;
 }
-.evo-a11y-heading { display: flex; justify-content: space-between; align-items: center; padding: 4px 6px 12px; font-size: 15px; }
+.evo-a11y-heading { display: flex; justify-content: space-between; align-items: center; padding: 4px 6px 12px; font-size: 0.9375rem; }
 .evo-a11y-heading button { border: 0; background: transparent; min-width: 40px; min-height: 40px; }
-.evo-a11y-panel > button { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 48px; padding: 10px 12px; border: 0; border-radius: 13px; background: transparent; color: #232b39; text-align: left; font-size: 14px; }
+.evo-a11y-panel > button { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 48px; padding: 10px 12px; border: 0; border-radius: 13px; background: transparent; color: #232b39; text-align: left; font-size: 0.875rem; }
 .evo-a11y-panel > button[aria-pressed="true"] { background: #e4eaf5; }
-.evo-a11y-panel > button span { margin-left: auto; color: #59677d; font-size: 12px; }
+.evo-a11y-panel > button span { margin-left: auto; color: #59677d; font-size: 0.75rem; }
 @keyframes evo-sidebar-bounce { 0% { opacity: 0; transform: translateY(-5px) scale(.76); } 65% { opacity: 1; transform: translateY(0) scale(1.045); } 100% { opacity: 1; transform: translateY(0) scale(1); } }
 html.evo-large-text .ref-view-chat .evo-chat-entry-main { font-size: 1.15em !important; }
 html.evo-high-contrast .ref-view-chat .evo-chat-entry-main { color: #080e19 !important; }

@@ -1,0 +1,299 @@
+/* Evölingo monochrome system — shared visual source of truth. */
+:root {
+  color-scheme: light;
+  --evo-bg: #ffffff;
+  --evo-surface: #f7f7f8;
+  --evo-surface-raised: #ffffff;
+  --evo-surface-muted: #f0f0f1;
+  --evo-text: #171717;
+  --evo-text-secondary: #626267;
+  --evo-text-tertiary: #8e8e93;
+  --evo-action: #242424;
+  --evo-action-hover: #38383a;
+  --evo-border: #e5e5e8;
+  --evo-border-strong: #c7c7cc;
+  --evo-success: #238451;
+  --evo-danger: #c63b3b;
+  --evo-achievement: #9a6b16;
+  --evo-focus: #626267;
+  --evo-font-title: 700 32px/38px Inter, Arial, sans-serif;
+  --evo-font-hero: 700 28px/34px Inter, Arial, sans-serif;
+  --evo-font-section: 600 20px/26px Inter, Arial, sans-serif;
+  --evo-font-row: 600 17px/23px Inter, Arial, sans-serif;
+  --evo-font-body: 400 16px/24px Inter, Arial, sans-serif;
+  --evo-font-compact: 400 15px/22px Inter, Arial, sans-serif;
+  --evo-font-support: 400 14px/20px Inter, Arial, sans-serif;
+  --evo-font-meta: 400 12px/16px Inter, Arial, sans-serif;
+  --evo-font-micro: 400 11px/15px Inter, Arial, sans-serif;
+  --evo-size-title: 32px;
+  --evo-size-hero: 28px;
+  --evo-size-section: 20px;
+  --evo-size-row: 17px;
+  --evo-size-body: 16px;
+  --evo-size-compact: 15px;
+  --evo-size-support: 14px;
+  --evo-size-meta: 12px;
+  --evo-size-micro: 11px;
+  --evo-radius-xs: 6px;
+  --evo-radius-sm: 10px;
+  --evo-radius-small: 10px;
+  --evo-radius-control: 14px;
+  --evo-radius-md: 14px;
+  --evo-radius-card: 18px;
+  --evo-radius-lg: 18px;
+  --evo-radius-xl: 22px;
+  --evo-radius-xxl: 24px;
+  --evo-radius-2xl: 26px;
+  --evo-radius-pill: 999px;
+  --evo-space-1: 4px;
+  --evo-space-2: 8px;
+  --evo-space-3: 12px;
+  --evo-space-4: 16px;
+  --evo-space-5: 20px;
+  --evo-space-6: 24px;
+  --evo-target-size: 44px;
+
+  /* Compatibility bridge for legacy screens while their CSS is migrated. */
+  --page: var(--evo-bg);
+  --text: var(--evo-text);
+  --muted: var(--evo-text-secondary);
+  --soft: var(--evo-surface);
+  --line: var(--evo-border);
+  --orange: var(--evo-action);
+  --red: var(--evo-danger);
+  --green: var(--evo-action);
+  --green-dark: var(--evo-action-hover);
+  --green-pale: var(--evo-surface-muted);
+  --green-line: var(--evo-border);
+  --evo-accent: var(--evo-action);
+  --evo-accent-soft: var(--evo-surface-muted);
+  --color-primary: var(--evo-action);
+  --color-accent: var(--evo-action);
+  --color-surface: var(--evo-surface-raised);
+  --color-border: var(--evo-border);
+  --color-muted: var(--evo-text-secondary);
+  --evo-page-ink: var(--evo-text);
+  --evo-page-muted: var(--evo-text-secondary);
+  --evo-page-line: var(--evo-border);
+  --evo-page-soft: var(--evo-surface);
+  --evo-page-surface: var(--evo-bg);
+  --radius-sm: var(--evo-radius-sm);
+  --radius-md: var(--evo-radius-md);
+  --radius-lg: var(--evo-radius-xxl);
+  --radius-pill: var(--evo-radius-pill);
+  --radius-control: var(--evo-radius-pill);
+  --radius-surface: var(--evo-radius-card);
+  --radius-panel: var(--evo-radius-card);
+  --radius-xl: var(--evo-radius-xl);
+  --radius-2xl: var(--evo-radius-2xl);
+  --profile-radius-sm: var(--evo-radius-sm);
+  --profile-radius-md: var(--evo-radius-card);
+  --profile-radius-lg: var(--evo-radius-lg);
+  --text-xs: var(--evo-size-meta);
+  --text-sm: var(--evo-size-support);
+  --text-md: var(--evo-size-body);
+  --text-lg: var(--evo-size-section);
+  --space-page: var(--evo-space-5);
+  --btn-h: 48px;
+  --control-height-md: var(--btn-h);
+}
+
+/* Typography utilities for new UI and gradual migration of legacy screens. */
+.evo-type-title { font: var(--evo-font-title); }
+.evo-type-hero { font: var(--evo-font-hero); }
+.evo-type-section { font: var(--evo-font-section); }
+.evo-type-row { font: var(--evo-font-row); }
+.evo-type-body { font: var(--evo-font-body); }
+.evo-type-compact { font: var(--evo-font-compact); }
+.evo-type-support { font: var(--evo-font-support); }
+.evo-type-meta { font: var(--evo-font-meta); }
+.evo-type-micro { font: var(--evo-font-micro); }
+
+html, body, .app-shell, .screen-content { color: var(--evo-text); background-color: var(--evo-bg); }
+button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible {
+  outline-color: var(--evo-focus);
+}
+
+/* Shared reference-screen header: 56px content row, aligned menu and avatar. */
+.app-shell.reference-shell .ref-app:not(.ref-view-chat):not(.ref-view-auth) > .ref-topbar {
+  min-height: calc(56px + env(safe-area-inset-top, 0px));
+  height: calc(56px + env(safe-area-inset-top, 0px));
+  align-items: center;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: 0;
+}
+.app-shell.reference-shell .ref-app:not(.ref-view-chat):not(.ref-view-auth) > .ref-topbar .ref-profile-shortcut {
+  top: calc(env(safe-area-inset-top, 0px) + 6px);
+  width: var(--evo-target-size) !important;
+  height: var(--evo-target-size) !important;
+}
+.app-shell.reference-shell .ref-app:not(.ref-view-chat):not(.ref-view-auth) > .ref-topbar .evo-morph-anchor {
+  top: calc(env(safe-area-inset-top, 0px) + 6px);
+}
+.app-shell.reference-shell .ref-app:not(.ref-view-chat):not(.ref-view-auth) .ref-course-wrap {
+  top: calc(env(safe-area-inset-top, 0px) + 64px);
+}
+
+/* Neutralize the legacy instructional gradients and bright UI accents. */
+.task-dot, .task-node.active .task-dot, .lesson-orb, .round-arrow,
+.primary-action, .task-action-bar .primary-action,
+.lesson-intro-layout .primary-action, .task-exercise-layout .primary-action,
+.progress-track span, .league-progress span, .lesson-progress-track span,
+.compact-lesson-icon, .compact-lesson-icon-button .compact-lesson-icon,
+.app-tab-bar button.active, .bottom-nav button.active,
+.ref-view-chat .evo-chat-send, .ref-dark-pill, .ref-continue,
+.evo-chat-send, .evo-sidebar-host .evo-morph-toggle {
+  background-color: var(--evo-action);
+  background-image: none;
+  color: #fff;
+  box-shadow: none;
+}
+.task-node.completed .task-dot, .completion-tag, .feedback-correct,
+.setting-success, .answer-option.selected {
+  color: var(--evo-success);
+}
+.task-node.completed .task-name { color: var(--evo-success); }
+.welcome-card, .world-card.selected, .rank-row.you, .lesson-question-card,
+.inline-notice, .league-badge, .xp-reward, .xp-bolt {
+  background: var(--evo-surface);
+  border-color: var(--evo-border);
+  color: var(--evo-text);
+}
+.lesson-card.active-lesson, .world-card.selected, .rank-row.you { box-shadow: none; }
+.link-button, .pill, .streak, .profile-stats svg { color: var(--evo-action); }
+.ref-view-chat .evo-chat-composer,
+.ref-view-chat .evo-chat-composer[data-focused="true"] { border-radius: 999px !important; }
+.evo-chat-entry--user .evo-chat-bubble { background: var(--evo-surface-muted); }
+html:has(.ref-view-chat) { background: #9cacc9; }
+html:has(.ref-view-chat)::before {
+  background: linear-gradient(180deg, #ffffff 0%, #ffffff 28%, #f9faff 42%, #dce3ef 67%, #9cacc9 100%) !important;
+}
+
+/* Bring legacy screen surfaces onto the shared monochrome palette. */
+:where(.ref-app, .screen-content) {
+  --orange: var(--evo-action);
+  --green: var(--evo-action);
+  --green-dark: var(--evo-action-hover);
+  --green-highlight: var(--evo-action-hover);
+  --green-pale: var(--evo-surface-muted);
+  --green-line: var(--evo-border);
+  --blue: var(--evo-action);
+  --purple: var(--evo-action);
+  --pink: var(--evo-action);
+  --yellow: var(--evo-action);
+  --evo-learn-ink: var(--evo-text);
+  --evo-learn-muted: var(--evo-text-secondary);
+  --evo-learn-line: var(--evo-border);
+  --evo-learn-surface: var(--evo-surface);
+}
+.app-shell.reference-shell .ref-app.ref-view-home,
+.app-shell.reference-shell .ref-app.ref-view-home .ref-course { color: var(--evo-text); }
+.app-shell.reference-shell .ref-app.ref-view-home .ref-course,
+.app-shell.reference-shell .ref-app.ref-view-home .ref-course-wrap { border-color: var(--evo-border) !important; }
+.app-shell.reference-shell .ref-app.ref-view-home .evo-learning-welcome p,
+.app-shell.reference-shell .ref-app.ref-view-home .evo-learning-welcome h1 { color: var(--evo-text); }
+.app-shell.reference-shell .ref-app.ref-view-home .evo-learning-welcome p { color: var(--evo-text-secondary); }
+.app-shell.reference-shell .ref-app.ref-view-home .evo-learning-home :is(button, a)[class*="primary"],
+.app-shell.reference-shell .ref-app.ref-view-home .evo-learning-home :is(.is-active, [aria-current="page"]) {
+  background-color: var(--evo-action);
+  background-image: none;
+  color: #fff;
+}
+.app-shell.reference-shell .ref-view-chat .evo-chat-send { background: var(--evo-action) !important; }
+.app-shell.reference-shell .ref-view-chat .evo-chat-entry--user .evo-chat-bubble { background: var(--evo-surface-muted); }
+.app-shell.reference-shell .ref-view-chat .evo-chat-welcome { background: var(--evo-bg); }
+
+/* Icon stroke consistency for Lucide and inline SVG navigation controls. */
+.app-shell svg { stroke-width: 1.75; }
+
+@media (max-width: 430px) {
+  .app-shell.reference-shell:not(:has(.ref-view-chat)) .screen-content { padding-right: 20px; padding-left: 20px; }
+  .app-shell.reference-shell .ref-app { max-width: 520px; }
+}
+
+/* Remove legacy ornamental color treatments from live app surfaces. */
+.compact-lesson-row.lesson-row-complete .compact-lesson-icon-button .compact-lesson-icon,
+.compact-lesson-row.lesson-row-current .compact-lesson-icon-button .compact-lesson-icon,
+.compact-lesson-row.lesson-row-locked .compact-lesson-icon-button .compact-lesson-icon,
+.compact-lesson-icon-button .compact-lesson-icon,
+.compact-lesson-icon-button.node-locked .compact-lesson-icon,
+.compact-lesson-row .compact-lesson-icon.node-locked,
+.profile-page .profile-cover,
+.profile-theme-sage .profile-cover,
+.profile-overview-track span,
+.unit-progress-track > span,
+.local-lesson-art .local-art-scene,
+.reading-art-scene,
+.task-dot,
+.task-node.active .task-dot,
+.lesson-orb,
+.round-arrow,
+.primary-action,
+.task-action-bar .primary-action,
+.lesson-intro-layout .primary-action,
+.task-exercise-layout .primary-action,
+.app-tab-bar button.active,
+.bottom-nav button.active,
+.evo-chat-send,
+.ref-view-chat .evo-chat-send {
+  background-color: var(--evo-action) !important;
+  background-image: none !important;
+  box-shadow: none;
+}
+.profile-page .profile-cover { background-color: var(--evo-surface) !important; }
+.profile-overview-track, .unit-progress-track { background: var(--evo-surface-muted) !important; }
+.ref-view-chat .evo-chat-frame,
+.ref-view-chat .evo-chat-bottom,
+.ref-view-chat .evo-chat-welcome { background: transparent !important; }
+
+/* The only retained gradient is a white fade used at scroll/composer edges. */
+.app-shell.reference-shell .ref-app:not(.ref-view-chat):not(.ref-view-auth) {
+  background: var(--evo-bg) !important;
+  background-image: none !important;
+}
+.intro-hero,
+.task-illustration,
+.local-lesson-art .local-art-scene,
+.reading-art-scene,
+.profile-page .profile-cover,
+.compact-lesson-row .compact-lesson-icon,
+.compact-lesson-icon,
+.lesson-carousel-dot,
+.learn-home-gradient {
+  background: var(--evo-surface) !important;
+  background-image: none !important;
+  box-shadow: none !important;
+}
+.bottom-nav,
+.app-tab-bar,
+.evo-liquid-root .evo-liquid-scene,
+.evo-tabbar.evo-glass-rail.evo-liquid-root,
+.ios-glass-button,
+.liquid-glass-control,
+.profile-overview,
+.profile-page .profile-social-stat,
+.profile-page .profile-learning-card,
+.profile-page .profile-goals-card,
+.profile-page .profile-custom-card,
+.lesson-reader .reading-clock,
+.lesson-intro-layout .exit-lesson,
+.task-exercise-layout .exit-lesson,
+.nav-selection-indicator,
+.bottom-nav::after,
+.compact-lesson-row::after {
+  background: var(--evo-bg) !important;
+  background-image: none !important;
+  box-shadow: none !important;
+}
+.ios-glass-button::before,
+.liquid-glass-control::before,
+.ios-glass-button::after,
+.lesson-intro-layout .primary-action::before,
+.task-exercise-layout .primary-action::before,
+.profile-cover::after,
+.profile-page .profile-cover::after {
+  background: none !important;
+  background-image: none !important;
+}
+.evo-liquid-root .evo-liquid-surface { background: var(--evo-surface); }
+.task-action-bar { background: linear-gradient(to top, var(--evo-bg) 82%, transparent) !important; }

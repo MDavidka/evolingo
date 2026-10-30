@@ -72,7 +72,7 @@ body .evo-profile-dashboard {
   color: var(--primary);
   background: #fff !important;
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
-  font-size: 16px;
+  font-size: 1rem;
   line-height: 1.4;
   -webkit-font-smoothing: antialiased;
 }
@@ -122,7 +122,7 @@ body .evo-profile-topbar {
 }
 body .evo-profile-wordmark {
   color: #262626 !important;
-  font-size: 18px !important;
+  font-size: 1.125rem !important;
   font-weight: 700 !important;
   line-height: 24px;
   letter-spacing: -.045em;
@@ -156,7 +156,7 @@ body .evo-profile-collapsed-title {
   transform: translateX(-50%);
   opacity: 0;
   color: #1c1c1e;
-  font-size: 16px;
+  font-size: 1rem;
   font-weight: 600;
   line-height: 24px;
   text-overflow: ellipsis;
@@ -214,12 +214,12 @@ body .evo-profile-course > span {
   overflow: hidden;
   max-width: 180px;
   color: #626262 !important;
-  font-size: 14px !important;
+  font-size: 0.875rem !important;
   font-weight: 500 !important;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-body .evo-profile-course > svg { flex: 0 0 14px; color: #8b8b8b; }
+body .evo-profile-course > svg { flex: 0 0 14px; color: #5b6472; }
 
 /* User identity and photo align on one horizontal baseline group. */
 body .evo-profile-intro {
@@ -246,12 +246,12 @@ body .evo-profile-meta {
   align-items: flex-start;
   gap: 3px;
   margin-top: 5px !important;
-  color: #828282 !important;
-  font-size: 13px !important;
+  color: #5b6472 !important;
+  font-size: 0.8125rem !important;
   line-height: 19px !important;
 }
 body .evo-profile-meta > span { max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
-body .evo-profile-joined { color: #9b9b9b; font-size: 12px; }
+body .evo-profile-joined { color: #5b6472; font-size: 0.75rem; }
 body .evo-profile-avatar-ring,
 body .evo-profile-avatar-inner {
   display: grid !important;
@@ -297,7 +297,7 @@ body .evo-profile-edit {
   background: #242424 !important;
   color: #fff !important;
   box-shadow: none !important;
-  font-size: 15px !important;
+  font-size: 0.9375rem !important;
   font-weight: 600 !important;
   line-height: 20px !important;
   letter-spacing: -.01em;
@@ -323,8 +323,8 @@ body .evo-profile-share:hover { background: #f5f5f5 !important; }
 body .evo-profile-share svg { width: 19px; height: 19px; stroke-width: 1.8; }
 body .evo-profile-share-status {
   margin: 10px 0 0 !important;
-  color: #777 !important;
-  font-size: 13px;
+  color: #5b6472 !important;
+  font-size: 0.8125rem;
 }
 
 /* Three stats, without cards: visual hierarchy is typography and spacing. */
@@ -378,21 +378,21 @@ body .evo-profile-stat > span {
   align-items: center !important;
   gap: 5px !important;
   max-width: 100%;
-  color: #777 !important;
-  font-size: 11.5px !important;
+  color: #5b6472 !important;
+  font-size: .75rem !important;
   font-weight: 400 !important;
   line-height: 16px !important;
   white-space: nowrap;
 }
-body .evo-profile-stat > span svg { flex: 0 0 13px; width: 13px; height: 13px; color: #858585 !important; stroke-width: 1.7; }
+body .evo-profile-stat > span svg { flex: 0 0 13px; width: 13px; height: 13px; color: #5b6472 !important; stroke-width: 1.7; }
 body .evo-profile-secondary-stats {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 10px;
   margin-top: 15px;
-  color: #8b8b8b;
-  font-size: 12.5px;
+  color: #5b6472;
+  font-size: 0.78125rem;
   font-variant-numeric: tabular-nums;
 }
 body .evo-profile-secondary-stats > span { min-width: 0; }
@@ -407,10 +407,10 @@ body .evo-profile-secondary-stats button {
   border-radius: 10px;
   background: transparent;
   color: #666;
-  font-size: 12.5px;
+  font-size: 0.78125rem;
   white-space: nowrap;
 }
-body .evo-profile-secondary-stats button svg { color: #888; }
+body .evo-profile-secondary-stats button svg { color: #5b6472; }
 
 /* Small factual learning summary; no invented level or fake percentage. */
 body .evo-profile-learning,
@@ -427,7 +427,7 @@ body .evo-profile-learning h2,
 body .evo-profile-section-heading h2,
 body .evo-profile-weekly-heading h2 {
   color: #202020 !important;
-  font-size: 20px !important;
+  font-size: 1.25rem !important;
   font-weight: 650 !important;
   line-height: 26px !important;
   letter-spacing: -.028em !important;
@@ -440,12 +440,12 @@ body .evo-profile-learning-rows > div {
   gap: 12px;
   min-height: 45px;
   border-bottom: 1px solid #f0f0f0;
-  color: #777;
-  font-size: 14px;
+  color: #5b6472;
+  font-size: 0.875rem;
 }
 body .evo-profile-learning-rows > div strong {
   color: #2b2b2b;
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: 600;
   font-variant-numeric: tabular-nums;
 }
@@ -457,8 +457,8 @@ body .evo-profile-badges-heading {
 }
 body .evo-profile-section-heading { justify-content: space-between !important; }
 body .evo-profile-badges-heading > span {
-  color: #959595 !important;
-  font-size: 13px !important;
+  color: #5b6472 !important;
+  font-size: 0.8125rem !important;
   font-weight: 400 !important;
   font-variant-numeric: tabular-nums;
 }
@@ -473,7 +473,7 @@ body .evo-profile-see-all {
   border-radius: 10px !important;
   background: transparent !important;
   color: #696969 !important;
-  font-size: 13.5px !important;
+  font-size: 0.84375rem !important;
   font-weight: 500 !important;
   white-space: nowrap;
 }
@@ -525,7 +525,7 @@ body .evo-badge-art {
   flex: 0 0 68px;
   width: 68px !important;
   height: 68px !important;
-  color: #777;
+  color: #5b6472;
   border: 0 !important;
   border-radius: 16px !important;
   background: #f5f5f5 !important;
@@ -541,7 +541,7 @@ body .evo-badge-art > svg:not(.evo-badge-ring):not(.evo-badge-mini-lock) {
 }
 body .evo-badge-art.is-earned { background: #edf3ed !important; color: #6b8b72 !important; }
 body .evo-badge-art.is-progress { background: #f4f4f4 !important; color: #718775 !important; }
-body .evo-badge-art.is-locked { background: #f6f6f6 !important; color: #b1b1b1 !important; }
+body .evo-badge-art.is-locked { background: #f6f6f6 !important; color: #5b6472 !important; }
 body .evo-badge-mini-lock {
   position: absolute;
   right: -3px;
@@ -553,7 +553,7 @@ body .evo-badge-mini-lock {
   border: 2px solid #fff;
   border-radius: 50%;
   background: #f2f2f2;
-  color: #969696;
+  color: #5b6472;
 }
 body .evo-badge-ring {
   position: absolute;
@@ -569,8 +569,8 @@ body .evo-badge-ring circle.evo-badge-ring-progress { stroke: #78927d; stroke-li
 body .evo-profile-badge-label {
   display: block;
   max-width: 83px;
-  color: #818181 !important;
-  font-size: 11.5px !important;
+  color: #5b6472 !important;
+  font-size: .75rem !important;
   font-weight: 450 !important;
   line-height: 15px !important;
   overflow-wrap: anywhere;
@@ -586,8 +586,8 @@ body .evo-profile-weekly-heading {
 }
 body .evo-profile-weekly-heading > span {
   flex: 0 0 auto;
-  color: #828282 !important;
-  font-size: 13px !important;
+  color: #5b6472 !important;
+  font-size: 0.8125rem !important;
   font-variant-numeric: tabular-nums;
 }
 body .evo-profile-week-chart {
@@ -626,8 +626,8 @@ body .evo-profile-bar {
 }
 body .evo-profile-day.is-today .evo-profile-bar { background: #708f79 !important; }
 body .evo-profile-day-name {
-  color: #888 !important;
-  font-size: 11.5px !important;
+  color: #5b6472 !important;
+  font-size: .75rem !important;
   line-height: 16px;
   text-align: center;
   white-space: nowrap;
@@ -679,7 +679,7 @@ body .evo-sheet-head {
 body .evo-sheet-head h2 {
   margin: 0;
   color: #202020 !important;
-  font-size: 20px !important;
+  font-size: 1.25rem !important;
   font-weight: 650 !important;
   line-height: 26px;
 }
@@ -707,10 +707,10 @@ body .evo-course-option {
 }
 body .evo-course-option > img { width: 24px; height: 24px; border-radius: 50%; object-fit: cover; }
 body .evo-course-option > span { display: grid; flex: 1 1 auto; gap: 3px; text-align: left; }
-body .evo-course-option strong { color: #202020; font-size: 15px; font-weight: 600; }
-body .evo-course-option small { color: #888; font-size: 13px; }
+body .evo-course-option strong { color: #202020; font-size: 0.9375rem; font-weight: 600; }
+body .evo-course-option small { color: #5b6472; font-size: 0.8125rem; }
 body .evo-course-option > svg { color: #708f79; }
-body .evo-sheet-summary { margin: 0 0 17px !important; color: #8b8b8b; font-size: 13px; }
+body .evo-sheet-summary { margin: 0 0 17px !important; color: #5b6472; font-size: 0.8125rem; }
 body .evo-badge-modal-grid {
   display: grid !important;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -726,10 +726,10 @@ body .evo-badge-detail {
   text-align: center;
 }
 body .evo-badge-detail > .evo-profile-badge { flex: 0 0 auto; }
-body .evo-badge-detail h3 { margin: 0; color: #202020; font-size: 20px; font-weight: 650; }
-body .evo-badge-detail p { max-width: 280px; margin: 0; color: #777; font-size: 14px; line-height: 21px; }
-body .evo-badge-detail strong { color: #242424; font-size: 14px; font-weight: 650; }
-body .evo-badge-date { color: #888; font-size: 12px; }
+body .evo-badge-detail h3 { margin: 0; color: #202020; font-size: 1.25rem; font-weight: 650; }
+body .evo-badge-detail p { max-width: 280px; margin: 0; color: #5b6472; font-size: 0.875rem; line-height: 21px; }
+body .evo-badge-detail strong { color: #242424; font-size: 0.875rem; font-weight: 650; }
+body .evo-badge-date { color: #5b6472; font-size: 0.75rem; }
 body .evo-badge-detail-track { width: 100%; max-width: 280px; height: 6px; overflow: hidden; border-radius: 999px; background: #eee; }
 body .evo-badge-detail-track > span { display: block; height: 100%; border-radius: inherit; background: #708f79; }
 
@@ -742,7 +742,7 @@ body .evo-badge-detail-track > span { display: block; height: 100%; border-radiu
   body .evo-profile-intro { gap: 12px !important; grid-template-columns: minmax(0, 1fr) 70px !important; }
   body .evo-profile-avatar-ring, body .evo-profile-avatar-inner { width: 70px !important; height: 70px !important; min-width: 70px !important; }
   body .evo-profile-stat { padding: 0 7px !important; }
-  body .evo-profile-stat > span { font-size: 10px !important; gap: 3px !important; }
+  body .evo-profile-stat > span { font-size: .75rem !important; gap: 3px !important; }
 }
 @media (prefers-reduced-motion: reduce) {
   body .evo-profile-dashboard *,
@@ -779,7 +779,7 @@ body .evo-profile-avatar-inner { flex-shrink: 0; }
   body .evo-profile-stat { padding-inline: 7px !important; }
   body .evo-profile-stat:first-child { padding-left: 0 !important; }
   body .evo-profile-stat:last-child { padding-right: 0 !important; }
-  body .evo-profile-stat > span { font-size: 10.5px !important; }
+  body .evo-profile-stat > span { font-size: .75rem !important; }
 }
 
 /* Profile editor: restrained iOS sheet, no floating glass or neon. */
@@ -839,7 +839,7 @@ body .profile-edit-heading {
 body .profile-edit-heading h2 {
   margin: 0 !important;
   color: #202020 !important;
-  font-size: 17px !important;
+  font-size: 1.0625rem !important;
   font-weight: 650 !important;
   line-height: 22px !important;
   letter-spacing: -.025em !important;
@@ -891,8 +891,8 @@ body .profile-edit-preview-cover > img {
   object-fit: cover;
 }
 body .profile-edit-preview-cover > span {
-  color: #a0a9a1;
-  font-size: 22px;
+  color: #5b6472;
+  font-size: 1.375rem;
   font-weight: 700;
   letter-spacing: -.055em;
 }
@@ -933,7 +933,7 @@ body .profile-edit-preview-avatar > img {
   border-radius: 50%;
   object-fit: cover;
 }
-body .profile-edit-preview-avatar > span:first-child { font-size: 35px; }
+body .profile-edit-preview-avatar > span:first-child { font-size: 2.1875rem; }
 body .profile-edit-preview-camera {
   position: absolute;
   right: -3px;
@@ -949,14 +949,14 @@ body .profile-edit-preview-camera {
 }
 body .profile-edit-preview-hint {
   margin: 0 0 23px !important;
-  color: #888 !important;
-  font-size: 12px !important;
+  color: #5b6472 !important;
+  font-size: 0.75rem !important;
   line-height: 18px !important;
 }
 body .profile-edit-field { display: flex; flex-direction: column; gap: 9px; }
 body .profile-edit-field label {
   color: #2d2d2d;
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: 600;
 }
 body .profile-edit-field input {
@@ -969,15 +969,15 @@ body .profile-edit-field input {
   color: #242424;
   background: #f8f8f8;
   font-family: inherit;
-  font-size: 16px;
+  font-size: 1rem;
   font-weight: 450;
   outline: none;
 }
 body .profile-edit-field input:focus { border-color: #8aa091; background: #fff; }
 body .profile-edit-field > span {
   align-self: flex-end;
-  color: #999;
-  font-size: 11px;
+  color: #5b6472;
+  font-size: .75rem;
   font-variant-numeric: tabular-nums;
 }
 body .profile-edit-divider {
@@ -988,14 +988,14 @@ body .profile-edit-divider {
 body .profile-edit-section-heading h3 {
   margin: 0;
   color: #242424;
-  font-size: 17px;
+  font-size: 1.0625rem;
   font-weight: 650;
   letter-spacing: -.02em;
 }
 body .profile-edit-section-heading p {
   margin: 5px 0 0;
-  color: #888;
-  font-size: 13px;
+  color: #5b6472;
+  font-size: 0.8125rem;
   line-height: 19px;
 }
 body .profile-edit-sheet .avatar-options {
@@ -1014,7 +1014,7 @@ body .profile-edit-sheet .avatar-option {
   border-radius: 16px !important;
   background: #f7f7f7 !important;
   box-shadow: none !important;
-  font-size: 26px;
+  font-size: 1.625rem;
 }
 body .profile-edit-sheet .avatar-option.selected {
   border: 2px solid #667f6d !important;
@@ -1056,27 +1056,27 @@ body .profile-edit-sheet .profile-gallery-actions button > span {
 }
 body .profile-edit-sheet .profile-gallery-actions strong {
   color: #242424;
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: 600;
 }
 body .profile-edit-sheet .profile-gallery-actions small {
-  color: #888;
-  font-size: 12px;
+  color: #5b6472;
+  font-size: 0.75rem;
 }
-body .profile-edit-sheet .profile-gallery-actions button > svg:last-child { color: #a1a1a1 !important; }
+body .profile-edit-sheet .profile-gallery-actions button > svg:last-child { color: #5b6472 !important; }
 body .profile-edit-sheet .profile-remove-banner {
   display: block;
   min-height: 44px;
   margin-top: 10px;
   padding: 10px 0;
   color: #7d5555;
-  font-size: 13px;
+  font-size: 0.8125rem;
   text-decoration: none;
 }
 body .profile-edit-sheet .setting-success {
   margin: 10px 0 0;
   color: #477e56;
-  font-size: 13px;
+  font-size: 0.8125rem;
 }
 body .profile-edit-footer {
   flex: 0 0 auto;
@@ -1094,7 +1094,7 @@ body .profile-edit-save {
   border-radius: 14px;
   color: #fff;
   background: #242424;
-  font-size: 15px;
+  font-size: 0.9375rem;
   font-weight: 650;
 }
 body .profile-edit-save:disabled { opacity: .4; cursor: not-allowed; }
@@ -1127,13 +1127,13 @@ body .evo-profile-dashboard {
 }
 body .evo-profile-dashboard .evo-profile-topbar { min-height: 46px !important; height: 46px !important; }
 body .evo-profile-dashboard .evo-profile-heading { padding-top: 13px !important; gap: 5px !important; }
-body .evo-profile-dashboard .evo-profile-heading h1 { font-size: 32px !important; line-height: 38px !important; }
+body .evo-profile-dashboard .evo-profile-heading h1 { font-size: 2rem !important; line-height: 38px !important; }
 body .evo-profile-dashboard .evo-profile-course { height: 40px !important; min-height: 40px !important; }
 body .evo-profile-dashboard .evo-profile-course > span,
 body .evo-profile-dashboard .evo-profile-course > svg { color: #606060 !important; }
 body .evo-profile-dashboard .evo-profile-intro { margin-top: 12px !important; gap: 12px !important; }
-body .evo-profile-dashboard .evo-profile-meta { color: #666 !important; font-size: 14px !important; }
-body .evo-profile-dashboard .evo-profile-joined { color: #707070 !important; font-size: 12px !important; }
+body .evo-profile-dashboard .evo-profile-meta { color: #666 !important; font-size: 0.875rem !important; }
+body .evo-profile-dashboard .evo-profile-joined { color: #707070 !important; font-size: 0.75rem !important; }
 body .evo-profile-dashboard .evo-profile-actions { margin-top: 17px !important; }
 body .evo-profile-dashboard .evo-profile-section-divider {
   height: 1px;
@@ -1153,29 +1153,29 @@ body .evo-profile-dashboard .evo-profile-stat > span {
 body .evo-profile-dashboard .evo-profile-secondary-stats,
 body .evo-profile-dashboard .evo-profile-secondary-stats button {
   color: #606060 !important;
-  font-size: 13px !important;
+  font-size: 0.8125rem !important;
 }
 body .evo-profile-dashboard .evo-profile-secondary-stats button svg { color: #666 !important; }
 body .evo-profile-dashboard .evo-profile-learning,
 body .evo-profile-dashboard .evo-profile-badges,
 body .evo-profile-dashboard .evo-profile-weekly { margin-top: 24px !important; }
 body .evo-profile-dashboard :is(.evo-profile-learning h2,.evo-profile-section-heading h2,.evo-profile-weekly-heading h2) {
-  font-size: 19px !important;
+  font-size: 1.1875rem !important;
   line-height: 26px !important;
 }
 body .evo-profile-dashboard .evo-profile-learning-rows > div {
   min-height: 44px;
   color: #666 !important;
-  font-size: 14px !important;
+  font-size: 0.875rem !important;
 }
 body .evo-profile-dashboard .evo-profile-badges-heading > span {
   color: #686868 !important;
-  font-size: 13px !important;
+  font-size: 0.8125rem !important;
 }
 body .evo-profile-dashboard .evo-profile-badge-swap {
   flex: 0 0 auto;
   min-height: 40px !important;
-  font-size: 12px !important;
+  font-size: 0.75rem !important;
   border-radius: 999px !important;
   box-shadow: none !important;
 }
@@ -1206,7 +1206,7 @@ body .evo-profile-dashboard .evo-profile-badges-all .evo-profile-badge {
 body .evo-profile-dashboard .evo-profile-badges-all .evo-profile-badge-label {
   max-width: 100% !important;
   color: #666 !important;
-  font-size: 11.5px !important;
+  font-size: .75rem !important;
 }
 body .evo-profile-dashboard .evo-profile-day-name,
 body .evo-profile-dashboard .evo-profile-weekly-heading > span {
@@ -1216,11 +1216,11 @@ body .evo-profile-dashboard button:focus-visible { outline-offset: 2px !importan
 
 @media (max-width: 370px) {
   body .evo-profile-dashboard .evo-profile-badges-all { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  body .evo-profile-dashboard .evo-profile-badges-heading h2 { font-size: 18px !important; }
+  body .evo-profile-dashboard .evo-profile-badges-heading h2 { font-size: 1.125rem !important; }
   body .evo-profile-dashboard .evo-profile-intro { grid-template-columns: minmax(0,1fr) 68px !important; }
   body .evo-profile-dashboard .evo-profile-avatar-ring,
   body .evo-profile-dashboard .evo-profile-avatar-inner { width: 68px !important; height: 68px !important; min-width: 68px !important; }
-  body .evo-profile-dashboard .evo-profile-stat > span { font-size: 11.5px !important; }
+  body .evo-profile-dashboard .evo-profile-stat > span { font-size: .75rem !important; }
 }
 @media (prefers-reduced-motion: reduce) {
   body .evo-profile-dashboard .evo-profile-badge-swap { animation: none !important; transition: none !important; }
@@ -1240,7 +1240,7 @@ body .evo-profile-dashboard .evo-profile-topbar {
   padding: 0 !important;
 }
 body .evo-profile-dashboard .evo-profile-wordmark {
-  font-size: 17px !important;
+  font-size: 1.0625rem !important;
   line-height: 22px !important;
 }
 body .evo-profile-dashboard .evo-profile-heading {
@@ -1279,7 +1279,7 @@ body .evo-profile-dashboard .evo-profile-course {
 }
 body .evo-profile-dashboard .evo-profile-course > span {
   color: #484848 !important;
-  font-size: 13px !important;
+  font-size: 0.8125rem !important;
   font-weight: 600 !important;
 }
 body .evo-profile-dashboard .evo-profile-course img {
@@ -1316,7 +1316,7 @@ body .evo-profile-dashboard .evo-profile-section-divider {
 }
 @media (max-width: 340px) {
   body .evo-profile-dashboard .evo-profile-heading { gap: 6px !important; }
-  body .evo-profile-dashboard .evo-profile-heading h1 { font-size: 29px !important; }
+  body .evo-profile-dashboard .evo-profile-heading h1 { font-size: 1.8125rem !important; }
   body .evo-profile-dashboard .evo-profile-course { max-width: 51% !important; padding-inline: 8px !important; }
-  body .evo-profile-dashboard .evo-profile-course > span { font-size: 12px !important; }
+  body .evo-profile-dashboard .evo-profile-course > span { font-size: 0.75rem !important; }
 }

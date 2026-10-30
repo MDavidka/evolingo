@@ -20,7 +20,7 @@ export function buildLessonOverview(lessons: LessonOverviewItem[], topicId = 0):
     id: "lesson-status",
     type: "chart_card",
     props: {
-      title: "Leckék állapota",
+      title: "Statisztika",
       chartType: "donut",
       source: "verified",
       unit: "lecke",
