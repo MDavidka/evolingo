@@ -358,3 +358,34 @@
   .evo-iui-study-calculator .evo-iui-calculator-result { padding: 13px; }
   .evo-iui-study-calculator .evo-iui-calculator-bottom button { width: 100%; }
 }
+
+/* General visual intelligence: restrained editorial illustrations and live data. */
+.evo-iui-illustration { overflow: hidden; }
+.evo-iui-illustration .evo-iui-illustration-art {
+  display: grid; place-items: center; min-height: 170px;
+  padding: 22px; margin: -16px -16px 17px;
+  background: #f3f5f9; border-bottom: 1px solid #e7eaf0;
+}
+.evo-iui-illustration .evo-iui-illustration-art img {
+  display: block; width: min(100%, 250px); height: 146px;
+  object-fit: contain; filter: drop-shadow(0 10px 14px rgba(18, 42, 89, .12));
+}
+.evo-iui-illustration figcaption { display: block; }
+.evo-iui-illustration figcaption p:not(.evo-iui-kicker) {
+  font-size: 14px; line-height: 1.6; color: #515968; margin: 8px 0;
+}
+.evo-iui-illustration figcaption small,
+.evo-iui-live-time > small { display: block; margin-top: 10px; font-size: 11px; color: #858b97; line-height: 1.5; }
+.evo-iui-live-time .evo-iui-live-time-display {
+  display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 14px;
+  margin: 17px 0 10px; padding: 20px 16px; border-radius: 18px; background: #f4f5f7;
+}
+.evo-iui-live-time .evo-iui-live-time-display strong {
+  font-size: clamp(29px, 8vw, 42px); font-weight: 680; line-height: 1.2;
+  font-variant-numeric: tabular-nums; letter-spacing: -.04em; color: #242831;
+}
+.evo-iui-live-time .evo-iui-live-time-display span { font-size: 13px; color: #737c8b; }
+.evo-iui-live-time > p { margin: 0; color: #555e6d; font-size: 14px; }
+@media (max-width: 350px) {
+  .evo-iui-illustration .evo-iui-illustration-art { margin-left: -12px; margin-right: -12px; }
+}
