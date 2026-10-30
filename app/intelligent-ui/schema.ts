@@ -48,9 +48,9 @@ function blockValid(b: unknown, allowProgress: boolean, allowVerifiedCharts: boo
       rows(p.points, 2, 8, v => keys(v, ["label", "value"]) && txt(v.label, 40) &&
         typeof v.value === "number" && Number.isFinite(v.value) && v.value >= 0 && v.value <= 100000)
     case "study_calculator": return keys(p, ["title", "dailyMinutes", "daysPerWeek", "weeks"]) &&
-      txt(p.title, 100) && Number.isInteger(p.dailyMinutes) && typeof p.dailyMinutes === "number" && p.dailyMinutes >= 5 && p.dailyMinutes <= 120 && p.dailyMinutes % 5 === 0 &&
-      Number.isInteger(p.daysPerWeek) && typeof p.daysPerWeek === "number" && p.daysPerWeek >= 1 && p.daysPerWeek <= 7 &&
-      Number.isInteger(p.weeks) && typeof p.weeks === "number" && p.weeks >= 1 && p.weeks <= 12
+      txt(p.title, 100) && typeof p.dailyMinutes === "number" && Number.isInteger(p.dailyMinutes) && p.dailyMinutes >= 5 && p.dailyMinutes <= 120 && p.dailyMinutes % 5 === 0 &&
+      typeof p.daysPerWeek === "number" && Number.isInteger(p.daysPerWeek) && p.daysPerWeek >= 1 && p.daysPerWeek <= 7 &&
+      typeof p.weeks === "number" && Number.isInteger(p.weeks) && p.weeks >= 1 && p.weeks <= 12
     case "progress_bars": return allowProgress && keys(p, ["title", "items"]) && txt(p.title, 100) && rows(p.items, 1, 8, v => keys(v, ["label", "value", "max"]) && txt(v.label, 90) && typeof v.value === "number" && typeof v.max === "number" && Number.isFinite(v.max) && Number.isFinite(v.value) && v.max > 0 && v.max <= 1000000 && v.value >= 0 && v.value <= v.max)
     default: return false
   }
