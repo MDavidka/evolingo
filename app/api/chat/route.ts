@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
+import { validateAttachment, type ChatAttachment } from "../../chat-attachments"
 import { parseModelUI, type IntelligentUI } from "../../intelligent-ui/schema"
 import { projectVisualResponse } from "../../intelligent-ui/visual-policy"
 import { classifyVisualIntent, getVisualSelectionHint, shouldPlanVisuals, VISUAL_CAPABILITIES } from "../../intelligent-ui/orchestrator"
@@ -9,6 +10,7 @@ export const maxDuration = 45
 
 type Role = "user" | "assistant"
 type Message = { role: Role; content: string }
+type ProviderMessage = { role: Role; content: unknown }
 
 const API_URL = "https://integrate.api.nvidia.com/v1/chat/completions"
 const MODEL = process.env.EVO_AI_MODEL?.trim() || "nvidia/nemotron-3.5-lightning-30b-a3b"
@@ -116,7 +118,7 @@ async function optionalUI(apiKey: string, question: string, reply: string): Prom
 /** Relays provider text deltas only, never reasoning_content or model-generated code. */
 async function streamProviderText(
   apiKey: string,
-  messages: Message[],
+  messages: ProviderMessage[],
   onDelta: (delta: string) => void,
 ): Promise<string> {
   const upstream = await fetch(API_URL, {
@@ -179,7 +181,7 @@ async function streamProviderText(
   return reply.trim()
 }
 
-function makeStream(apiKey: string, messages: Message[]) {
+function makeStream(apiKey: string, messages: Message[], attachment: ChatAttachment | null) {
   const encoder = new TextEncoder()
   return new ReadableStream<Uint8Array>({
     async start(controller) {
