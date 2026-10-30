@@ -330,7 +330,7 @@ export default function ReferenceScreens(props: Props) {
 
   if (view === "auth") return <main className="ref-app ref-view-auth">{content}</main>
   return <main className={`ref-app ref-view-${view}`}>
-    <GlobalHeader name={userName} avatarImage={avatarImage} avatarFallback={avatarFallback} onNavigate={onView} title={view === "chat" ? "AI Chat" : view === "space" ? "Fájlok" : view === "utility" ? "Eszközök" : view === "profile" ? "Profil" : view === "selector" ? "Lecke" : "Tanulás"} />
+    <GlobalHeader name={userName} avatarImage={avatarImage} avatarFallback={avatarFallback} onNavigate={onView} title={view === "chat" ? "AI Chat" : view === "space" ? "Könyvtár" : view === "utility" ? "Eszközök" : view === "profile" ? "Profil" : view === "selector" ? "Lecke" : "Tanulás"} />
     {content}
   </main>
 }
