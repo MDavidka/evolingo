@@ -73,3 +73,24 @@ test("accepts valid structured JSON wrapped by model prose", () => {
   const raw = JSON.stringify({ version: "1", blocks: [rule] })
   assert.equal(parseModelUI("Ezek az elemek:\n" + raw + "\nKész.")?.blocks.length, 1)
 })
+
+test("accepts bounded example bar, line and donut charts", () => {
+  for (const chartType of ["bar", "line", "donut"]) {
+    const block = { id: "chart-1", type: "chart_card", props: { title: "Példaadatok", chartType, source: "example", unit: "pont", points: [{ label: "A", value: 2 }, { label: "B", value: 5 }] } }
+    assert.equal(validateIntelligentUI({ version: "1", blocks: [block] })?.blocks[0].type, "chart_card")
+  }
+})
+
+test("rejects fabricated verified progress and malformed numerical values", () => {
+  const block = { id: "chart-1", type: "chart_card", props: { title: "Haladás", chartType: "donut", source: "verified", points: [{ label: "Kész", value: 3 }, { label: "Hátra", value: 7 }] } }
+  assert.equal(validateIntelligentUI({ version: "1", blocks: [block] }), null)
+  assert.equal(validateIntelligentUI({ version: "1", blocks: [block] }, { allowVerifiedCharts: true })?.blocks.length, 1)
+  assert.equal(validateIntelligentUI({ version: "1", blocks: [{ ...block, props: { ...block.props, source: "example", points: [{ label: "Kész", value: -1 }, { label: "Hátra", value: 7 }] } }] }), null)
+  assert.equal(validateIntelligentUI({ version: "1", blocks: [{ ...block, props: { ...block.props, source: "example", chartType: "html" } }] }), null)
+})
+
+test("rejects giant data arrays and unrecognized chart props", () => {
+  const values = Array.from({ length: 9 }, (_, i) => ({ label: String(i), value: i }))
+  assert.equal(validateIntelligentUI({ version: "1", blocks: [{ id: "chart-1", type: "chart_card", props: { title: "Minták", chartType: "line", source: "example", points: values } }] }), null)
+  assert.equal(validateIntelligentUI({ version: "1", blocks: [{ id: "chart-1", type: "chart_card", props: { title: "Minták", chartType: "line", source: "example", points: values.slice(0, 3), onClick: "fetch()" } }] }), null)
+})
