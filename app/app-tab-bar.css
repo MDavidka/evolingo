@@ -611,7 +611,8 @@ html.evo-reduced-motion *, html.evo-reduced-motion *::before, html.evo-reduced-m
   .evo-global-profile-button { right: max(14px, env(safe-area-inset-right, 0px)); }
 }
 /* Avoid duplicate profile shortcuts while the shared control is mounted. */
-.app-shell:has(.evo-global-profile-button) .ref-profile-shortcut { visibility: hidden !important; pointer-events: none !important; }
+/* Global navigation is mounted outside .app-shell; hide legacy per-page profile shortcuts whenever it is present. */
+body:has(.evo-sidebar-host .evo-global-profile-button) .app-shell .ref-profile-shortcut { display: none !important; }
 
 /* Align both global header controls on one symmetric 46px axis. */
 .evo-sidebar-host {
