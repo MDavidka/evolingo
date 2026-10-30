@@ -1107,9 +1107,10 @@ export default function App() {
       {screen === "profile" && <Profile onBack={() => goBackInApp("/utvonal")} completedCount={completedLessons.length} readCount={readLessons.length} completedTaskCount={answeredTasks.filter(key => !key.startsWith("skill:")).length} xp={xp} stars={stars} userName={userName} setUserName={setUserName} avatar={avatar} setAvatar={setAvatar} avatarImage={avatarImage} setAvatarImage={setAvatarImage} bannerImage={bannerImage} setBannerImage={setBannerImage} dailyStudy={dailyStudy} onDailyGoalChange={(dailyGoal) => setDailyStudy(previous => ({ ...previous, dailyGoal }))} saveStatus={saveStatus} onRetryCloudSave={retryCloudSave} notifications={notifications} setNotifications={setNotifications} compactMode={compactMode} setCompactMode={setCompactMode} showSettings={showSettings} setShowSettings={setShowSettings} weeklyStudySeconds={weeklyStudySeconds} onOpenFriends={() => setScreen("friends")} />}
       </>}
     </section>
-    {screen !== "lessonIntro" && screen !== "task" && screen !== "skill" && screen !== "flashcards" && screen !== "chestOpen" && referenceView !== "auth" && <AppTabBar activeTab={currentAppTab} onSelect={navigateAppTab} avatarImage={avatarImage} avatar={avatar} userName={userName} stars={stars} streak={dailyStudy.streak} onOpenLeaderboard={() => openLegacyPage("leaderboard")} />}
 
   </main>
+  {/* Global floating navigation is a sibling of every page, never page content. */}
+    {screen !== "lessonIntro" && screen !== "task" && screen !== "skill" && screen !== "flashcards" && screen !== "chestOpen" && referenceView !== "auth" && <AppTabBar activeTab={currentAppTab} onSelect={navigateAppTab} avatarImage={avatarImage} avatar={avatar} userName={userName} stars={stars} streak={dailyStudy.streak} onOpenLeaderboard={() => openLegacyPage("leaderboard")} />}
   {confirmation && <AppConfirmSheet
     confirmation={confirmation}
     onCancel={() => setConfirmation(null)}
