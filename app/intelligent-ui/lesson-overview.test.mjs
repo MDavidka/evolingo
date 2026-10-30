@@ -41,5 +41,5 @@ test("empty lessons do not show fake progress or example questions", () => {
 test("incomplete and duplicate lesson data falls back to actual charts", () => {
   const data = [{ ...lessons[0], title: "Grammar", summary: "" }, { ...lessons[1], title: "Grammar" }]
   const ui = buildLessonOverview(data, 3)
-  assert.deepEqual(ui.blocks.map(block => block.type), ["chart_card"])
+  assert.deepEqual(ui.blocks.map(block => block.type), ["chart_card", "vocabulary_flashcard"])
 })
