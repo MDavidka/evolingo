@@ -1,7 +1,7 @@
 "use client"
 
-import { useEffect, useId, useState } from "react"
-import { ArrowLeft, ArrowRight, Check, RotateCcw, Lightbulb, BookOpen, Languages, CheckCircle2 } from "lucide-react"
+import { useEffect, useId, useRef, useState } from "react"
+import { ArrowLeft, ArrowRight, Check, RotateCcw, Volume2, Lightbulb, BookOpen, Languages, CheckCircle2 } from "lucide-react"
 import type { IntelligentBlock, IntelligentUI, GrammarRuleBlock, QuizChoiceBlock, VocabularyFlashcardBlock, ComparisonTableBlock, TenseTimelineBlock, StudyPlanBlock, ConceptCardBlock, ProgressBarsBlock } from "./schema"
 import { validateIntelligentUI } from "./schema"
 import ChartCard from "./chart-card"
@@ -82,25 +82,89 @@ function QuizCard({ block, storageKey }: { block: QuizChoiceBlock; storageKey: s
   </section>
 }
 
-function Flashcard({ block }: { block: VocabularyFlashcardBlock }) {
+function Flashcard({ block, storageKey }: { block: VocabularyFlashcardBlock; storageKey: string }) {
   const [index, setIndex] = useState(0)
   const [flipped, setFlipped] = useState(false)
+  const [mastery, setMastery] = useState<Record<number, boolean>>({})
   const label = useId()
+  const swipeOrigin = useRef<{ x: number; y: number } | null>(null)
+  const swiped = useRef(false)
   const cards = block.props.cards
   const current = cards[index]
-  const go = (next: number) => { setIndex(next); setFlipped(false) }
-  return <section className="evo-iui-block" aria-labelledby={label}>
+  const known = Object.values(mastery).filter(Boolean).length
+  const go = (next: number) => {
+    if (next < 0 || next >= cards.length) return
+    setIndex(next)
+    setFlipped(false)
+  }
+  useEffect(() => {
+    setIndex(0)
+    setFlipped(false)
+    try {
+      const raw = localStorage.getItem(storageKey)
+      const previous: unknown = raw ? JSON.parse(raw) : null
+      if (previous && typeof previous === "object" && !Array.isArray(previous)) {
+        const safe: Record<number, boolean> = {}
+        for (const [key, value] of Object.entries(previous)) {
+          const id = Number(key)
+          if (Number.isInteger(id) && id >= 0 && id < cards.length && typeof value === "boolean") safe[id] = value
+        }
+        setMastery(safe)
+      }
+    } catch {}
+  }, [storageKey, cards.length])
+  const mark = (value: boolean) => {
+    const next = { ...mastery, [index]: value }
+    setMastery(next)
+    try { localStorage.setItem(storageKey, JSON.stringify(next)) } catch {}
+    if (index < cards.length - 1) go(index + 1)
+  }
+  const pronounce = () => {
+    if (typeof window === "undefined" || !("speechSynthesis" in window) || !("SpeechSynthesisUtterance" in window)) return
+    window.speechSynthesis.cancel()
+    const message = new SpeechSynthesisUtterance(current.front)
+    message.lang = "en-GB"
+    message.rate = 0.9
+    window.speechSynthesis.speak(message)
+  }
+  const touchEnd = (event: React.TouchEvent<HTMLButtonElement>) => {
+    const first = swipeOrigin.current
+    swipeOrigin.current = null
+    if (!first) return
+    const last = event.changedTouches[0]
+    if (!last) return
+    const dx = last.clientX - first.x
+    const dy = last.clientY - first.y
+    if (Math.abs(dx) > 52 && Math.abs(dx) > Math.abs(dy) * 1.3) {
+      swiped.current = true
+      go(index + (dx < 0 ? 1 : -1))
+    }
+  }
+
+  return <section className="evo-iui-block evo-iui-vocabulary" aria-labelledby={label}>
     <div className="evo-iui-flex-heading"><div><p className="evo-iui-kicker">Tanulókártyák</p><h3 id={label}>{block.props.title}</h3></div><span className="evo-iui-count">{index + 1} / {cards.length}</span></div>
-    <button type="button" className="evo-iui-flashcard" aria-label={flipped ? "Vissza a szóhoz" : "Jelentés megjelenítése"} onClick={() => setFlipped(v => !v)}>
+    <button type="button" className="evo-iui-flashcard" aria-label={flipped ? "Vissza a szóhoz" : "Jelentés megjelenítése"}
+      onClick={() => { if (swiped.current) { swiped.current = false; return } setFlipped(v => !v) }}
+      onTouchStart={event => { const touch = event.touches[0]; if (touch) swipeOrigin.current = { x: touch.clientX, y: touch.clientY } }}
+      onTouchEnd={touchEnd}>
       <small>{flipped ? "Jelentés" : "Kifejezés"}</small>
       <strong>{flipped ? current.back : current.front}</strong>
       {flipped && current.example && <span>{current.example}</span>}
-      <em>Érintsd meg a megfordításhoz</em>
+      <em>Érintsd meg a megfordításhoz · Húzd oldalra a váltáshoz</em>
     </button>
     <div className="evo-iui-pager">
       <button type="button" disabled={index === 0} aria-label="Előző kártya" onClick={() => go(index - 1)}><ArrowLeft size={19} /></button>
-      <span>{index + 1}. kártya</span>
+      <button type="button" className="evo-iui-pronounce" aria-label="Angol kiejtés meghallgatása" onClick={pronounce}><Volume2 size={18} /> Kiejtés</button>
       <button type="button" disabled={index === cards.length - 1} aria-label="Következő kártya" onClick={() => go(index + 1)}><ArrowRight size={19} /></button>
+    </div>
+    <div className="evo-iui-mastery">
+      <div className="evo-iui-mastery-heading"><span>Ismert kifejezések</span><strong>{known} / {cards.length}</strong></div>
+      <progress max={cards.length} value={known} aria-label="Elsajátított kifejezések" />
+      <div className="evo-iui-mastery-actions">
+        <button type="button" onClick={() => mark(false)}>Ismétlem</button>
+        <button type="button" onClick={() => mark(true)}><Check size={16} /> Tudom</button>
+      </div>
+      <p>A kártyák értékelése ezen az eszközön marad; nem módosítja a leckepontokat.</p>
     </div>
   </section>
 }
@@ -184,7 +248,7 @@ function Block({ block, storageKey }: { block: IntelligentBlock; storageKey: str
   switch (block.type) {
     case "grammar_rule": return <GrammarCard block={block} />
     case "quiz_choice": return <QuizCard block={block} storageKey={storageKey} />
-    case "vocabulary_flashcard": return <Flashcard block={block} />
+    case "vocabulary_flashcard": return <Flashcard block={block} storageKey={storageKey} />
     case "comparison_table": return <Comparison block={block} />
     case "tense_timeline": return <Timeline block={block} />
     case "study_plan": return <StudyPlan block={block} storageKey={storageKey} />
