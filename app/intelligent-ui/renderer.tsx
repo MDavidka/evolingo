@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useId, useRef, useState } from "react"
+import { useEffect, useId, useRef, useState, type TouchEvent } from "react"
 import { ArrowLeft, ArrowRight, Check, RotateCcw, Volume2, Lightbulb, BookOpen, Languages, CheckCircle2 } from "lucide-react"
 import type { IntelligentBlock, IntelligentUI, GrammarRuleBlock, QuizChoiceBlock, VocabularyFlashcardBlock, ComparisonTableBlock, TenseTimelineBlock, StudyPlanBlock, ConceptCardBlock, ProgressBarsBlock } from "./schema"
 import { validateIntelligentUI } from "./schema"
@@ -127,7 +127,7 @@ function Flashcard({ block, storageKey }: { block: VocabularyFlashcardBlock; sto
     message.rate = 0.9
     window.speechSynthesis.speak(message)
   }
-  const touchEnd = (event: React.TouchEvent<HTMLButtonElement>) => {
+  const touchEnd = (event: TouchEvent<HTMLButtonElement>) => {
     const first = swipeOrigin.current
     swipeOrigin.current = null
     if (!first) return
