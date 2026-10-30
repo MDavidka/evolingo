@@ -340,3 +340,157 @@
 @media (prefers-reduced-motion: reduce) {
   .library-sheet-backdrop, .library-sheet, .library-loading span, .library-file { animation: none !important; transition: none !important; }
 }
+
+/* Library UX polish: compact iPhone controls and explicit contrast over global .ref-app button rules. */
+.app-shell.reference-shell .library-space {
+  padding-top: 12px !important;
+  padding-bottom: max(48px, calc(env(safe-area-inset-bottom, 0px) + 32px)) !important;
+}
+.app-shell.reference-shell .library-space .library-title-row {
+  min-height: 66px;
+  gap: 12px;
+}
+.app-shell.reference-shell .library-space .library-title-copy h1 {
+  font-size: clamp(28px, 7.8vw, 34px);
+  line-height: 1.12;
+  letter-spacing: -.95px;
+}
+.app-shell.reference-shell .library-space .library-subtitle {
+  margin-top: 6px;
+  font-size: 13px;
+  line-height: 1.35;
+}
+.app-shell.reference-shell .library-space .library-add-primary {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex: 0 0 auto;
+  gap: 6px;
+  width: auto !important;
+  min-width: 79px;
+  height: 44px;
+  padding: 0 13px;
+  border: 1px solid #202127 !important;
+  border-radius: 14px;
+  background: #202127 !important;
+  color: #fff !important;
+  font-size: 14px;
+  font-weight: 650;
+  white-space: nowrap;
+}
+.app-shell.reference-shell .library-space .library-add-primary span,
+.app-shell.reference-shell .library-space .library-add-primary svg {
+  display: inline-block !important;
+  flex: none;
+  color: #fff !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  fill: none;
+}
+.app-shell.reference-shell .library-space .library-add-primary:active { background: #36373e !important; }
+.app-shell.reference-shell .library-space .library-search {
+  height: 48px;
+  margin: 21px 0 7px;
+  border-radius: 14px;
+}
+.app-shell.reference-shell .library-space .library-controls {
+  min-height: 52px;
+  margin-bottom: 6px;
+  padding-bottom: 3px;
+}
+.app-shell.reference-shell .library-space .library-result-count {
+  color: #7b7d85;
+  font-size: 12.5px;
+  white-space: nowrap;
+}
+.app-shell.reference-shell .library-space .library-controls-actions { gap: 5px; }
+.app-shell.reference-shell .library-space .library-sort-button {
+  height: 42px;
+  max-width: 124px;
+  gap: 5px;
+  padding: 0 9px;
+  background: transparent !important;
+  color: #5b5d64 !important;
+  font-size: 12.5px;
+  font-weight: 550;
+}
+.app-shell.reference-shell .library-space .library-sort-button svg { width: 17px; height: 17px; flex: none; }
+.app-shell.reference-shell .library-space .library-view-switch {
+  height: 42px;
+  padding: 3px;
+  border: 1px solid #eeeef0;
+  background: #f5f5f7;
+}
+.app-shell.reference-shell .library-space .library-view-switch button {
+  width: 36px;
+  min-width: 36px;
+  height: 36px;
+  border-radius: 9px;
+  color: #777980;
+}
+.app-shell.reference-shell .library-space .library-view-switch button.is-active {
+  background: #fff !important;
+  color: #202127 !important;
+}
+.app-shell.reference-shell .library-space .library-files.is-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: 12px;
+  row-gap: 12px;
+  padding-top: 9px;
+}
+.app-shell.reference-shell .library-space .library-files.is-grid .library-file {
+  min-height: 132px;
+  border: 1px solid #e8e8ec;
+  border-radius: 17px;
+  background: #fff;
+}
+.app-shell.reference-shell .library-space .library-files.is-grid .library-file-open {
+  min-height: 132px;
+  gap: 10px;
+  padding: 13px 12px 13px;
+}
+.app-shell.reference-shell .library-space .library-files.is-grid .library-file-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+}
+.app-shell.reference-shell .library-space .library-files.is-grid .library-file-copy { gap: 5px; }
+.app-shell.reference-shell .library-space .library-files.is-grid .library-file-copy strong {
+  font-size: 15px;
+  line-height: 1.25;
+}
+.app-shell.reference-shell .library-space .library-files.is-grid .library-file-copy small {
+  font-size: 12px;
+}
+.app-shell.reference-shell .library-space .library-files.is-grid .library-file-more {
+  top: 3px;
+  right: 3px;
+  width: 42px;
+  height: 42px;
+}
+.app-shell.reference-shell .library-space .library-files.is-list .library-file {
+  min-height: 72px;
+}
+.app-shell.reference-shell .library-space .library-files.is-list .library-file-open { min-height: 72px; }
+.app-shell.reference-shell .library-space .library-empty-upload,
+.app-shell.reference-shell .library-space .library-empty-clear,
+.app-shell.reference-shell .library-space .library-new-folder button:not(:disabled),
+.app-shell.reference-shell .library-space .library-form > button:not(:disabled),
+.app-shell.reference-shell .library-space .library-confirm button.is-destructive {
+  color: #fff !important;
+}
+.app-shell.reference-shell .library-space .library-empty-folder { color: #202127 !important; }
+.app-shell.reference-shell .library-space .library-sheet-actions .is-destructive { color: #bc332b !important; }
+.app-shell.reference-shell .library-space .library-sheet-handle {
+  touch-action: pan-y;
+}
+@media (max-width: 375px) {
+  .app-shell.reference-shell .library-space .library-title-copy h1 { font-size: 29px; }
+  .app-shell.reference-shell .library-space .library-add-primary { min-width: 70px; padding: 0 10px; }
+  .app-shell.reference-shell .library-space .library-files.is-grid { gap: 9px; }
+  .app-shell.reference-shell .library-space .library-files.is-grid .library-file-open { padding: 12px 10px; }
+  .app-shell.reference-shell .library-space .library-sort-button { max-width: 110px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .app-shell.reference-shell .library-space .library-add-primary { transition: none !important; }
+}
