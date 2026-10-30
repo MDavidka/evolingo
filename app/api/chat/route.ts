@@ -171,9 +171,10 @@ function makeStream(apiKey: string, messages: Message[]) {
           const planned = await optionalUI(apiKey, question,
             "Készíts ellenőrizhető, helyes válaszú feleletválasztós kvízt a felhasználó témájából.")
           const safe = planned ? projectVisualResponse(planned) : null
-          if (safe?.blocks.some(block => block.type === "quiz_choice")) {
+          const questions = safe?.blocks.filter(block => block.type === "quiz_choice") ?? []
+          if (questions.length) {
             emit("text", { reply: "Válassz a gyakorlókérdés lehetőségei közül. A megoldás ellenőrzés után jelenik meg." })
-            emit("ui", { ui: safe })
+            emit("ui", { ui: { version: "1", blocks: questions } })
           } else {
             emit("text", { reply: "Most nem sikerült ellenőrizhető kvízt készíteni. Próbáld újra, vagy kérj szöveges magyarázatot." })
           }
