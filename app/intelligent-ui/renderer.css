@@ -218,3 +218,143 @@
 .evo-iui-vocabulary .evo-iui-mastery-actions button { display:flex; align-items:center; justify-content:center; gap:7px; min-height:47px; padding:9px; border:1px solid #e5e5ea; border-radius:999px; font-size:13px; color:#454d59; background:#fff; }
 .evo-iui-vocabulary .evo-iui-mastery-actions button:last-child { color:#fff; background:#252830; border-color:#252830; }
 .evo-iui-vocabulary .evo-iui-mastery > p { margin:12px 0 0; color:#8e8e93; font-size:11px; line-height:1.5; }
+
+/* Secure practice feedback and live, local-only study calculator. */
+.evo-iui-quiz .evo-iui-quiz-error {
+  margin: 12px 0 0;
+  padding: 11px 12px;
+  border-radius: 12px;
+  background: #fff3f3;
+  color: #8f3838;
+  font-size: 13px;
+  line-height: 1.5;
+}
+.evo-iui-quiz .evo-iui-quiz-note {
+  margin: 12px 0 0;
+  color: #7e8590;
+  font-size: 12px;
+  line-height: 1.5;
+}
+.evo-iui-study-calculator .evo-iui-calculator-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 19px;
+  margin-top: 20px;
+}
+.evo-iui-study-calculator .evo-iui-calculator-field {
+  display: block;
+  min-width: 0;
+}
+.evo-iui-study-calculator .evo-iui-calculator-field > span {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+.evo-iui-study-calculator .evo-iui-calculator-field strong {
+  min-width: 0;
+  color: #30343d;
+  font-size: 14px;
+  line-height: 1.4;
+  font-weight: 580;
+}
+.evo-iui-study-calculator .evo-iui-calculator-field output {
+  flex: none;
+  font-size: 14px;
+  line-height: 1.4;
+  font-weight: 650;
+  color: #465a70;
+  font-variant-numeric: tabular-nums;
+}
+.evo-iui-study-calculator .evo-iui-calculator-field input[type="range"] {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  height: 30px;
+  margin: 0;
+  padding: 0;
+  accent-color: #586e88;
+  cursor: pointer;
+  touch-action: pan-x;
+}
+.evo-iui-study-calculator .evo-iui-calculator-field input:focus-visible {
+  outline: 2px solid #6784ad;
+  outline-offset: 3px;
+  border-radius: 8px;
+}
+.evo-iui-study-calculator .evo-iui-calculator-result {
+  margin-top: 20px;
+  padding: 17px;
+  border-radius: 17px;
+  background: #f5f5f7;
+  color: #202127;
+}
+.evo-iui-study-calculator .evo-iui-calculator-result > small {
+  display: block;
+  color: #808792;
+  font-size: 13px;
+  line-height: 1.4;
+}
+.evo-iui-study-calculator .evo-iui-calculator-result > strong {
+  display: block;
+  margin-top: 5px;
+  font-size: clamp(26px, 7vw, 32px);
+  line-height: 1.2;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -.6px;
+}
+.evo-iui-study-calculator .evo-iui-calculator-result > p,
+.evo-iui-study-calculator .evo-iui-calculator-result > span {
+  display: block;
+  margin: 10px 0 0;
+  color: #646b76;
+  font-size: 13px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+.evo-iui-study-calculator .evo-iui-calculator-bottom {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 8px 14px;
+  align-items: center;
+  margin-top: 12px;
+}
+.evo-iui-study-calculator .evo-iui-calculator-bottom p {
+  flex: 1 1 160px;
+  margin: 0;
+  color: #8e8e93;
+  font-size: 12px;
+  line-height: 1.4;
+}
+.evo-iui-study-calculator .evo-iui-calculator-bottom button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 44px;
+  border: 1px solid #e5e5ea;
+  padding: 0 14px;
+  border-radius: 999px;
+  color: #505864;
+  background: #fff;
+  font-size: 13px;
+  font-weight: 580;
+}
+.evo-iui-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+@media (max-width: 350px) {
+  .evo-iui-study-calculator .evo-iui-calculator-result { padding: 13px; }
+  .evo-iui-study-calculator .evo-iui-calculator-bottom button { width: 100%; }
+}
