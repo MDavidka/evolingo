@@ -3,6 +3,7 @@
 import { useEffect, useId, useState } from "react"
 import { RotateCcw } from "lucide-react"
 import type { StudyCalculatorBlock } from "./schema"
+import { calculateLearningMinutes } from "./calculations"
 
 type Values = { dailyMinutes: number; daysPerWeek: number; weeks: number }
 
@@ -12,10 +13,6 @@ const bounds = {
   weeks: { min: 1, max: 12, step: 1 },
 } as const
 
-/** Audited multiplication: no model-provided JavaScript or arithmetic expression. */
-export function calculateLearningMinutes(values: Values): number {
-  return values.dailyMinutes * values.daysPerWeek * values.weeks
-}
 
 export default function StudyCalculator({ block, storageKey }: { block: StudyCalculatorBlock; storageKey: string }) {
   const label = useId()
