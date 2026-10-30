@@ -166,3 +166,24 @@
   line-height: 1.55;
   overflow-wrap: anywhere;
 }
+
+/* Visual Intelligence charts: responsive, calm iOS-style and fully accessible. */
+.evo-visual-chart { container-type: inline-size; }
+.evo-visual-chart .evo-visual-chart-kind { display:grid; width:38px; height:38px; flex:none; place-items:center; color:#667990; background:#f5f5f7; border-radius:12px; }
+.evo-visual-chart .evo-visual-chart-source { color:#8e8e93; font-size:12px; margin:-4px 0 10px; }
+.evo-visual-chart .evo-visual-chart-svg { display:block; width:100%; max-width:100%; height:auto; overflow:visible; }
+.evo-visual-chart .evo-visual-chart-selection { display:flex; flex-wrap:wrap; align-items:center; gap:7px; margin:12px 0; }
+.evo-visual-chart .evo-visual-chart-selection button { min-height:37px; padding:8px 11px; border:1px solid #e5e5ea; border-radius:12px; background:#fff; color:#657082; font-size:12px; line-height:1.25; text-align:center; overflow-wrap:anywhere; }
+.evo-visual-chart .evo-visual-chart-selection button.is-active { color:#202127; border-color:#b0bfd0; background:#edf2f7; }
+.evo-visual-chart .evo-visual-chart-value { display:flex; align-items:baseline; justify-content:space-between; gap:8px; margin:12px 0 0; padding:12px 0 0; border-top:1px solid #e5e5ea; font-size:13px; color:#66717d; }
+.evo-visual-chart .evo-visual-chart-value strong { color:#303943; font-weight:600; }
+.evo-visual-chart .evo-visual-chart-value span { font-variant-numeric:tabular-nums; font-weight:650; color:#252830; }
+.evo-visual-chart .evo-visual-chart-data { margin-top:13px; }
+.evo-visual-chart .evo-visual-chart-data summary { color:#687588; font-size:12px; cursor:pointer; min-height:44px; display:flex; align-items:center; }
+.evo-visual-chart .evo-visual-chart-data ul { margin:0; padding:0; list-style:none; }
+.evo-visual-chart .evo-visual-chart-data li { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:8px 0; border-top:1px solid #eef0f3; font-size:12px; line-height:1.45; color:#687588; }
+.evo-visual-chart .evo-visual-chart-data li strong { color:#343d48; font-weight:600; font-variant-numeric:tabular-nums; }
+@container (max-width:270px) {
+  .evo-visual-chart .evo-visual-chart-selection { gap:5px; }
+  .evo-visual-chart .evo-visual-chart-selection button { padding:7px 8px; font-size:11px; }
+}
