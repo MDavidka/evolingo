@@ -15,6 +15,11 @@ type Sheet = "new" | "sort" | "actions" | "rename" | "move" | "delete" | "previe
 const ENTRIES_KEY = "evolingo.space.v1"
 const BLOBS_KEY = "evolingo.space-blobs.v1"
 const MAX_FILE_SIZE = 2 * 1024 * 1024
+const SORT_LABELS: Record<SortKey, string> = {
+  date: "Legutóbbi", name: "Név szerint", size: "Méret szerint", type: "Típus szerint",
+}
+const normalizeSearch = (value: string) =>
+  value.toLocaleLowerCase("hu-HU").normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim()
 
 function readBlobs() {
   try { return JSON.parse(localStorage.getItem(BLOBS_KEY) || "{}") as Record<string, string> } catch { return {} }
@@ -114,9 +119,9 @@ export default function LibrarySpace() {
   }
 
   const folderName = folder ? entries.find(item => item.id === folder)?.name || "Saját fájlok" : "Saját fájlok"
-  const normalizedQuery = query.trim().toLocaleLowerCase("hu-HU")
+  const normalizedQuery = normalizeSearch(query)
   const visible = useMemo(() => entries
-    .filter(item => normalizedQuery ? item.name.toLocaleLowerCase("hu-HU").includes(normalizedQuery) : item.parent === (folder || undefined))
+    .filter(item => normalizedQuery ? normalizeSearch(item.name).includes(normalizedQuery) : item.parent === (folder || undefined))
     .sort((a, b) => {
       if (a.kind === "folder" && b.kind !== "folder") return -1
       if (b.kind === "folder" && a.kind !== "folder") return 1
@@ -226,22 +231,29 @@ export default function LibrarySpace() {
 
     <div className="library-title-row">
       <div className="library-title-copy">
-        {folder && <button className="library-back" type="button" onClick={() => setFolder(entries.find(item => item.id === folder)?.parent || null)}><ChevronLeft size={20} /> Saját fájlok</button>}
-        <h1>{folderName}</h1>
+        {folder && <button className="library-back" type="button" aria-label="Vissza az előző mappába" onClick={() => setFolder(entries.find(item => item.id === folder)?.parent || null)}><ChevronLeft size={19} /> Vissza</button>}
+        <h1>{folder ? folderName : "Könyvtár"}</h1>
+        <p className="library-subtitle">{folder ? "A mappa fájljai és almappái" : "Minden dokumentumod egy helyen."}</p>
       </div>
-      <div className="library-toolbar" aria-label="Könyvtár műveletek">
-        <button type="button" aria-label="Keresés" onClick={() => searchInput.current?.focus()}><Search size={21} /></button>
-        <button type="button" aria-label={view === "list" ? "Rácsnézet" : "Listanézet"} onClick={() => setView(current => current === "list" ? "grid" : "list")}>{view === "list" ? <Grid2X2 size={20} /> : <List size={21} />}</button>
-        <button className="library-new-button" type="button" aria-label="Új elem" onClick={() => { setDraftName(""); setSheet("new") }}><Plus size={22} /></button>
-        <button type="button" aria-label="További beállítások" onClick={() => setSheet("sort")}><MoreHorizontal size={22} /></button>
-      </div>
+      <button className="library-add-primary" type="button" onClick={() => { setDraftName(""); setSheet("new") }} aria-label="Új fájl vagy mappa hozzáadása"><Plus size={20} strokeWidth={2} /><span>Új</span></button>
     </div>
 
     <label className="library-search">
-      <Search size={19} aria-hidden="true" />
-      <input ref={searchInput} value={query} onChange={event => setQuery(event.target.value)} placeholder="Keresés a fájlok között" enterKeyHint="search" autoComplete="off" />
+      <Search size={20} strokeWidth={1.8} aria-hidden="true" />
+      <input ref={searchInput} type="search" value={query} onChange={event => setQuery(event.target.value)} onKeyDown={event => { if (event.key === "Escape") setQuery("") }} placeholder="Fájlok és mappák keresése" aria-label="Keresés a könyvtárban" enterKeyHint="search" autoComplete="off" />
       {query && <button type="button" aria-label="Keresés törlése" onClick={() => { setQuery(""); searchInput.current?.focus() }}><X size={16} /></button>}
     </label>
+
+    <div className="library-controls" aria-label="Könyvtár nézete és rendezése">
+      <span className="library-result-count" aria-live="polite">{loading ? "Betöltés…" : normalizedQuery ? `${visible.length} találat` : `${visible.length} elem`}</span>
+      <div className="library-controls-actions">
+        <button className="library-sort-button" type="button" aria-label={`Rendezés: ${SORT_LABELS[sort]}`} onClick={() => setSheet("sort")}><SlidersHorizontal size={17} strokeWidth={1.8} /><span>{SORT_LABELS[sort]}</span></button>
+        <div className="library-view-switch" role="group" aria-label="Megjelenítés">
+          <button type="button" aria-label="Listanézet" aria-pressed={view === "list"} className={view === "list" ? "is-active" : ""} onClick={() => setView("list")}><List size={19} strokeWidth={1.8} /></button>
+          <button type="button" aria-label="Rácsnézet" aria-pressed={view === "grid"} className={view === "grid" ? "is-active" : ""} onClick={() => setView("grid")}><Grid2X2 size={18} strokeWidth={1.8} /></button>
+        </div>
+      </div>
+    </div>
 
     {hasRealStorage && <button type="button" className="library-storage" onClick={() => setNotice(`${formatSize(storageUsed)} / ${formatSize(storageTotal)}`)}>
       <span><HardDrive size={18} /> Tárhely</span><small>{formatSize(storageUsed)} / {formatSize(storageTotal)}</small>
@@ -256,7 +268,7 @@ export default function LibrarySpace() {
 
     {loading ? <div className="library-loading" role="status"><span /> <span /> <span /></div> : visible.length ? <div className={`library-files ${view === "grid" ? "is-grid" : "is-list"}`} onScroll={() => searchInput.current?.blur()}>
       {visible.map(entry => <article className={`library-file ${selected.has(entry.id) ? "is-selected" : ""}`} key={entry.id} onPointerDown={() => beginLongPress(entry)} onPointerUp={cancelLongPress} onPointerCancel={cancelLongPress} onPointerLeave={cancelLongPress}>
-        <button className="library-file-open" type="button" onClick={() => openEntry(entry)}>
+        <button className="library-file-open" type="button" aria-pressed={selectionMode ? selected.has(entry.id) : undefined} onClick={() => openEntry(entry)}>
           <span className="library-file-icon"><FileIcon kind={entry.kind} /></span>
           <span className="library-file-copy"><strong>{entry.name}</strong><small>{entry.kind === "folder" ? `${entries.filter(item => item.parent === entry.id).length} elem` : `${formatSize(entry.size)} · ${formatDate(entry.modifiedAt)}`}</small></span>
           {selectionMode && <span className="library-check" aria-hidden="true">{selected.has(entry.id) && <Check size={15} />}</span>}
@@ -265,9 +277,12 @@ export default function LibrarySpace() {
       </article>)}
     </div> : <div className="library-empty">
       <FolderOpen size={48} strokeWidth={1.5} />
-      <h2>{query ? "Nincs találat" : "Még nincsenek fájljaid"}</h2>
-      <p>{query ? "Próbálj másik keresést." : "A feltöltött fájljaid itt jelennek meg."}</p>
-      {!query && <button type="button" onClick={() => setSheet("new")}><Plus size={18} /> Fájl hozzáadása</button>}
+      <h2>{query ? "Nincs találat" : folder ? "Ez a mappa üres" : "Még nincsenek fájljaid"}</h2>
+      <p>{query ? "Próbálj más kifejezést, vagy töröld a keresést." : "Tölts fel egy dokumentumot, vagy rendezd mappákba a fájljaidat."}</p>
+      {query ? <button className="library-empty-clear" type="button" onClick={() => setQuery("")}>Keresés törlése</button> : <div className="library-empty-actions">
+        <button className="library-empty-upload" type="button" onClick={() => filePicker.current?.click()}><Upload size={18} /> Fájl feltöltése</button>
+        <button className="library-empty-folder" type="button" onClick={() => { setDraftName(""); setSheet("new") }}><Folder size={18} /> Új mappa</button>
+      </div>}
     </div>}
 
     {notice && <div className="library-toast" role="status">{notice}<button type="button" aria-label="Bezárás" onClick={() => setNotice("")}><X size={16} /></button></div>}
@@ -275,10 +290,10 @@ export default function LibrarySpace() {
     {sheet && <div className="library-sheet-backdrop" onPointerDown={event => { if (event.target === event.currentTarget) setSheet(null) }}>
       <div ref={sheetRef} className={`library-sheet library-sheet--${sheet}`} role="dialog" aria-modal="true" aria-label={sheet === "new" ? "Új elem" : sheet === "sort" ? "Rendezés" : sheet === "preview" ? "Fájl előnézete" : "Fájlműveletek"} onTouchStart={event => { sheetTouchY.current = event.touches[0]?.clientY ?? null }} onTouchEnd={event => { const start = sheetTouchY.current; sheetTouchY.current = null; if (start != null && (event.changedTouches[0]?.clientY ?? start) - start > 80) setSheet(null) }}>
         <div className="library-sheet-handle" aria-hidden="true" />
-        <div className="library-sheet-heading"><h2>{sheet === "new" ? "Új" : sheet === "sort" ? "Rendezés" : sheet === "rename" ? "Átnevezés" : sheet === "move" ? "Áthelyezés" : sheet === "delete" ? "Törlés" : sheet === "preview" ? active?.name : active?.name}</h2><button type="button" aria-label="Bezárás" onClick={() => setSheet(null)}><X size={20} /></button></div>
+        <div className="library-sheet-heading"><h2>{sheet === "new" ? "Új elem" : sheet === "sort" ? "Rendezés" : sheet === "rename" ? "Átnevezés" : sheet === "move" ? "Áthelyezés" : sheet === "delete" ? "Törlés" : sheet === "preview" ? active?.name : active?.name}</h2><button type="button" aria-label="Bezárás" onClick={() => setSheet(null)}><X size={20} /></button></div>
 
         {sheet === "new" && <div className="library-sheet-actions">
-          <button type="button" onClick={() => { setSheet(null); filePicker.current?.click() }}><Upload size={21} /><span><strong>Fájl feltöltése</strong><small>Dokumentum kiválasztása az eszközről</small></span></button>
+          <button type="button" onClick={() => { setSheet(null); filePicker.current?.click() }}><Upload size={21} /><span><strong>Fájl feltöltése</strong><small>Legfeljebb 2 MB · az eszközödről</small></span></button>
           <div className="library-new-folder"><label htmlFor="library-folder-name"><Folder size={21} /><span>Új mappa</span></label><div><input id="library-folder-name" value={draftName} onChange={event => setDraftName(event.target.value)} placeholder="Mappa neve" maxLength={80} /><button type="button" disabled={!draftName.trim()} onClick={createFolder}>Létrehozás</button></div></div>
         </div>}
 
