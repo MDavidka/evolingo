@@ -6,8 +6,9 @@ export type ComparisonTableBlock = { id: string; type: "comparison_table"; props
 export type TenseTimelineBlock = { id: string; type: "tense_timeline"; props: { title: string; steps: { phase: "past" | "present" | "future"; label: string; detail: string }[] } }
 export type StudyPlanBlock = { id: string; type: "study_plan"; props: { title: string; days: { day: string; task: string }[] } }
 export type ConceptCardBlock = { id: string; type: "concept_card"; props: { title: string; description: string; icon: "idea" | "book" | "language" | "check"; badge?: string } }
+export type ChartCardBlock = { id: string; type: "chart_card"; props: { title: string; chartType: "bar" | "line" | "donut"; source: "example" | "verified"; unit?: string; points: { label: string; value: number }[] } }
 export type ProgressBarsBlock = { id: string; type: "progress_bars"; props: { title: string; items: { label: string; value: number; max: number }[] } }
-export type IntelligentBlock = GrammarRuleBlock | QuizChoiceBlock | VocabularyFlashcardBlock | ComparisonTableBlock | TenseTimelineBlock | StudyPlanBlock | ConceptCardBlock | ProgressBarsBlock
+export type IntelligentBlock = GrammarRuleBlock | QuizChoiceBlock | VocabularyFlashcardBlock | ComparisonTableBlock | TenseTimelineBlock | StudyPlanBlock | ConceptCardBlock | ChartCardBlock | ProgressBarsBlock
 export type IntelligentUI = { version: "1"; blocks: IntelligentBlock[] }
 
 type Obj = Record<string, unknown>
@@ -17,7 +18,7 @@ const txt = (x: unknown, n = 220): x is string => typeof x === "string" && !!x.t
 const texts = (x: unknown, min: number, max: number, n = 200): x is string[] => Array.isArray(x) && x.length >= min && x.length <= max && x.every(v => txt(v, n))
 const rows = (x: unknown, min: number, max: number, f: (row: Obj) => boolean) => Array.isArray(x) && x.length >= min && x.length <= max && x.every(v => obj(v) && f(v))
 
-function blockValid(b: unknown, allowProgress: boolean): b is IntelligentBlock {
+function blockValid(b: unknown, allowProgress: boolean, allowVerifiedCharts: boolean): b is IntelligentBlock {
   if (!obj(b) || !keys(b, ["id", "type", "props"]) || !txt(b.id, 48) || !/^[a-z0-9][a-z0-9-]{0,47}$/i.test(b.id) || !obj(b.props)) return false
   const p = b.props
   switch (b.type) {
@@ -28,15 +29,21 @@ function blockValid(b: unknown, allowProgress: boolean): b is IntelligentBlock {
     case "tense_timeline": return keys(p, ["title", "steps"]) && txt(p.title, 100) && rows(p.steps, 2, 5, v => keys(v, ["phase", "label", "detail"]) && ["past", "present", "future"].includes(String(v.phase)) && txt(v.label, 120) && txt(v.detail, 240))
     case "study_plan": return keys(p, ["title", "days"]) && txt(p.title, 100) && rows(p.days, 1, 7, v => keys(v, ["day", "task"]) && txt(v.day, 50) && txt(v.task, 180))
     case "concept_card": return keys(p, ["title", "description", "icon", "badge"]) && txt(p.title, 100) && txt(p.description, 480) && ["idea", "book", "language", "check"].includes(String(p.icon)) && (p.badge === undefined || txt(p.badge, 36))
+    case "chart_card": return keys(p, ["title", "chartType", "source", "unit", "points"]) &&
+      txt(p.title, 100) && ["bar", "line", "donut"].includes(String(p.chartType)) &&
+      (p.source === "example" || (allowVerifiedCharts && p.source === "verified")) &&
+      (p.unit === undefined || txt(p.unit, 18)) &&
+      rows(p.points, 2, 8, v => keys(v, ["label", "value"]) && txt(v.label, 40) &&
+        typeof v.value === "number" && Number.isFinite(v.value) && v.value >= 0 && v.value <= 100000)
     case "progress_bars": return allowProgress && keys(p, ["title", "items"]) && txt(p.title, 100) && rows(p.items, 1, 8, v => keys(v, ["label", "value", "max"]) && txt(v.label, 90) && typeof v.value === "number" && typeof v.max === "number" && Number.isFinite(v.max) && Number.isFinite(v.value) && v.max > 0 && v.max <= 1000000 && v.value >= 0 && v.value <= v.max)
     default: return false
   }
 }
-export function validateIntelligentUI(input: unknown, opts?: { allowUserProgress?: boolean }): IntelligentUI | null {
+export function validateIntelligentUI(input: unknown, opts?: { allowUserProgress?: boolean; allowVerifiedCharts?: boolean }): IntelligentUI | null {
   if (!obj(input) || !keys(input, ["version", "blocks"]) || input.version !== "1" || !Array.isArray(input.blocks) || input.blocks.length > 3) return null
   const ids = new Set<string>()
   for (const b of input.blocks) {
-    if (!blockValid(b, opts?.allowUserProgress === true) || ids.has(b.id)) return null
+    if (!blockValid(b, opts?.allowUserProgress === true, opts?.allowVerifiedCharts === true) || ids.has(b.id)) return null
     ids.add(b.id)
   }
   return input as unknown as IntelligentUI
