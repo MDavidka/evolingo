@@ -4,6 +4,7 @@ import { useEffect, useId, useState } from "react"
 import { ArrowLeft, ArrowRight, Check, RotateCcw, Lightbulb, BookOpen, Languages, CheckCircle2 } from "lucide-react"
 import type { IntelligentBlock, IntelligentUI, GrammarRuleBlock, QuizChoiceBlock, VocabularyFlashcardBlock, ComparisonTableBlock, TenseTimelineBlock, StudyPlanBlock, ConceptCardBlock, ProgressBarsBlock } from "./schema"
 import { validateIntelligentUI } from "./schema"
+import ChartCard from "./chart-card"
 
 function GrammarCard({ block }: { block: GrammarRuleBlock }) {
   const label = useId()
@@ -148,13 +149,14 @@ function Block({ block, storageKey }: { block: IntelligentBlock; storageKey: str
     case "study_plan": return <StudyPlan block={block} storageKey={storageKey} />
     case "concept_card": return <Concept block={block} />
     case "progress_bars": return <Progress block={block} />
+    case "chart_card": return <ChartCard block={block} storageKey={storageKey} />
     default: return null
   }
 }
 
 /** Safe by construction: only validated descriptors map to prebuilt components. */
-export default function IntelligentResponse({ ui, messageId }: { ui: IntelligentUI; messageId?: string }) {
-  const validated = validateIntelligentUI(ui)
+export default function IntelligentResponse({ ui, messageId, verifiedData = false }: { ui: IntelligentUI; messageId?: string; verifiedData?: boolean }) {
+  const validated = validateIntelligentUI(ui, { allowVerifiedCharts: verifiedData, allowUserProgress: verifiedData })
   if (!validated || !validated.blocks.length) return null
   return <div className="evo-iui-response">
     {validated.blocks.map(block => <Block key={block.id} block={block} storageKey={"evolingo.study-plan.v1." + (messageId || "session") + "." + block.id} />)}
