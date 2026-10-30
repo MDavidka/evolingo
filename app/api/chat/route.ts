@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import { parseModelUI, type IntelligentUI } from "../../intelligent-ui/schema"
+import { projectVisualResponse } from "../../intelligent-ui/visual-policy"
 
 export const runtime = "nodejs"
 export const dynamic = "force-dynamic"
@@ -167,7 +168,8 @@ function makeStream(apiKey: string, messages: Message[]) {
         const reply = await streamProviderText(apiKey, messages, delta => emit("delta", { delta }))
         emit("text", { reply })
         const ui = await optionalUI(apiKey, messages[messages.length - 1].content, reply)
-        if (ui?.blocks.length) emit("ui", { ui })
+        const publicUI = ui ? projectVisualResponse(ui) : null
+        if (publicUI?.blocks.length) emit("ui", { ui: publicUI })
         emit("done")
       } catch (error) {
         emit("error", { error: error instanceof Error ? error.message : "Hálózati hiba történt." })
