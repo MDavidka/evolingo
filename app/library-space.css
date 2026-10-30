@@ -13,65 +13,40 @@
   min-height: 100dvh;
   background: #fff !important;
 }
-.app-shell.reference-shell .ref-view-space > .ref-topbar {
-  height: calc(env(safe-area-inset-top, 0px) + 76px);
-  min-height: 76px;
-  padding: calc(env(safe-area-inset-top, 0px) + 16px) 20px 0;
-}
-.app-shell.reference-shell:has(.ref-view-space) .evo-morph-anchor {
-  top: calc(env(safe-area-inset-top, 0px) + 16px);
-  left: max(calc((100vw - 760px) / 2 + 20px), calc(env(safe-area-inset-left, 0px) + 20px));
-  width: 44px;
-  height: 44px;
-}
-.app-shell.reference-shell:has(.ref-view-space) .evo-morph-toggle {
-  width: 44px;
-  height: 44px;
-  border: 0;
-  background: transparent;
-  box-shadow: none;
-  color: #202127;
-}
-.app-shell.reference-shell .ref-view-space .ref-profile-shortcut {
-  top: calc(env(safe-area-inset-top, 0px) + 18px);
-  right: max(calc((100vw - 760px) / 2 + 20px), calc(env(safe-area-inset-right, 0px) + 20px));
-  width: 40px !important;
-  height: 40px !important;
-}
 .app-shell.reference-shell .library-space {
-  width: min(100%, 680px);
-  max-width: 680px;
-  min-height: calc(100dvh - env(safe-area-inset-top, 0px) - 76px);
-  padding: 18px 20px max(48px, calc(env(safe-area-inset-bottom, 0px) + 28px)) !important;
+  width: min(100%, 520px);
+  max-width: 520px;
+  min-height: 0;
   margin: 0 auto !important;
+  padding: calc(env(safe-area-inset-top, 0px) + 82px) 20px
+    max(40px, calc(env(safe-area-inset-bottom, 0px) + 24px)) !important;
   color: #202127;
 }
 
 /* Calm hierarchy: title and primary action, followed by search and display controls. */
 .library-title-row {
   display: flex;
-  min-height: 72px;
+  min-height: 66px;
   align-items: center;
   justify-content: space-between;
-  gap: 14px;
+  gap: 12px;
 }
 .library-title-copy { min-width: 0; flex: 1; }
 .app-shell.reference-shell .library-title-copy h1 {
   max-width: 100%;
   margin: 0;
   color: #202127;
-  font-size: clamp(29px, 7.5vw, 36px);
+  font-size: clamp(29px, 7.8vw, 34px);
   line-height: 1.12;
   font-weight: 700;
   letter-spacing: -.9px;
   overflow-wrap: anywhere;
 }
 .library-subtitle {
-  margin: 7px 0 0;
+  margin: 6px 0 0;
   color: #777980;
-  font-size: 14px;
-  line-height: 1.45;
-  font-weight: 400;
+  font-size: 13.5px;
+  line-height: 1.4;
 }
 .library-back {
   display: inline-flex;
@@ -86,27 +61,44 @@
   font-size: 14px;
   font-weight: 500;
 }
-.library-add-primary {
+.app-shell.reference-shell .library-space .library-add-primary {
   display: inline-flex;
   flex: none;
   align-items: center;
   justify-content: center;
   gap: 7px;
-  min-width: 82px;
+  width: auto;
+  min-width: 85px;
+  min-height: 44px;
   height: 44px;
   padding: 0 15px;
-  border: 1px solid #202127;
-  border-radius: 14px;
-  background: #202127;
-  color: white;
-  font-size: 15px;
-  line-height: 1;
+  border: 1px solid #d1d1d5;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #202127 !important;
+  box-shadow: none;
+  font-size: 14px;
   font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
-  transition: background-color 150ms ease, transform 150ms ease;
+  touch-action: manipulation;
+  transition: background-color 160ms ease, border-color 160ms ease;
 }
-.library-add-primary:active { background: #34353a; transform: scale(.98); }
+.app-shell.reference-shell .library-space .library-add-primary > span,
+.app-shell.reference-shell .library-space .library-add-primary > svg {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  color: inherit !important;
+  opacity: 1;
+  visibility: visible;
+}
+.app-shell.reference-shell .library-space .library-add-primary:active {
+  background: #f5f5f7;
+  border-color: #bfc0c5;
+}
 .library-file-more,
 .library-search button,
 .library-sheet-heading button {
@@ -126,16 +118,16 @@
 .library-search {
   display: flex;
   width: 100%;
-  height: 52px;
+  height: 49px;
   align-items: center;
   gap: 11px;
   padding: 0 15px;
-  margin: 23px 0 10px;
+  margin: 20px 0 8px;
   border: 1px solid #f0f0f2;
   border-radius: 15px;
   background: #f5f5f7;
   color: #8e8e93;
-  transition: box-shadow 160ms ease, border-color 160ms ease;
+  transition: border-color 160ms ease, box-shadow 160ms ease;
 }
 .library-search:focus-within {
   border-color: #b4b6bc;
@@ -164,11 +156,12 @@
 }
 .library-controls {
   display: flex;
-  min-height: 55px;
+  min-height: 48px;
   align-items: center;
   justify-content: space-between;
-  gap: 10px;
-  padding-bottom: 8px;
+  gap: 9px;
+  margin-bottom: 12px;
+  padding: 0;
 }
 .library-result-count {
   min-width: 0;
@@ -178,50 +171,59 @@
   font-weight: 500;
   white-space: nowrap;
 }
-.library-controls-actions { display: flex; flex: none; align-items: center; gap: 8px; }
-.library-sort-button {
+.library-controls-actions {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 8px;
+}
+.app-shell.reference-shell .library-space .library-sort-button {
   display: inline-flex;
-  height: 40px;
-  min-width: 40px;
-  max-width: 152px;
+  height: 44px;
+  min-width: 44px;
+  max-width: 139px;
   align-items: center;
   justify-content: center;
   gap: 7px;
   padding: 0 11px;
-  border: 0;
-  border-radius: 12px;
-  background: #f5f5f7;
-  color: #4a4b51;
+  border: 1px solid #d1d1d5;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #202127 !important;
   font-size: 13px;
   font-weight: 550;
   white-space: nowrap;
+  cursor: pointer;
 }
 .library-sort-button span { overflow: hidden; text-overflow: ellipsis; }
 .library-view-switch {
   display: flex;
-  height: 40px;
+  height: 44px;
   align-items: center;
   gap: 2px;
-  padding: 3px;
-  border-radius: 12px;
-  background: #f5f5f7;
+  padding: 2px;
+  border: 1px solid #d1d1d5;
+  border-radius: 999px;
+  background: #ffffff;
 }
-.library-view-switch button {
+.app-shell.reference-shell .library-space .library-view-switch button {
   display: grid;
-  width: 36px;
-  height: 34px;
+  width: 38px;
+  min-width: 38px;
+  height: 38px;
   place-items: center;
   padding: 0;
   border: 0;
-  border-radius: 9px;
+  border-radius: 999px;
   background: transparent;
-  color: #777980;
+  color: #74767d;
   -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
-.library-view-switch button.is-active {
-  background: white;
-  color: #202127;
-  box-shadow: 0 1px 4px rgba(20,24,32,.08);
+.app-shell.reference-shell .library-space .library-view-switch button.is-active {
+  background: #f0f0f2;
+  color: #202127 !important;
+  box-shadow: none;
 }
 .library-add-primary:focus-visible,
 .library-back:focus-visible,
@@ -321,176 +323,30 @@
 @keyframes library-fade { from { opacity: 0; } }
 @keyframes library-sheet-up { from { transform: translateY(100%); } }
 
-@media (max-width: 430px) {
-  .app-shell.reference-shell .library-space { padding-top: 16px !important; }
-  .library-search { margin-top: 20px; }
-}
+/* This screen reserves a 20px gap below the 46px global floating controls.
+   No redundant per-page header is rendered in Könyvtár. */
 @media (max-width: 375px) {
   .app-shell.reference-shell .library-space { padding-right: 16px !important; padding-left: 16px !important; }
-  .library-title-row { align-items: center; flex-direction: row; gap: 10px; }
-  .library-add-primary { min-width: 72px; padding: 0 12px; }
+  .app-shell.reference-shell .library-title-copy h1 { font-size: 29px; }
+  .app-shell.reference-shell .library-space .library-add-primary { min-width: 75px; padding-inline: 12px; }
+  .app-shell.reference-shell .library-space .library-sort-button { max-width: 126px; padding-inline: 9px; }
   .library-controls-actions { gap: 6px; }
-  .library-sort-button { max-width: 125px; padding: 0 8px; }
 }
 @media (max-width: 340px) {
-  .library-sort-button span { display: none; }
-  .library-sort-button { width: 40px; padding: 0; }
-  .library-title-copy h1 { font-size: 28px !important; }
+  .app-shell.reference-shell .library-space .library-sort-button span { display: none; }
+  .app-shell.reference-shell .library-space .library-sort-button { width: 44px; padding: 0; }
+}
+@media (hover: hover) and (pointer: fine) {
+  .app-shell.reference-shell .library-space .library-add-primary:hover,
+  .app-shell.reference-shell .library-space .library-sort-button:hover,
+  .app-shell.reference-shell .library-space .library-view-switch button:hover {
+    background: #f7f7f8;
+  }
 }
 @media (prefers-reduced-motion: reduce) {
-  .library-sheet-backdrop, .library-sheet, .library-loading span, .library-file { animation: none !important; transition: none !important; }
-}
-
-/* Library UX polish: compact iPhone controls and explicit contrast over global .ref-app button rules. */
-.app-shell.reference-shell .library-space {
-  padding-top: 12px !important;
-  padding-bottom: max(48px, calc(env(safe-area-inset-bottom, 0px) + 32px)) !important;
-}
-.app-shell.reference-shell .library-space .library-title-row {
-  min-height: 66px;
-  gap: 12px;
-}
-.app-shell.reference-shell .library-space .library-title-copy h1 {
-  font-size: clamp(28px, 7.8vw, 34px);
-  line-height: 1.12;
-  letter-spacing: -.95px;
-}
-.app-shell.reference-shell .library-space .library-subtitle {
-  margin-top: 6px;
-  font-size: 13px;
-  line-height: 1.35;
-}
-.app-shell.reference-shell .library-space .library-add-primary {
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  flex: 0 0 auto;
-  gap: 6px;
-  width: auto !important;
-  min-width: 79px;
-  height: 44px;
-  padding: 0 13px;
-  border: 1px solid #202127 !important;
-  border-radius: 14px;
-  background: #202127 !important;
-  color: #fff !important;
-  font-size: 14px;
-  font-weight: 650;
-  white-space: nowrap;
-}
-.app-shell.reference-shell .library-space .library-add-primary span,
-.app-shell.reference-shell .library-space .library-add-primary svg {
-  display: inline-block !important;
-  flex: none;
-  color: #fff !important;
-  opacity: 1 !important;
-  visibility: visible !important;
-  fill: none;
-}
-.app-shell.reference-shell .library-space .library-add-primary:active { background: #36373e !important; }
-.app-shell.reference-shell .library-space .library-search {
-  height: 48px;
-  margin: 21px 0 7px;
-  border-radius: 14px;
-}
-.app-shell.reference-shell .library-space .library-controls {
-  min-height: 52px;
-  margin-bottom: 6px;
-  padding-bottom: 3px;
-}
-.app-shell.reference-shell .library-space .library-result-count {
-  color: #7b7d85;
-  font-size: 12.5px;
-  white-space: nowrap;
-}
-.app-shell.reference-shell .library-space .library-controls-actions { gap: 5px; }
-.app-shell.reference-shell .library-space .library-sort-button {
-  height: 42px;
-  max-width: 124px;
-  gap: 5px;
-  padding: 0 9px;
-  background: transparent !important;
-  color: #5b5d64 !important;
-  font-size: 12.5px;
-  font-weight: 550;
-}
-.app-shell.reference-shell .library-space .library-sort-button svg { width: 17px; height: 17px; flex: none; }
-.app-shell.reference-shell .library-space .library-view-switch {
-  height: 42px;
-  padding: 3px;
-  border: 1px solid #eeeef0;
-  background: #f5f5f7;
-}
-.app-shell.reference-shell .library-space .library-view-switch button {
-  width: 36px;
-  min-width: 36px;
-  height: 36px;
-  border-radius: 9px;
-  color: #777980;
-}
-.app-shell.reference-shell .library-space .library-view-switch button.is-active {
-  background: #fff !important;
-  color: #202127 !important;
-}
-.app-shell.reference-shell .library-space .library-files.is-grid {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  column-gap: 12px;
-  row-gap: 12px;
-  padding-top: 9px;
-}
-.app-shell.reference-shell .library-space .library-files.is-grid .library-file {
-  min-height: 132px;
-  border: 1px solid #e8e8ec;
-  border-radius: 17px;
-  background: #fff;
-}
-.app-shell.reference-shell .library-space .library-files.is-grid .library-file-open {
-  min-height: 132px;
-  gap: 10px;
-  padding: 13px 12px 13px;
-}
-.app-shell.reference-shell .library-space .library-files.is-grid .library-file-icon {
-  width: 42px;
-  height: 42px;
-  border-radius: 12px;
-}
-.app-shell.reference-shell .library-space .library-files.is-grid .library-file-copy { gap: 5px; }
-.app-shell.reference-shell .library-space .library-files.is-grid .library-file-copy strong {
-  font-size: 15px;
-  line-height: 1.25;
-}
-.app-shell.reference-shell .library-space .library-files.is-grid .library-file-copy small {
-  font-size: 12px;
-}
-.app-shell.reference-shell .library-space .library-files.is-grid .library-file-more {
-  top: 3px;
-  right: 3px;
-  width: 42px;
-  height: 42px;
-}
-.app-shell.reference-shell .library-space .library-files.is-list .library-file {
-  min-height: 72px;
-}
-.app-shell.reference-shell .library-space .library-files.is-list .library-file-open { min-height: 72px; }
-.app-shell.reference-shell .library-space .library-empty-upload,
-.app-shell.reference-shell .library-space .library-empty-clear,
-.app-shell.reference-shell .library-space .library-new-folder button:not(:disabled),
-.app-shell.reference-shell .library-space .library-form > button:not(:disabled),
-.app-shell.reference-shell .library-space .library-confirm button.is-destructive {
-  color: #fff !important;
-}
-.app-shell.reference-shell .library-space .library-empty-folder { color: #202127 !important; }
-.app-shell.reference-shell .library-space .library-sheet-actions .is-destructive { color: #bc332b !important; }
-.app-shell.reference-shell .library-space .library-sheet-handle {
-  touch-action: pan-y;
-}
-@media (max-width: 375px) {
-  .app-shell.reference-shell .library-space .library-title-copy h1 { font-size: 29px; }
-  .app-shell.reference-shell .library-space .library-add-primary { min-width: 70px; padding: 0 10px; }
-  .app-shell.reference-shell .library-space .library-files.is-grid { gap: 9px; }
-  .app-shell.reference-shell .library-space .library-files.is-grid .library-file-open { padding: 12px 10px; }
-  .app-shell.reference-shell .library-space .library-sort-button { max-width: 110px; }
-}
-@media (prefers-reduced-motion: reduce) {
+  .library-sheet-backdrop, .library-sheet, .library-loading span, .library-file {
+    animation: none !important;
+    transition: none !important;
+  }
   .app-shell.reference-shell .library-space .library-add-primary { transition: none !important; }
 }
