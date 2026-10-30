@@ -119,11 +119,11 @@ export default function ToolsHub({ onUpload, onFriends, onLeaderboard }: ToolHub
         <span className="evo-tools-provider-logo"><img src={`https://cdn.jsdelivr.net/npm/simple-icons@v15/icons/${selected.logo}.svg`} alt="" width="28" height="28" /></span>
         <p>{selected.description}</p>
         <div className="evo-tools-dialog-status">{selected.id === "google-drive" ? "A Google Drive-ból közvetlenül választhatsz majd dokumentumokat és tananyagokat." : selected.id === "notion" ? "A Notion-oldalaidat és jegyzeteidet kapcsolhatod majd a tanulási anyagaidhoz." : selected.id === "github" ? "A GitHub-projektjeid dokumentációját és kódtárait érheted majd el." : "A Slack-csatornákból származó fontos tanulási anyagokat kapcsolhatod majd össze."}</div>
-        <button type="button" className="evo-tools-dialog-connect" onClick={() => {
+        <button type="button" className="evo-tools-dialog-connect evo-wide-action" onClick={() => {
           const next = Array.from(new Set([...requestedProviders, selected.id]))
           setRequestedProviders(next)
           try { localStorage.setItem("evolingo.integration-interest.v1", JSON.stringify(next)) } catch {}
-        }}>{requestedProviders.includes(selected.id) ? "Értesítést kérek · mentve" : "Értesíts, ha elérhető"}</button>
+        }}>{requestedProviders.includes(selected.id) ? "Értesítést kérek · mentve" : "Értesíts, ha elérhető"}<ArrowUpRight size={19} aria-hidden="true" /></button>
         <p className="evo-tools-dialog-footnote">Az érdeklődésed ezen az eszközön mentjük; értesítést még nem tudunk küldeni.</p>
     </UnifiedSheet>}
   </div>
