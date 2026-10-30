@@ -238,8 +238,27 @@ export default function LibrarySpace() {
   }
 
   const toggleSelection = (id: string) => setSelected(current => { const next = new Set(current); if (next.has(id)) next.delete(id); else next.add(id); return next })
-  const beginLongPress = (entry: SpaceEntry) => { suppressClick.current = false; longPress.current = setTimeout(() => { suppressClick.current = true; setSelectionMode(true); setSelected(new Set([entry.id])); navigator.vibrate?.(10) }, 450) }
-  const cancelLongPress = () => { if (longPress.current) clearTimeout(longPress.current); longPress.current = null }
+  const beginLongPress = (entry: SpaceEntry, event: ReactPointerEvent<HTMLButtonElement>) => {
+    if (selectionMode || event.pointerType === "mouse") return
+    suppressClick.current = false
+    pointerOrigin.current = { x: event.clientX, y: event.clientY }
+    if (longPress.current) clearTimeout(longPress.current)
+    longPress.current = setTimeout(() => {
+      suppressClick.current = true
+      setSelectionMode(true)
+      setSelected(new Set([entry.id]))
+      navigator.vibrate?.(10)
+    }, 450)
+  }
+  const moveLongPress = (event: ReactPointerEvent<HTMLButtonElement>) => {
+    const origin = pointerOrigin.current
+    if (origin && (Math.abs(event.clientX - origin.x) > 9 || Math.abs(event.clientY - origin.y) > 9)) cancelLongPress()
+  }
+  const cancelLongPress = () => {
+    if (longPress.current) clearTimeout(longPress.current)
+    longPress.current = null
+    pointerOrigin.current = null
+  }
   const openActions = (entry: SpaceEntry) => { setActive(entry); setSheet("actions") }
   const openRename = () => { if (active) setDraftName(active.name); setSheet("rename") }
   const folders = entries.filter(item => item.kind === "folder" && item.id !== active?.id)
@@ -287,9 +306,9 @@ export default function LibrarySpace() {
 
     {loading ? <div className="library-loading" role="status"><span /> <span /> <span /></div> : visible.length ? <div className={`library-files ${view === "grid" ? "is-grid" : "is-list"}`}>
       {visible.map(entry => <article className={`library-file ${selected.has(entry.id) ? "is-selected" : ""}`} key={entry.id}>
-        <button className="library-file-open" type="button" aria-pressed={selectionMode ? selected.has(entry.id) : undefined} onPointerDown={() => beginLongPress(entry)} onPointerUp={cancelLongPress} onPointerCancel={cancelLongPress} onPointerLeave={cancelLongPress} onClick={() => openEntry(entry)}>
+        <button className="library-file-open" type="button" aria-label={selectionMode ? `${entry.name} kijelölése` : entry.kind === "folder" ? `${entry.name} mappa megnyitása` : `${entry.name} előnézete`} aria-pressed={selectionMode ? selected.has(entry.id) : undefined} onPointerDown={event => beginLongPress(entry, event)} onPointerMove={moveLongPress} onPointerUp={cancelLongPress} onPointerCancel={cancelLongPress} onPointerLeave={cancelLongPress} onClick={() => openEntry(entry)}>
           <span className="library-file-icon"><FileIcon kind={entry.kind} /></span>
-          <span className="library-file-copy"><strong>{entry.name}</strong><small>{entry.kind === "folder" ? `${entries.filter(item => item.parent === entry.id).length} elem` : `${formatSize(entry.size)} · ${formatDate(entry.modifiedAt)}`}</small></span>
+          <span className="library-file-copy"><strong title={entry.name}>{entry.name}</strong><small>{entry.kind === "folder" ? `${entries.filter(item => item.parent === entry.id).length} elem` : `${formatSize(entry.size)} · ${formatDate(entry.modifiedAt)}`}</small></span>
           {selectionMode && <span className="library-check" aria-hidden="true">{selected.has(entry.id) && <Check size={15} />}</span>}
         </button>
         {!selectionMode && <button className="library-file-more" type="button" aria-label={`${entry.name} műveletei`} onClick={() => openActions(entry)}><MoreHorizontal size={21} /></button>}
