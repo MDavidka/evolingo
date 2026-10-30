@@ -1,5 +1,6 @@
 "use client"
 
+import { LiquidGlassButton } from "./liquid-glass-button"
 import { useEffect, useMemo, useRef, useState, type ChangeEvent, type PointerEvent as ReactPointerEvent } from "react"
 import {
   ArrowDownToLine, Check, CheckSquare2, ChevronLeft, Copy, File, FileText, Folder,
@@ -316,7 +317,7 @@ export default function LibrarySpace() {
         <h1>{folder ? folderName : "Könyvtár"}</h1>
         <p className="library-subtitle">{folder ? "A mappa fájljai és almappái" : "Minden dokumentumod egy helyen."}</p>
       </div>
-      <button className="library-add-primary" type="button" onClick={() => { setDraftName(""); setSheet("new") }} aria-label="Új fájl vagy mappa hozzáadása"><Plus size={20} strokeWidth={2} /><span>Új</span></button>
+      <LiquidGlassButton className="library-add-primary" variant="primary" size="compact" icon={Plus} onClick={() => { setDraftName(""); setSheet("new") }} aria-label="Új fájl vagy mappa hozzáadása">Új</LiquidGlassButton>
     </div>
 
     <label className="library-search">
