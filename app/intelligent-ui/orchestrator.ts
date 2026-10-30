@@ -5,7 +5,7 @@
  */
 export type VisualIntent =
   | "text" | "quiz" | "flashcards" | "calculator" | "chart"
-  | "comparison" | "grammar" | "timeline" | "planning"
+  | "comparison" | "grammar" | "timeline" | "planning" | "illustration" | "live_time" | "explain"
 
 export const VISUAL_CAPABILITIES = Object.freeze([
   "grammar_rule",
@@ -17,6 +17,8 @@ export const VISUAL_CAPABILITIES = Object.freeze([
   "concept_card",
   "chart_card",
   "study_calculator",
+  "illustration",
+  "live_time",
 ] as const)
 
 const withoutAccents = (value: string) =>
@@ -26,6 +28,8 @@ export function classifyVisualIntent(query: string): VisualIntent {
   const text = withoutAccents(query.trim())
   if (!text || /csak (?:sima |rovid |egyszeru )?(?:szoveg|valasz)|ne (?:hasznalj|mutass|rajzolj) (?:ui|kartya|grafikon|diagram)|only text|no (?:visual|ui|cards)|felulet nelkul/.test(text))
     return "text"
+  if (/mennyi az ido|hany ora van|pontos ido|elo ora|live time|current time|what time is it/.test(text)) return "live_time"
+  if (/europai unio|european union|\bmi az eu\b|\bwhat is the eu\b|\bmi az unio\b/.test(text)) return "illustration"
   if (/kerdezz ki|kerj (?:tol|tőlem) valaszt|kviz|quiz|tesztelj|feleletvalaszt|tudasteszt/.test(text))
     return "quiz"
   if (/tanulokartya|szokartya|flashcard|szavakat tanul|szokincs|szotanul|tanits meg.*szot/.test(text))
@@ -43,6 +47,7 @@ export function classifyVisualIntent(query: string): VisualIntent {
     return "planning"
   if (/nyelvtan|igeido|present |past |future |grammar|tense|magyarazd|pelda|erasmus/.test(text))
     return "grammar"
+  if (/^(mi az|mi a|mik azok|hogyan|miert|mit jelent|what is|who is|how does|explain|tell me about|mutasd be|meselj|magyarazd el|bemutatnad|szeretnek tudni)/.test(text) || text.length > 22) return "explain"
   return "text"
 }
 
@@ -56,6 +61,9 @@ const hints: Record<VisualIntent, string> = {
   grammar: "A grammar_rule vagy concept_card hasznos, de csak ha a próza nem elég.",
   timeline: "A tense_timeline komponenst használd valódi időrendi magyarázathoz.",
   planning: "A study_plan komponenst használd rövid, reálisan megvalósítható napirendhez.",
+  illustration: "Az Európai Unió témához használj illustration elemet european_union subject értékkel. A kép hitelesített, előre kiválasztott EU-zászló; ne generálj URL-t. Egy rövid concept_card társítható hozzá.",
+  live_time: "A live_time komponensben válassz valós IANA időzónát az engedélyezett listából. Az órát a böngésző számítja élőben, a modell nem találhat ki pontos időt.",
+  explain: "Az általános ismeretterjesztő kérdéshez használj egy tömör concept_card elemet vagy releváns összehasonlítást, ha valóban segít; ne erőltess irreleváns oktatási kártyát.",
 }
 
 export function getVisualSelectionHint(query: string) {
