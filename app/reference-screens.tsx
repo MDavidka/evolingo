@@ -2,17 +2,16 @@
 
 import { useEffect, useRef, useState, type ReactNode } from "react"
 import dynamic from "next/dynamic"
+import FlexRemixIcon from "./flex-remix-icon"
 import ChatInterface from "./chat-interface"
 import { buildLessonOverview } from "./intelligent-ui/lesson-overview"
 import UnifiedSheet from "./unified-sheet"
 import { AppHeader } from "@/components/app-header"
 import { Tabs } from "@/components/arc/tabs/tabs"
 // Web-safe icons with SF Symbols-aligned shapes; see docs/sf-symbols.md.
-import { GraduationCapIcon as SFGraduationCap } from "@phosphor-icons/react/dist/csr/GraduationCap"
 import { BookOpenIcon as SFBookOpen } from "@phosphor-icons/react/dist/csr/BookOpen"
 import { BooksIcon as SFBooks } from "@phosphor-icons/react/dist/csr/Books"
 import { TranslateIcon as SFTranslate } from "@phosphor-icons/react/dist/csr/Translate"
-import { MagnifyingGlassIcon as SFMagnify } from "@phosphor-icons/react/dist/csr/MagnifyingGlass"
 import { CaretRightIcon as SFCaretRight } from "@phosphor-icons/react/dist/csr/CaretRight"
 import { CaretDownIcon as SFCaretDown } from "@phosphor-icons/react/dist/csr/CaretDown"
 import { XIcon as SFX } from "@phosphor-icons/react/dist/csr/X"
@@ -95,12 +94,12 @@ function Header({ name, avatarImage, avatarFallback, onProfile, onHome, onSelect
   }, [])
   return <AppHeader variant="main" className="ref-topbar" center={showCourse ? <div className="ref-course-wrap" ref={courseRef}>
       <button className="ref-course" type="button" aria-haspopup="menu" aria-expanded={courseOpen} onClick={() => setCourseOpen(value => !value)}>
-        <SFGraduationCap size={20} weight="regular" aria-hidden="true" /><strong>{courseName || "Témáim"}</strong><span className="ref-course-chevron"><SFCaretDown size={14} weight="bold" aria-hidden="true" /></span>
+        <FlexRemixIcon name="topics" size={20} /><strong>{courseName || "Témáim"}</strong><span className="ref-course-chevron"><SFCaretDown size={14} weight="bold" aria-hidden="true" /></span>
       </button>
       {courseOpen && <div className="ref-course-menu" role="menu" aria-label="Téma kiválasztása">
         <span className="ref-course-menu-label">Jelenlegi téma</span>
         {topics.map(topic => <button key={topic.id} className="ref-course-choice" type="button" role="menuitem" onClick={() => { setCourseOpen(false); onSelectCourse(topic.id) }}>
-          <SFGraduationCap size={17} weight="regular" aria-hidden="true" /> {topic.title} {(selectedTopicId === topic.id || (selectedTopicId === null && topics[0]?.id === topic.id)) && <Check size={17} />}
+          <FlexRemixIcon name="topics" size={17} /> {topic.title} {(selectedTopicId === topic.id || (selectedTopicId === null && topics[0]?.id === topic.id)) && <Check size={17} />}
         </button>)}
         <button className="ref-course-choice" type="button" role="menuitem" onClick={() => { setCourseOpen(false); onHome() }}>
           <SFBookOpen size={17} weight="regular" aria-hidden="true" /> Összes téma
@@ -135,7 +134,7 @@ function Topics({ topics, lessons, onSelectTopic, onSelectLesson }: {
 
   return <div className="ref-topics evo-learning-home">
     <div className="evo-learning-search" role="search">
-      <SFMagnify size={21} weight="regular" aria-hidden="true" />
+      <FlexRemixIcon name="search" size={21} />
       <input
         type="search"
         autoComplete="off"
@@ -150,9 +149,9 @@ function Topics({ topics, lessons, onSelectTopic, onSelectLesson }: {
     <section className="evo-learning-section" aria-label="Saját témák és leckék">
       <div className="evo-learning-topic-list">
         {filteredTopics.map((topic, index) => {
-          const Icon = index === 0 ? SFGraduationCap : index % 2 === 0 ? SFBookOpen : SFTranslate
+          const Icon = index % 2 === 0 ? SFBookOpen : SFTranslate
           return <button type="button" className="evo-learning-topic-card" key={topic.id} onClick={() => onSelectTopic(topic.id)}>
-            <span className="evo-learning-topic-icon"><Icon size={24} weight="regular" aria-hidden="true" /></span>
+            <span className="evo-learning-topic-icon">{index === 0 ? <FlexRemixIcon name="topics" size={24} /> : <Icon size={24} weight="regular" aria-hidden="true" />}</span>
             <span className="evo-learning-topic-copy">
               <strong>{topic.title}</strong>
               <span>{topic.lessonIds.length} lecke{topic.subtitle ? ` · ${topic.subtitle.includes("Nyelvtani szabályok") ? "Nyelvtan és kommunikáció" : topic.subtitle}` : ""}</span>
