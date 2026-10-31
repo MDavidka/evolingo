@@ -7,12 +7,47 @@ import { buildLessonOverview } from "./intelligent-ui/lesson-overview"
 import UnifiedSheet from "./unified-sheet"
 import { AppHeader } from "@/components/app-header"
 import { Tabs } from "@/components/arc/tabs/tabs"
-import {
-  ArrowRight, ArrowUp, ArrowUpRight, BookOpen, CalendarDays, CheckCircle2, ChevronDown, ChevronsUpDown, ChevronRight,
-  CircleDot, CircleHelp, Eye, EyeOff, FileText, GraduationCap, Info, Landmark,
-  LockKeyhole, LogOut, LogIn, Mic, MoreHorizontal, Plus, Search, Send, ShieldCheck, UserRound, Users, BarChart3, Check, LibraryBig,
-  X, Languages, Dna, ClipboardCheck, Layers, Crown, PencilLine, Sparkles, type LucideIcon,
-} from "lucide-react"
+import { mage } from "./mage-icons"
+const ArrowRight = mage("arrow-right")
+const ArrowUp = mage("arrow-up")
+const ArrowUpRight = mage("arrow-up-right")
+const BookOpen = mage("book")
+const CalendarDays = mage("calendar")
+const CheckCircle2 = mage("check-circle")
+const ChevronDown = mage("arrow-down")
+const ChevronsUpDown = mage("arrows-all-direction")
+const ChevronRight = mage("arrow-right")
+const CircleDot = mage("double-circle")
+const CircleHelp = mage("question-mark-circle")
+const Eye = mage("eye")
+const EyeOff = mage("eye-closed")
+const FileText = mage("file")
+const GraduationCap = mage("book-text")
+const Info = mage("information-circle")
+const Landmark = mage("home")
+const LockKeyhole = mage("lock")
+const LogOut = mage("arrow-right")
+const LogIn = mage("arrow-left")
+const Mic = mage("microphone")
+const MoreHorizontal = mage("dots-horizontal")
+const Plus = mage("plus")
+const Search = mage("search")
+const Send = mage("arrow-up")
+const ShieldCheck = mage("shield-check")
+const UserRound = mage("user")
+const Users = mage("users")
+const BarChart3 = mage("dashboard-chart")
+const Check = mage("check")
+const LibraryBig = mage("book-text")
+const X = mage("x")
+const Languages = mage("book")
+const Dna = mage("health-circle")
+const ClipboardCheck = mage("checklist")
+const Layers = mage("layout-grid")
+const Crown = mage("star")
+const PencilLine = mage("edit-pen")
+const Sparkles = mage("star")
+type LucideIcon = ReturnType<typeof mage>
 
 /* Non-chat tabs and learning widgets are loaded only when needed.
    General AI chat stays available on the first paint. */
