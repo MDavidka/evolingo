@@ -1,12 +1,15 @@
 "use client"
 
 import { useEffect, useRef, useState, type ReactNode } from "react"
+import dynamic from "next/dynamic"
 import ChatInterface from "./chat-interface"
-import Brainstorm from "./brainstorm"
-import LibrarySpace from "./library-space"
-import IntelligentResponse from "./intelligent-ui/renderer"
 import { buildLessonOverview } from "./intelligent-ui/lesson-overview"
-import ToolsHub from "./tools-hub"
+/* Non-chat tabs and learning widgets are loaded only when needed.
+   General AI chat stays available on the first paint. */
+const Brainstorm = dynamic(() => import("./brainstorm"), { ssr: false })
+const LibrarySpace = dynamic(() => import("./library-space"), { ssr: false })
+const ToolsHub = dynamic(() => import("./tools-hub"), { ssr: false })
+const IntelligentResponse = dynamic(() => import("./intelligent-ui/renderer"), { ssr: false })
 import UnifiedSheet from "./unified-sheet"
 import { AppHeader } from "@/components/app-header"
 import { Tabs } from "@/components/arc/tabs/tabs"
@@ -96,12 +99,11 @@ function Header({ name, avatarImage, avatarFallback, onProfile, onHome, onSelect
     </div> : null} right={<button className="ref-profile-shortcut" type="button" onClick={() => { setCourseOpen(false); onProfile() }} aria-label="Profil megnyitása"><Avatar name={name} src={avatarImage} fallback={avatarFallback} /></button>} />
 }
 
-function Topics({ topics, lessons, onSelectTopic, onSelectLesson, onNewLesson }: {
+function Topics({ topics, lessons, onSelectTopic, onSelectLesson }: {
   topics: TopicData[]
   lessons: LessonData[]
   onSelectTopic: (id: number) => void
   onSelectLesson: (id: number) => void
-  onNewLesson: () => void
 }) {
   const [query, setQuery] = useState("")
   // The redesigned index is much shorter than the old path. Restoring its old
@@ -143,7 +145,7 @@ function Topics({ topics, lessons, onSelectTopic, onSelectLesson, onNewLesson }:
             <span className="evo-learning-topic-icon"><Icon size={24} strokeWidth={1.75} aria-hidden="true" /></span>
             <span className="evo-learning-topic-copy">
               <strong>{topic.title}</strong>
-              <span>{topic.lessonIds.length} lecke{topic.subtitle ? ` · ${topic.subtitle}` : ""}</span>
+              <span>{topic.lessonIds.length} lecke{topic.subtitle ? ` · ${topic.subtitle.includes("Nyelvtani szabályok") ? "Nyelvtan és kommunikáció" : topic.subtitle}` : ""}</span>
             </span>
             <ChevronRight size={20} strokeWidth={1.75} className="evo-learning-chevron" aria-hidden="true" />
           </button>
@@ -156,7 +158,6 @@ function Topics({ topics, lessons, onSelectTopic, onSelectLesson, onNewLesson }:
         </button>}
       </div>
     </section>
-    {!term && <button type="button" className="evo-learning-create" onClick={onNewLesson}><Plus size={17} strokeWidth={1.9} aria-hidden="true" /><span>Új lecke</span></button>}
 
     {term && matchingLessons.length > 0 && <section className="evo-learning-section" aria-labelledby="evo-learning-results-title">
       <div className="evo-learning-section-header"><h2 id="evo-learning-results-title">Talált leckék</h2><span>{matchingLessons.length} találat</span></div>
@@ -269,7 +270,7 @@ export default function ReferenceScreens(props: Props) {
   }, [view])
   const selectedTopic = topics.find(topic => topic.id === selectedTopicId) ?? topics[0]
   let content: ReactNode
-  if (view === "home") content = <Topics topics={topics} lessons={lessons} onSelectTopic={id => { onSelectTopic(id); onView("topic") }} onSelectLesson={id => { onSelectLesson(id); onView("selector") }} onNewLesson={() => { const first = topics[0]?.lessonIds[0]; if (first != null) { onSelectLesson(first); onView("selector") } }} />
+  if (view === "home") content = <Topics topics={topics} lessons={lessons} onSelectTopic={id => { onSelectTopic(id); onView("topic") }} onSelectLesson={id => { onSelectLesson(id); onView("selector") }} />
   else if (view === "topic") content = <TopicDetail topic={selectedTopicId === -1 ? undefined : selectedTopic} showAll={selectedTopicId === -1} lessons={lessons} onSelectLesson={id => { onSelectLesson(id); onView("selector") }} onBack={() => onView("home")} />
   else if (view === "selector") content = <LessonSelector lesson={lessons.find(item => item.id === activeLessonId)} onSelectMode={onSelectMode} onContinue={onContinue} />
   else if (view === "chat") content = <ChatInterface />
