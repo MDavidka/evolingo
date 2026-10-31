@@ -125,12 +125,7 @@ function Topics({ topics, lessons, onSelectTopic, onSelectLesson, onNewLesson }:
   )
 
   return <div className="ref-topics evo-learning-home">
-    <div className="evo-learning-welcome">
-      <p>A tanulás itt kezdődik</p>
-      <h1>Mit tanulnál ma?</h1>
-    </div>
-
-    <label className="evo-learning-search">
+    <div className="evo-learning-search" role="search">
       <Search size={21} strokeWidth={1.75} aria-hidden="true" />
       <input
         type="search"
@@ -141,15 +136,9 @@ function Topics({ topics, lessons, onSelectTopic, onSelectLesson, onNewLesson }:
         onChange={event => setQuery(event.target.value)}
       />
       {query && <button type="button" aria-label="Keresés törlése" onClick={() => setQuery("")}><X size={18} strokeWidth={1.75} /></button>}
-    </label>
+    </div>
 
-    <section className="evo-learning-section" aria-labelledby="evo-learning-topics-title">
-      <div className="evo-learning-section-header">
-        <h2 id="evo-learning-topics-title">Témáim</h2>
-        <button type="button" className="evo-learning-create" onClick={onNewLesson}>
-          <Plus size={18} strokeWidth={1.75} aria-hidden="true" /> Új lecke
-        </button>
-      </div>
+    <section className="evo-learning-section" aria-label="Saját témák és leckék">
       <div className="evo-learning-topic-list">
         {filteredTopics.map((topic, index) => {
           const Icon = index === 0 ? GraduationCap : index % 2 === 0 ? BookOpen : Languages
@@ -157,15 +146,20 @@ function Topics({ topics, lessons, onSelectTopic, onSelectLesson, onNewLesson }:
             <span className="evo-learning-topic-icon"><Icon size={24} strokeWidth={1.75} aria-hidden="true" /></span>
             <span className="evo-learning-topic-copy">
               <strong>{topic.title}</strong>
-              <span>{topic.subtitle}</span>
-              <small>{topic.lessonIds.length} lecke</small>
+              <span>{topic.lessonIds.length} lecke{topic.subtitle ? ` · ${topic.subtitle}` : ""}</span>
             </span>
             <ChevronRight size={20} strokeWidth={1.75} className="evo-learning-chevron" aria-hidden="true" />
           </button>
         })}
         {filteredTopics.length === 0 && matchingLessons.length === 0 && <p className="evo-learning-empty">Nem található ilyen téma vagy lecke.</p>}
+        {!term && <button type="button" className="evo-learning-library" onClick={() => onSelectTopic(-1)} disabled={!lessons.length}>
+          <span className="evo-learning-library-icon"><LibraryBig size={23} strokeWidth={1.75} aria-hidden="true" /></span>
+          <span><strong>Összes lecke</strong><small>Böngészd a tananyagokat</small></span>
+          <ChevronRight size={20} strokeWidth={1.75} aria-hidden="true" />
+        </button>}
       </div>
     </section>
+    {!term && <button type="button" className="evo-learning-create" onClick={onNewLesson}><Plus size={17} strokeWidth={1.9} aria-hidden="true" /><span>Új lecke</span></button>}
 
     {term && matchingLessons.length > 0 && <section className="evo-learning-section" aria-labelledby="evo-learning-results-title">
       <div className="evo-learning-section-header"><h2 id="evo-learning-results-title">Talált leckék</h2><span>{matchingLessons.length} találat</span></div>
@@ -178,11 +172,6 @@ function Topics({ topics, lessons, onSelectTopic, onSelectLesson, onNewLesson }:
       </div>
     </section>}
 
-    <button type="button" className="evo-learning-library" onClick={() => onSelectTopic(-1)} disabled={!lessons.length}>
-      <span className="evo-learning-library-icon"><LibraryBig size={23} strokeWidth={1.75} aria-hidden="true" /></span>
-      <span><strong>Összes lecke</strong><small>Böngészd az összes tananyagot</small></span>
-      <ChevronRight size={20} strokeWidth={1.75} aria-hidden="true" />
-    </button>
   </div>
 }
 
@@ -296,7 +285,7 @@ export default function ReferenceScreens(props: Props) {
   if (view === "auth") return <main className="ref-app ref-view-auth">{content}</main>
   return <main className={`ref-app ref-view-${view}`}>
     {/* Könyvtár uses the app-level floating sidebar/profile; do not render an empty page header. */}
-    {view !== "space" && <Header key={view} name={userName} avatarImage={avatarImage} avatarFallback={avatarFallback} onProfile={() => onView("profile")} onHome={() => onView("home")} onSelectCourse={id => { onSelectTopic(id); onView("topic") }} topics={topics} selectedTopicId={selectedTopicId} showCourse={view === "home" || view === "topic"} courseName={selectedTopicId === -1 ? "Összes lecke" : selectedTopic?.title} />}
+    {view !== "space" && <Header key={view} name={userName} avatarImage={avatarImage} avatarFallback={avatarFallback} onProfile={() => onView("profile")} onHome={() => onView("home")} onSelectCourse={id => { onSelectTopic(id); onView("topic") }} topics={topics} selectedTopicId={selectedTopicId} showCourse={view === "home" || view === "topic"} courseName={selectedTopicId === -1 ? "Összes lecke" : (selectedTopic?.title || "Témáim").replace(/\s+A1[–-]B2\s*$/, "")} />}
     {content}
   </main>
 }
