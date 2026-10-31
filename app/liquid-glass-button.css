@@ -57,7 +57,7 @@
 /* Shared floating navigation uses the same glass optics; the avatar remains an accessible image control. */
 /* Shared floating controls must retain a clear silhouette on a white page.
    Optical glass stays subtle; readable ink and a defined border take priority. */
-.evo-sidebar-host .evo-morph-anchor > .evo-morph-toggle.evo-liquid-button,
+.evo-sidebar-host .evo-morph-anchor > .evo-morph-toggle,
 .evo-sidebar-host .evo-global-profile-button {
   background: rgba(255,255,255,.94) !important;
   border: 1px solid rgba(207,208,213,.96) !important;
@@ -67,7 +67,7 @@
   color: #17181d !important;
   opacity: 1 !important;
 }
-.evo-sidebar-host .evo-morph-anchor > .evo-morph-toggle.evo-liquid-button .evo-liquid-button__content svg {
+.evo-sidebar-host .evo-morph-anchor > .evo-morph-toggle > svg {
   color: #17181d !important;
   stroke: #17181d !important;
   stroke-width: 2 !important;
@@ -75,7 +75,7 @@
 .evo-sidebar-host .evo-morph-anchor > .evo-morph-toggle.evo-liquid-button:active,
 .evo-sidebar-host .evo-global-profile-button.evo-liquid-button:active { transform: scale(.96) !important; }
 @media (prefers-reduced-transparency: reduce) {
-  .evo-sidebar-host .evo-morph-anchor > .evo-morph-toggle.evo-liquid-button,
+  .evo-sidebar-host .evo-morph-anchor > .evo-morph-toggle,
   .evo-sidebar-host .evo-global-profile-button { background: #fff !important; border-color: #c7c7cd !important; backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
 }
 
