@@ -7,10 +7,9 @@ import {
   Share2, Trash2, Upload, X,
 } from "lucide-react"
 // Web-compatible SF Symbols-style glyphs; Apple assets are not bundled.
-import { FolderIcon as SFFolder } from "@phosphor-icons/react/dist/csr/Folder"
+import FlexRemixIcon from "./flex-remix-icon"
 import { FileTextIcon as SFFileText } from "@phosphor-icons/react/dist/csr/FileText"
 import { FileIcon as SFFile } from "@phosphor-icons/react/dist/csr/File"
-import { MagnifyingGlassIcon as SFMagnify } from "@phosphor-icons/react/dist/csr/MagnifyingGlass"
 import { XIcon as SFX } from "@phosphor-icons/react/dist/csr/X"
 import { CaretLeftIcon as SFBack } from "@phosphor-icons/react/dist/csr/CaretLeft"
 import { SquaresFourIcon as SFGrid } from "@phosphor-icons/react/dist/csr/SquaresFour"
@@ -56,7 +55,7 @@ function kindLabel(kind: FileKind) {
 }
 
 function FileIcon({ kind, size = 23 }: { kind: FileKind; size?: number }) {
-  return kind === "folder" ? <SFFolder size={size} weight="regular" /> : kind === "pdf" ? <SFFileText size={size} weight="regular" /> : <SFFile size={size} weight="regular" />
+  return kind === "folder" ? <FlexRemixIcon name="files" size={size} /> : kind === "pdf" ? <SFFileText size={size} weight="regular" /> : <SFFile size={size} weight="regular" />
 }
 
 export default function LibrarySpace() {
@@ -323,7 +322,7 @@ export default function LibrarySpace() {
     <input ref={filePicker} className="ref-hidden-file" type="file" multiple aria-label="Fájl kiválasztása" onChange={uploadFile} />
 
     <div className="library-search" role="search">
-      <SFMagnify size={20} weight="regular" aria-hidden="true" />
+      <FlexRemixIcon name="search" size={20} />
       <input ref={searchInput} type="search" value={query} onChange={event => setQuery(event.target.value)} onKeyDown={event => { if (event.key === "Escape") setQuery("") }} placeholder="Fájlok és mappák keresése" aria-label="Keresés a könyvtárban" enterKeyHint="search" autoComplete="off" />
       {query && <button type="button" aria-label="Keresés törlése" onClick={() => { setQuery(""); searchInput.current?.focus() }}><SFX size={16} weight="regular" /></button>}
     </div>
