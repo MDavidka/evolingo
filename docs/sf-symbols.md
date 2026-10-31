@@ -1,5 +1,13 @@
 # Evölingo iconography — Apple SF Symbols semantics
 
+> **Current web design (October 2026):** Evölingo now uses the genuine
+> [Streamline Flex Remix Free](https://www.streamlinehq.com/icons/flex-remix-free)
+> icon shapes under CC BY 4.0 for its sidebar and key screens. See
+> [docs/streamline-flex-remix.md](./streamline-flex-remix.md) for provenance
+> and attribution. This document remains the separate native SwiftUI
+> SF Symbols reference, not the icon source for the PWA.
+
+
 This specification records the intended SF Symbols for a **future native SwiftUI
 iOS build** and their web-safe counterparts in the current Next.js/PWA.
 
