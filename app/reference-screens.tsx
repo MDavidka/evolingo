@@ -8,7 +8,7 @@ import UnifiedSheet from "./unified-sheet"
 import { AppHeader } from "@/components/app-header"
 import { Tabs } from "@/components/arc/tabs/tabs"
 import { mage } from "./mage-icons"
-import { IconRefresh as RefreshCw } from "@tabler/icons-react"
+import { RefreshCw } from "lucide-react"
 const ArrowRight = mage("arrow-right")
 const ArrowUp = mage("arrow-up")
 const ArrowUpRight = mage("arrow-up-right")
