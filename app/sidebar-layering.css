@@ -1,18 +1,18 @@
-/* Evölingo iOS layered sidebar.
-   Secondary navigation is a stationary base; the current screen becomes
-   the rounded foreground sheet. Scoped to handheld viewports only. */
+/* Evölingo — two-layer iOS navigation.
+   The sidebar fills the complete viewport underneath the app. The active
+   screen stays 100vw wide and slides exactly two thirds of a viewport to the
+   right, leaving one third visible. It is NOT a separate narrow side panel. */
 @media (max-width: 767px) {
   :root {
-    --evo-layer-reveal: clamp(220px, 62vw, 300px);
+    --evo-layer-reveal: 66.6667vw;
     --evo-layer-radius: 48px;
     --evo-layer-duration: 380ms;
     --evo-layer-ease: cubic-bezier(.22, 1, .36, 1);
   }
 
-  /* Prepare the page for the return animation without changing its layout
-     or making fixed descendants relative to a transformed container. */
   body:has(.evo-sidebar-host) .app-shell {
-    transition: transform var(--evo-layer-duration) var(--evo-layer-ease),
+    transition:
+      transform var(--evo-layer-duration) var(--evo-layer-ease),
       border-radius var(--evo-layer-duration) var(--evo-layer-ease),
       box-shadow var(--evo-layer-duration) var(--evo-layer-ease);
   }
@@ -28,32 +28,18 @@
     background: #f5f5f7 !important;
   }
 
-  /* The main screen, including its safe area, is the elevated white layer. */
-  html.evo-sidebar-layer-open body .app-shell {
+  /* The sidebar is the full-screen SECONDARY layer, not a drawer ending at
+     the point where the top sheet starts. Only its content is 2/3 wide. */
+  html.evo-sidebar-layer-active .evo-sidebar-host {
     position: relative !important;
-    z-index: 2;
-    width: 100% !important;
-    min-height: 100dvh !important;
-    transform: translate3d(var(--evo-layer-reveal), 0, 0) !important;
-    border-radius: var(--evo-layer-radius) 0 0 var(--evo-layer-radius) !important;
-    background: #fff !important;
-    box-shadow: -22px 0 56px rgba(20, 22, 30, .14) !important;
-    overflow: hidden !important;
-    isolation: isolate;
+    z-index: 110 !important;
   }
 
-  /* Existing reference pages sometimes force transparent content or
-     overflow:visible; the white sheet must stay continuous behind them. */
-  html.evo-sidebar-layer-open body .app-shell.reference-shell {
-    background: #fff !important;
-    overflow: hidden !important;
-  }
-
-  /* The navigation stays flat underneath, so no drawer edge, backdrop
-     dimming, or grey strip appears at the native iOS status bar. */
   html.evo-sidebar-layer-active .evo-sidebar-host .evo-sidebar {
-    inset: 0 auto 0 0 !important;
-    width: var(--evo-layer-reveal) !important;
+    position: fixed !important;
+    inset: 0 !important;
+    width: 100vw !important;
+    max-width: none !important;
     height: 100dvh !important;
     border: 0 !important;
     border-radius: 0 !important;
@@ -64,32 +50,68 @@
     animation: none !important;
     transform: none !important;
     opacity: 1 !important;
+    transition: none !important;
   }
 
-  /* Keep the main page dismissible without dimming the top layer. */
+  html.evo-sidebar-layer-active .evo-sidebar-host .evo-sidebar-safe {
+    width: var(--evo-layer-reveal) !important;
+    max-width: var(--evo-layer-reveal) !important;
+    padding: calc(env(safe-area-inset-top, 0px) + 14px) 14px
+             calc(env(safe-area-inset-bottom, 0px) + 15px) 17px !important;
+  }
+
+  /* Keep the TOP layer above the sidebar throughout the opening AND closing
+     animations. Otherwise the sidebar suddenly covers it during exit. */
+  html.evo-sidebar-layer-active body .app-shell {
+    position: relative !important;
+    z-index: 111 !important;
+    width: 100vw !important;
+    max-width: none !important;
+    min-width: 100vw !important;
+    margin: 0 !important;
+  }
+
+  html.evo-sidebar-layer-open body .app-shell {
+    min-height: 100dvh !important;
+    transform: translate3d(var(--evo-layer-reveal), 0, 0) !important;
+    border-radius: var(--evo-layer-radius) 0 0 var(--evo-layer-radius) !important;
+    background: #fff !important;
+    box-shadow: -20px 0 54px rgba(20, 22, 30, .14) !important;
+    overflow: hidden !important;
+    isolation: isolate;
+  }
+
+  html.evo-sidebar-layer-open body .app-shell.reference-shell {
+    background: #fff !important;
+    overflow: hidden !important;
+  }
+
+  /* No dark veil. The elevated white app covers the right-hand third
+     itself. Clicking that foreground screen dismisses the menu. */
   html.evo-sidebar-layer-active .evo-sidebar-host .evo-sidebar-backdrop {
     inset: 0 0 0 var(--evo-layer-reveal) !important;
+    width: auto !important;
     height: 100dvh !important;
     background: transparent !important;
-    animation: none !important;
     opacity: 1 !important;
+    animation: none !important;
   }
 
-  html.evo-sidebar-layer-active .evo-sidebar-host .evo-sidebar-backdrop.is-closing {
-    pointer-events: auto;
-  }
-
-  /* Foreground controls are part of the moving screen, not the exposed
-     sidebar. The sidebar's own close button remains available. */
   html.evo-sidebar-layer-active .evo-sidebar-host .evo-morph-anchor,
   html.evo-sidebar-layer-active .evo-sidebar-host .evo-global-profile-button {
     opacity: 0 !important;
     pointer-events: none !important;
   }
 
-  html.evo-sidebar-layer-active .evo-sidebar-safe {
-    padding-top: calc(env(safe-area-inset-top, 0px) + 14px);
-    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 15px);
+  @media (max-width: 360px) {
+    /* The sidebar heading must still fit in two thirds of a small iPhone. */
+    html.evo-sidebar-layer-active .evo-sidebar-brand {
+      font-size: 1.125rem;
+    }
+    html.evo-sidebar-layer-active .evo-sidebar-tool {
+      width: 34px;
+      height: 34px;
+    }
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -99,8 +121,7 @@
   }
 }
 
-/* Desktop remains a conventional overlay drawer; closing it should not
-   abruptly remove the entire drawer before the exit motion completes. */
+/* Desktop retains its original conventional overlay drawer. */
 .evo-sidebar.is-closing {
   pointer-events: none;
   animation: none;
