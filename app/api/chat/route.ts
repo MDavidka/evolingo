@@ -23,14 +23,14 @@ function fail(error: string, status: number) {
 
 
 /** Intelligent UI is an optional progressive enhancement, not an executable model response. */
-const UI_ENABLED = process.env.EVO_INTELLIGENT_UI_ENABLED !== "false"
+const UI_ENABLED = false // General chat only: no in-app visual or learning integrations.
 const replyPrompt = [
-  "Az Evölingo magyar nyelvű tanulási asszisztense vagy. Pontosan, érthetően és természetesen válaszolj magyarul.",
-  "Használj szabályos Markdown formázást, ha javítja az érthetőséget: rövid címsorok, **kiemelés**, példamondatok, felsorolások, összehasonlító táblázatok és működő HTTPS forráshivatkozások.",
-  "Ne adj nyers HTML-t, JSX-et, JSON UI-leírást vagy kódot a felület vezérlésére.",
-  "Képet kizárólag létező, igazolható HTTPS-forrásból idézz, ne találj ki képhivatkozást.",
-  "Egyszerű kérdésre válaszolj röviden. Általános ismeretterjesztő kérdéseknél adj világos magyarázatot, érdekes tényeket és releváns példákat. A külön vizuális réteg illusztrációt, órát vagy kártyát is adhat.",
-  "Ne találj ki személyes tanulási adatot, és ne állítsd, hogy ChatGPT vagy.",
+  "Általános célú, segítőkész AI-asszisztens vagy az Evölingo alkalmazásban.",
+  "Válaszolj a felhasználó nyelvén, természetesen és pontosan. Nem vagy külön tutor, és nincs alapértelmezett tantárgyi szereped.",
+  "Bármilyen témával foglalkozhatsz: általános kérdések, kreatív írás, programozás, fordítás vagy tanulás, amennyiben a felhasználó kéri.",
+  "Használj rövid, jól olvasható Markdown-formázást, amikor hasznos. Ne találj ki forrásokat, adatokat vagy hivatkozásokat.",
+  "Nincs hozzáférésed az alkalmazás leckéihez, feladataihoz, Ötletbörzéjéhez, Könyvtárához, barátaihoz vagy haladási adataihoz.",
+  "Ne állítsd, hogy alkalmazásbeli műveleteket végeztél. Ne készíts interaktív UI-utasításokat.",
 ].join(" ")
 
 const uiInstructions = [
@@ -255,9 +255,7 @@ export async function POST(request: NextRequest) {
   let messages: Message[]
   let interactive = false
   let attachment: ChatAttachment | null = null
-  let approvedTasks: string[] = []
-  let mode: "tutor" | "conversation" | "writing" = "tutor"
-  try {
+request state removed  try {
     const raw = await request.text()
     if (raw.length > 3_100_000) return fail("Az üzenet túl hosszú.", 413)
     const body: unknown = JSON.parse(raw)
@@ -266,16 +264,6 @@ export async function POST(request: NextRequest) {
     if (rawAttachment != null) {
       attachment = validateAttachment(rawAttachment)
       if (!attachment) return fail("Nem támogatott vagy túl nagy melléklet.", 400)
-    }
-    const rawTasks = (body as { approvedTasks?: unknown }).approvedTasks
-    if (rawTasks != null) {
-      if (!Array.isArray(rawTasks) || rawTasks.length > 20 || rawTasks.some(task => typeof task !== "string" || !task.trim() || task.length > 500)) return fail("Érvénytelen jóváhagyott feladatlista.", 400)
-      approvedTasks = rawTasks.map(task => (task as string).trim())
-    }
-    const requestedMode = (body as { mode?: unknown }).mode
-    if (requestedMode != null) {
-      if (requestedMode !== "tutor" && requestedMode !== "conversation" && requestedMode !== "writing") return fail("Érvénytelen beszélgetési mód.", 400)
-      mode = requestedMode
     }
     const list = (body as { messages?: unknown }).messages
     interactive = (body as { interactive?: unknown }).interactive === true
@@ -291,14 +279,8 @@ export async function POST(request: NextRequest) {
     return fail("Érvénytelen üzenetformátum.", 400)
   }
 
-  const modePrompt = mode === "conversation"
-    ? " Beszélgetés módban természetes, kötetlen párbeszédet folytass; igazodj a felhasználó nyelvéhez, és csak kérésre válts tanári magyarázatra."
-    : mode === "writing"
-      ? " Fogalmazás módban segíts szöveget írni, átfogalmazni és javítani; előbb add meg a kész, használható változatot, utána röviden indokold a fontos javításokat."
-      : " Tutor módban taníts türelmesen, érthető példákkal és lépésenkénti magyarázattal."
-  const system = (approvedTasks.length
-    ? replyPrompt + " Jóváhagyott, minden beszélgetésből közös ötletbörze-feladatok: " + approvedTasks.map(task => "- " + task).join(" ") + " Ezeket vedd figyelembe a válaszban, ha kapcsolódnak a kérdéshez. Ne tekintsd őket új üzenetnek, és ne állítsd, hogy már elvégezték őket."
-    : replyPrompt) + modePrompt
+  // The general chat endpoint deliberately ignores app-specific modes and task context.
+  const system = replyPrompt
 
   if (interactive) return new Response(makeStream(apiKey, messages, attachment, system), {
     headers: { ...headers, "Content-Type": "text/event-stream; charset=utf-8", "X-Accel-Buffering": "no" },
