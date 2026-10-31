@@ -4,12 +4,6 @@ import { useEffect, useRef, useState, type ReactNode } from "react"
 import dynamic from "next/dynamic"
 import ChatInterface from "./chat-interface"
 import { buildLessonOverview } from "./intelligent-ui/lesson-overview"
-/* Non-chat tabs and learning widgets are loaded only when needed.
-   General AI chat stays available on the first paint. */
-const Brainstorm = dynamic(() => import("./brainstorm"), { ssr: false })
-const LibrarySpace = dynamic(() => import("./library-space"), { ssr: false })
-const ToolsHub = dynamic(() => import("./tools-hub"), { ssr: false })
-const IntelligentResponse = dynamic(() => import("./intelligent-ui/renderer"), { ssr: false })
 import UnifiedSheet from "./unified-sheet"
 import { AppHeader } from "@/components/app-header"
 import { Tabs } from "@/components/arc/tabs/tabs"
@@ -19,6 +13,13 @@ import {
   LockKeyhole, LogOut, LogIn, Mic, MoreHorizontal, Plus, Search, Send, ShieldCheck, UserRound, Users, BarChart3, Check, LibraryBig,
   X, Languages, Dna, ClipboardCheck, Layers, Crown, PencilLine, Sparkles, type LucideIcon,
 } from "lucide-react"
+
+/* Non-chat tabs and learning widgets are loaded only when needed.
+   General AI chat stays available on the first paint. */
+const Brainstorm = dynamic(() => import("./brainstorm"), { ssr: false })
+const LibrarySpace = dynamic(() => import("./library-space"), { ssr: false })
+const ToolsHub = dynamic(() => import("./tools-hub"), { ssr: false })
+const IntelligentResponse = dynamic(() => import("./intelligent-ui/renderer"), { ssr: false })
 
 export type ReferenceView = "home" | "topic" | "selector" | "chat" | "brainstorm" | "space" | "utility" | "profile" | "auth"
 
