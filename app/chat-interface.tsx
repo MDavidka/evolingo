@@ -4,7 +4,7 @@ import { useEffect, useRef, useState, type FormEvent, type KeyboardEvent } from 
 // SF Symbols-equivalent controls; native icons are referenced in docs/sf-symbols.md.
 import { ArrowUpIcon as SFArrowUp } from "@phosphor-icons/react/dist/csr/ArrowUp"
 import { CheckIcon as SFCheck } from "@phosphor-icons/react/dist/csr/Check"
-import { CopyIcon as SFCopy } from "@phosphor-icons/react/dist/csr/Copy"
+import FlexRemixIcon from "./flex-remix-icon"
 import { PlusIcon as SFPlus } from "@phosphor-icons/react/dist/csr/Plus"
 import { CameraIcon as SFCamera } from "@phosphor-icons/react/dist/csr/Camera"
 import { ImageIcon as SFImage } from "@phosphor-icons/react/dist/csr/Image"
@@ -363,7 +363,7 @@ export default function ChatInterface() {
       {messages.length > 0 && <div className="evo-chat-thread">
         {messages.map((item, index) => <div key={item.id ?? `${item.role}-${index}`} className={`evo-chat-entry evo-chat-entry--${item.role}`}>
           <div className="evo-chat-entry-main"><div className="evo-chat-bubble">{item.role === "assistant" ? <ChatRichText text={item.content} /> : item.content}</div>
-            {item.role === "assistant" && <button type="button" className="evo-chat-copy" aria-label="Válasz másolása" onClick={() => void copyMessage(item.content, index)}>{copied === index ? <SFCheck size={16} weight="regular" /> : <SFCopy size={16} weight="regular" />}<span>{copied === index ? "Másolva" : "Másolás"}</span></button>}
+            {item.role === "assistant" && <button type="button" className="evo-chat-copy" aria-label="Válasz másolása" onClick={() => void copyMessage(item.content, index)}>{copied === index ? <SFCheck size={16} weight="regular" /> : <FlexRemixIcon name="copy" size={16} />}<span>{copied === index ? "Másolva" : "Másolás"}</span></button>}
           </div>
         </div>)}
         {busy && !streaming && <div className="evo-chat-entry evo-chat-entry--assistant"><span className="evo-chat-thinking" role="status">Válasz írása<span className="evo-chat-dots">…</span></span></div>}
