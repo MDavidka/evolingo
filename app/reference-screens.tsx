@@ -96,8 +96,6 @@ function Header({ name, avatarImage, avatarFallback, onProfile, onHome, onSelect
     </div> : null} right={<button className="ref-profile-shortcut" type="button" onClick={() => { setCourseOpen(false); onProfile() }} aria-label="Profil megnyitása"><Avatar name={name} src={avatarImage} fallback={avatarFallback} /></button>} />
 }
 
-let savedLearningScroll = 0
-
 function Topics({ topics, lessons, onSelectTopic, onSelectLesson, onNewLesson }: {
   topics: TopicData[]
   lessons: LessonData[]
@@ -106,12 +104,11 @@ function Topics({ topics, lessons, onSelectTopic, onSelectLesson, onNewLesson }:
   onNewLesson: () => void
 }) {
   const [query, setQuery] = useState("")
+  // The redesigned index is much shorter than the old path. Restoring its old
+  // scroll offset can land users on an empty white screen after tab changes.
   useEffect(() => {
-    const frame = requestAnimationFrame(() => window.scrollTo(0, savedLearningScroll))
-    return () => {
-      cancelAnimationFrame(frame)
-      savedLearningScroll = window.scrollY
-    }
+    const frame = requestAnimationFrame(() => window.scrollTo(0, 0))
+    return () => cancelAnimationFrame(frame)
   }, [])
 
   const term = query.toLocaleLowerCase("hu").normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim()
