@@ -8,9 +8,9 @@ import { DotsThreeIcon } from "@phosphor-icons/react/dist/csr/DotsThree"
 import { PencilSimpleIcon } from "@phosphor-icons/react/dist/csr/PencilSimple"
 import { TrashIcon } from "@phosphor-icons/react/dist/csr/Trash"
 import { MagnifyingGlassIcon } from "@phosphor-icons/react/dist/csr/MagnifyingGlass"
-import { BooksIcon } from "@phosphor-icons/react/dist/csr/Books"
-import { FoldersIcon } from "@phosphor-icons/react/dist/csr/Folders"
-import { PuzzlePieceIcon } from "@phosphor-icons/react/dist/csr/PuzzlePiece"
+import { GraduationCapIcon } from "@phosphor-icons/react/dist/csr/GraduationCap"
+import { FolderIcon } from "@phosphor-icons/react/dist/csr/Folder"
+import { SquaresFourIcon } from "@phosphor-icons/react/dist/csr/SquaresFour"
 import { LightbulbIcon } from "@phosphor-icons/react/dist/csr/Lightbulb"
 import { ChatCircleDotsIcon } from "@phosphor-icons/react/dist/csr/ChatCircleDots"
 import { NotePencilIcon } from "@phosphor-icons/react/dist/csr/NotePencil"
@@ -20,13 +20,15 @@ import { deleteChatSession, notifyChatSessionAction, readChatSessions, renameCha
 export type AppTab = "learn" | "ai" | "files" | "tools" | "profile" | "brainstorm"
 type Props = { activeTab: AppTab; onSelect: (tab: AppTab) => void; avatarImage: string; avatar: string; userName: string; stars?: number; streak?: number; onOpenLeaderboard?: () => void }
 
+/* Each item pairs a web-safe Phosphor glyph with the native SF Symbol name.
+   Apple's original SF Symbol assets must NOT be shipped inside this web app. */
 const quickLinks = [
-  { label: "AI chat", Icon: ChatCircleDotsIcon, target: "ai" },
-  { label: "Témák", Icon: BooksIcon, target: "learn" },
-  { label: "Könyvtár", Icon: FoldersIcon, target: "files" },
-  { label: "Eszközök", Icon: PuzzlePieceIcon, target: "tools" },
-  { label: "Ötletbörze", Icon: LightbulbIcon, target: "brainstorm" },
-  { label: "Profil", Icon: UserCircleIcon, target: "profile" },
+  { label: "AI chat", Icon: ChatCircleDotsIcon, target: "ai", nativeSymbol: "bubble.left.and.bubble.right" },
+  { label: "Témák", Icon: GraduationCapIcon, target: "learn", nativeSymbol: "graduationcap" },
+  { label: "Könyvtár", Icon: FolderIcon, target: "files", nativeSymbol: "folder" },
+  { label: "Eszközök", Icon: SquaresFourIcon, target: "tools", nativeSymbol: "square.grid.2x2" },
+  { label: "Ötletbörze", Icon: LightbulbIcon, target: "brainstorm", nativeSymbol: "lightbulb" },
+  { label: "Profil", Icon: UserCircleIcon, target: "profile", nativeSymbol: "person.crop.circle" },
 ] as const
 
 function dateGroup(timestamp: number) {
@@ -136,7 +138,7 @@ export default function AppTabBar({ activeTab, onSelect, avatarImage, userName }
   return <div className="evo-sidebar-host">
     <button type="button" className="evo-global-profile-button" onClick={onProfile} aria-label={`${userName} profilja`} aria-current={activeTab === "profile" ? "page" : undefined}>{avatarImage ? <img src={avatarImage} alt="" /> : <span className="evo-profile-initials">{usernameInitials}</span>}</button>
     <div className={`evo-morph-anchor ${open ? "is-sidebar-open" : ""}`}>
-      <button ref={trigger} type="button" className="evo-morph-toggle" aria-label={open ? "Menü bezárása" : "Menü megnyitása"} aria-expanded={open} onClick={() => open ? close() : show()}><SidebarSimpleIcon size={24} weight="regular" aria-hidden="true" /></button>
+      <button ref={trigger} type="button" className="evo-morph-toggle" aria-label={open ? "Menü bezárása" : "Menü megnyitása"} aria-expanded={open} onClick={() => open ? close() : show()}><SidebarSimpleIcon size={23} weight="regular" aria-hidden="true" /></button>
     </div>
     {open && <>
       <button className="evo-sidebar-backdrop" type="button" aria-label="Menü bezárása" onClick={() => close()} />
@@ -147,7 +149,7 @@ export default function AppTabBar({ activeTab, onSelect, avatarImage, userName }
             <div className="evo-sidebar-tools"><button type="button" className="evo-sidebar-tool" aria-label="Beszélgetések keresése" aria-expanded={searchOpen} onClick={() => { setSearchOpen(value => !value); setQuery("") }}><MagnifyingGlassIcon size={21} weight="regular" /></button><button type="button" className="evo-sidebar-tool evo-sidebar-close" onClick={() => close()} aria-label="Menü bezárása"><XIcon size={20} weight="regular" /></button></div>
           </div>
           <nav className="evo-sidebar-nav" aria-label="Fő navigáció">
-            {quickLinks.map(({ label, Icon, target }) => <button key={label} type="button" aria-current={activeTab === target ? "page" : undefined} onClick={() => select(target)}><Icon size={22} weight="regular" /><span>{label}</span></button>)}
+            {quickLinks.map(({ label, Icon, target, nativeSymbol }) => <button key={label} type="button" data-native-symbol={nativeSymbol} aria-current={activeTab === target ? "page" : undefined} onClick={() => select(target)}><Icon size={22} weight={activeTab === target ? "fill" : "regular"} aria-hidden="true" /><span>{label}</span></button>)}
           </nav>
           <div className="evo-sidebar-recent-heading"><span>Legutóbbiak</span><button type="button" aria-label="Új beszélgetés" onClick={startNew}><PlusIcon size={19} weight="regular" /></button></div>
           {searchOpen && <label className="evo-sidebar-search"><MagnifyingGlassIcon size={16} weight="regular" /><input autoFocus value={query} onChange={event => setQuery(event.target.value)} placeholder="Keresés a beszélgetésekben" /></label>}
