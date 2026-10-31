@@ -949,7 +949,8 @@ export default function App() {
       'button, a, input, textarea, select, [contenteditable="true"], [role="slider"], [role="dialog"], [data-swipe-exempt], .evo-chat-composer, .evo-chat-popover, .evo-chat-sheet, .evo-iui-root, [data-radix-scroll-area-viewport]'
     )) return
     const touch = event.touches[0]
-    if (touch.clientX < 26 || touch.clientX > window.innerWidth - 26) return
+    // Left 110px belongs to the global sidebar swipe gesture, not tab navigation.
+    if (touch.clientX < 110 || touch.clientX > window.innerWidth - 26) return
     referenceSwipeOrigin.current = { x: touch.clientX, y: touch.clientY }
   }
   const onReferenceSwipeEnd = (event: ReactTouchEvent<HTMLElement>) => {
