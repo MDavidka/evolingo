@@ -536,3 +536,43 @@ html:has(.ref-view-chat)::before {
     background: linear-gradient(180deg, #fff 0%, rgba(255,255,255,.94) 62%, transparent 100%);
   }
 }
+
+
+/* iOS PWA keyboard: keep navigation visible and the composer close to the
+   system keyboard. Do not hide the header when the textarea is focused. */
+html.evo-keyboard-open:has(.ref-view-chat) .ref-view-chat > .ref-topbar {
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  z-index: 45;
+  height: calc(env(safe-area-inset-top, 0px) + 74px);
+  padding-top: calc(env(safe-area-inset-top, 0px) + 10px) !important;
+}
+html.evo-keyboard-open:has(.ref-view-chat) .ref-view-chat > .ref-topbar .ref-profile-shortcut {
+  display: grid !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+}
+html.evo-keyboard-open:has(.ref-view-chat) .evo-sidebar-host .evo-morph-anchor {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+  top: calc(env(safe-area-inset-top, 0px) + 10px);
+}
+html.evo-keyboard-open:has(.ref-view-chat) .evo-chat-frame {
+  --evo-chat-bottom-pad: 0px;
+}
+html.evo-keyboard-open:has(.ref-view-chat) .ref-view-chat .evo-chat-bottom {
+  padding-top: 6px !important;
+  padding-bottom: 2px !important;
+}
+html.evo-keyboard-open:has(.ref-view-chat) .ref-view-chat .evo-chat-thread {
+  padding-bottom: 12px;
+}
+html.evo-keyboard-open:has(.ref-view-chat) .ref-view-chat .evo-chat-composer {
+  min-height: 54px !important;
+  padding-top: 5px !important;
+  padding-bottom: 5px !important;
+}
