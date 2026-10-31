@@ -1,8 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
 import { validateAttachment, type ChatAttachment } from "../../chat-attachments"
-import { parseModelUI, type IntelligentUI } from "../../intelligent-ui/schema"
-import { projectVisualResponse } from "../../intelligent-ui/visual-policy"
-import { classifyVisualIntent, getVisualSelectionHint, shouldPlanVisuals, VISUAL_CAPABILITIES } from "../../intelligent-ui/orchestrator"
 
 export const runtime = "nodejs"
 export const dynamic = "force-dynamic"
@@ -22,8 +19,6 @@ function fail(error: string, status: number) {
 }
 
 
-/** Intelligent UI is an optional progressive enhancement, not an executable model response. */
-const UI_ENABLED = false // General chat only: no in-app visual or learning integrations.
 const replyPrompt = [
   "Általános célú, segítőkész AI-asszisztens vagy az Evölingo alkalmazásban.",
   "Válaszolj a felhasználó nyelvén, természetesen és pontosan. Nem vagy külön tutor, és nincs alapértelmezett tantárgyi szereped.",
@@ -32,88 +27,6 @@ const replyPrompt = [
   "Nincs hozzáférésed az alkalmazás leckéihez, feladataihoz, Ötletbörzéjéhez, Könyvtárához, barátaihoz vagy haladási adataihoz.",
   "Ne állítsd, hogy alkalmazásbeli műveleteket végeztél. Ne készíts interaktív UI-utasításokat.",
 ].join(" ")
-
-const uiInstructions = [
-  'Csak érvényes JSON objektumot adj meg, markdown vagy kód nélkül.',
-  'A felhasználói kérés és az asszisztens válasza alapján válassz 1-2 releváns vizuális UI elemet, ha egy ábra, kép, élő óra, fogalomkártya vagy diagram segít. Általános tudáskérdésekhez is használj vizuális magyarázatot; ne csak nyelvtanhoz. Ha a válasz nagyon rövid vagy a vizualizáció félrevezető lenne, legyen üres tömb.',
-  'Gyökér: {"version":"1","blocks":[]}. Csak a version és blocks kulcsok használhatók.',
-  'Minden blokknál pontosan id, type és props kulcs szerepeljen. Az id csak angol betűt, számot vagy kötőjelet tartalmazzon.',
-  'Megengedett blokkok formátumai:',
-  '{"id":"rule-1","type":"grammar_rule","props":{"title":"Cím","rule":"Rövid szabály","examples":["Angol példamondat."]}}',
-  '{"id":"quiz-1","type":"quiz_choice","props":{"question":"Melyik helyes?","choices":["A","B"],"correctIndex":0,"explanation":"Magyarázat"}}',
-  '{"id":"vocab-1","type":"vocabulary_flashcard","props":{"title":"Szókincs","cards":[{"front":"English","back":"magyar","example":"English example"}]}}',
-  '{"id":"compare-1","type":"comparison_table","props":{"title":"Összehasonlítás","columns":["A","B"],"rows":[{"label":"Szempont","left":"A értéke","right":"B értéke"}]}}',
-  '{"id":"timeline-1","type":"tense_timeline","props":{"title":"Idővonal","steps":[{"phase":"past","label":"Múlt","detail":"Esemény"},{"phase":"present","label":"Jelen","detail":"Eredmény"}]}}',
-  '{"id":"plan-1","type":"study_plan","props":{"title":"Heti terv","days":[{"day":"Hétfő","task":"15 perc tanulás"}]}}',
-  '{"id":"concept-1","type":"concept_card","props":{"title":"Fontos szabály","description":"Rövid, hasznos magyarázat.","icon":"idea","badge":"Tipp"}}',
-  '{"id":"chart-1","type":"chart_card","props":{"title":"Példa grafikon","chartType":"bar","source":"example","unit":"pont","points":[{"label":"A","value":8},{"label":"B","value":13}]}}',
-  '{"id":"eu-1","type":"illustration","props":{"subject":"european_union","title":"Európai Unió","caption":"Az EU zászlaja tizenkét csillaggal."}}',
-  '{"id":"clock-1","type":"live_time","props":{"title":"Pontos idő","timeZone":"Europe/Bucharest","label":"Románia"}}',
-  'Az illustration csak european_union subject értékkel megengedett. A kép előre jóváhagyott forrásból származik; ne készíts kép-URL-t. Más témához válassz fogalomkártyát, összehasonlítást vagy idővonalat.',
-  'A live_time csak Europe/Bucharest, Europe/London, Europe/Paris vagy UTC időzónát használhat. Az óra böngészőben frissül, ezért ne generálj hamis pillanatnyi időpontot.',
-  'chartType csak bar, line vagy donut lehet. A forrás mindig source: example, és a kártya szemléltető adatok feliratot kap. Csak akkor kérj grafikont, ha a felhasználó példadiagramot vagy összehasonlító számsort kér.',
-  'SOHA ne állítsd, hogy a modell személyes tanulási haladási statisztikákat ismer. Nincs jogosultság hitelesített értékek előállítására. A chart_card source: verified kizárólag a kliens megbízható adataiból keletkezhet.',
-  'A study_calculator kizárólag tanulásiidő-kalkulációhoz használható. Példa: {"id":"calc-1","type":"study_calculator","props":{"title":"Tanulási idő kiszámítása","dailyMinutes":30,"daysPerWeek":5,"weeks":4}}. A napi percek csak 5-ösével választhatók 5 és 120 között, a napok 1-7, a hetek 1-12 között. Az alkalmazás számol, ne generálj futtatható képletet.',
-  'Kizárólag az engedélyezett blokkokat választhatod: '+VISUAL_CAPABILITIES.join(', ')+'.',
-  'A progress_bars típus NEM engedélyezett a modell számára, mert hitelesített felhasználói adatot igényel.',
-  'Ne adj meg HTML-t, JS-t, JSX-et, URL-t, külső műveleteket, szerverhívásokat vagy személyes statisztikákat. Kizárólag valóban releváns vizuális elemet adj.',
-  'Legfeljebb 12 tanulókártya, 8 összehasonlító sor, 7 nap, 5 válasz, 5 lépés és 5 példamondat legyen.',
-  'Minden UI-szöveg magyar legyen (kivéve a tanult nyelvű példákat). A JSON legyen rövid és a kvíz helyes válasza pontos.',
-].join("\n")
-
-async function providerCompletion(apiKey: string, messages: Message[], system: string, maxTokens: number, timeout: number): Promise<string> {
-  const response = await fetch(API_URL, {
-    method: "POST",
-    headers: { Authorization: "Bearer " + apiKey, "Content-Type": "application/json" },
-    body: JSON.stringify({ model: MODEL, messages: [{ role: "system", content: system }, ...messages], temperature: 0.5, max_tokens: maxTokens, stream: false, ...(MODEL.startsWith("nvidia/nemotron-3.5-") ? { chat_template_kwargs: { enable_thinking: false } } : {}) }),
-    cache: "no-store",
-    signal: AbortSignal.timeout(timeout),
-  })
-  if (!response.ok) {
-    console.error("[chat] AI provider status", response.status)
-    throw new Error(response.status === 429 ? "Az AI jelenleg túlterhelt." : response.status === 410 || response.status === 404 ? "A modell nem érhető el." : "Az AI szolgáltatás nem érhető el.")
-  }
-  const result = await response.json() as { choices?: Array<{ message?: { content?: unknown } }> }
-  const value = result.choices?.[0]?.message?.content
-  const answer = typeof value === "string" ? value : Array.isArray(value) ? value.map(part => part && typeof part === "object" && "text" in part ? String(part.text) : "").join("") : ""
-  if (!answer.trim() || answer.length > 30000) throw new Error("Az AI nem adott értelmezhető választ.")
-  return answer.trim()
-}
-
-function generalVisualFallback(question: string): IntelligentUI | null {
-  const intent = classifyVisualIntent(question)
-  if (intent === "illustration") return { version: "1", blocks: [{
-    id: "eu-illustration", type: "illustration",
-    props: { subject: "european_union", title: "Az Európai Unió",
-      caption: "A kék zászlón tizenkét aranycsillag alkot kört. A csillagok száma nem a tagállamok számát jelöli." },
-  }] }
-  if (intent === "live_time") return { version: "1", blocks: [{
-    id: "live-clock", type: "live_time",
-    props: { title: "Pontos idő", timeZone: "Europe/Bucharest", label: "Románia" },
-  }] }
-  return null
-}
-
-async function optionalUI(apiKey: string, question: string, reply: string): Promise<IntelligentUI | null> {
-  if (!UI_ENABLED || !shouldPlanVisuals(question)) return null
-  const curated = generalVisualFallback(question)
-  if (curated) return curated
-  const prompt = "Kérés: " + question.slice(0, 1100) + "\nVálasz: " + reply.slice(0, 2300) + "\nJavasolt megjelenítés: " + getVisualSelectionHint(question) + "\nCsak JSON legyen az eredmény."
-  try {
-    const raw = await providerCompletion(apiKey, [{ role: "user", content: prompt }], uiInstructions, 1300, 8000)
-    const parsed = parseModelUI(raw)
-    const guaranteed = generalVisualFallback(question)
-    if (guaranteed) return guaranteed
-    if (parsed) return parsed.blocks.length ? parsed : null
-    // Bounded retry on schema failure, never a second request on a valid empty result.
-    const retry = await providerCompletion(apiKey, [{ role: "user", content: prompt + "\nAz előző válasz formátuma hibás volt. Javítsd ki a JSON-szerkezetet, egyéb szöveg nélkül." }], uiInstructions, 900, 4000)
-    const safe = parseModelUI(retry)
-    return safe?.blocks.length ? safe : generalVisualFallback(question)
-  } catch (error) {
-    console.error("[chat] optional UI unavailable", error instanceof Error ? error.name : "unknown")
-    return generalVisualFallback(question)
-  }
-}
 
 /** Relays provider text deltas only, never reasoning_content or model-generated code. */
 async function streamProviderText(
@@ -199,6 +112,7 @@ function withAttachment(messages: Message[], attachment: ChatAttachment | null):
   return result
 }
 
+/** General-purpose text-only streaming; no learning UI or in-app data exchange. */
 function makeStream(apiKey: string, messages: Message[], attachment: ChatAttachment | null, system: string) {
   const providerMessages = withAttachment(messages, attachment)
   const encoder = new TextEncoder()
@@ -207,31 +121,12 @@ function makeStream(apiKey: string, messages: Message[], attachment: ChatAttachm
       const emit = (type: string, data: Record<string, unknown> = {}) =>
         controller.enqueue(encoder.encode("data: " + JSON.stringify({ type, ...data }) + "\n\n"))
       try {
-        const question = messages[messages.length - 1].content
-        // For quiz requests, keep the answer entirely on the server until
-        // submission. Even the streamed prose must not reveal the solution.
-        if (UI_ENABLED && classifyVisualIntent(question) === "quiz") {
-          const planned = await optionalUI(apiKey, question,
-            "Készíts ellenőrizhető, helyes válaszú feleletválasztós kvízt a felhasználó témájából.")
-          const safe = planned ? projectVisualResponse(planned) : null
-          const questions = safe?.blocks.filter(block => block.type === "quiz_choice") ?? []
-          if (questions.length) {
-            emit("text", { reply: "Válassz a gyakorlókérdés lehetőségei közül. A megoldás ellenőrzés után jelenik meg." })
-            emit("ui", { ui: { version: "1", blocks: questions } })
-          } else {
-            emit("text", { reply: "Most nem sikerült ellenőrizhető kvízt készíteni. Próbáld újra, vagy kérj szöveges magyarázatot." })
-          }
-          emit("done")
-          return
-        }
         const reply = await streamProviderText(apiKey, providerMessages, delta => emit("delta", { delta }), system)
         emit("text", { reply })
-        const ui = await optionalUI(apiKey, messages[messages.length - 1].content, reply)
-        const publicUI = ui ? projectVisualResponse(ui) : null
-        if (publicUI?.blocks.length) emit("ui", { ui: publicUI })
         emit("done")
       } catch (error) {
         emit("error", { error: error instanceof Error ? error.message : "Hálózati hiba történt." })
+        emit("done")
       } finally {
         controller.close()
       }
