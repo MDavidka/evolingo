@@ -425,3 +425,37 @@ body:has(.ref-view-chat) { touch-action: pan-y; background: transparent !importa
 .evo-chat-mode-option > svg:last-child { margin-left:auto; }
 .evo-chat-sheet-empty { padding:14px 8px; color:#72757d; font-size:14px; }
 @media (min-width:700px) { .evo-chat-sheet-backdrop { align-items:center; } }
+
+/* AI homepage polish: quiet white canvas, restrained cool fade at the bottom. */
+html:has(.ref-view-chat)::before {
+  background: linear-gradient(180deg, #fff 0%, #fff 31%, #fafbfe 49%, #e7eaf2 70%, #a5b2cd 100%) !important;
+}
+.ref-view-chat .evo-chat-bottom {
+  padding-inline: 16px !important;
+}
+.ref-view-chat .evo-composer-surface {
+  width: min(100%, 468px) !important;
+  max-width: 100%;
+  border-radius: 999px !important;
+}
+.ref-view-chat .evo-chat-composer {
+  border: 1px solid #d9dce4 !important;
+  background: rgba(255,255,255,.98) !important;
+  box-shadow: 0 4px 22px rgba(38,48,72,.12), inset 0 1px 0 #fff !important;
+}
+.ref-view-chat .evo-chat-composer:focus-within {
+  border-color: #a6aab4 !important;
+  box-shadow: 0 4px 22px rgba(38,48,72,.12), 0 0 0 3px rgba(38,48,72,.045) !important;
+}
+.ref-view-chat .evo-chat-composer textarea::placeholder { color: #92949b !important; }
+.ref-view-chat .evo-chat-model:hover { color: #111318 !important; }
+.ref-view-chat .evo-chat-attach:focus-visible,
+.ref-view-chat .evo-chat-model:focus-visible,
+.ref-view-chat .evo-chat-send:focus-visible { outline: 2px solid #24252b; outline-offset: 2px; }
+@media (max-width: 480px) {
+  .ref-view-chat .evo-chat-bottom { padding-inline: 16px !important; }
+  .ref-view-chat .evo-chat-composer { min-height: 58px !important; }
+}
+@media (max-width: 360px) {
+  .ref-view-chat .evo-chat-bottom { padding-inline: 12px !important; }
+}
