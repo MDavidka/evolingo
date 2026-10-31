@@ -171,3 +171,28 @@
 @media (prefers-reduced-motion: reduce) {
   .evo-sidebar-host .evo-sidebar-nav button { transition: none !important; }
 }
+
+/* Attribution for the authentic Streamline Flex Remix free assets.
+   Always reachable from the global sidebar without crowding navigation. */
+.evo-sidebar-host .evo-sidebar-footer {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
+}
+.evo-sidebar-host .evo-sidebar-icon-credit {
+  display: block;
+  min-height: 30px;
+  padding: 5px 4px;
+  border-radius: 8px;
+  color: #777980;
+  font-size: 11px;
+  line-height: 1.5;
+  text-align: center;
+  text-decoration: none;
+}
+.evo-sidebar-host .evo-sidebar-icon-credit:hover { text-decoration: underline; }
+.evo-sidebar-host .evo-sidebar-icon-credit:focus-visible {
+  outline: 2px solid #202127;
+  outline-offset: 2px;
+}
