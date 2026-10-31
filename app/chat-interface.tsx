@@ -1,7 +1,16 @@
 "use client"
 
 import { useEffect, useRef, useState, type FormEvent, type KeyboardEvent } from "react"
-import { ArrowUp, Check, Copy, Plus, Camera, Image as ImageIcon, FileText, Mic, X } from "lucide-react"
+import { mage } from "./mage-icons"
+const ArrowUp = mage("arrow-up")
+const Check = mage("check")
+const Copy = mage("copy")
+const Plus = mage("plus")
+const Camera = mage("camera")
+const ImageIcon = mage("image")
+const FileText = mage("file")
+const Mic = mage("microphone")
+const X = mage("x")
 import { Button as AppsButton } from "@openai/apps-sdk-ui/components/Button"
 import ChatRichText from "./chat-rich-text"
 import { MAX_IMAGE_BYTES, MAX_TEXT_BYTES, IMAGE_TYPES, TEXT_EXTENSIONS, type ChatAttachment } from "./chat-attachments"
