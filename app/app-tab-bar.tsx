@@ -41,6 +41,7 @@ function dateGroup(timestamp: number) {
 
 export default function AppTabBar({ activeTab, onSelect, avatarImage, userName }: Props) {
   const [open, setOpen] = useState(false)
+  const [renderSidebar, setRenderSidebar] = useState(false)
   const [chats, setChats] = useState<ChatSession[]>([])
   const [menuFor, setMenuFor] = useState<string | null>(null)
   const [searchOpen, setSearchOpen] = useState(false)
@@ -60,6 +61,7 @@ export default function AppTabBar({ activeTab, onSelect, avatarImage, userName }
   }, [])
   const show = useCallback(() => {
     document.querySelector<HTMLTextAreaElement>(".ref-view-chat textarea")?.blur()
+    setRenderSidebar(true)
     setOpen(true)
   }, [])
 
@@ -78,7 +80,7 @@ export default function AppTabBar({ activeTab, onSelect, avatarImage, userName }
       const touch = event.touches[0]
       const inside = !!target.closest(".evo-sidebar")
       if (!openRef.current && (touch.clientX < 24 || touch.clientX > 100)) return
-      if (openRef.current && !inside) return
+      if (openRef.current && !inside && !target.closest(".evo-sidebar-backdrop")) return
       swipeStart.current = { x: touch.clientX, y: touch.clientY, targetInPanel: inside }
     }
     const onTouchEnd = (event: globalThis.TouchEvent) => {
@@ -90,7 +92,7 @@ export default function AppTabBar({ activeTab, onSelect, avatarImage, userName }
       const dy = touch.clientY - start.y
       if (Math.abs(dy) > 55 || Math.abs(dx) < 75 || Math.abs(dx) < Math.abs(dy) * 1.6) return
       if (!openRef.current && dx > 0) show()
-      else if (openRef.current && start.targetInPanel && dx < 0) close()
+      else if (openRef.current && dx < 0) close()
     }
     const onTouchCancel = () => { swipeStart.current = null }
     const onEscape = (event: KeyboardEvent) => { if (event.key === "Escape" && openRef.current) close() }
@@ -118,6 +120,24 @@ export default function AppTabBar({ activeTab, onSelect, avatarImage, userName }
     }
   }, [open])
 
+  // Keep the underlying navigation mounted until the foreground sheet has
+  // completed its return animation; remove both classes on unmount.
+  useEffect(() => {
+    document.documentElement.classList.toggle("evo-sidebar-layer-open", open)
+    return () => document.documentElement.classList.remove("evo-sidebar-layer-open")
+  }, [open])
+
+  useEffect(() => {
+    document.documentElement.classList.toggle("evo-sidebar-layer-active", renderSidebar)
+    const timer = renderSidebar && !open
+      ? window.setTimeout(() => setRenderSidebar(false), 380)
+      : undefined
+    return () => {
+      if (timer !== undefined) window.clearTimeout(timer)
+      document.documentElement.classList.remove("evo-sidebar-layer-active")
+    }
+  }, [open, renderSidebar])
+
   const trapFocus = (event: ReactKeyboardEvent<HTMLElement>) => {
     if (event.key !== "Tab" || !dialog.current) return
     const items = [...dialog.current.querySelectorAll<HTMLElement>('button:not([disabled]), a[href], input:not([disabled]), [tabindex]:not([tabindex="-1"])')]
@@ -138,11 +158,11 @@ export default function AppTabBar({ activeTab, onSelect, avatarImage, userName }
   return <div className="evo-sidebar-host">
     <button type="button" className="evo-global-profile-button" onClick={onProfile} aria-label={`${userName} profilja`} aria-current={activeTab === "profile" ? "page" : undefined}>{avatarImage ? <img src={avatarImage} alt="" /> : <span className="evo-profile-initials">{usernameInitials}</span>}</button>
     <div className={`evo-morph-anchor ${open ? "is-sidebar-open" : ""}`}>
-      <button ref={trigger} type="button" className="evo-morph-toggle" aria-label={open ? "Menü bezárása" : "Menü megnyitása"} aria-expanded={open} onClick={() => open ? close() : show()}><SidebarSimpleIcon size={24} weight="regular" aria-hidden="true" /></button>
+      <button ref={trigger} type="button" className="evo-morph-toggle" aria-label={open ? "Menü bezárása" : "Menü megnyitása"} aria-expanded={open} aria-controls="evo-global-sidebar" onClick={() => open ? close() : show()}><SidebarSimpleIcon size={24} weight="regular" aria-hidden="true" /></button>
     </div>
-    {open && <>
-      <button className="evo-sidebar-backdrop" type="button" aria-label="Menü bezárása" onClick={() => close()} />
-      <aside ref={dialog} className="evo-sidebar" role="dialog" aria-modal="true" aria-label="Menü" onKeyDown={trapFocus} >
+    {renderSidebar && <>
+      <button className={`evo-sidebar-backdrop ${open ? "" : "is-closing"}`} type="button" aria-label="Menü bezárása" onClick={() => close()} />
+      <aside id="evo-global-sidebar" ref={dialog} className={`evo-sidebar ${open ? "" : "is-closing"}`} role="dialog" aria-modal={open} aria-hidden={!open} aria-label="Menü" onKeyDown={trapFocus} >
         <div className="evo-sidebar-safe">
           <div className="evo-sidebar-heading">
             <strong className="evo-sidebar-brand">Evölingo</strong>
