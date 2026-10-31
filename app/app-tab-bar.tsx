@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useEffect, useRef, useState, type KeyboardEvent as ReactKeyboardEvent, type TouchEvent as ReactTouchEvent } from "react"
+import { useCallback, useEffect, useRef, useState, type KeyboardEvent as ReactKeyboardEvent } from "react"
 import { SidebarSimpleIcon, XIcon, PlusIcon, DotsThreeIcon, PencilSimpleIcon, TrashIcon, MagnifyingGlassIcon, BooksIcon, FoldersIcon, PuzzlePieceIcon, LightbulbIcon, ChatCircleDotsIcon, NotePencilIcon, UserCircleIcon } from "@phosphor-icons/react"
 import { deleteChatSession, notifyChatSessionAction, readChatSessions, renameChatSession, type ChatSession } from "./chat-sessions"
 
@@ -126,12 +126,12 @@ export default function AppTabBar({ activeTab, onSelect, avatarImage, userName }
       <button ref={trigger} type="button" className="evo-morph-toggle" aria-label={open ? "Menü bezárása" : "Menü megnyitása"} aria-expanded={open} onClick={() => open ? close() : show()}><SidebarSimpleIcon size={24} weight="regular" aria-hidden="true" /></button>
     </div>
     {open && <>
-      <button className="evo-sidebar-backdrop" type="button" aria-label="Menü bezárása" onClick={close} />
+      <button className="evo-sidebar-backdrop" type="button" aria-label="Menü bezárása" onClick={() => close()} />
       <aside ref={dialog} className="evo-sidebar" role="dialog" aria-modal="true" aria-label="Menü" onKeyDown={trapFocus} >
         <div className="evo-sidebar-safe">
           <div className="evo-sidebar-heading">
             <strong className="evo-sidebar-brand">Evölingo</strong>
-            <div className="evo-sidebar-tools"><button type="button" className="evo-sidebar-tool" aria-label="Beszélgetések keresése" aria-expanded={searchOpen} onClick={() => { setSearchOpen(value => !value); setQuery("") }}><MagnifyingGlassIcon size={21} weight="regular" /></button><button type="button" className="evo-sidebar-tool evo-sidebar-close" onClick={close} aria-label="Menü bezárása"><XIcon size={20} weight="regular" /></button></div>
+            <div className="evo-sidebar-tools"><button type="button" className="evo-sidebar-tool" aria-label="Beszélgetések keresése" aria-expanded={searchOpen} onClick={() => { setSearchOpen(value => !value); setQuery("") }}><MagnifyingGlassIcon size={21} weight="regular" /></button><button type="button" className="evo-sidebar-tool evo-sidebar-close" onClick={() => close()} aria-label="Menü bezárása"><XIcon size={20} weight="regular" /></button></div>
           </div>
           <nav className="evo-sidebar-nav" aria-label="Fő navigáció">
             {quickLinks.map(({ label, Icon, target }) => <button key={label} type="button" aria-current={activeTab === target ? "page" : undefined} onClick={() => select(target)}><Icon size={22} weight="regular" /><span>{label}</span></button>)}
