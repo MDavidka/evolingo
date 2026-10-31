@@ -310,11 +310,11 @@ export default function LibrarySpace() {
   return <div className="ref-space library-space">
     <input ref={filePicker} className="ref-hidden-file" type="file" multiple aria-label="Fájl kiválasztása" onChange={uploadFile} />
 
-    <label className="library-search">
+    <div className="library-search" role="search">
       <Search size={20} strokeWidth={1.8} aria-hidden="true" />
       <input ref={searchInput} type="search" value={query} onChange={event => setQuery(event.target.value)} onKeyDown={event => { if (event.key === "Escape") setQuery("") }} placeholder="Fájlok és mappák keresése" aria-label="Keresés a könyvtárban" enterKeyHint="search" autoComplete="off" />
       {query && <button type="button" aria-label="Keresés törlése" onClick={() => { setQuery(""); searchInput.current?.focus() }}><X size={16} /></button>}
-    </label>
+    </div>
 
     <div className="library-toolbar">
       <div className="library-location">
