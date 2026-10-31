@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState, type ChangeEvent, type PointerEvent as ReactPointerEvent } from "react"
 import { mage } from "./mage-icons"
+import { QrCode } from "lucide-react"
 const ArrowDownToLine = mage("arrow-down")
 const ArrowUpRight = mage("arrow-up-right")
 const Check = mage("check")
@@ -29,7 +30,7 @@ const X = mage("x")
 type FileKind = "folder" | "pdf" | "note"
 type SpaceEntry = { id: string; name: string; detail: string; kind: FileKind; parent?: string; size?: number; modifiedAt?: number }
 type SortKey = "name" | "date" | "size" | "type"
-type Sheet = "new" | "view" | "sort" | "actions" | "rename" | "move" | "delete" | "preview" | null
+type Sheet = "new" | "view" | "sort" | "actions" | "rename" | "move" | "delete" | "preview" | "storage" | "qr" | null
 
 const ENTRIES_KEY = "evolingo.space.v1"
 const BLOBS_KEY = "evolingo.space-blobs.v1"
@@ -41,6 +42,21 @@ const SORT_LABELS: Record<SortKey, string> = {
 }
 const normalizeSearch = (value: string) =>
   value.toLocaleLowerCase("hu-HU").normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim()
+
+// The QR shortcut accepts only safe, ordinary HTTPS links.
+function safeQrUrl(value: string): string | null {
+  try {
+    const url = new URL(value.trim())
+    if (url.protocol !== "https:" || url.username || url.password ||
+      url.hostname === "localhost" || url.hostname.endsWith(".local") ||
+      url.hostname.endsWith(".internal") || /^\d{1,3}(?:\.\d{1,3}){3}$/.test(url.hostname)) return null
+    return url.toString()
+  } catch { return null }
+}
+
+type QrDetector = new (options: { formats: string[] }) => {
+  detect(source: ImageBitmap): Promise<Array<{ rawValue?: string }>>
+}
 
 function readBlobs() {
   try { return JSON.parse(localStorage.getItem(BLOBS_KEY) || "{}") as Record<string, string> } catch { return {} }
@@ -68,6 +84,7 @@ function FileIcon({ kind, size = 23 }: { kind: FileKind; size?: number }) {
 
 export default function LibrarySpace() {
   const filePicker = useRef<HTMLInputElement>(null)
+  const qrPicker = useRef<HTMLInputElement>(null)
   const searchInput = useRef<HTMLInputElement>(null)
   const sheetRef = useRef<HTMLDivElement>(null)
   const longPress = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -88,6 +105,8 @@ export default function LibrarySpace() {
   const [loading, setLoading] = useState(true)
   const [storageUsed, setStorageUsed] = useState<number | null>(null)
   const [storageTotal, setStorageTotal] = useState<number | null>(null)
+  const [qrValue, setQrValue] = useState("")
+  const [qrError, setQrError] = useState("")
   useEffect(() => {
     try {
       const v = localStorage.getItem(VIEW_KEY)
@@ -157,6 +176,12 @@ export default function LibrarySpace() {
   }
 
   const folderName = folder ? entries.find(item => item.id === folder)?.name || "Saját fájlok" : "Saját fájlok"
+  const folderCounts = useMemo(() => {
+    const counts = new Map<string, number>()
+    for (const entry of entries) if (entry.parent) counts.set(entry.parent, (counts.get(entry.parent) || 0) + 1)
+    return counts
+  }, [entries])
+  const localBytes = useMemo(() => entries.reduce((sum, entry) => sum + (entry.kind === "folder" ? 0 : (entry.size || 0)), 0), [entries])
   const normalizedQuery = normalizeSearch(query)
   const visible = useMemo(() => entries
     .filter(item => normalizedQuery ? normalizeSearch(item.name).includes(normalizedQuery) : item.parent === (folder || undefined))
@@ -325,24 +350,61 @@ export default function LibrarySpace() {
   const openRename = () => { if (active) setDraftName(active.name); setSheet("rename") }
   const folders = entries.filter(item => item.kind === "folder" && item.id !== active?.id && (active?.kind !== "folder" || !isDescendantOf(item.id, active.id)))
   const hasRealStorage = storageUsed != null && storageTotal != null && storageTotal > 0
+  const usagePercent = hasRealStorage ? Math.min(100, Math.max(0, (storageUsed! / storageTotal!) * 100)) : null
+
+  const importQrImage = async (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    event.target.value = ""
+    if (!file) return
+    setQrError("")
+    if (!file.type.startsWith("image/") || file.size > 10 * 1024 * 1024) {
+      setQrError("Válassz egy legfeljebb 10 MB méretű képet.")
+      return
+    }
+    const Detector = (window as Window & { BarcodeDetector?: QrDetector }).BarcodeDetector
+    if (!Detector || typeof createImageBitmap !== "function") {
+      setQrError("Ez a böngésző nem támogatja a QR-kódok képből történő felismerését. A hivatkozást kézzel is beillesztheted.")
+      return
+    }
+    let bitmap: ImageBitmap | null = null
+    try {
+      bitmap = await createImageBitmap(file)
+      const values = await new Detector({ formats: ["qr_code"] }).detect(bitmap)
+      const code = values.find(item => item.rawValue)?.rawValue
+      if (!code) { setQrError("A kiválasztott képen nem található felismerhető QR-kód."); return }
+      setQrValue(code)
+      if (!safeQrUrl(code)) setQrError("A beolvasott kód nem tartalmaz megnyitható HTTPS-hivatkozást.")
+    } catch {
+      setQrError("A QR-kódot nem sikerült beolvasni. Próbálj másik képet.")
+    } finally {
+      bitmap?.close()
+    }
+  }
+  const openQr = () => { setQrValue(""); setQrError(""); setSheet("qr") }
 
   return <div className="ref-space library-space">
     <input ref={filePicker} className="ref-hidden-file" type="file" multiple aria-label="Fájl kiválasztása" onChange={uploadFile} />
+    <input ref={qrPicker} className="ref-hidden-file" type="file" accept="image/*" aria-label="QR-kód képfájl kiválasztása" onChange={event => { void importQrImage(event) }} />
 
     <div className="library-search" role="search">
       <Search size={20} strokeWidth={1.8} aria-hidden="true" />
-      <input ref={searchInput} type="search" value={query} onChange={event => setQuery(event.target.value)} onKeyDown={event => { if (event.key === "Escape") setQuery("") }} placeholder="Fájlok és mappák keresése" aria-label="Keresés a könyvtárban" enterKeyHint="search" autoComplete="off" />
+      <input ref={searchInput} type="search" value={query} onChange={event => setQuery(event.target.value)} onKeyDown={event => { if (event.key === "Escape") setQuery("") }} placeholder="Alkalmazások keresése" aria-label="Fájlok és mappák keresése" enterKeyHint="search" autoComplete="off" />
       {query && <button type="button" aria-label="Keresés törlése" onClick={() => { setQuery(""); searchInput.current?.focus() }}><X size={16} /></button>}
     </div>
 
     <div className="library-toolbar">
-      <div className="library-location">
-        {folder && <button className="library-back" type="button" aria-label="Vissza az előző mappába" onClick={() => setFolder(entries.find(item => item.id === folder)?.parent || null)}><ChevronLeft size={19} aria-hidden="true" /></button>}
+      {folder ? <div className="library-location">
+        <button className="library-back" type="button" aria-label="Vissza az előző mappába" onClick={() => setFolder(entries.find(item => item.id === folder)?.parent || null)}><ChevronLeft size={20} aria-hidden="true" /></button>
         <h1 title={folderName}>{folderName}</h1>
-      </div>
+      </div> : <div className="library-quick-actions">
+        <button className="library-quick-button" type="button" aria-label="Tárhely áttekintése" aria-haspopup="dialog" onClick={() => setSheet("storage")}>
+          <span className="library-storage-ring" style={usagePercent === null ? undefined : { background: `conic-gradient(#5e5e62 ${usagePercent}%, #dedee1 0)` }} aria-hidden="true"><span /></span>
+        </button>
+        <button className="library-quick-button" type="button" aria-label="QR-kód beolvasása" aria-haspopup="dialog" onClick={openQr}><QrCode size={24} strokeWidth={1.75} aria-hidden="true" /></button>
+      </div>}
       <div className="library-toolbar-actions">
-        <button className="library-view-button" type="button" aria-label="Nézet és rendezés" aria-haspopup="dialog" onClick={() => setSheet("view")}>{view === "list" ? <Grid2X2 size={21} strokeWidth={1.9} aria-hidden="true" /> : <List size={22} strokeWidth={1.9} aria-hidden="true" />}</button>
-        <button className="library-add-primary" type="button" aria-label="Új fájl vagy mappa hozzáadása" onClick={() => { setDraftName(""); setSheet("new") }}><Plus size={18} strokeWidth={1.9} aria-hidden="true" /><span>Új</span></button>
+        <button className="library-view-button" type="button" aria-label="Nézet és rendezés" aria-haspopup="dialog" onClick={() => setSheet("view")}>{view === "list" ? <Grid2X2 size={22} strokeWidth={1.85} aria-hidden="true" /> : <List size={22} strokeWidth={1.85} aria-hidden="true" />}</button>
+        <button className="library-add-primary" type="button" aria-label="Új fájl vagy mappa hozzáadása" onClick={() => { setDraftName(""); setSheet("new") }}><Plus size={20} strokeWidth={1.85} aria-hidden="true" /><span>Új</span></button>
       </div>
     </div>
     {normalizedQuery && <p className="library-results-status" aria-live="polite">{visible.length} találat</p>}
@@ -357,33 +419,44 @@ export default function LibrarySpace() {
       {visible.map(entry => <article className={`library-file ${selected.has(entry.id) ? "is-selected" : ""}`} key={entry.id}>
         <button className="library-file-open" type="button" aria-label={selectionMode ? `${entry.name} kijelölése` : entry.kind === "folder" ? `${entry.name} mappa megnyitása` : `${entry.name} előnézete`} aria-pressed={selectionMode ? selected.has(entry.id) : undefined} onPointerDown={event => beginLongPress(entry, event)} onPointerMove={moveLongPress} onPointerUp={cancelLongPress} onPointerCancel={cancelLongPress} onPointerLeave={cancelLongPress} onClick={() => openEntry(entry)}>
           <span className="library-file-icon"><FileIcon kind={entry.kind} /></span>
-          <span className="library-file-copy"><strong title={entry.name}>{entry.name}</strong><small>{entry.kind === "folder" ? `${entries.filter(item => item.parent === entry.id).length} elem` : `${formatSize(entry.size)} · ${formatDate(entry.modifiedAt)}`}</small></span>
+          <span className="library-file-copy"><strong title={entry.name}>{entry.name}</strong><small>{entry.kind === "folder" ? `${folderCounts.get(entry.id) || 0} elem` : `${formatSize(entry.size)} · ${formatDate(entry.modifiedAt)}`}</small></span>
           {selectionMode && <span className="library-check" aria-hidden="true">{selected.has(entry.id) && <Check size={15} />}</span>}
         </button>
         {!selectionMode && <button className="library-file-more" type="button" aria-label={`${entry.name} műveletei`} onClick={() => openActions(entry)}><MoreHorizontal size={21} /></button>}
       </article>)}
+    </div> : !folder && !query ? <div className="library-empty library-empty--quiet" role="status">
+      <span className="library-visually-hidden">A Könyvtár üres. Az Új gombbal létrehozhatsz mappát vagy feltölthetsz fájlt.</span>
     </div> : <div className="library-empty">
-      <FolderOpen size={48} strokeWidth={1.5} />
-      <h2>{query ? "Nincs találat" : folder ? "Ez a mappa üres" : "Még nincsenek fájljaid"}</h2>
-      <p>{query ? "Próbálj más kifejezést, vagy töröld a keresést." : "Tölts fel egy dokumentumot, vagy rendezd mappákba a fájljaidat."}</p>
-      {query ? <button className="library-empty-clear" type="button" onClick={() => setQuery("")}>Keresés törlése</button> : <div className="library-empty-actions">
-        <button className="library-empty-upload evo-wide-action" type="button" onClick={() => filePicker.current?.click()}>Fájl feltöltése <ArrowUpRight size={20} aria-hidden="true" /></button>
-        <button className="library-empty-folder" type="button" onClick={() => { setDraftName(""); setSheet("new") }}><Folder size={18} /> Új mappa</button>
-      </div>}
+      <FolderOpen size={38} strokeWidth={1.5} />
+      <h2>{query ? "Nincs találat" : "Ez a mappa üres"}</h2>
+      <p>{query ? "Próbálj más kifejezést, vagy töröld a keresést." : "Itt még nincsenek fájlok."}</p>
+      {query && <button className="library-empty-clear" type="button" onClick={() => setQuery("")}>Keresés törlése</button>}
     </div>}
-
-    {hasRealStorage && <button type="button" className="library-storage" onClick={() => setNotice(`${formatSize(storageUsed)} / ${formatSize(storageTotal)}`)}>
-      <span><Cloud size={18} strokeWidth={1.75} aria-hidden="true" /> Tárhely</span>
-      <small>{formatSize(storageUsed)} / {formatSize(storageTotal)}</small>
-      <i aria-hidden="true"><b style={{ width: `${Math.min(100, (storageUsed / storageTotal) * 100)}%` }} /></i>
-    </button>}
 
     {notice && <div className="library-toast" role="status">{notice}<button type="button" aria-label="Bezárás" onClick={() => setNotice("")}><X size={16} /></button></div>}
 
     {sheet && <div className="library-sheet-backdrop" onPointerDown={event => { if (event.target === event.currentTarget) setSheet(null) }}>
-      <div ref={sheetRef} className={`library-sheet library-sheet--${sheet}`} role="dialog" aria-modal="true" aria-label={sheet === "new" ? "Új elem" : sheet === "view" ? "Nézet és rendezés" : sheet === "sort" ? "Rendezés" : sheet === "preview" ? "Fájl előnézete" : "Fájlműveletek"}>
+      <div ref={sheetRef} className={`library-sheet library-sheet--${sheet}`} role="dialog" aria-modal="true" aria-label={sheet === "new" ? "Új elem" : sheet === "view" ? "Nézet és rendezés" : sheet === "sort" ? "Rendezés" : sheet === "storage" ? "Tárhely" : sheet === "qr" ? "QR-kód beolvasása" : sheet === "preview" ? "Fájl előnézete" : "Fájlműveletek"}>
         <div className="library-sheet-handle" aria-hidden="true" onTouchStart={event => { sheetTouchY.current = event.touches[0]?.clientY ?? null }} onTouchEnd={event => { const start = sheetTouchY.current; sheetTouchY.current = null; if (start != null && (event.changedTouches[0]?.clientY ?? start) - start > 80) setSheet(null) }} />
-        <div className="library-sheet-heading"><h2>{sheet === "new" ? "Új elem" : sheet === "view" ? "Nézet és rendezés" : sheet === "sort" ? "Rendezés" : sheet === "rename" ? "Átnevezés" : sheet === "move" ? "Áthelyezés" : sheet === "delete" ? "Törlés" : sheet === "preview" ? active?.name : active?.name}</h2><button type="button" aria-label="Bezárás" onClick={() => setSheet(null)}><X size={20} /></button></div>
+        <div className="library-sheet-heading"><h2>{sheet === "new" ? "Új elem" : sheet === "view" ? "Nézet és rendezés" : sheet === "sort" ? "Rendezés" : sheet === "storage" ? "Tárhely" : sheet === "qr" ? "QR-kód beolvasása" : sheet === "rename" ? "Átnevezés" : sheet === "move" ? "Áthelyezés" : sheet === "delete" ? "Törlés" : sheet === "preview" ? active?.name : active?.name}</h2><button type="button" aria-label="Bezárás" onClick={() => setSheet(null)}><X size={20} /></button></div>
+
+        {sheet === "storage" && <div className="library-storage-overview">
+          <span className="library-storage-overview-icon"><Cloud size={24} strokeWidth={1.6} aria-hidden="true" /></span>
+          <strong>{hasRealStorage ? formatSize(storageUsed!) + " / " + formatSize(storageTotal!) : formatSize(localBytes)}</strong>
+          <p>{hasRealStorage ? "Felhasznált felhőtárhely" : "Helyben tárolt fájlok mérete"}</p>
+          <small>{entries.filter(item => item.kind !== "folder").length} fájl · {entries.filter(item => item.kind === "folder").length} mappa</small>
+          {!hasRealStorage && <small>A Könyvtár az eszközöd böngészőjében tárolja az adataidat. A felhőtárhely nincs beállítva.</small>}
+        </div>}
+
+        {sheet === "qr" && <div className="library-qr-sheet">
+          <p>Válassz egy QR-kódot tartalmazó képet, vagy illeszd be a benne található hivatkozást.</p>
+          <button className="library-qr-pick" type="button" onClick={() => qrPicker.current?.click()}><QrCode size={20} strokeWidth={1.8} /> Kép kiválasztása</button>
+          <label htmlFor="library-qr-url">HTTPS-hivatkozás</label>
+          <input id="library-qr-url" type="url" inputMode="url" value={qrValue} onChange={event => { setQrValue(event.target.value); setQrError("") }} placeholder="https://..." autoCapitalize="off" spellCheck={false} />
+          {qrError && <p className="library-qr-error" role="alert">{qrError}</p>}
+          <button className="library-qr-open" type="button" disabled={!safeQrUrl(qrValue)} onClick={() => { const link = safeQrUrl(qrValue); if (link) { window.open(link, "_blank", "noopener,noreferrer"); setSheet(null) } }}>Hivatkozás megnyitása</button>
+          <small>A QR-beolvasás elérhetősége a böngészőtől függ. A hivatkozást nem küldjük szerverre.</small>
+        </div>}
 
         {sheet === "new" && <div className="library-sheet-actions">
           <button type="button" onClick={() => { setSheet(null); filePicker.current?.click() }}><Upload size={21} /><span><strong>Fájl feltöltése</strong><small>Legfeljebb 2 MB · az eszközödről</small></span></button>

@@ -559,3 +559,251 @@
   }
   .app-shell.reference-shell .library-space .library-search { transition: none !important; }
 }
+
+
+/* Screenshot-faithful Könyvtár home, mobile-first.
+   Global sidebar/avatar controls remain owned by AppTabBar. */
+.app-shell.reference-shell .ref-app.ref-view-space .library-space {
+  padding: calc(env(safe-area-inset-top, 0px) + 80px) 24px max(24px, calc(env(safe-area-inset-bottom, 0px) + 20px)) !important;
+  color: #202127;
+  background: #fff !important;
+}
+.app-shell.reference-shell .library-space .library-search {
+  height: 54px;
+  gap: 13px;
+  padding: 0 17px;
+  border: 1px solid #dedee2;
+  border-radius: 999px;
+  background: #fff;
+  box-shadow: 0 2px 7px rgba(17, 19, 24, .035);
+}
+.app-shell.reference-shell .library-space .library-search > svg {
+  width: 22px;
+  height: 22px;
+  color: #8e8e93;
+}
+.app-shell.reference-shell .library-space .library-search input {
+  font-size: 16px !important;
+  font-weight: 400;
+  color: #202127;
+}
+.app-shell.reference-shell .library-space .library-search input::placeholder { color: #9a9a9f; }
+.app-shell.reference-shell .library-space .library-search:focus-within {
+  border-color: #b8b8be;
+  box-shadow: 0 0 0 3px rgba(32, 33, 39, .04);
+}
+/* Two outlined circular utilities on the left, view + new on the right. */
+.app-shell.reference-shell .library-space .library-toolbar {
+  min-height: 52px;
+  margin: 40px 0 22px;
+  gap: 10px;
+}
+.app-shell.reference-shell .library-space .library-quick-actions {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 12px;
+}
+.app-shell.reference-shell .library-space .library-quick-button {
+  display: grid;
+  width: 50px;
+  min-width: 50px;
+  height: 50px;
+  padding: 0;
+  place-items: center;
+  border: 1px solid #e6e6e9;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 3px #14151a05;
+  color: #404147;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.app-shell.reference-shell .library-space .library-storage-ring {
+  display: grid;
+  width: 28px;
+  height: 28px;
+  padding: 5px;
+  place-items: center;
+  border-radius: 50%;
+  background: #d8d8dc;
+}
+.app-shell.reference-shell .library-space .library-storage-ring > span {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  background: #fff;
+}
+.app-shell.reference-shell .library-space .library-location { gap: 6px; }
+.app-shell.reference-shell .library-space .library-location h1 {
+  font-size: 17px;
+  font-weight: 620;
+}
+.app-shell.reference-shell .library-space .library-toolbar-actions { gap: 7px; }
+.app-shell.reference-shell .library-space .library-view-button {
+  width: 42px;
+  min-width: 42px;
+  height: 46px;
+  color: #68696f;
+}
+.app-shell.reference-shell .library-space .library-add-primary {
+  min-width: 83px;
+  height: 44px;
+  min-height: 44px;
+  padding: 0 15px !important;
+  gap: 8px;
+  border: 1px solid #dedee2 !important;
+  border-radius: 999px !important;
+  background: #fff !important;
+  color: #202127 !important;
+  box-shadow: 0 1px 4px rgba(17, 19, 24, .045) !important;
+  font-size: 16px !important;
+  font-weight: 530 !important;
+}
+.app-shell.reference-shell .library-space .library-results-status { margin: -8px 0 11px; }
+/* Flat folder rows, 56px icons, no card wrapper and understated metadata. */
+.app-shell.reference-shell .library-space .library-file {
+  min-height: 88px;
+}
+.app-shell.reference-shell .library-space .library-file-open {
+  min-height: 88px;
+  gap: 14px;
+  padding: 12px 3px;
+}
+.app-shell.reference-shell .library-space .library-file-icon {
+  width: 54px;
+  min-width: 54px;
+  height: 54px;
+  border: 1px solid #eeeef1;
+  border-radius: 16px;
+  background: #f6f6f7;
+  color: #595b62;
+}
+.app-shell.reference-shell .library-space .library-file-icon svg {
+  width: 24px;
+  height: 24px;
+  stroke-width: 1.65px;
+}
+.app-shell.reference-shell .library-space .library-file-copy { gap: 6px; }
+.app-shell.reference-shell .library-space .library-file-copy strong {
+  font-size: 17px;
+  font-weight: 620;
+  letter-spacing: -.28px;
+}
+.app-shell.reference-shell .library-space .library-file-copy small {
+  font-size: 13.5px;
+  color: #93939a;
+}
+.app-shell.reference-shell .library-space .library-file-more {
+  width: 44px;
+  min-width: 44px;
+  height: 48px;
+  color: #595a60;
+}
+.app-shell.reference-shell .library-space .library-file::after { background: #f1f1f3; }
+/* In a new empty library the screenshot intentionally shows open white space.
+   Do not create fake example folders or duplicate "upload" prompts. */
+.app-shell.reference-shell .library-space .library-empty--quiet {
+  min-height: 240px;
+  flex: 1;
+  padding: 0;
+  background: #fff;
+}
+.app-shell.reference-shell .library-space .library-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  padding: 0;
+  margin: -1px;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+/* Keep the existing grid mode and file actions fully usable. */
+.app-shell.reference-shell .library-space .library-files.is-grid { gap: 12px; }
+.app-shell.reference-shell .library-space .library-files.is-grid .library-file {
+  border-radius: 18px;
+}
+.app-shell.reference-shell .library-space .library-files.is-grid .library-file-icon {
+  width: 48px;
+  min-width: 48px;
+  height: 48px;
+}
+.app-shell.reference-shell .library-space :is(.library-quick-button,.library-add-primary,.library-view-button,.library-back):active {
+  background: #f5f5f7 !important;
+}
+.app-shell.reference-shell .library-space :is(.library-quick-button,.library-qr-pick):focus-visible {
+  outline: 2px solid #202127;
+  outline-offset: 3px;
+}
+/* Real storage details and browser QR decoder are optional utilities. */
+.library-storage-overview,
+.library-qr-sheet {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 12px;
+  padding: 12px 4px 20px;
+  color: #202127;
+}
+.library-storage-overview { align-items: flex-start; }
+.library-storage-overview-icon {
+  display: grid;
+  width: 50px;
+  height: 50px;
+  place-items: center;
+  border-radius: 16px;
+  background: #f5f5f7;
+}
+.library-storage-overview strong { font-size: 25px; font-weight: 660; letter-spacing: -.6px; }
+.library-storage-overview p { margin: 0; color: #6e6e74; font-size: 14px; }
+.library-storage-overview small,
+.library-qr-sheet small { color: #8e8e93; font-size: 12px; line-height: 1.5; }
+.library-qr-sheet p { margin: 0 0 2px; color: #707076; font-size: 14px; line-height: 1.5; }
+.library-qr-sheet label { margin-top: 9px; color: #66676e; font-size: 13px; }
+.library-qr-sheet input {
+  width: 100%;
+  min-height: 48px;
+  padding: 0 14px;
+  border: 1px solid #e5e5ea;
+  border-radius: 14px;
+  background: #f7f7f8;
+  color: #202127;
+  font-size: 16px;
+}
+.library-qr-sheet .library-qr-error { color: #bd3434; font-size: 13px; }
+.library-qr-sheet .library-qr-pick,
+.library-qr-sheet .library-qr-open {
+  display: flex;
+  min-height: 48px;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  border-radius: 999px;
+  border: 1px solid #dcdce0;
+  background: #fff;
+  color: #202127;
+  font-size: 15px;
+  font-weight: 550;
+}
+.library-qr-sheet .library-qr-open { margin-top: 5px; background: #25262a; border-color: #25262a; color: #fff; }
+.library-qr-sheet .library-qr-open:disabled { background: #f5f5f7; border-color: #e5e5ea; color: #8e8e93; }
+@media (max-width: 375px) {
+  .app-shell.reference-shell .library-space .library-toolbar { gap: 6px; }
+  .app-shell.reference-shell .library-space .library-quick-actions { gap: 8px; }
+  .app-shell.reference-shell .library-space .library-quick-button { width: 46px; min-width: 46px; height: 46px; }
+  .app-shell.reference-shell .library-space .library-toolbar-actions { gap: 2px; }
+  .app-shell.reference-shell .library-space .library-view-button { width: 38px; min-width: 38px; }
+  .app-shell.reference-shell .library-space .library-add-primary { min-width: 76px; padding-inline: 11px !important; }
+}
+@media (max-height: 680px) {
+  .app-shell.reference-shell .ref-app.ref-view-space .library-space { padding-top: calc(env(safe-area-inset-top, 0px) + 76px) !important; }
+}
+@media (hover:hover) and (pointer:fine) {
+  .app-shell.reference-shell .library-space :is(.library-quick-button,.library-view-button,.library-add-primary):hover { background: #fafafa !important; }
+}
+@media (prefers-reduced-motion:reduce) {
+  .app-shell.reference-shell .library-space :is(.library-quick-button,.library-add-primary,.library-file) { transition: none !important; }
+}
