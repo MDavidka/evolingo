@@ -3,7 +3,7 @@
 .app-shell.reference-shell:has(.ref-view-space) {
   background: #fff !important;
 }
-.app-shell.reference-shell .ref-app.ref-view-space {
+.app-shell.reference-shell .ref-app.ref-view-space:not(.ref-view-chat):not(.ref-view-auth) {
   width: min(100%, 760px);
   max-width: 760px;
   min-height: 100dvh;
