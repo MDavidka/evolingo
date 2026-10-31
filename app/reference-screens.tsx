@@ -7,6 +7,15 @@ import { buildLessonOverview } from "./intelligent-ui/lesson-overview"
 import UnifiedSheet from "./unified-sheet"
 import { AppHeader } from "@/components/app-header"
 import { Tabs } from "@/components/arc/tabs/tabs"
+// Web-safe icons with SF Symbols-aligned shapes; see docs/sf-symbols.md.
+import { GraduationCapIcon as SFGraduationCap } from "@phosphor-icons/react/dist/csr/GraduationCap"
+import { BookOpenIcon as SFBookOpen } from "@phosphor-icons/react/dist/csr/BookOpen"
+import { BooksIcon as SFBooks } from "@phosphor-icons/react/dist/csr/Books"
+import { TranslateIcon as SFTranslate } from "@phosphor-icons/react/dist/csr/Translate"
+import { MagnifyingGlassIcon as SFMagnify } from "@phosphor-icons/react/dist/csr/MagnifyingGlass"
+import { CaretRightIcon as SFCaretRight } from "@phosphor-icons/react/dist/csr/CaretRight"
+import { CaretDownIcon as SFCaretDown } from "@phosphor-icons/react/dist/csr/CaretDown"
+import { XIcon as SFX } from "@phosphor-icons/react/dist/csr/X"
 import {
   ArrowRight, ArrowUp, ArrowUpRight, BookOpen, CalendarDays, CheckCircle2, ChevronDown, ChevronsUpDown, ChevronRight,
   CircleDot, CircleHelp, Eye, EyeOff, FileText, GraduationCap, Info, Landmark,
@@ -86,15 +95,15 @@ function Header({ name, avatarImage, avatarFallback, onProfile, onHome, onSelect
   }, [])
   return <AppHeader variant="main" className="ref-topbar" center={showCourse ? <div className="ref-course-wrap" ref={courseRef}>
       <button className="ref-course" type="button" aria-haspopup="menu" aria-expanded={courseOpen} onClick={() => setCourseOpen(value => !value)}>
-        <GraduationCap size={20} strokeWidth={1.75} /><strong>{courseName || "Témáim"}</strong><span className="ref-course-chevron"><ChevronsUpDown size={13} /></span>
+        <SFGraduationCap size={20} weight="regular" aria-hidden="true" /><strong>{courseName || "Témáim"}</strong><span className="ref-course-chevron"><SFCaretDown size={14} weight="bold" aria-hidden="true" /></span>
       </button>
       {courseOpen && <div className="ref-course-menu" role="menu" aria-label="Téma kiválasztása">
         <span className="ref-course-menu-label">Jelenlegi téma</span>
         {topics.map(topic => <button key={topic.id} className="ref-course-choice" type="button" role="menuitem" onClick={() => { setCourseOpen(false); onSelectCourse(topic.id) }}>
-          <GraduationCap size={17} /> {topic.title} {(selectedTopicId === topic.id || (selectedTopicId === null && topics[0]?.id === topic.id)) && <Check size={17} />}
+          <SFGraduationCap size={17} weight="regular" aria-hidden="true" /> {topic.title} {(selectedTopicId === topic.id || (selectedTopicId === null && topics[0]?.id === topic.id)) && <Check size={17} />}
         </button>)}
         <button className="ref-course-choice" type="button" role="menuitem" onClick={() => { setCourseOpen(false); onHome() }}>
-          <BookOpen size={17} /> Összes téma
+          <SFBookOpen size={17} weight="regular" aria-hidden="true" /> Összes téma
         </button>
       </div>}
     </div> : null} right={<button className="ref-profile-shortcut" type="button" onClick={() => { setCourseOpen(false); onProfile() }} aria-label="Profil megnyitása"><Avatar name={name} src={avatarImage} fallback={avatarFallback} /></button>} />
@@ -126,7 +135,7 @@ function Topics({ topics, lessons, onSelectTopic, onSelectLesson }: {
 
   return <div className="ref-topics evo-learning-home">
     <div className="evo-learning-search" role="search">
-      <Search size={21} strokeWidth={1.75} aria-hidden="true" />
+      <SFMagnify size={21} weight="regular" aria-hidden="true" />
       <input
         type="search"
         autoComplete="off"
@@ -135,27 +144,27 @@ function Topics({ topics, lessons, onSelectTopic, onSelectLesson }: {
         value={query}
         onChange={event => setQuery(event.target.value)}
       />
-      {query && <button type="button" aria-label="Keresés törlése" onClick={() => setQuery("")}><X size={18} strokeWidth={1.75} /></button>}
+      {query && <button type="button" aria-label="Keresés törlése" onClick={() => setQuery("")}><SFX size={18} weight="regular" aria-hidden="true" /></button>}
     </div>
 
     <section className="evo-learning-section" aria-label="Saját témák és leckék">
       <div className="evo-learning-topic-list">
         {filteredTopics.map((topic, index) => {
-          const Icon = index === 0 ? GraduationCap : index % 2 === 0 ? BookOpen : Languages
+          const Icon = index === 0 ? SFGraduationCap : index % 2 === 0 ? SFBookOpen : SFTranslate
           return <button type="button" className="evo-learning-topic-card" key={topic.id} onClick={() => onSelectTopic(topic.id)}>
-            <span className="evo-learning-topic-icon"><Icon size={24} strokeWidth={1.75} aria-hidden="true" /></span>
+            <span className="evo-learning-topic-icon"><Icon size={24} weight="regular" aria-hidden="true" /></span>
             <span className="evo-learning-topic-copy">
               <strong>{topic.title}</strong>
               <span>{topic.lessonIds.length} lecke{topic.subtitle ? ` · ${topic.subtitle.includes("Nyelvtani szabályok") ? "Nyelvtan és kommunikáció" : topic.subtitle}` : ""}</span>
             </span>
-            <ChevronRight size={20} strokeWidth={1.75} className="evo-learning-chevron" aria-hidden="true" />
+            <SFCaretRight size={20} weight="regular" className="evo-learning-chevron" aria-hidden="true" />
           </button>
         })}
         {filteredTopics.length === 0 && matchingLessons.length === 0 && <p className="evo-learning-empty">Nem található ilyen téma vagy lecke.</p>}
         {!term && <button type="button" className="evo-learning-library" onClick={() => onSelectTopic(-1)} disabled={!lessons.length}>
-          <span className="evo-learning-library-icon"><LibraryBig size={23} strokeWidth={1.75} aria-hidden="true" /></span>
+          <span className="evo-learning-library-icon"><SFBooks size={23} weight="regular" aria-hidden="true" /></span>
           <span><strong>Összes lecke</strong><small>Böngészd a tananyagokat</small></span>
-          <ChevronRight size={20} strokeWidth={1.75} aria-hidden="true" />
+          <SFCaretRight size={20} weight="regular" aria-hidden="true" />
         </button>}
       </div>
     </section>
@@ -164,9 +173,9 @@ function Topics({ topics, lessons, onSelectTopic, onSelectLesson }: {
       <div className="evo-learning-section-header"><h2 id="evo-learning-results-title">Talált leckék</h2><span>{matchingLessons.length} találat</span></div>
       <div className="evo-learning-lesson-list">
         {matchingLessons.map(lesson => <button type="button" className="evo-learning-lesson-row" key={lesson.id} onClick={() => onSelectLesson(lesson.id)}>
-          <span className="evo-learning-lesson-icon"><BookOpen size={21} strokeWidth={1.75} aria-hidden="true" /></span>
+          <span className="evo-learning-lesson-icon"><SFBookOpen size={21} weight="regular" aria-hidden="true" /></span>
           <span><strong>{lesson.title}</strong><small>{lesson.summary}</small></span>
-          <ChevronRight size={19} strokeWidth={1.75} aria-hidden="true" />
+          <SFCaretRight size={19} weight="regular" aria-hidden="true" />
         </button>)}
       </div>
     </section>}
