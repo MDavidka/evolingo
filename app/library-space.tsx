@@ -3,8 +3,8 @@
 import { useEffect, useMemo, useRef, useState, type ChangeEvent, type PointerEvent as ReactPointerEvent } from "react"
 import {
   ArrowDownToLine, ArrowUpRight, Check, CheckSquare2, ChevronLeft, Copy, File, FileText, Folder,
-  FolderOpen, Grid2X2, HardDrive, List, MoreHorizontal, Move, PanelLeft, Pencil, Plus, Search,
-  Share2, SlidersHorizontal, Trash2, Upload, X,
+  FolderOpen, HardDrive, MoreHorizontal, Move, PanelLeft, Pencil, Plus, Search,
+  Share2, Trash2, Upload, X,
 } from "lucide-react"
 
 type FileKind = "folder" | "pdf" | "note"
