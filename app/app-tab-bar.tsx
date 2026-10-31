@@ -96,12 +96,23 @@ export default function AppTabBar({ activeTab, onSelect, avatarImage, userName }
     }
     const onTouchCancel = () => { swipeStart.current = null }
     const onEscape = (event: KeyboardEvent) => { if (event.key === "Escape" && openRef.current) close() }
+    // The white top sheet is a full-width screen above the secondary menu.
+    // Dismiss on tap without activating links/buttons on the covered page.
+    const onForegroundClick = (event: MouseEvent) => {
+      if (!openRef.current || !window.matchMedia("(max-width: 767px)").matches) return
+      const target = event.target
+      if (!(target instanceof Element) || !target.closest(".app-shell")) return
+      event.preventDefault()
+      event.stopPropagation()
+      close(false)
+    }
     window.addEventListener("evolingo:chat-history-updated", onHistory)
     document.addEventListener("focusin", onFocusIn)
     document.addEventListener("touchstart", onTouchStart, { passive: true })
     document.addEventListener("touchend", onTouchEnd, { passive: true })
     document.addEventListener("touchcancel", onTouchCancel, { passive: true })
     document.addEventListener("keydown", onEscape)
+    document.addEventListener("click", onForegroundClick, true)
     return () => {
       window.removeEventListener("evolingo:chat-history-updated", onHistory)
       document.removeEventListener("focusin", onFocusIn)
@@ -109,6 +120,7 @@ export default function AppTabBar({ activeTab, onSelect, avatarImage, userName }
       document.removeEventListener("touchend", onTouchEnd)
       document.removeEventListener("touchcancel", onTouchCancel)
       document.removeEventListener("keydown", onEscape)
+      document.removeEventListener("click", onForegroundClick, true)
       document.body.style.overflow = ""
     }
   }, [close, refresh, show])
