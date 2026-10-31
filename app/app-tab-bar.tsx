@@ -139,6 +139,29 @@ export default function AppTabBar({ activeTab, onSelect, avatarImage, userName }
     return () => document.documentElement.classList.remove("evo-sidebar-layer-open")
   }, [open])
 
+  // iOS PWA (statusBarStyle "default"): the native strip around the Dynamic
+  // Island is painted from <meta name="theme-color">, not from page CSS, so it
+  // must follow the sidebar state explicitly. Open: the sidebar's own
+  // background. Closed: restore the page's original theme colour.
+  useEffect(() => {
+    const metas = [...document.querySelectorAll<HTMLMetaElement>('meta[name="theme-color"]')]
+    if (!metas.length) {
+      const meta = document.createElement("meta")
+      meta.name = "theme-color"
+      meta.content = "#ffffff"
+      document.head.appendChild(meta)
+      metas.push(meta)
+    }
+    metas.forEach(meta => { if (meta.dataset.evoBase === undefined) meta.dataset.evoBase = meta.content })
+    const restore = () => metas.forEach(meta => { meta.content = meta.dataset.evoBase || "#ffffff" })
+    if (!open) { restore(); return }
+    const sidebar = dialog.current
+    const bg = sidebar ? getComputedStyle(sidebar).backgroundColor : ""
+    const color = bg && bg !== "transparent" && !/^rgba\(.*,\s*0\)$/.test(bg) ? bg : "#ffffff"
+    metas.forEach(meta => { meta.content = color })
+    return restore
+  }, [open, renderSidebar])
+
   useEffect(() => {
     document.documentElement.classList.toggle("evo-sidebar-layer-active", renderSidebar)
     const timer = renderSidebar && !open
