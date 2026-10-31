@@ -13,10 +13,12 @@ const Mic = mage("microphone")
 const X = mage("x")
 import { Button as AppsButton } from "@openai/apps-sdk-ui/components/Button"
 import ChatRichText from "./chat-rich-text"
+import AgentPlanView from "./chat-agent-plan-view"
+import { isAgentPlan, type AgentPlan } from "./chat-agent-plan"
 import { MAX_IMAGE_BYTES, MAX_TEXT_BYTES, IMAGE_TYPES, TEXT_EXTENSIONS, type ChatAttachment } from "./chat-attachments"
 import { activeChatSessionId, readChatSessions, saveChatSession, setActiveChatSessionId } from "./chat-sessions"
 
-type ChatMessage = { role: "user" | "assistant"; content: string; id?: string; attachmentName?: string }
+type ChatMessage = { role: "user" | "assistant"; content: string; id?: string; attachmentName?: string; plan?: AgentPlan }
 const SESSION_KEY = "evolingo.chat.session.v1"
 
 export default function ChatInterface() {
@@ -41,9 +43,13 @@ export default function ChatInterface() {
   const wasAtBottom = useRef(true)
   const wasAtBottomOnFocus = useRef(true)
   const blurTimer = useRef<number | null>(null)
+  const streamingAssistantId = useRef<string | null>(null)
+  const requestController = useRef<AbortController | null>(null)
+  useEffect(() => () => { requestController.current?.abort() }, [])
 
   const resetTurnPosition = () => {
     latestSentUser.current = null
+    streamingAssistantId.current = null
     followNewestTurn.current = true
     if (turnSpacer.current) turnSpacer.current.style.height = "0px"
   }
@@ -61,12 +67,12 @@ export default function ChatInterface() {
           const safe = parsed.slice(-16).filter((item): item is ChatMessage =>
             !!item && typeof item === "object" && (item.role === "user" || item.role === "assistant") &&
             typeof item.content === "string" && item.content.length <= 30000
-          ).map(({ role, content, id }) => ({ role, content, id }))
+          ).map(({ role, content, id, plan }) => ({ role, content, id, ...(isAgentPlan(plan) ? { plan } : {}) }))
           setMessages(safe)
         }
         activeId = crypto.randomUUID()
       } else {
-        setMessages(active.messages.slice(-16).map(({ role, content, id }) => ({ role, content, id })))
+        setMessages(active.messages.slice(-16).map(({ role, content, id, plan }) => ({ role, content, id, ...(isAgentPlan(plan) ? { plan } : {}) })))
       }
       setSessionId(activeId)
       setActiveChatSessionId(activeId)
@@ -83,10 +89,11 @@ export default function ChatInterface() {
   useEffect(() => {
     const onNew = () => startNewChat(false)
     const onOpen = (event: Event) => {
+      if (busy) return
       const id = (event as CustomEvent<{ id?: string }>).detail?.id
       const selected = readChatSessions().find(session => session.id === id)
       if (!selected) return
-      const safe = selected.messages.slice(-16).map(({ role, content, id }) => ({ role, content, id }))
+      const safe = selected.messages.slice(-16).map(({ role, content, id, plan }) => ({ role, content, id, ...(isAgentPlan(plan) ? { plan } : {}) }))
       resetTurnPosition()
       setSessionId(selected.id)
       setActiveChatSessionId(selected.id)
@@ -227,6 +234,9 @@ export default function ChatInterface() {
     followNewestTurn.current = true
     const next: ChatMessage[] = [...messages, { id: userId, role: "user", content: content || "Elemezd a csatolt fájlt.", ...(attachment ? { attachmentName: attachment.name } : {}) }]
     const assistantId = crypto.randomUUID()
+    streamingAssistantId.current = assistantId
+    // Persist the user turn before the network call, so navigation never loses it.
+    if (sessionId) saveChatSession(sessionId, next)
     setMessages(next)
     window.dispatchEvent(new CustomEvent("evolingo:chat-message-sent"))
     input.current?.blur()
@@ -256,8 +266,18 @@ export default function ChatInterface() {
     }
     const acceptEvent = (raw: string) => {
       try {
-        const event = JSON.parse(raw) as { type?: string; reply?: string; delta?: string; ui?: unknown; error?: string }
-        if (event.type === "delta" && typeof event.delta === "string" && event.delta) {
+        const event = JSON.parse(raw) as { type?: string; reply?: string; delta?: string; plan?: unknown; error?: string }
+        if (event.type === "plan" && isAgentPlan(event.plan)) {
+          // The fixed plan id is replaced in place, not appended as a new bubble.
+          const plan = event.plan
+          setStreaming(true)
+          setMessages(old => {
+            const existing = old.some(msg => msg.id === assistantId)
+            return existing
+              ? old.map(msg => msg.id === assistantId ? { ...msg, plan } : msg)
+              : [...old, { id: assistantId, role: "assistant", content: "", plan }]
+          })
+        } else if (event.type === "delta" && typeof event.delta === "string" && event.delta) {
           streamReply += event.delta
           if (streamReply.length > 30000) throw new Error("Túl hosszú válasz.")
           if (!answered) {
@@ -280,20 +300,21 @@ export default function ChatInterface() {
               ? old.map(msg => msg.id === assistantId ? { ...msg, content: event.reply as string } : msg)
               : [...old, { id: assistantId, role: "assistant", content: event.reply as string }]
           })
-          setStreaming(false)
-          setBusy(false)
-                  } else if (event.type === "error") {
+        } else if (event.type === "error") {
           setError(answered ? "A válasz megszakadt; a már megjelent szöveg megmaradt." : event.error || "Az AI jelenleg nem válaszol. Próbáld újra.")
         } else if (event.type === "done") completed = true
       } catch { /* Malformed event is not rendered or executed. */ }
     }
 
+    const controller = new AbortController()
+    requestController.current = controller
     try {
       const response = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages: next.slice(-12).map(({ role, content }) => ({ role, content })), interactive: true, attachment: sentAttachment }),
+        body: JSON.stringify({ messages: next.slice(-8).map(({ role, content }) => ({ role, content })), interactive: true, agentMode: "auto", attachment: sentAttachment }),
         cache: "no-store",
+        signal: controller.signal,
       })
       if (!response.ok) {
         const payload = await response.json().catch(() => ({})) as { error?: string }
@@ -318,11 +339,14 @@ export default function ChatInterface() {
           if (done) break
           buffer += decoder.decode(value, { stream: true }).replace(/\r\n/g, "\n")
           if (buffer.length > 60000) throw new Error("A válasz túl hosszú.")
-          const segments = buffer.split("\n\n")
-          buffer = segments.pop() || ""
-          for (const segment of segments) {
+          // Incremental SSE parsing avoids allocating a full split array per chunk.
+          let boundary = buffer.indexOf("\n\n")
+          while (boundary !== -1) {
+            const segment = buffer.slice(0, boundary)
+            buffer = buffer.slice(boundary + 2)
             const line = segment.split("\n").find(part => part.startsWith("data: "))
             if (line) acceptEvent(line.slice(6))
+            boundary = buffer.indexOf("\n\n")
           }
         }
         buffer += decoder.decode().replace(/\r\n/g, "\n")
@@ -343,6 +367,7 @@ export default function ChatInterface() {
       setError(answered ? "A kapcsolat megszakadt; a már megjelent válasz megmaradt." : cause instanceof Error ? cause.message : "Nem sikerült elküldeni az üzenetet.")
     } finally {
       if (flushTimer !== null) window.clearTimeout(flushTimer)
+      if (requestController.current === controller) requestController.current = null
       setBusy(false)
       setStreaming(false)
     }
@@ -421,8 +446,16 @@ export default function ChatInterface() {
       role="log" aria-label="Beszélgetés">
       {messages.length > 0 && <div className="evo-chat-thread">
         {messages.map((item, index) => <div key={item.id ?? `${item.role}-${index}`} data-message-id={item.id} className={`evo-chat-entry evo-chat-entry--${item.role}`}>
-          <div className="evo-chat-entry-main"><div className="evo-chat-bubble">{item.role === "assistant" ? <ChatRichText text={item.content} /> : item.content}</div>
-            {item.role === "assistant" && <button type="button" className="evo-chat-copy" aria-label="Válasz másolása" onClick={() => void copyMessage(item.content, index)}>{copied === index ? <Check size={16} /> : <Copy size={16} />}<span>{copied === index ? "Másolva" : "Másolás"}</span></button>}
+          <div className="evo-chat-entry-main">
+            {item.role === "assistant" && item.plan && <AgentPlanView plan={item.plan} />}
+            {(item.role === "user" || item.content) && <div className="evo-chat-bubble">
+              {item.role === "assistant" ? (
+                busy && streaming && streamingAssistantId.current === item.id
+                  ? <span className="evo-chat-live-text">{item.content}</span>
+                  : <ChatRichText text={item.content} />
+              ) : item.content}
+            </div>}
+            {item.role === "assistant" && !!item.content && <button type="button" className="evo-chat-copy" aria-label="Válasz másolása" onClick={() => void copyMessage(item.content, index)}>{copied === index ? <Check size={16} /> : <Copy size={16} />}<span>{copied === index ? "Másolva" : "Másolás"}</span></button>}
           </div>
         </div>)}
         {busy && !streaming && <div className="evo-chat-entry evo-chat-entry--assistant"><span className="evo-chat-thinking" role="status">Válasz írása<span className="evo-chat-dots">…</span></span></div>}

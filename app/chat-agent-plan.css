@@ -1,0 +1,44 @@
+/* shadcn AI Elements / Plan: locally composed from Trace parts, no extra runtime dependency. */
+.ref-view-chat .evo-agent-plan {
+  width: min(100%, 500px);
+  margin: 1px 0 18px;
+  color: #50515a;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", Inter, system-ui, sans-serif;
+}
+.ref-view-chat .evo-trace { display: flex; flex-direction: column; min-width: 0; gap: 2px; }
+.ref-view-chat .evo-trace-collapsible { display: flex; flex-direction: column; min-width: 0; }
+.ref-view-chat .evo-trace-trigger {
+  display: flex; align-items: center; gap: 10px; width: fit-content; max-width: 100%;
+  min-height: 38px; margin: 0; padding: 5px 3px 5px 0;
+  border: 0; border-radius: 10px; background: transparent; color: inherit;
+  font-size: 13px; text-align: left; cursor: pointer;
+}
+.ref-view-chat .evo-trace-line {
+  display: flex; min-width: 0; max-width: 100%; align-items: center;
+  gap: 10px; min-height: 29px; color: #62636b; font-size: 13px;
+}
+.ref-view-chat .evo-trace-icon { display: inline-flex; flex: 0 0 17px; align-items: center; justify-content: center; color: #767780; }
+.ref-view-chat .evo-trace-title { display: inline-block; min-width: 0; flex: 1; font-weight: 540; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ref-view-chat .evo-trace-description { flex: none; color: #93949a; font-size: 11px; font-variant-numeric: tabular-nums; }
+.ref-view-chat .evo-trace-line[data-status="running"] .evo-trace-icon { color: #34353b; }
+.ref-view-chat .evo-trace-line[data-status="error"] .evo-trace-icon { color: #b44b4b; }
+.ref-view-chat .evo-trace-line[data-status="pending"] { opacity: .64; }
+.ref-view-chat .evo-trace-chevron { display: inline-block; flex: none; color: #999aa0; transition: transform .15s ease; }
+.ref-view-chat .evo-trace-trigger[aria-expanded="true"] .evo-trace-chevron { transform: rotate(90deg); }
+.ref-view-chat .evo-trace-trigger:focus-visible { outline: 2px solid #25262a; outline-offset: 2px; }
+.ref-view-chat .evo-trace-content { padding: 2px 0 3px 16px; }
+.ref-view-chat .evo-trace-content[hidden] { display: none !important; }
+.ref-view-chat .evo-agent-plan-title { margin: 5px 0 8px 9px; color: #8b8c93; font-size: 12px; line-height: 1.45; }
+.ref-view-chat .evo-trace-content .evo-trace-line { padding: 5px 3px 5px 8px; }
+.ref-view-chat .evo-trace-content .evo-trace-line + .evo-trace-line { border-top: 1px solid #f3f3f4; }
+.ref-view-chat .evo-trace-content .evo-trace-title { font-size: 12px; font-weight: 470; }
+.ref-view-chat .evo-trace-content .evo-trace-description { font-size: 10.5px; }
+.ref-view-chat .evo-chat-live-text { white-space: pre-wrap; overflow-wrap: anywhere; }
+@media (max-width: 380px) {
+  .ref-view-chat .evo-agent-plan { width: 100%; }
+  .ref-view-chat .evo-trace-line { gap: 7px; }
+  .ref-view-chat .evo-trace-description { font-size: 10px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ref-view-chat .evo-trace-chevron { transition: none; }
+}

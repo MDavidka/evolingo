@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { validateAttachment, type ChatAttachment } from "../../chat-attachments"
+import { shouldUseAgentPlan } from "../../chat-agent-plan"
+import { executeAgentPlan } from "../../chat-agent-runner"
 
 export const runtime = "nodejs"
 export const dynamic = "force-dynamic"
@@ -35,6 +37,7 @@ async function streamProviderText(
   messages: ProviderMessage[],
   onDelta: (delta: string) => void,
   system: string,
+  options: { signal?: AbortSignal; maxTokens?: number } = {},
 ): Promise<string> {
   const upstream = await fetch(API_URL, {
     method: "POST",
@@ -43,12 +46,12 @@ async function streamProviderText(
       model: MODEL,
       messages: [{ role: "system", content: system }, ...messages],
       temperature: 0.7,
-      max_tokens: 1400,
+      max_tokens: options.maxTokens ?? 1200,
       stream: true,
       ...(MODEL.startsWith("nvidia/nemotron-3.5-") ? { chat_template_kwargs: { enable_thinking: false } } : {}),
     }),
     cache: "no-store",
-    signal: AbortSignal.timeout(30000),
+    signal: AbortSignal.any([...(options.signal ? [options.signal] : []), AbortSignal.timeout((options.maxTokens ?? 1200) > 1200 ? 24500 : 30000)]),
   })
   if (!upstream.ok) {
     console.error("[chat] streaming provider status", upstream.status)
@@ -113,17 +116,34 @@ function withAttachment(messages: Message[], attachment: ChatAttachment | null):
   return result
 }
 
-/** General-purpose text-only streaming; no learning UI or in-app data exchange. */
-function makeStream(apiKey: string, messages: Message[], attachment: ChatAttachment | null, system: string) {
+/** Ordinary messages stream in one call. Multi-part requests use bounded, concurrent substeps. */
+function makeStream(
+  apiKey: string, messages: Message[], attachment: ChatAttachment | null,
+  system: string, signal: AbortSignal, agentMode: "auto" | "plan" | "fast",
+) {
   const providerMessages = withAttachment(messages, attachment)
+  // Image/file questions take the direct streaming path to avoid duplicated large uploads.
+  const usePlan = !attachment && (agentMode === "plan" ||
+    (agentMode === "auto" && shouldUseAgentPlan(messages[messages.length - 1].content)))
   const encoder = new TextEncoder()
   return new ReadableStream<Uint8Array>({
     async start(controller) {
       const emit = (type: string, data: Record<string, unknown> = {}) =>
         controller.enqueue(encoder.encode("data: " + JSON.stringify({ type, ...data }) + "\n\n"))
-      try {
-        const reply = await streamProviderText(apiKey, providerMessages, delta => emit("delta", { delta }), system)
+      const streamFinal = async (currentSystem: string) => {
+        const reply = await streamProviderText(
+          apiKey, providerMessages, delta => emit("delta", { delta }), currentSystem,
+          { signal, maxTokens: usePlan ? 1500 : 1200 },
+        )
         emit("text", { reply })
+        return reply
+      }
+      try {
+        if (usePlan) await executeAgentPlan({
+          apiKey, model: MODEL, messages: providerMessages, system,
+          signal, emit, streamFinal,
+        })
+        else await streamFinal(system)
         emit("done")
       } catch (error) {
         emit("error", { error: error instanceof Error ? error.message : "Hálózati hiba történt." })
@@ -150,6 +170,7 @@ export async function POST(request: NextRequest) {
 
   let messages: Message[]
   let interactive = false
+  let agentMode: "auto" | "plan" | "fast" = "auto"
   let attachment: ChatAttachment | null = null
   try {
     const raw = await request.text()
@@ -163,6 +184,8 @@ export async function POST(request: NextRequest) {
     }
     const list = (body as { messages?: unknown }).messages
     interactive = (body as { interactive?: unknown }).interactive === true
+    const requestedMode = (body as { agentMode?: unknown }).agentMode
+    if (requestedMode === "fast" || requestedMode === "plan") agentMode = requestedMode
     if (!Array.isArray(list) || list.length === 0 || list.length > 12) return fail("Érvénytelen beszélgetés.", 400)
     messages = list.map((item: unknown) => {
       if (!item || typeof item !== "object") throw new Error("Invalid message")
@@ -178,7 +201,7 @@ export async function POST(request: NextRequest) {
   // The general chat endpoint deliberately ignores app-specific modes and task context.
   const system = replyPrompt
 
-  if (interactive) return new Response(makeStream(apiKey, messages, attachment, system), {
+  if (interactive) return new Response(makeStream(apiKey, messages, attachment, system, request.signal, agentMode), {
     headers: { ...headers, "Content-Type": "text/event-stream; charset=utf-8", "X-Accel-Buffering": "no" },
   })
 

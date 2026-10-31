@@ -1,4 +1,6 @@
-export type StoredChatMessage = { role: "user" | "assistant"; content: string; id?: string; ui?: unknown }
+import { isAgentPlan, type AgentPlan } from "./chat-agent-plan"
+
+export type StoredChatMessage = { role: "user" | "assistant"; content: string; id?: string; ui?: unknown; plan?: AgentPlan }
 export type ChatSession = { id: string; title: string; createdAt: number; updatedAt: number; messages: StoredChatMessage[] }
 
 const SESSIONS_KEY = "evolingo.chat.sessions.v1"
@@ -11,6 +13,10 @@ function safeMessages(value: unknown): StoredChatMessage[] {
   return value.slice(-16).filter((item): item is StoredChatMessage => !!item && typeof item === "object" &&
     ((item as StoredChatMessage).role === "user" || (item as StoredChatMessage).role === "assistant") &&
     typeof (item as StoredChatMessage).content === "string" && (item as StoredChatMessage).content.length <= 30000)
+    .map(message => ({
+      role: message.role, content: message.content, id: message.id,
+      ...(isAgentPlan(message.plan) ? { plan: message.plan } : {}),
+    }))
 }
 
 function makeTitle(messages: StoredChatMessage[]) {
