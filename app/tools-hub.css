@@ -1,323 +1,314 @@
-/* Scoped to Eszközök: no changes to other screens or shared navigation. */
+/* Eszközök: quiet white, screenshot-matched directory. All styles are scoped. */
 .app-shell.reference-shell .ref-app .evo-tools-hub {
   width: 100%;
-  max-width: 520px;
+  max-width: 535px;
   margin: 20px auto 0;
-  padding: 0 clamp(16px, 5.5vw, 24px) calc(40px + env(safe-area-inset-bottom, 0px)) !important;
-  color: #202329;
+  padding: 0 clamp(18px, 5.5vw, 27px) calc(64px + env(safe-area-inset-bottom, 0px)) !important;
   background: #fff;
+  color: #202127;
   overflow: visible;
-}
-.evo-tools-hub .evo-tools-heading { margin: 0 0 22px; }
-.evo-tools-hub .evo-tools-heading h1 {
-  margin: 0;
-  font-size: clamp(29px, 7.5vw, 33px);
-  font-weight: 720;
-  line-height: 1.18;
-  letter-spacing: -.9px;
-  color: #202329;
-}
-.evo-tools-hub .evo-tools-heading p {
-  margin: 7px 0 0;
-  font-size: 0.875rem;
-  line-height: 1.4;
-  color: #5b6472;
 }
 .evo-tools-hub .evo-tools-search {
   display: flex;
-  align-items: center;
   width: 100%;
-  min-height: 50px;
-  gap: 10px;
-  padding: 0 14px;
-  border: 1px solid #e9ebee;
-  border-radius: 17px;
-  background: #f5f6f8;
-  color: #5b6472;
+  height: 54px;
+  align-items: center;
+  gap: 13px;
+  padding: 0 19px;
+  border: 1px solid #dedee2;
+  border-radius: 999px;
+  background: #fff;
+  color: #8b8d93;
+  box-shadow: 0 1px 5px rgba(0,0,0,.035);
 }
 .evo-tools-hub .evo-tools-search input {
-  width: 100%;
-  min-width: 0;
-  height: 48px;
   flex: 1;
+  min-width: 0;
+  width: 100%;
+  height: 100%;
   border: 0;
   outline: 0;
   background: transparent;
-  font-size: 1rem !important;
-  color: #202329;
+  color: #202127;
+  font-size: 16px !important;
+  font-weight: 400;
   appearance: none;
   -webkit-appearance: none;
 }
 .evo-tools-hub .evo-tools-search input::-webkit-search-cancel-button { display: none; }
-.evo-tools-hub .evo-tools-search input::placeholder { color: #5b6472; }
+.evo-tools-hub .evo-tools-search input::placeholder { color: #9b9b9e; opacity: 1; }
 .evo-tools-hub .evo-tools-search button {
   display: grid;
-  width: 32px;
-  height: 44px;
   flex: none;
+  width: 28px;
+  height: 40px;
+  padding: 0;
   place-items: center;
   border: 0;
   background: transparent;
-  color: #7b838e;
+  color: #8e8e93;
 }
-.evo-tools-hub .evo-tools-filters {
+.evo-tools-hub .evo-tools-storage-section { margin-top: 47px; }
+.evo-tools-hub .evo-tools-storage-heading {
   display: flex;
+  min-height: 33px;
   align-items: center;
-  gap: 8px;
-  margin: 15px 0 28px;
-  overflow: visible;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 28px;
 }
-.evo-tools-hub .evo-tools-filters button {
-  flex: none;
-  min-height: 40px;
-  padding: 0 15px;
-  border: 1px solid #e9ebee;
-  border-radius: 999px;
-  background: #fff;
-  color: #66707d;
-  font-size: 0.8125rem;
-  font-weight: 590;
+.evo-tools-hub .evo-tools-storage-heading h1 {
+  margin: 0;
+  color: #545456;
+  font-size: clamp(22px, 6vw, 27px);
+  font-weight: 680;
+  letter-spacing: -.7px;
+  line-height: 1.2;
   white-space: nowrap;
 }
-.evo-tools-hub .evo-tools-filters button.is-active {
-  border-color: #252a32;
-  background: #252a32;
-  color: #fff;
+.evo-tools-hub .evo-tools-storage-subtitle {
+  color: #8e8e93;
+  font-size: 12px;
+  white-space: nowrap;
 }
-.evo-tools-hub .evo-tools-section { margin: 0 0 28px; }
+.evo-tools-hub .evo-tools-storage-usage {
+  flex: 0 1 44%;
+  min-width: 80px;
+}
+.evo-tools-hub .evo-tools-storage-track {
+  width: 100%;
+  height: 17px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #aaa;
+}
+.evo-tools-hub .evo-tools-storage-track span {
+  display: block;
+  height: 100%;
+  min-width: 0;
+  border-radius: inherit;
+  background: #080808;
+}
+.evo-tools-hub .evo-tools-storage-grid {
+  display: grid;
+  width: 100%;
+  max-width: 340px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 13px;
+}
+.evo-tools-hub .evo-tools-storage-card {
+  display: flex;
+  min-width: 0;
+  height: 148px;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 14px 13px 13px;
+  border: 1px solid #e5e5e9;
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: none;
+  text-align: left;
+  transition: background-color 140ms ease, border-color 140ms ease;
+}
+.evo-tools-hub .evo-tools-card-top {
+  display: flex;
+  min-width: 21px;
+  min-height: 22px;
+  align-items: center;
+  color: #202127;
+}
+.evo-tools-hub .evo-tools-card-bottom { display: flex; flex-direction: column; min-width: 0; width: 100%; gap: 4px; }
+.evo-tools-hub .evo-tools-card-bottom strong {
+  overflow: hidden;
+  color: #262629;
+  font-size: 14px;
+  font-weight: 640;
+  letter-spacing: -.2px;
+  line-height: 1.3;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.evo-tools-hub .evo-tools-card-bottom small {
+  color: #98989d;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.3;
+}
+.evo-tools-hub .evo-tools-apps-section { margin-top: 58px; }
+.evo-tools-hub .evo-tools-community-section { margin-top: 40px; }
 .evo-tools-hub .evo-tools-section-heading {
   display: flex;
-  min-height: 24px;
-  align-items: baseline;
+  align-items: center;
   justify-content: space-between;
-  gap: 8px;
-  margin-bottom: 13px;
+  min-height: 27px;
+  gap: 10px;
+  margin-bottom: 11px;
 }
-.evo-tools-hub .evo-tools-section-heading h2 {
+.app-shell.reference-shell .ref-app .evo-tools-hub .evo-tools-section-heading h2 {
   margin: 0;
-  color: #252a32;
-  font-size: 1rem;
-  font-weight: 680;
-  letter-spacing: -.25px;
+  color: #222326;
+  font-size: 20px;
+  font-weight: 650;
+  letter-spacing: -.45px;
   line-height: 1.3;
 }
-.evo-tools-hub .evo-tools-section-heading span {
-  color: #5b6472;
-  font-size: 0.75rem;
-  white-space: nowrap;
+.evo-tools-hub .evo-tools-discover {
+  min-height: 40px;
+  padding: 0 2px 0 14px;
+  border: 0;
+  background: transparent;
+  color: #929297;
+  font-size: 14px;
+  font-weight: 440;
 }
-.evo-tools-hub .evo-tools-creation-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
-}
-.evo-tools-hub .evo-tools-creation-card {
-  position: relative;
-  display: flex;
-  min-width: 0;
-  min-height: 152px;
-  flex-direction: column;
-  align-items: flex-start;
-  padding: 14px;
-  border: 1px solid #e8eaee;
-  border-radius: 19px;
-  background: #fff;
-  text-align: left;
-  box-shadow: none;
-}
-.evo-tools-hub .evo-tools-creation-card:disabled { opacity: .64; cursor: not-allowed; }
-.evo-tools-hub .evo-tools-icon,
-.evo-tools-hub .evo-tools-provider-logo {
-  display: grid;
-  width: 48px;
-  height: 48px;
-  flex: 0 0 48px;
-  place-items: center;
-  border: 1px solid #eceef2;
-  border-radius: 16px;
-  background: #f5f6f8;
-  color: #4e5968;
-}
-.evo-tools-hub .evo-tools-creation-card strong {
-  display: block;
-  margin-top: 14px;
-  color: #252a32;
-  font-size: 0.9375rem;
-  font-weight: 670;
-  line-height: 1.25;
-}
-.evo-tools-hub .evo-tools-creation-card small {
-  display: block;
-  margin-top: 5px;
-  padding-right: 10px;
-  color: #5b6472;
-  font-size: 0.75rem;
-  line-height: 1.3;
-}
-.evo-tools-hub .evo-tools-card-arrow {
-  position: absolute;
-  right: 14px;
-  bottom: 15px;
-  color: #5b6472;
-}
-.evo-tools-hub .evo-tools-list {
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-  border-top: 1px solid #eef0f3;
-}
-.evo-tools-hub .evo-tools-nav-row,
-.evo-tools-hub .evo-tools-integration-row {
+.evo-tools-hub .evo-tools-apps-list { display: flex; flex-direction: column; }
+.evo-tools-hub .evo-tools-app-row {
   display: flex;
   width: 100%;
   min-width: 0;
-  min-height: 73px;
+  min-height: 87px;
   align-items: center;
-  gap: 12px;
-  padding: 10px 0;
+  gap: 14px;
+  padding: 12px 0;
   border: 0;
-  border-bottom: 1px solid #eef0f3;
+  border-bottom: 1px solid #f0f0f2;
   background: #fff;
   text-align: left;
+  transition: background-color 140ms ease;
 }
-.evo-tools-hub .evo-tools-nav-row > svg:last-child {
-  flex: none;
-  margin-left: auto;
-  color: #5b6472;
+.evo-tools-hub .evo-tools-app-row:last-child { border-bottom: 0; }
+.evo-tools-hub .evo-tools-provider-logo,
+.evo-tools-hub .evo-tools-community-icon {
+  display: grid;
+  flex: 0 0 55px;
+  width: 55px;
+  height: 55px;
+  place-items: center;
+  border: 1px solid #f0f0f2;
+  border-radius: 15px;
+  background: #fff;
+  color: #27272a;
+}
+.evo-tools-hub .evo-tools-provider-logo img {
+  display: block;
+  width: 35px;
+  height: 35px;
+  object-fit: contain;
 }
 .evo-tools-hub .evo-tools-row-copy {
   display: flex;
   min-width: 0;
-  flex: 1 1 auto;
+  flex: 1;
   flex-direction: column;
   gap: 4px;
 }
 .evo-tools-hub .evo-tools-row-copy strong {
   overflow: hidden;
-  color: #252a32;
-  font-size: 0.875rem;
-  font-weight: 650;
-  line-height: 1.3;
+  color: #252528;
+  font-size: 17px;
+  font-weight: 550;
+  letter-spacing: -.35px;
+  line-height: 1.25;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 .evo-tools-hub .evo-tools-row-copy small {
   overflow: hidden;
-  color: #5b6472;
-  font-size: 0.75rem;
+  color: #8f8f93;
+  font-size: 13px;
+  font-weight: 410;
   line-height: 1.35;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.evo-tools-hub .evo-tools-provider-logo {
-  background: #fff;
-  border-color: #5b6472;
-}
-.evo-tools-hub .evo-tools-provider-logo img { display: block; width: 27px; height: 27px; object-fit: contain; }
-.evo-tools-hub .evo-tools-connect {
-  flex: none;
-  min-height: 36px;
-  padding: 0 12px;
-  border: 1px solid #e8eaee;
-  border-radius: 999px;
-  background: #f6f7f9;
-  color: #353b46;
-  font-size: 0.75rem;
-  font-weight: 620;
-}
-.evo-tools-hub .evo-tools-coming-badge { flex: none; padding: 5px 8px; border-radius: 999px; background: #f1f2f4; color: #5b6472; font-size: .6875rem; font-weight: 650; white-space: nowrap; }
-.evo-tools-hub .evo-tools-disclaimer {
-  margin: 12px 0 0;
-  color: #5b6472;
-  font-size: 0.75rem;
-  line-height: 1.5;
-}
+.evo-tools-hub .evo-tools-app-row > svg:last-child { flex: none; margin-left: auto; color: #a1a1a6; }
 .evo-tools-hub .evo-tools-empty {
   display: flex;
   align-items: center;
   flex-direction: column;
-  gap: 9px;
-  padding: 30px 12px;
+  gap: 10px;
+  padding: 60px 12px 40px;
+  color: #9c9ca1;
   text-align: center;
-  color: #89919d;
 }
-.evo-tools-hub .evo-tools-empty strong { color: #252a32; font-size: 1rem; }
-.evo-tools-hub .evo-tools-empty p { margin: 0; max-width: 270px; font-size: 0.8125rem; line-height: 1.5; }
+.evo-tools-hub .evo-tools-empty strong { color: #262629; font-size: 16px; }
+.evo-tools-hub .evo-tools-empty p { margin: 0; font-size: 14px; }
 .evo-tools-hub .evo-tools-empty button {
   min-height: 44px;
-  margin-top: 7px;
+  margin-top: 8px;
   padding: 0 18px;
-  border: 1px solid #e8eaee;
+  border: 1px solid #dedee2;
   border-radius: 999px;
   background: #fff;
-  font-size: 0.8125rem;
+  color: #252529;
+  font-size: 14px;
 }
-.evo-tools-hub .evo-tools-dialog-backdrop {
-  display: flex;
-  overflow-y: auto;
-}
+.evo-tools-hub .evo-tools-dialog-backdrop { display: flex; overflow-y: auto; }
 .evo-tools-hub .evo-tools-dialog {
   position: relative;
   width: min(100%, 480px);
   max-height: 86dvh;
   overflow-y: auto;
   padding: 24px;
-  border: 1px solid #e9ebef;
+  border: 1px solid #e8e8ec;
   border-radius: 24px;
   background: #fff;
 }
-@media (min-width: 700px) {
-  .evo-tools-hub .evo-tools-dialog { align-self: center; }
+.evo-tools-hub .evo-tools-dialog-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 18px;
 }
+.evo-tools-hub .evo-tools-dialog-heading h2 { margin: 0; color: #202127; font-size: 23px; font-weight: 650; }
 .evo-tools-hub .evo-tools-dialog-close {
-  position: absolute;
-  top: 16px;
-  right: 16px;
   display: grid;
-  width: 44px;
-  height: 44px;
+  width: 42px;
+  height: 42px;
   place-items: center;
   border: 0;
   border-radius: 50%;
-  background: #f5f6f8;
+  background: #f5f5f7;
 }
-.evo-tools-hub .evo-tools-dialog h2 { margin: 16px 0 7px; font-size: 1.375rem; color: #252a32; }
-.evo-tools-hub .evo-tools-dialog p { color: #7f8793; font-size: 0.875rem; line-height: 1.5; }
+.evo-tools-hub .evo-tools-dialog p { color: #77777e; font-size: 14px; line-height: 1.5; }
 .evo-tools-hub .evo-tools-dialog-status {
-  margin: 20px 0 14px;
-  padding: 13px;
-  border: 1px solid #eceef2;
+  margin: 19px 0 14px;
+  padding: 13px 14px;
+  border: 1px solid #e9e9ed;
   border-radius: 14px;
-  background: #f8f9fa;
-  color: #626c78;
-  font-size: 0.8125rem;
+  background: #f8f8fa;
+  color: #707077;
+  font-size: 13px;
   line-height: 1.5;
 }
 .evo-tools-hub .evo-tools-dialog-connect {
   width: 100%;
   min-height: 48px;
-  border: 0;
-  border-radius: 14px;
-  background: #e9ebee;
-  color: #5b6472;
-  font-size: 0.875rem;
-  font-weight: 650;
-  cursor: not-allowed;
+  padding: 0 16px;
+  border: 1px solid #dedee2;
+  border-radius: 999px;
+  background: #fff;
+  color: #202127;
+  font-size: 14px;
+  font-weight: 550;
 }
-.evo-tools-hub .evo-tools-dialog-footnote { margin: 12px 0 0; font-size: 0.75rem !important; }
+.evo-tools-hub .evo-tools-dialog-connect:disabled { background: #f7f7f8; color: #86868b; }
+.evo-tools-hub .evo-tools-dialog-footnote { margin: 12px 0 0; font-size: 12px !important; }
 @media (max-width: 350px) {
-  .evo-tools-hub .evo-tools-filters { gap: 6px; }
-  .evo-tools-hub .evo-tools-filters button { padding-inline: 11px; font-size: 0.75rem; }
-  .evo-tools-hub .evo-tools-creation-grid { gap: 9px; }
-  .evo-tools-hub .evo-tools-creation-card { padding: 11px; }
-  .evo-tools-hub .evo-tools-row-copy strong { font-size: 0.8125rem; }
-  .evo-tools-hub .evo-tools-connect { padding-inline: 9px; }
+  .app-shell.reference-shell .ref-app .evo-tools-hub { padding-inline: 17px !important; }
+  .evo-tools-hub .evo-tools-storage-heading h1 { font-size: 21px; }
+  .evo-tools-hub .evo-tools-storage-grid { gap: 10px; }
+  .evo-tools-hub .evo-tools-app-row { gap: 11px; }
+  .evo-tools-hub .evo-tools-provider-logo,
+  .evo-tools-hub .evo-tools-community-icon { width: 49px; height: 49px; flex-basis: 49px; }
 }
-@media (hover:hover) and (pointer:fine) {
-  .evo-tools-hub .evo-tools-nav-row:hover,
-  .evo-tools-hub .evo-tools-integration-row:hover { background: #fafbfc; }
-  .evo-tools-hub .evo-tools-creation-card:not(:disabled):hover { background: #fafbfc; }
+@media (hover: hover) and (pointer: fine) {
+  .evo-tools-hub .evo-tools-storage-card:hover,
+  .evo-tools-hub .evo-tools-app-row:hover { background: #fafafa; }
+  .evo-tools-hub .evo-tools-discover:hover { color: #29292d; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .evo-tools-hub *, .evo-tools-hub *::before, .evo-tools-hub *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; }
+  .evo-tools-hub *, .evo-tools-hub *::before, .evo-tools-hub *::after { transition: none !important; }
 }

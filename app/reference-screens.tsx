@@ -312,7 +312,7 @@ export default function ReferenceScreens(props: Props) {
   else if (view === "chat") content = <ChatInterface />
   else if (view === "brainstorm") content = <Brainstorm />
   else if (view === "space") content = <LibrarySpace />
-  else if (view === "utility") content = <ToolsHub onUpload={props.onUploadFile} onFriends={props.onOpenFriends} onLeaderboard={props.onOpenLeaderboard} />
+  else if (view === "utility") content = <ToolsHub onUpload={props.onUploadFile} onOpenLibrary={() => onView("space")} onFriends={props.onOpenFriends} onLeaderboard={props.onOpenLeaderboard} />
   else if (view === "auth") content = <AuthScreen onBack={onAppBack} initialRegister={registerAuth} onModeChange={onAuthModeChange} />
   else content = <Profile name={userName} avatarImage={avatarImage} avatarFallback={avatarFallback} onEdit={onEditProfile} onEditAvatar={props.onEditAvatar} onLogin={() => onView("auth")} />
 
