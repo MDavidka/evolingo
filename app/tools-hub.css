@@ -312,3 +312,71 @@
 @media (prefers-reduced-motion: reduce) {
   .evo-tools-hub *, .evo-tools-hub *::before, .evo-tools-hub *::after { transition: none !important; }
 }
+
+/* Screenshot refinement — airy spacing, subtle corners and SVG brand marks. */
+.app-shell.reference-shell .ref-app .evo-tools-hub {
+  margin-top: 20px;
+  padding-inline: clamp(18px, 5.4vw, 28px) !important;
+  background: #fff !important;
+}
+.evo-tools-hub .evo-tools-search {
+  height: 54px;
+  border-color: #dadade;
+  border-radius: 999px;
+  box-shadow: 0 2px 6px #18181b08;
+}
+.evo-tools-hub .evo-tools-search:focus-within {
+  border-color: #b6b6bd;
+  box-shadow: 0 0 0 3px #20212709;
+}
+.evo-tools-hub .evo-tools-storage-section { margin-top: 48px; }
+.evo-tools-hub .evo-tools-storage-heading { min-height: 36px; margin-bottom: 30px; }
+.evo-tools-hub .evo-tools-storage-grid { max-width: 345px; gap: 14px; }
+.evo-tools-hub .evo-tools-storage-card {
+  height: 152px;
+  border-radius: 20px;
+  border-color: #e6e6e9;
+  box-shadow: 0 1px 3px #18181b05;
+}
+.evo-tools-hub .evo-tools-storage-card strong { font-weight: 630; }
+.evo-tools-hub .evo-tools-storage-card small { color: #96969b; }
+.evo-tools-hub .evo-tools-apps-section { margin-top: 60px; }
+.evo-tools-hub .evo-tools-section-heading { min-height: 37px; margin-bottom: 3px; }
+.app-shell.reference-shell .ref-app .evo-tools-hub .evo-tools-section-heading h2 {
+  font-size: 21px;
+  letter-spacing: -.5px;
+}
+.evo-tools-hub .evo-tools-app-row {
+  min-height: 92px;
+  gap: 15px;
+  padding: 13px 0;
+  border-bottom-color: #f0f0f2;
+}
+.evo-tools-hub .evo-tools-provider-logo,
+.evo-tools-hub .evo-tools-community-icon {
+  flex-basis: 56px;
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  border-color: #eeeef1;
+  background: #fff;
+}
+.evo-tools-hub .evo-tools-provider-logo img {
+  width: 39px;
+  height: 39px;
+  object-fit: contain;
+}
+.evo-tools-hub .evo-tools-row-copy { gap: 5px; }
+.evo-tools-hub .evo-tools-row-copy strong { font-size: 18px; font-weight: 550; letter-spacing: -.4px; }
+.evo-tools-hub .evo-tools-row-copy small { font-size: 13.5px; color: #909097; }
+.evo-tools-hub .evo-tools-dialog { border-radius: 24px; }
+.evo-tools-hub .evo-tools-dialog-status { border-radius: 14px; }
+.evo-tools-hub :is(button, input):focus-visible { outline: 2px solid #202127; outline-offset: 3px; }
+@media (max-width: 350px) {
+  .evo-tools-hub .evo-tools-storage-grid { gap: 10px; }
+  .evo-tools-hub .evo-tools-app-row { gap: 10px; }
+  .evo-tools-hub .evo-tools-provider-logo,
+  .evo-tools-hub .evo-tools-community-icon { width: 49px; height: 49px; flex-basis: 49px; }
+  .evo-tools-hub .evo-tools-provider-logo img { width: 34px; height: 34px; }
+  .evo-tools-hub .evo-tools-row-copy strong { font-size: 16px; }
+}

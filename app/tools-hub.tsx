@@ -15,7 +15,7 @@ type Integration = {
   id: string
   title: string
   description: string
-  domain: string
+  icon: string
   detail: string
   keywords: string
 }
@@ -24,32 +24,32 @@ type Integration = {
 const integrations: Integration[] = [
   {
     id: "gmail", title: "Gmail", description: "E-mailek és üzenetek",
-    domain: "mail.google.com", detail: "E-mailek és mellékletek felhasználása a tanuláshoz.",
+    icon: "gmail.svg", detail: "E-mailek és mellékletek felhasználása a tanuláshoz.",
     keywords: "gmail google levelezes email",
   },
   {
     id: "google-drive", title: "Google Drive", description: "Fájlok és dokumentumok",
-    domain: "drive.google.com", detail: "Dokumentumok és tananyagok kiválasztása a Google Drive-ból.",
+    icon: "drive.svg", detail: "Dokumentumok és tananyagok kiválasztása a Google Drive-ból.",
     keywords: "google drive felho fajl dokumentum",
   },
   {
     id: "google-calendar", title: "Google Naptár", description: "Naptár és események",
-    domain: "calendar.google.com", detail: "Tanulási események és határidők áttekintése.",
+    icon: "google-calendar.svg", detail: "Tanulási események és határidők áttekintése.",
     keywords: "google calendar naptar esemenyek",
   },
   {
     id: "github", title: "GitHub", description: "Projektek és adattárak",
-    domain: "github.com", detail: "Projektek, kódtárak és dokumentációk elérése.",
+    icon: "github.svg", detail: "Projektek, kódtárak és dokumentációk elérése.",
     keywords: "github kod repozitorium fejlesztes",
   },
   {
     id: "notion", title: "Notion", description: "Jegyzetek és tudásbázisok",
-    domain: "notion.so", detail: "Jegyzetek és tanulási anyagok elérése.",
+    icon: "notion.svg", detail: "Jegyzetek és tanulási anyagok elérése.",
     keywords: "notion jegyzetek tanulas",
   },
   {
     id: "slack", title: "Slack", description: "Csapatok és beszélgetések",
-    domain: "slack.com", detail: "Tanuláshoz kapcsolódó csatornák és üzenetek elérése.",
+    icon: "slack.svg", detail: "Tanuláshoz kapcsolódó csatornák és üzenetek elérése.",
     keywords: "slack chat uzenetek csapat",
   },
 ]
@@ -61,10 +61,10 @@ function normalize(value: string) {
 function ProviderLogo({ provider }: { provider: Integration }) {
   return <span className="evo-tools-provider-logo">
     <img
-      src={"https://www.google.com/s2/favicons?domain=" + provider.domain + "&sz=64"}
+      src={"/icons/svgl/" + provider.icon}
       alt=""
-      width={35}
-      height={35}
+      width={39}
+      height={39}
       loading="lazy"
     />
   </span>
@@ -115,7 +115,7 @@ export default function ToolsHub({ onUpload, onOpenLibrary, onFriends, onLeaderb
   const matches = (value: string) => normalize(value).includes(search)
   const storageActions = useMemo(() => [
     { id: "library", name: "Könyvtár", description: fileCount === null ? "Saját fájlok" : fileCount + " fájl", Icon: FolderOpen, action: onOpenLibrary },
-    { id: "upload", name: "Új fájl", description: "Feltöltés", Icon: Plus, action: onUpload },
+    { id: "upload", name: "Új fájl", description: "Fájl feltöltése", Icon: Plus, action: onUpload },
   ], [fileCount, onOpenLibrary, onUpload])
   const visibleStorage = storageActions.filter(item => matches(item.name + " " + item.description + " fájl tárhely felhő"))
   const community = [
@@ -151,17 +151,17 @@ export default function ToolsHub({ onUpload, onOpenLibrary, onFriends, onLeaderb
 
     {visibleStorage.length > 0 && <section className="evo-tools-storage-section" aria-labelledby="evo-tools-storage-title">
       <div className="evo-tools-storage-heading">
-        <h1 id="evo-tools-storage-title">Felhőtárhely</h1>
+        <h1 id="evo-tools-storage-title">{storage ? "Felhőtárhely" : "Tárhely"}</h1>
         {usage !== null ? <div className="evo-tools-storage-usage">
           <div className="evo-tools-storage-track" role="progressbar" aria-label="Tárhelyhasználat" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(usage)}>
             <span style={{ width: usage + "%" }} />
           </div>
-        </div> : <span className="evo-tools-storage-subtitle">Saját fájlok</span>}
+        </div> : <span className="evo-tools-storage-subtitle">Helyi fájlok</span>}
       </div>
       <div className="evo-tools-storage-grid">
         {visibleStorage.map(({ id, name, description, Icon, action }) =>
           <button key={id} type="button" className="evo-tools-storage-card" onClick={action}>
-            <span className="evo-tools-card-top"><Icon size={20} strokeWidth={1.8} aria-hidden="true" /></span>
+            <span className="evo-tools-card-top"><Icon size={21} strokeWidth={1.7} aria-hidden="true" /></span>
             <span className="evo-tools-card-bottom"><strong>{name}</strong><small>{description}</small></span>
           </button>
         )}
