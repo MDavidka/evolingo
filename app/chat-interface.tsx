@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState, type FormEvent, type KeyboardEvent } from "react"
 import { ArrowUp, Check, Copy, Plus, Camera, Image as ImageIcon, FileText, Mic, X } from "lucide-react"
 import { Button as AppsButton } from "@openai/apps-sdk-ui/components/Button"
-import { Markdown as AppsMarkdown } from "@openai/apps-sdk-ui/components/Markdown"
+import ChatRichText from "./chat-rich-text"
 import { MAX_IMAGE_BYTES, MAX_TEXT_BYTES, IMAGE_TYPES, TEXT_EXTENSIONS, type ChatAttachment } from "./chat-attachments"
 import { activeChatSessionId, readChatSessions, saveChatSession, setActiveChatSessionId } from "./chat-sessions"
 
@@ -354,7 +354,7 @@ export default function ChatInterface() {
     <div className="evo-chat-messages" ref={scroll} onScroll={event => { const node = event.currentTarget; wasAtBottom.current = node.scrollHeight - node.scrollTop - node.clientHeight < 80 }} role="log" aria-label="Beszélgetés">
       {messages.length > 0 && <div className="evo-chat-thread">
         {messages.map((item, index) => <div key={item.id ?? `${item.role}-${index}`} className={`evo-chat-entry evo-chat-entry--${item.role}`}>
-          <div className="evo-chat-entry-main"><div className="evo-chat-bubble">{item.role === "assistant" ? <AppsMarkdown includeMath breakNewLines copyableCodeBlocks>{item.content}</AppsMarkdown> : item.content}</div>
+          <div className="evo-chat-entry-main"><div className="evo-chat-bubble">{item.role === "assistant" ? <ChatRichText text={item.content} /> : item.content}</div>
             {item.role === "assistant" && <button type="button" className="evo-chat-copy" aria-label="Válasz másolása" onClick={() => void copyMessage(item.content, index)}>{copied === index ? <Check size={16} /> : <Copy size={16} />}<span>{copied === index ? "Másolva" : "Másolás"}</span></button>}
           </div>
         </div>)}
