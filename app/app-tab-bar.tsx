@@ -13,9 +13,7 @@ const BooksIcon = mage("book-text")
 const FoldersIcon = mage("folder")
 const PuzzlePieceIcon = mage("dashboard-4")
 const LightbulbIcon = mage("light-bulb")
-const ChatCircleDotsIcon = mage("message-dots-round")
 const NotePencilIcon = mage("note-text")
-const UserCircleIcon = mage("user-circle")
 
 import { deleteChatSession, notifyChatSessionAction, readChatSessions, renameChatSession, type ChatSession } from "./chat-sessions"
 
@@ -23,12 +21,10 @@ export type AppTab = "learn" | "ai" | "files" | "tools" | "profile" | "brainstor
 type Props = { activeTab: AppTab; onSelect: (tab: AppTab) => void; avatarImage: string; avatar: string; userName: string; stars?: number; streak?: number; onOpenLeaderboard?: () => void }
 
 const quickLinks = [
-  { label: "AI chat", Icon: ChatCircleDotsIcon, target: "ai" },
   { label: "Témák", Icon: BooksIcon, target: "learn" },
   { label: "Könyvtár", Icon: FoldersIcon, target: "files" },
   { label: "Eszközök", Icon: PuzzlePieceIcon, target: "tools" },
   { label: "Ötletbörze", Icon: LightbulbIcon, target: "brainstorm" },
-  { label: "Profil", Icon: UserCircleIcon, target: "profile" },
 ] as const
 
 function dateGroup(timestamp: number) {
@@ -47,6 +43,7 @@ export default function AppTabBar({ activeTab, onSelect, avatarImage, userName }
   const [searchOpen, setSearchOpen] = useState(false)
   const [query, setQuery] = useState("")
   const trigger = useRef<HTMLButtonElement>(null)
+  const savedPageScroll = useRef(0)
   const dialog = useRef<HTMLElement>(null)
   const swipeStart = useRef<{ x: number; y: number; targetInPanel: boolean } | null>(null)
   const openRef = useRef(open)
@@ -61,6 +58,12 @@ export default function AppTabBar({ activeTab, onSelect, avatarImage, userName }
   }, [])
   const show = useCallback(() => {
     document.querySelector<HTMLTextAreaElement>(".ref-view-chat textarea")?.blur()
+    // Témák and other long pages must reveal the same full-height foreground.
+    // Preserve their scroll position and restore it only after the drawer closes.
+    if (window.matchMedia("(max-width: 767px)").matches) {
+      savedPageScroll.current = window.scrollY
+      if (savedPageScroll.current > 0) window.scrollTo(0, 0)
+    }
     setRenderSidebar(true)
     setOpen(true)
   }, [])
@@ -173,6 +176,14 @@ export default function AppTabBar({ activeTab, onSelect, avatarImage, userName }
     }
   }, [open, renderSidebar])
 
+  useEffect(() => {
+    if (!open && !renderSidebar && savedPageScroll.current > 0) {
+      const position = savedPageScroll.current
+      savedPageScroll.current = 0
+      requestAnimationFrame(() => window.scrollTo(0, position))
+    }
+  }, [open, renderSidebar])
+
   const trapFocus = (event: ReactKeyboardEvent<HTMLElement>) => {
     if (event.key !== "Tab" || !dialog.current) return
     const items = [...dialog.current.querySelectorAll<HTMLElement>('button:not([disabled]), a[href], input:not([disabled]), [tabindex]:not([tabindex="-1"])')]
@@ -182,7 +193,7 @@ export default function AppTabBar({ activeTab, onSelect, avatarImage, userName }
     else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus() }
   }
 
-  const select = (tab: AppTab) => { onSelect(tab); close(false) }
+  const select = (tab: AppTab) => { savedPageScroll.current = 0; onSelect(tab); close(false) }
   const startNew = () => { notifyChatSessionAction("new"); select("ai") }
   const openChat = (id: string) => { notifyChatSessionAction("open", id); select("ai") }
   const onProfile = () => select("profile")

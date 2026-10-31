@@ -466,3 +466,31 @@ html:has(.ref-view-chat)::before {
 @media (max-width: 360px) {
   .ref-view-chat .evo-chat-bottom { padding-inline: 12px !important; }
 }
+
+/* Latest chat turn gets its own readable space; the input never touches a reply. */
+.ref-view-chat .evo-chat-messages {
+  scroll-padding-top: 16px;
+}
+.ref-view-chat .evo-chat-thread {
+  gap: 30px;
+  padding: 18px 0 38px;
+  margin-top: 0;
+}
+.ref-view-chat .evo-chat-entry--assistant .evo-chat-entry-main { max-width: 100%; width: 100%; }
+.ref-view-chat .evo-chat-entry--assistant .evo-chat-bubble {
+  font-size: 17px;
+  line-height: 1.72;
+  letter-spacing: -.1px;
+}
+.ref-view-chat .evo-chat-entry--user .evo-chat-bubble { font-size: 16px; line-height: 1.55; }
+.ref-view-chat .evo-chat-turn-spacer { flex: 0 0 auto; height: 0; pointer-events: none; }
+.ref-view-chat .evo-chat-bottom {
+  padding-top: 24px !important;
+}
+@media (max-width: 390px) {
+  .ref-view-chat .evo-chat-thread { gap: 26px; }
+  .ref-view-chat .evo-chat-entry--assistant .evo-chat-bubble { font-size: 16.5px; }
+}
+@media (max-height: 620px) {
+  .ref-view-chat .evo-chat-bottom { padding-top: 12px !important; }
+}

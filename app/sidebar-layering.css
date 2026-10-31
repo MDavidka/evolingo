@@ -25,15 +25,20 @@
     background-color: #fff !important;
   }
 
-  /* The secondary grey canvas is only exposed while the drawer is open.
-     During its closing transition the foreground remains white. */
+  /* The secondary canvas uses the same white as the foreground.
+     Depth comes from the raised sheet shadow, not a different background tint. */
   html.evo-sidebar-layer-open,
   html.evo-sidebar-layer-open body,
   html.evo-sidebar-layer-open body:has(.ref-view-chat) {
-    background-color: #f5f5f7 !important;
+    background-color: #fff !important;
   }
   html.evo-sidebar-layer-open:has(.ref-view-chat)::before {
-    background: #f5f5f7 !important;
+    background: #fff !important;
+  }
+  html.evo-sidebar-layer-open,
+  html.evo-sidebar-layer-open body {
+    overflow: hidden !important;
+    overscroll-behavior: none;
   }
 
   body:has(.evo-sidebar-host) .app-shell {
@@ -63,7 +68,7 @@
     height: 100dvh !important;
     border: 0 !important;
     border-radius: 0 !important;
-    background: #f5f5f7 !important;
+    background: #fff !important;
     box-shadow: none !important;
     -webkit-backdrop-filter: none !important;
     backdrop-filter: none !important;
@@ -103,6 +108,22 @@
 
   html.evo-sidebar-layer-open body .app-shell.reference-shell {
     background: #fff !important;
+    overflow: hidden !important;
+  }
+
+  /* The Témák page is normally document-scrolled and its reference-shell
+     explicitly allows overflow. Freeze the raised sheet to the visual
+     viewport only while the menu is open, including its inner screen. */
+  html.evo-sidebar-layer-open body .app-shell.reference-shell:has(.ref-view-home) {
+    height: 100dvh !important;
+    max-height: 100dvh !important;
+    min-height: 100dvh !important;
+    overflow: hidden !important;
+  }
+  html.evo-sidebar-layer-open body .app-shell.reference-shell:has(.ref-view-home) > .screen-content,
+  html.evo-sidebar-layer-open body .app-shell.reference-shell:has(.ref-view-home) .ref-app.ref-view-home {
+    height: 100dvh !important;
+    min-height: 0 !important;
     overflow: hidden !important;
   }
 

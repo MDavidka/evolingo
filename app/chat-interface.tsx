@@ -35,9 +35,20 @@ export default function ChatInterface() {
   const [sessionId, setSessionId] = useState("")
   const scroll = useRef<HTMLDivElement>(null)
   const input = useRef<HTMLTextAreaElement>(null)
+  const turnSpacer = useRef<HTMLDivElement>(null)
+  const latestSentUser = useRef<string | null>(null)
+  const followNewestTurn = useRef(true)
+  const lastAutomaticScroll = useRef<number | null>(null)
   const wasAtBottom = useRef(true)
   const wasAtBottomOnFocus = useRef(true)
   const blurTimer = useRef<number | null>(null)
+
+  const resetTurnPosition = () => {
+    latestSentUser.current = null
+    followNewestTurn.current = true
+    lastAutomaticScroll.current = null
+    if (turnSpacer.current) turnSpacer.current.style.height = "0px"
+  }
 
   useEffect(() => {
     try {
@@ -78,6 +89,7 @@ export default function ChatInterface() {
       const selected = readChatSessions().find(session => session.id === id)
       if (!selected) return
       const safe = selected.messages.slice(-16).map(({ role, content, id }) => ({ role, content, id }))
+      resetTurnPosition()
       setSessionId(selected.id)
       setActiveChatSessionId(selected.id)
       setMessages(safe)
@@ -143,6 +155,31 @@ export default function ChatInterface() {
   useEffect(() => {
     const container = scroll.current
     if (!container) return
+    const sentId = latestSentUser.current
+    const spacer = turnSpacer.current
+    if (sentId && spacer) {
+      const sent = [...container.querySelectorAll<HTMLElement>(".evo-chat-entry--user")]
+        .find(entry => entry.dataset.messageId === sentId)
+      if (sent) {
+        // Give the latest exchange enough scroll range to place the user's
+        // message at the top, while the assistant grows naturally beneath it.
+        spacer.style.height = "0px"
+        const userTop = sent.getBoundingClientRect().top - container.getBoundingClientRect().top + container.scrollTop
+        const contentAfterUser = container.scrollHeight - userTop
+        spacer.style.height = Math.max(0, container.clientHeight - contentAfterUser + 22) + "px"
+        if (followNewestTurn.current) {
+          const assistants = container.querySelectorAll<HTMLElement>(".evo-chat-entry--assistant")
+          const lastAssistant = assistants[assistants.length - 1]
+          const replyReachesBottom = !!lastAssistant &&
+            lastAssistant.getBoundingClientRect().bottom - sent.getBoundingClientRect().top > container.clientHeight - 36
+          container.scrollTop = replyReachesBottom
+            ? container.scrollHeight - container.clientHeight
+            : Math.max(0, userTop - 14)
+          lastAutomaticScroll.current = container.scrollTop
+        }
+        return
+      }
+    }
     const distance = container.scrollHeight - container.scrollTop - container.clientHeight
     if (wasAtBottom.current || distance < 140) container.scrollTop = container.scrollHeight
   }, [messages, busy, error])
@@ -182,7 +219,11 @@ export default function ChatInterface() {
   async function send(text: string) {
     const content = text.trim()
     if ((!content && !attachment) || busy) return
-    const next: ChatMessage[] = [...messages, { id: crypto.randomUUID(), role: "user", content: content || "Elemezd a csatolt fájlt.", ...(attachment ? { attachmentName: attachment.name } : {}) }]
+    const userId = crypto.randomUUID()
+    latestSentUser.current = userId
+    followNewestTurn.current = true
+    lastAutomaticScroll.current = null
+    const next: ChatMessage[] = [...messages, { id: userId, role: "user", content: content || "Elemezd a csatolt fájlt.", ...(attachment ? { attachmentName: attachment.name } : {}) }]
     const assistantId = crypto.randomUUID()
     setMessages(next)
     window.dispatchEvent(new CustomEvent("evolingo:chat-message-sent"))
@@ -338,6 +379,7 @@ export default function ChatInterface() {
 
   function startNewChat(focus = true) {
     if (busy) return
+    resetTurnPosition()
     const nextId = crypto.randomUUID()
     setSessionId(nextId)
     setActiveChatSessionId(nextId)
@@ -360,14 +402,24 @@ export default function ChatInterface() {
   return <><style>{`\n.evo-chat-frame{background:transparent!important;border:0!important;border-radius:0!important;color:#181818;min-height:0;}\n.evo-chat-messages{min-height:0!important;flex:1!important}.evo-chat-bottom{width:100%!important}.evo-chat-composer{max-width:100%!important}.evo-chat-toolbar{background:transparent!important;border:0!important;box-shadow:none!important;}\n.evo-chat-title{display:flex;align-items:center;gap:6px}.evo-chat-title span{display:none}.evo-chat-title strong{font-size:var(--evo-size-row);font-weight:650}\n.evo-chat-welcome{padding-top:12vh}.evo-chat-welcome h1{font-size:var(--evo-size-hero);letter-spacing:-.8px}.evo-chat-welcome p{color:#6b7280;font-size:var(--evo-size-support)}\n.evo-chat-mark{background:transparent!important;border:0!important;box-shadow:none!important;width:68px;height:68px;margin-inline:auto}.evo-chat-mark img{width:100%;height:100%;object-fit:contain}\n.evo-chat-composer{background:#fff!important;border:1px solid #e9e9ed!important;border-radius:26px !important;box-shadow:0 5px 22px #33415513!important;display:flex;align-items:center;gap:7px;padding:7px 9px!important;min-height:54px}\n.evo-chat-composer[data-focused="true"]{border-radius:14px!important;box-shadow:0 5px 20px #33415518!important}.evo-composer-surface:has(.evo-chat-composer[data-focused="true"]){border-radius:18px!important}\n.evo-chat-composer textarea{flex:1;min-width:0;font-size:var(--evo-size-body) !important;background:transparent!important;resize:none}.evo-chat-attach,.evo-chat-mic{display:grid;place-items:center;flex:none;width:30px;height:36px;border:0;background:transparent;color:#9da1aa;padding:0}.evo-chat-model{display:flex;align-items:center;gap:5px;flex:none;min-height:32px;padding:0 9px;border:1px solid #e8e8ec;border-radius:999px;background:#fafafa;color:#45464a;font-size:var(--evo-size-meta);white-space:nowrap}.evo-chat-send{flex:none;border-radius:50%!important;width:38px!important;height:38px!important;background:#e3e5e9!important;color:#414650!important}.evo-chat-send:not(:disabled){background:#242424!important;color:#fff!important}.evo-chat-bottom{background:transparent!important;border:0!important;padding-inline:12px}.evo-chat-messages{scrollbar-width:none}.evo-chat-entry--assistant .evo-chat-bubble{background:transparent!important;box-shadow:none!important}.evo-chat-entry--user .evo-chat-bubble{border-radius:18px !important}\n.evo-chat-composer-controls{display:contents}.evo-chat-attach{order:1}.evo-chat-composer textarea{order:2}.evo-chat-model{order:3}.evo-chat-send{order:4}
 @media(max-width:480px){.ref-view-chat .evo-chat-composer{display:flex!important;flex-direction:row!important;align-items:center!important;gap:5px!important;min-height:58px!important;padding:7px 10px!important;border-radius:999px!important}.ref-view-chat .evo-chat-composer textarea{order:2!important;flex:1 1 0!important;width:0!important;min-width:0!important;min-height:36px!important;max-height:110px!important;padding:7px 2px!important;line-height:22px!important;overflow-y:auto;scrollbar-width:none}.ref-view-chat .evo-chat-composer-controls{display:contents!important}.ref-view-chat .evo-chat-attach{order:1!important;width:32px!important;min-width:32px!important;height:40px!important;color:#262830!important}.ref-view-chat .evo-chat-model{order:3!important;min-height:38px!important;padding:0 3px!important;border:0!important;background:transparent!important;color:#292b31!important;font-size:13px!important;font-weight:600!important}.evo-chat-model-prefix{display:none}.ref-view-chat .evo-chat-mic{order:4!important;width:29px!important;min-width:29px!important;height:40px!important;color:#292b31!important}.ref-view-chat .evo-chat-send{order:5!important;width:36px!important;min-width:36px!important;height:36px!important;margin-left:0!important}}
 @media(max-width:390px){.ref-view-chat .evo-chat-composer{gap:3px!important;padding-inline:8px!important}.ref-view-chat .evo-chat-model{font-size:12px!important}.ref-view-chat .evo-chat-attach{width:30px!important;min-width:30px!important}.ref-view-chat .evo-chat-mic{width:26px!important;min-width:26px!important}}\n.evo-chat-attachment-preview{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:9px 13px;margin-bottom:8px;border:1px solid #e5e7eb;border-radius:16px;background:#f7f7f8;color:#444;font-size:var(--evo-size-meta)}.evo-chat-attachment-preview span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.evo-chat-attachment-preview button{flex:none;width:28px;height:28px;border:0;background:transparent;color:#666;font-size:var(--evo-size-section)}\n`}</style><div className="evo-chat-frame">
-    <div className="evo-chat-messages" ref={scroll} onScroll={event => { const node = event.currentTarget; wasAtBottom.current = node.scrollHeight - node.scrollTop - node.clientHeight < 80 }} role="log" aria-label="Beszélgetés">
+    <div className="evo-chat-messages" ref={scroll} onScroll={event => {
+      const node = event.currentTarget
+      const nearBottom = node.scrollHeight - node.scrollTop - node.clientHeight < 80
+      wasAtBottom.current = nearBottom
+      if (latestSentUser.current && lastAutomaticScroll.current !== null &&
+          Math.abs(node.scrollTop - lastAutomaticScroll.current) > 4) {
+        // A manual scroll takes priority over automatic stream-following.
+        followNewestTurn.current = nearBottom
+      }
+    }} role="log" aria-label="Beszélgetés">
       {messages.length > 0 && <div className="evo-chat-thread">
-        {messages.map((item, index) => <div key={item.id ?? `${item.role}-${index}`} className={`evo-chat-entry evo-chat-entry--${item.role}`}>
+        {messages.map((item, index) => <div key={item.id ?? `${item.role}-${index}`} data-message-id={item.id} className={`evo-chat-entry evo-chat-entry--${item.role}`}>
           <div className="evo-chat-entry-main"><div className="evo-chat-bubble">{item.role === "assistant" ? <ChatRichText text={item.content} /> : item.content}</div>
             {item.role === "assistant" && <button type="button" className="evo-chat-copy" aria-label="Válasz másolása" onClick={() => void copyMessage(item.content, index)}>{copied === index ? <Check size={16} /> : <Copy size={16} />}<span>{copied === index ? "Másolva" : "Másolás"}</span></button>}
           </div>
         </div>)}
         {busy && !streaming && <div className="evo-chat-entry evo-chat-entry--assistant"><span className="evo-chat-thinking" role="status">Válasz írása<span className="evo-chat-dots">…</span></span></div>}
+        <div ref={turnSpacer} className="evo-chat-turn-spacer" aria-hidden="true" />
       </div>}
     </div>
 
