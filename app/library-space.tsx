@@ -6,17 +6,6 @@ import {
   FolderOpen, Cloud, Grid2X2, List, MoreHorizontal, Move, Pencil, Plus, Search, SlidersHorizontal,
   Share2, Trash2, Upload, X,
 } from "lucide-react"
-// Web-compatible SF Symbols-style glyphs; Apple assets are not bundled.
-import FlexRemixIcon from "./flex-remix-icon"
-import { FileTextIcon as SFFileText } from "@phosphor-icons/react/dist/csr/FileText"
-import { FileIcon as SFFile } from "@phosphor-icons/react/dist/csr/File"
-import { XIcon as SFX } from "@phosphor-icons/react/dist/csr/X"
-import { CaretLeftIcon as SFBack } from "@phosphor-icons/react/dist/csr/CaretLeft"
-import { SquaresFourIcon as SFGrid } from "@phosphor-icons/react/dist/csr/SquaresFour"
-import { ListIcon as SFList } from "@phosphor-icons/react/dist/csr/List"
-import { PlusIcon as SFPlus } from "@phosphor-icons/react/dist/csr/Plus"
-import { DotsThreeIcon as SFDots } from "@phosphor-icons/react/dist/csr/DotsThree"
-import { CloudIcon as SFCloud } from "@phosphor-icons/react/dist/csr/Cloud"
 
 type FileKind = "folder" | "pdf" | "note"
 type SpaceEntry = { id: string; name: string; detail: string; kind: FileKind; parent?: string; size?: number; modifiedAt?: number }
@@ -55,7 +44,7 @@ function kindLabel(kind: FileKind) {
 }
 
 function FileIcon({ kind, size = 23 }: { kind: FileKind; size?: number }) {
-  return kind === "folder" ? <FlexRemixIcon name="files" size={size} /> : kind === "pdf" ? <SFFileText size={size} weight="regular" /> : <SFFile size={size} weight="regular" />
+  return kind === "folder" ? <Folder size={size} /> : kind === "pdf" ? <FileText size={size} /> : <File size={size} />
 }
 
 export default function LibrarySpace() {
@@ -322,19 +311,19 @@ export default function LibrarySpace() {
     <input ref={filePicker} className="ref-hidden-file" type="file" multiple aria-label="Fájl kiválasztása" onChange={uploadFile} />
 
     <div className="library-search" role="search">
-      <FlexRemixIcon name="search" size={20} />
+      <Search size={20} strokeWidth={1.8} aria-hidden="true" />
       <input ref={searchInput} type="search" value={query} onChange={event => setQuery(event.target.value)} onKeyDown={event => { if (event.key === "Escape") setQuery("") }} placeholder="Fájlok és mappák keresése" aria-label="Keresés a könyvtárban" enterKeyHint="search" autoComplete="off" />
-      {query && <button type="button" aria-label="Keresés törlése" onClick={() => { setQuery(""); searchInput.current?.focus() }}><SFX size={16} weight="regular" /></button>}
+      {query && <button type="button" aria-label="Keresés törlése" onClick={() => { setQuery(""); searchInput.current?.focus() }}><X size={16} /></button>}
     </div>
 
     <div className="library-toolbar">
       <div className="library-location">
-        {folder && <button className="library-back" type="button" aria-label="Vissza az előző mappába" onClick={() => setFolder(entries.find(item => item.id === folder)?.parent || null)}><SFBack size={19} weight="regular" aria-hidden="true" /></button>}
+        {folder && <button className="library-back" type="button" aria-label="Vissza az előző mappába" onClick={() => setFolder(entries.find(item => item.id === folder)?.parent || null)}><ChevronLeft size={19} aria-hidden="true" /></button>}
         <h1 title={folderName}>{folderName}</h1>
       </div>
       <div className="library-toolbar-actions">
-        <button className="library-view-button" type="button" aria-label="Nézet és rendezés" aria-haspopup="dialog" onClick={() => setSheet("view")}>{view === "list" ? <SFGrid size={21} weight="regular" aria-hidden="true" /> : <SFList size={22} weight="regular" aria-hidden="true" />}</button>
-        <button className="library-add-primary" type="button" aria-label="Új fájl vagy mappa hozzáadása" onClick={() => { setDraftName(""); setSheet("new") }}><SFPlus size={18} weight="regular" aria-hidden="true" /><span>Új</span></button>
+        <button className="library-view-button" type="button" aria-label="Nézet és rendezés" aria-haspopup="dialog" onClick={() => setSheet("view")}>{view === "list" ? <Grid2X2 size={21} strokeWidth={1.9} aria-hidden="true" /> : <List size={22} strokeWidth={1.9} aria-hidden="true" />}</button>
+        <button className="library-add-primary" type="button" aria-label="Új fájl vagy mappa hozzáadása" onClick={() => { setDraftName(""); setSheet("new") }}><Plus size={18} strokeWidth={1.9} aria-hidden="true" /><span>Új</span></button>
       </div>
     </div>
     {normalizedQuery && <p className="library-results-status" aria-live="polite">{visible.length} találat</p>}
@@ -352,7 +341,7 @@ export default function LibrarySpace() {
           <span className="library-file-copy"><strong title={entry.name}>{entry.name}</strong><small>{entry.kind === "folder" ? `${entries.filter(item => item.parent === entry.id).length} elem` : `${formatSize(entry.size)} · ${formatDate(entry.modifiedAt)}`}</small></span>
           {selectionMode && <span className="library-check" aria-hidden="true">{selected.has(entry.id) && <Check size={15} />}</span>}
         </button>
-        {!selectionMode && <button className="library-file-more" type="button" aria-label={`${entry.name} műveletei`} onClick={() => openActions(entry)}><SFDots size={23} weight="bold" /></button>}
+        {!selectionMode && <button className="library-file-more" type="button" aria-label={`${entry.name} műveletei`} onClick={() => openActions(entry)}><MoreHorizontal size={21} /></button>}
       </article>)}
     </div> : <div className="library-empty">
       <FolderOpen size={48} strokeWidth={1.5} />
@@ -365,7 +354,7 @@ export default function LibrarySpace() {
     </div>}
 
     {hasRealStorage && <button type="button" className="library-storage" onClick={() => setNotice(`${formatSize(storageUsed)} / ${formatSize(storageTotal)}`)}>
-      <span><SFCloud size={18} weight="regular" aria-hidden="true" /> Tárhely</span>
+      <span><Cloud size={18} strokeWidth={1.75} aria-hidden="true" /> Tárhely</span>
       <small>{formatSize(storageUsed)} / {formatSize(storageTotal)}</small>
       <i aria-hidden="true"><b style={{ width: `${Math.min(100, (storageUsed / storageTotal) * 100)}%` }} /></i>
     </button>}
