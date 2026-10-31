@@ -10,6 +10,32 @@
     --evo-layer-ease: cubic-bezier(.22, 1, .36, 1);
   }
 
+  /* Closed PWA: paint the entire viewport, including the Dynamic Island
+     inset, white. The chat page previously left the root transparent and
+     exposed its background pseudo-element through the status-bar strip. */
+  html:not(.evo-sidebar-layer-open),
+  html:not(.evo-sidebar-layer-open) body,
+  html:not(.evo-sidebar-layer-open) body:has(.ref-view-chat) {
+    background-color: #fff !important;
+  }
+  html:not(.evo-sidebar-layer-open):has(.ref-view-chat)::before {
+    background: #fff !important;
+  }
+  html:not(.evo-sidebar-layer-open) body .app-shell.reference-shell {
+    background-color: #fff !important;
+  }
+
+  /* The secondary grey canvas is only exposed while the drawer is open.
+     During its closing transition the foreground remains white. */
+  html.evo-sidebar-layer-open,
+  html.evo-sidebar-layer-open body,
+  html.evo-sidebar-layer-open body:has(.ref-view-chat) {
+    background-color: #f5f5f7 !important;
+  }
+  html.evo-sidebar-layer-open:has(.ref-view-chat)::before {
+    background: #f5f5f7 !important;
+  }
+
   body:has(.evo-sidebar-host) .app-shell {
     transition:
       transform var(--evo-layer-duration) var(--evo-layer-ease),
@@ -20,12 +46,6 @@
   html.evo-sidebar-layer-active,
   html.evo-sidebar-layer-active body {
     overflow-x: clip !important;
-  }
-
-  html.evo-sidebar-layer-active body,
-  html.evo-sidebar-layer-active body:has(.ref-view-chat),
-  html.evo-sidebar-layer-active:has(.ref-view-chat)::before {
-    background: #f5f5f7 !important;
   }
 
   /* The sidebar is the full-screen SECONDARY layer, not a drawer ending at
