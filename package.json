@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "predev": "node scripts/sync-main.mjs",
-    "dev": "next dev",
-    "build": "next build",
+    "dev": "next dev --webpack",
+    "build": "next build --webpack",
     "start": "next start",
     "test": "node --experimental-strip-types --test app/intelligent-ui/*.test.mjs app/chat-attachments.test.mjs app/chat-agent-plan.test.mjs",
     "typecheck": "tsc --noEmit"
