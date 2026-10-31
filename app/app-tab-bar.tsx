@@ -1,20 +1,22 @@
 "use client"
 
 import { useCallback, useEffect, useRef, useState, type KeyboardEvent as ReactKeyboardEvent } from "react"
-import { SidebarSimpleIcon } from "@phosphor-icons/react/dist/csr/SidebarSimple"
-import { XIcon } from "@phosphor-icons/react/dist/csr/X"
-import { PlusIcon } from "@phosphor-icons/react/dist/csr/Plus"
-import { DotsThreeIcon } from "@phosphor-icons/react/dist/csr/DotsThree"
-import { PencilSimpleIcon } from "@phosphor-icons/react/dist/csr/PencilSimple"
-import { TrashIcon } from "@phosphor-icons/react/dist/csr/Trash"
-import { MagnifyingGlassIcon } from "@phosphor-icons/react/dist/csr/MagnifyingGlass"
-import { BooksIcon } from "@phosphor-icons/react/dist/csr/Books"
-import { FoldersIcon } from "@phosphor-icons/react/dist/csr/Folders"
-import { PuzzlePieceIcon } from "@phosphor-icons/react/dist/csr/PuzzlePiece"
-import { LightbulbIcon } from "@phosphor-icons/react/dist/csr/Lightbulb"
-import { ChatCircleDotsIcon } from "@phosphor-icons/react/dist/csr/ChatCircleDots"
-import { NotePencilIcon } from "@phosphor-icons/react/dist/csr/NotePencil"
-import { UserCircleIcon } from "@phosphor-icons/react/dist/csr/UserCircle"
+import { mage } from "./mage-icons"
+const SidebarSimpleIcon = mage("dash-menu")
+const XIcon = mage("x")
+const PlusIcon = mage("plus")
+const DotsThreeIcon = mage("dots-horizontal")
+const PencilSimpleIcon = mage("edit-pen")
+const TrashIcon = mage("trash")
+const MagnifyingGlassIcon = mage("search")
+const BooksIcon = mage("book-text")
+const FoldersIcon = mage("folder")
+const PuzzlePieceIcon = mage("dashboard-4")
+const LightbulbIcon = mage("light-bulb")
+const ChatCircleDotsIcon = mage("message-dots-round")
+const NotePencilIcon = mage("note-text")
+const UserCircleIcon = mage("user-circle")
+
 import { deleteChatSession, notifyChatSessionAction, readChatSessions, renameChatSession, type ChatSession } from "./chat-sessions"
 
 export type AppTab = "learn" | "ai" | "files" | "tools" | "profile" | "brainstorm"
