@@ -10,6 +10,8 @@ export default function DevelopmentNotice() {
   const acknowledgeButton = useRef<HTMLButtonElement>(null)
 
   useEffect(() => {
+    // Do not interrupt the general chat startup or steal focus from its composer.
+    if (window.location.pathname === "/chat" || window.location.pathname === "/") return
     try {
       if (window.localStorage.getItem(DISMISS_KEY) === "dismissed") return
     } catch { /* Storage can be restricted in private browsing. */ }
