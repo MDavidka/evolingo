@@ -1,16 +1,13 @@
 "use client"
 
 import { useEffect, useRef, useState, type FormEvent, type KeyboardEvent } from "react"
-import { ArrowUp, Check, Copy, Plus, ChevronDown, Camera, Image as ImageIcon, FileText, FolderOpen, Mic, X, MessageCircle, GraduationCap, PenLine } from "lucide-react"
+import { ArrowUp, Check, Copy, Plus, Camera, Image as ImageIcon, FileText, Mic, X } from "lucide-react"
 import { Button as ArcButton } from "@/components/arc/button/button"
-import IntelligentResponse from "./intelligent-ui/renderer"
 import ChatRichText from "./chat-rich-text"
-import { validateIntelligentUI, type IntelligentUI } from "./intelligent-ui/schema"
 import { MAX_IMAGE_BYTES, MAX_TEXT_BYTES, IMAGE_TYPES, TEXT_EXTENSIONS, type ChatAttachment } from "./chat-attachments"
 import { activeChatSessionId, readChatSessions, saveChatSession, setActiveChatSessionId } from "./chat-sessions"
-import { readApprovedBrainstormItems } from "./brainstorm"
 
-type ChatMessage = { role: "user" | "assistant"; content: string; id?: string; ui?: IntelligentUI }
+type ChatMessage = { role: "user" | "assistant"; content: string; id?: string; attachmentName?: string }
 const SESSION_KEY = "evolingo.chat.session.v1"
 
 export default function ChatInterface() {
@@ -20,12 +17,7 @@ export default function ChatInterface() {
   const fileInput = useRef<HTMLInputElement>(null)
   const cameraInput = useRef<HTMLInputElement>(null)
   const [attachMenuOpen, setAttachMenuOpen] = useState(false)
-  const [modeOpen, setModeOpen] = useState(false)
-  const [libraryOpen, setLibraryOpen] = useState(false)
-  const [libraryFiles, setLibraryFiles] = useState<Array<{ id: string; name: string; kind: string }>>([])
-  const [chatMode, setChatMode] = useState<"tutor" | "conversation" | "writing">("tutor")
   const [busy, setBusy] = useState(false)
-  const [enhancing, setEnhancing] = useState(false)
   const [streaming, setStreaming] = useState(false)
   const [hydrated, setHydrated] = useState(false)
   const [error, setError] = useState("")
@@ -37,15 +29,6 @@ export default function ChatInterface() {
   const wasAtBottom = useRef(true)
   const wasAtBottomOnFocus = useRef(true)
   const blurTimer = useRef<number | null>(null)
-
-  useEffect(() => {
-    if (!modeOpen && !libraryOpen) return
-    const closeOnEscape = (event: globalThis.KeyboardEvent) => {
-      if (event.key === "Escape") { setModeOpen(false); setLibraryOpen(false) }
-    }
-    window.addEventListener("keydown", closeOnEscape)
-    return () => window.removeEventListener("keydown", closeOnEscape)
-  }, [modeOpen, libraryOpen])
 
   useEffect(() => {
     try {
@@ -60,12 +43,12 @@ export default function ChatInterface() {
           const safe = parsed.slice(-16).filter((item): item is ChatMessage =>
             !!item && typeof item === "object" && (item.role === "user" || item.role === "assistant") &&
             typeof item.content === "string" && item.content.length <= 30000
-          ).map(item => ({ ...item, ui: item.ui ? validateIntelligentUI(item.ui, { allowPublicQuizzes: true }) ?? undefined : undefined }))
+          ).map(({ role, content, id }) => ({ role, content, id }))
           setMessages(safe)
         }
         activeId = crypto.randomUUID()
       } else {
-        setMessages(active.messages.slice(-16).map(item => ({ ...item, ui: item.ui ? validateIntelligentUI(item.ui, { allowPublicQuizzes: true }) ?? undefined : undefined })))
+        setMessages(active.messages.slice(-16).map(({ role, content, id }) => ({ role, content, id })))
       }
       setSessionId(activeId)
       setActiveChatSessionId(activeId)
@@ -74,10 +57,10 @@ export default function ChatInterface() {
   }, [])
 
   useEffect(() => {
-    if (!hydrated || busy || enhancing) return
+    if (!hydrated || busy) return
     try { sessionStorage.setItem(SESSION_KEY, JSON.stringify(messages.slice(-16))) } catch {}
     if (sessionId) saveChatSession(sessionId, messages)
-  }, [messages, hydrated, busy, enhancing, sessionId])
+  }, [messages, hydrated, busy, sessionId])
 
   useEffect(() => {
     const onNew = () => startNewChat(false)
@@ -85,7 +68,7 @@ export default function ChatInterface() {
       const id = (event as CustomEvent<{ id?: string }>).detail?.id
       const selected = readChatSessions().find(session => session.id === id)
       if (!selected) return
-      const safe = selected.messages.slice(-16).map(item => ({ ...item, ui: item.ui ? validateIntelligentUI(item.ui, { allowPublicQuizzes: true }) ?? undefined : undefined }))
+      const safe = selected.messages.slice(-16).map(({ role, content, id }) => ({ role, content, id }))
       setSessionId(selected.id)
       setActiveChatSessionId(selected.id)
       setMessages(safe)
@@ -96,7 +79,18 @@ export default function ChatInterface() {
     window.addEventListener("evolingo:chat-new", onNew)
     window.addEventListener("evolingo:chat-open", onOpen)
     return () => { window.removeEventListener("evolingo:chat-new", onNew); window.removeEventListener("evolingo:chat-open", onOpen) }
-  }, [busy, enhancing])
+  }, [busy])
+
+  useEffect(() => {
+    if (!hydrated) return
+    // Make the composer ready on arrival. iOS may still require a user tap
+    // before displaying its software keyboard.
+    const frame = requestAnimationFrame(() => {
+      if (document.visibilityState !== "visible" || document.querySelector('[role="dialog"][aria-modal="true"]')) return
+      input.current?.focus({ preventScroll: true })
+    })
+    return () => cancelAnimationFrame(frame)
+  }, [hydrated])
 
   useEffect(() => {
     const root = document.documentElement
@@ -178,7 +172,7 @@ export default function ChatInterface() {
 
   async function send(text: string) {
     const content = text.trim()
-    if ((!content && !attachment) || busy || enhancing) return
+    if ((!content && !attachment) || busy) return
     const next: ChatMessage[] = [...messages, { id: crypto.randomUUID(), role: "user", content: content || "Elemezd a csatolt fájlt.", ...(attachment ? { attachmentName: attachment.name } : {}) }]
     const assistantId = crypto.randomUUID()
     setMessages(next)
@@ -224,22 +218,17 @@ export default function ChatInterface() {
           })
           setStreaming(false)
           setBusy(false)
-          setEnhancing(true)
-        } else if (event.type === "ui" && event.ui) {
-          const ui = validateIntelligentUI(event.ui, { allowPublicQuizzes: true })
-          if (ui) setMessages(old => old.map(msg => msg.id === assistantId ? { ...msg, ui } : msg))
-        } else if (event.type === "error") {
+                  } else if (event.type === "error") {
           setError(answered ? "A válasz megszakadt; a már megjelent szöveg megmaradt." : event.error || "Az AI jelenleg nem válaszol. Próbáld újra.")
         } else if (event.type === "done") completed = true
       } catch { /* Malformed event is not rendered or executed. */ }
     }
 
     try {
-      const approvedTasks = await readApprovedBrainstormItems().catch(() => [])
       const response = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages: next.slice(-12).map(({ role, content }) => ({ role, content })), interactive: true, attachment: sentAttachment, approvedTasks, mode: chatMode }),
+        body: JSON.stringify({ messages: next.slice(-12).map(({ role, content }) => ({ role, content })), interactive: true, attachment: sentAttachment }),
         cache: "no-store",
       })
       if (!response.ok) {
@@ -285,7 +274,7 @@ export default function ChatInterface() {
         cancelAnimationFrame(frame)
         frame = null
       }
-      // Commit the finished streamed text before rendering any attached visual JSON UI.
+      // Commit the finished streamed text to the plain chat transcript.
       if (streamReply) {
         const finalText = streamReply
         setMessages(old => old.map(msg => msg.id === assistantId ? { ...msg, content: finalText } : msg))
@@ -296,8 +285,7 @@ export default function ChatInterface() {
     } finally {
       if (frame !== null) cancelAnimationFrame(frame)
       setBusy(false)
-      setEnhancing(false)
-      setStreaming(false)
+            setStreaming(false)
     }
   }
 
@@ -340,7 +328,7 @@ export default function ChatInterface() {
   }
 
   function startNewChat(focus = true) {
-    if (busy || enhancing) return
+    if (busy) return
     const nextId = crypto.randomUUID()
     setSessionId(nextId)
     setActiveChatSessionId(nextId)
@@ -360,11 +348,6 @@ export default function ChatInterface() {
     }
   }
 
-  const modes = [
-    { id: "tutor", title: "Tutor", description: "Magyarázatok és lépésenkénti segítség.", icon: GraduationCap },
-    { id: "conversation", title: "Beszélgetés", description: "Kötetlen beszélgetés angolul vagy magyarul.", icon: MessageCircle },
-    { id: "writing", title: "Fogalmazás", description: "Szövegek megírása, javítása és csiszolása.", icon: PenLine },
-  ] as const
   return <><style>{`\n.evo-chat-frame{background:transparent!important;border:0!important;border-radius:0!important;color:#181818;min-height:0;}\n.evo-chat-messages{min-height:0!important;flex:1!important}.evo-chat-bottom{width:100%!important}.evo-chat-composer{max-width:100%!important}.evo-chat-toolbar{background:transparent!important;border:0!important;box-shadow:none!important;}\n.evo-chat-title{display:flex;align-items:center;gap:6px}.evo-chat-title span{display:none}.evo-chat-title strong{font-size:var(--evo-size-row);font-weight:650}\n.evo-chat-welcome{padding-top:12vh}.evo-chat-welcome h1{font-size:var(--evo-size-hero);letter-spacing:-.8px}.evo-chat-welcome p{color:#6b7280;font-size:var(--evo-size-support)}\n.evo-chat-mark{background:transparent!important;border:0!important;box-shadow:none!important;width:68px;height:68px;margin-inline:auto}.evo-chat-mark img{width:100%;height:100%;object-fit:contain}\n.evo-chat-composer{background:#fff!important;border:1px solid #e9e9ed!important;border-radius:26px !important;box-shadow:0 5px 22px #33415513!important;display:flex;align-items:center;gap:7px;padding:7px 9px!important;min-height:54px}\n.evo-chat-composer[data-focused="true"]{border-radius:14px!important;box-shadow:0 5px 20px #33415518!important}.evo-composer-surface:has(.evo-chat-composer[data-focused="true"]){border-radius:18px!important}\n.evo-chat-composer textarea{flex:1;min-width:0;font-size:var(--evo-size-body) !important;background:transparent!important;resize:none}.evo-chat-attach,.evo-chat-mic{display:grid;place-items:center;flex:none;width:30px;height:36px;border:0;background:transparent;color:#9da1aa;padding:0}.evo-chat-model{display:flex;align-items:center;gap:5px;flex:none;min-height:32px;padding:0 9px;border:1px solid #e8e8ec;border-radius:999px;background:#fafafa;color:#45464a;font-size:var(--evo-size-meta);white-space:nowrap}.evo-chat-send{flex:none;border-radius:50%!important;width:38px!important;height:38px!important;background:#e3e5e9!important;color:#414650!important}.evo-chat-send:not(:disabled){background:#242424!important;color:#fff!important}.evo-chat-bottom{background:transparent!important;border:0!important;padding-inline:12px}.evo-chat-messages{scrollbar-width:none}.evo-chat-entry--assistant .evo-chat-bubble{background:transparent!important;box-shadow:none!important}.evo-chat-entry--user .evo-chat-bubble{border-radius:18px !important}\n.evo-chat-composer-controls{display:contents}.evo-chat-attach{order:1}.evo-chat-composer textarea{order:2}.evo-chat-model{order:3}.evo-chat-send{order:4}
 @media(max-width:480px){.ref-view-chat .evo-chat-composer{display:flex!important;flex-direction:row!important;align-items:center!important;gap:5px!important;min-height:58px!important;padding:7px 10px!important;border-radius:999px!important}.ref-view-chat .evo-chat-composer textarea{order:2!important;flex:1 1 0!important;width:0!important;min-width:0!important;min-height:36px!important;max-height:110px!important;padding:7px 2px!important;line-height:22px!important;overflow-y:auto;scrollbar-width:none}.ref-view-chat .evo-chat-composer-controls{display:contents!important}.ref-view-chat .evo-chat-attach{order:1!important;width:32px!important;min-width:32px!important;height:40px!important;color:#262830!important}.ref-view-chat .evo-chat-model{order:3!important;min-height:38px!important;padding:0 3px!important;border:0!important;background:transparent!important;color:#292b31!important;font-size:13px!important;font-weight:600!important}.evo-chat-model-prefix{display:none}.ref-view-chat .evo-chat-mic{order:4!important;width:29px!important;min-width:29px!important;height:40px!important;color:#292b31!important}.ref-view-chat .evo-chat-send{order:5!important;width:36px!important;min-width:36px!important;height:36px!important;margin-left:0!important}}
 @media(max-width:390px){.ref-view-chat .evo-chat-composer{gap:3px!important;padding-inline:8px!important}.ref-view-chat .evo-chat-model{font-size:12px!important}.ref-view-chat .evo-chat-attach{width:30px!important;min-width:30px!important}.ref-view-chat .evo-chat-mic{width:26px!important;min-width:26px!important}}\n.evo-chat-attachment-preview{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:9px 13px;margin-bottom:8px;border:1px solid #e5e7eb;border-radius:16px;background:#f7f7f8;color:#444;font-size:var(--evo-size-meta)}.evo-chat-attachment-preview span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.evo-chat-attachment-preview button{flex:none;width:28px;height:28px;border:0;background:transparent;color:#666;font-size:var(--evo-size-section)}\n`}</style><div className="evo-chat-frame">
@@ -372,11 +355,9 @@ export default function ChatInterface() {
       {messages.length > 0 && <div className="evo-chat-thread">
         {messages.map((item, index) => <div key={item.id ?? `${item.role}-${index}`} className={`evo-chat-entry evo-chat-entry--${item.role}`}>
           <div className="evo-chat-entry-main"><div className="evo-chat-bubble">{item.role === "assistant" ? <ChatRichText text={item.content} /> : item.content}</div>
-            {item.role === "assistant" && item.ui && <IntelligentResponse ui={item.ui} messageId={item.id} />}
             {item.role === "assistant" && <button type="button" className="evo-chat-copy" aria-label="Válasz másolása" onClick={() => void copyMessage(item.content, index)}>{copied === index ? <Check size={16} /> : <Copy size={16} />}<span>{copied === index ? "Másolva" : "Másolás"}</span></button>}
           </div>
         </div>)}
-        {enhancing && <div className="evo-iui-loading" role="status">Tanulási elemek előkészítése…</div>}
         {busy && !streaming && <div className="evo-chat-entry evo-chat-entry--assistant"><span className="evo-chat-thinking" role="status">Válasz írása<span className="evo-chat-dots">…</span></span></div>}
       </div>}
     </div>
@@ -390,28 +371,18 @@ export default function ChatInterface() {
       {attachMenuOpen && <div className="evo-chat-popover" role="menu" aria-label="Melléklet hozzáadása">
         <button type="button" role="menuitem" onClick={() => { setAttachMenuOpen(false); cameraInput.current?.click() }}><Camera size={19} /><span><strong>Fotó készítése</strong><small>Új kép a kamerával</small></span></button>
         <button type="button" role="menuitem" onClick={() => { setAttachMenuOpen(false); fileInput.current?.click() }}><ImageIcon size={19} /><span><strong>Kép a galériából</strong><small>JPG, PNG vagy WebP</small></span></button>
-        <button type="button" role="menuitem" onClick={() => { setAttachMenuOpen(false); fileInput.current?.click() }}><FileText size={19} /><span><strong>Jegyzet vagy fájl</strong><small>TXT, MD, CSV, JSON vagy TSV · PDF-et a Könyvtár őriz</small></span></button>
-        <button type="button" role="menuitem" onClick={() => {
-          setAttachMenuOpen(false)
-          try {
-            const entries = JSON.parse(localStorage.getItem("evolingo.space.v1") || "[]") as Array<{ id?: string; name?: string; kind?: string }>
-            const blobs = JSON.parse(localStorage.getItem("evolingo.space-blobs.v1") || "{}") as Record<string, string>
-            setLibraryFiles(entries.filter(entry => entry.id && entry.name && entry.kind !== "folder" && blobs[entry.id]).map(entry => ({ id: entry.id!, name: entry.name!, kind: entry.kind || "note" })))
-            setLibraryOpen(true)
-          } catch { setLibraryFiles([]); setLibraryOpen(true) }
-        }}><FolderOpen size={19} /><span><strong>Fájl a Könyvtárból</strong><small>Az eszközödön mentett fájlok</small></span></button>
+        <button type="button" role="menuitem" onClick={() => { setAttachMenuOpen(false); fileInput.current?.click() }}><FileText size={19} /><span><strong>Jegyzet vagy fájl</strong><small>TXT, MD, CSV, JSON vagy TSV</small></span></button>
+
       </div>}
       <form onSubmit={submit} className="evo-chat-composer" data-focused={inputFocused}>
-        <textarea ref={input} value={draft} onChange={event => { setDraft(event.target.value); resizeInput() }} onFocus={handleInputFocus} onBlur={handleInputBlur} onKeyDown={keyDown} rows={1} maxLength={4000} enterKeyHint="send" autoComplete="off" aria-label="Üzenet írása" placeholder="Írj egy üzenetet…" />
+        <textarea ref={input} autoFocus value={draft} onChange={event => { setDraft(event.target.value); resizeInput() }} onFocus={handleInputFocus} onBlur={handleInputBlur} onKeyDown={keyDown} rows={1} maxLength={4000} enterKeyHint="send" autoComplete="off" aria-label="Üzenet írása" placeholder="Írj egy üzenetet…" />
         <div className="evo-chat-composer-controls">
-          <button type="button" className="evo-chat-attach" aria-label="Melléklet hozzáadása" aria-expanded={attachMenuOpen} onClick={() => setAttachMenuOpen(value => !value)} disabled={busy || enhancing}><Plus size={21} /></button>
-          <button type="button" className="evo-chat-model" aria-label={`Mód: ${modes.find(mode => mode.id === chatMode)?.title}`} onClick={() => setModeOpen(true)}><span className="evo-chat-model-prefix">Mód: </span>{modes.find(mode => mode.id === chatMode)?.title}<ChevronDown size={14} /></button>
+          <button type="button" className="evo-chat-attach" aria-label="Melléklet hozzáadása" aria-expanded={attachMenuOpen} onClick={() => setAttachMenuOpen(value => !value)} disabled={busy}><Plus size={21} /></button>
+
           <button type="button" className="evo-chat-mic" aria-label="Hangbevitel hamarosan" title="Hangbevitel hamarosan" disabled><Mic size={18} strokeWidth={1.8} /></button>
-          <ArcButton type="submit" variant="primary" className="evo-chat-send evo-arc-primary" loading={busy || enhancing} disabled={!draft.trim() && !attachment} aria-label="Üzenet küldése"><ArrowUp size={20} strokeWidth={1.75} /></ArcButton>
+          <ArcButton type="submit" variant="primary" className="evo-chat-send evo-arc-primary" loading={busy} disabled={!draft.trim() && !attachment} aria-label="Üzenet küldése"><ArrowUp size={20} strokeWidth={1.75} /></ArcButton>
         </div>
       </form>
-      {modeOpen && <div className="evo-chat-sheet-backdrop" onMouseDown={event => { if (event.target === event.currentTarget) setModeOpen(false) }}><section className="evo-chat-sheet" role="dialog" aria-modal="true" aria-labelledby="evo-chat-mode-title"><div className="evo-chat-sheet-heading"><h2 id="evo-chat-mode-title">Válassz módot</h2><button type="button" aria-label="Bezárás" onClick={() => setModeOpen(false)}><X size={20} /></button></div>{modes.map(mode => { const Icon = mode.icon; return <button type="button" key={mode.id} className="evo-chat-mode-option" aria-pressed={chatMode === mode.id} onClick={() => { setChatMode(mode.id); setModeOpen(false) }}><Icon size={20} /><span><strong>{mode.title}</strong><small>{mode.description}</small></span>{chatMode === mode.id && <Check size={18} />}</button> })}</section></div>}
-      {libraryOpen && <div className="evo-chat-sheet-backdrop" onMouseDown={event => { if (event.target === event.currentTarget) setLibraryOpen(false) }}><section className="evo-chat-sheet" role="dialog" aria-modal="true" aria-labelledby="evo-chat-library-title"><div className="evo-chat-sheet-heading"><h2 id="evo-chat-library-title">Fájl a Könyvtárból</h2><button type="button" aria-label="Bezárás" onClick={() => setLibraryOpen(false)}><X size={20} /></button></div>{libraryFiles.length ? libraryFiles.map(file => <button type="button" className="evo-chat-mode-option" key={file.id} onClick={async () => { try { const blobs = JSON.parse(localStorage.getItem("evolingo.space-blobs.v1") || "{}") as Record<string,string>; const response = await fetch(blobs[file.id]); const blob = await response.blob(); if (blob.type === "application/pdf") { setLibraryOpen(false); setError("A PDF a Könyvtárban megőrizhető, de AI-csatoláshoz még nem támogatott."); return } await chooseAttachment(new File([blob], file.name, { type: blob.type || "text/plain" })); setLibraryOpen(false) } catch { setLibraryOpen(false); setError("A fájlt nem sikerült megnyitni a Könyvtárból.") } }}><FileText size={19} /><span><strong>{file.name}</strong><small>{file.kind === "pdf" ? "PDF · AI-csatolás nem támogatott" : "Mentett fájl"}</small></span></button>) : <p className="evo-chat-sheet-empty">Még nincs mentett fájl a Könyvtárban.</p>}</section></div>}
       </div>
       
     </div>
