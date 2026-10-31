@@ -2,8 +2,8 @@
 
 import { useEffect, useRef, useState, type FormEvent, type KeyboardEvent } from "react"
 import { ArrowUp, Check, Copy, Plus, Camera, Image as ImageIcon, FileText, Mic, X } from "lucide-react"
-import { Button as ArcButton } from "@/components/arc/button/button"
-import ChatRichText from "./chat-rich-text"
+import { Button as AppsButton } from "@openai/apps-sdk-ui/components/Button"
+import { Markdown as AppsMarkdown } from "@openai/apps-sdk-ui/components/Markdown"
 import { MAX_IMAGE_BYTES, MAX_TEXT_BYTES, IMAGE_TYPES, TEXT_EXTENSIONS, type ChatAttachment } from "./chat-attachments"
 import { activeChatSessionId, readChatSessions, saveChatSession, setActiveChatSessionId } from "./chat-sessions"
 
@@ -354,7 +354,7 @@ export default function ChatInterface() {
     <div className="evo-chat-messages" ref={scroll} onScroll={event => { const node = event.currentTarget; wasAtBottom.current = node.scrollHeight - node.scrollTop - node.clientHeight < 80 }} role="log" aria-label="Beszélgetés">
       {messages.length > 0 && <div className="evo-chat-thread">
         {messages.map((item, index) => <div key={item.id ?? `${item.role}-${index}`} className={`evo-chat-entry evo-chat-entry--${item.role}`}>
-          <div className="evo-chat-entry-main"><div className="evo-chat-bubble">{item.role === "assistant" ? <ChatRichText text={item.content} /> : item.content}</div>
+          <div className="evo-chat-entry-main"><div className="evo-chat-bubble">{item.role === "assistant" ? <AppsMarkdown includeMath breakNewLines copyableCodeBlocks>{item.content}</AppsMarkdown> : item.content}</div>
             {item.role === "assistant" && <button type="button" className="evo-chat-copy" aria-label="Válasz másolása" onClick={() => void copyMessage(item.content, index)}>{copied === index ? <Check size={16} /> : <Copy size={16} />}<span>{copied === index ? "Másolva" : "Másolás"}</span></button>}
           </div>
         </div>)}
@@ -380,7 +380,7 @@ export default function ChatInterface() {
           <button type="button" className="evo-chat-attach" aria-label="Melléklet hozzáadása" aria-expanded={attachMenuOpen} onClick={() => setAttachMenuOpen(value => !value)} disabled={busy}><Plus size={21} /></button>
 
           <button type="button" className="evo-chat-mic" aria-label="Hangbevitel hamarosan" title="Hangbevitel hamarosan" disabled><Mic size={18} strokeWidth={1.8} /></button>
-          <ArcButton type="submit" variant="primary" className="evo-chat-send evo-arc-primary" loading={busy} disabled={!draft.trim() && !attachment} aria-label="Üzenet küldése"><ArrowUp size={20} strokeWidth={1.75} /></ArcButton>
+          <AppsButton type="submit" color="primary" variant="solid" size="2xl" uniform pill className="evo-chat-send evo-arc-primary" loading={busy} disabled={!draft.trim() && !attachment} aria-label="Üzenet küldése"><ArrowUp size={20} strokeWidth={1.75} /></AppsButton>
         </div>
       </form>
       </div>
