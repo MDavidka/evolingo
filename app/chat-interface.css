@@ -494,3 +494,45 @@ html:has(.ref-view-chat)::before {
 @media (max-height: 620px) {
   .ref-view-chat .evo-chat-bottom { padding-top: 12px !important; }
 }
+
+/* The conversation scroll viewport reaches behind the fixed iPhone header.
+   Only its initial content is padded so a newly opened chat remains legible. */
+.ref-view-chat .evo-chat-frame {
+  padding-top: 0 !important;
+}
+.ref-view-chat .evo-chat-messages {
+  position: relative;
+  z-index: 1;
+  overflow-anchor: none;
+}
+.ref-view-chat .evo-chat-messages.has-messages {
+  padding-top: calc(env(safe-area-inset-top, 0px) + 102px) !important;
+  scroll-padding-top: calc(env(safe-area-inset-top, 0px) + 102px);
+}
+/* Blur only the top strip. Text can slide behind it while the sidebar and
+   avatar remain crisp and clickable. The fade never blocks touch gestures. */
+.ref-view-chat .evo-chat-top-fade {
+  position: absolute;
+  z-index: 4;
+  pointer-events: none;
+  inset: 0 0 auto;
+  height: calc(env(safe-area-inset-top, 0px) + 107px);
+  background: linear-gradient(
+    180deg,
+    rgba(255,255,255,.95) 0%,
+    rgba(255,255,255,.84) 34%,
+    rgba(255,255,255,.48) 70%,
+    rgba(255,255,255,0) 100%
+  );
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 30%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 0%, #000 30%, transparent 100%);
+}
+@media (prefers-reduced-transparency: reduce) {
+  .ref-view-chat .evo-chat-top-fade {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    background: linear-gradient(180deg, #fff 0%, rgba(255,255,255,.94) 62%, transparent 100%);
+  }
+}
