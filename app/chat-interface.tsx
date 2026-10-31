@@ -1,15 +1,7 @@
 "use client"
 
 import { useEffect, useRef, useState, type FormEvent, type KeyboardEvent } from "react"
-// SF Symbols-equivalent controls; native icons are referenced in docs/sf-symbols.md.
-import { ArrowUpIcon as SFArrowUp } from "@phosphor-icons/react/dist/csr/ArrowUp"
-import { CheckIcon as SFCheck } from "@phosphor-icons/react/dist/csr/Check"
-import FlexRemixIcon from "./flex-remix-icon"
-import { PlusIcon as SFPlus } from "@phosphor-icons/react/dist/csr/Plus"
-import { CameraIcon as SFCamera } from "@phosphor-icons/react/dist/csr/Camera"
-import { ImageIcon as SFImage } from "@phosphor-icons/react/dist/csr/Image"
-import { FileTextIcon as SFFileText } from "@phosphor-icons/react/dist/csr/FileText"
-import { MicrophoneIcon as SFMicrophone } from "@phosphor-icons/react/dist/csr/Microphone"
+import { ArrowUp, Check, Copy, Plus, Camera, Image as ImageIcon, FileText, Mic, X } from "lucide-react"
 import { Button as ArcButton } from "@/components/arc/button/button"
 import ChatRichText from "./chat-rich-text"
 import { MAX_IMAGE_BYTES, MAX_TEXT_BYTES, IMAGE_TYPES, TEXT_EXTENSIONS, type ChatAttachment } from "./chat-attachments"
@@ -363,7 +355,7 @@ export default function ChatInterface() {
       {messages.length > 0 && <div className="evo-chat-thread">
         {messages.map((item, index) => <div key={item.id ?? `${item.role}-${index}`} className={`evo-chat-entry evo-chat-entry--${item.role}`}>
           <div className="evo-chat-entry-main"><div className="evo-chat-bubble">{item.role === "assistant" ? <ChatRichText text={item.content} /> : item.content}</div>
-            {item.role === "assistant" && <button type="button" className="evo-chat-copy" aria-label="Válasz másolása" onClick={() => void copyMessage(item.content, index)}>{copied === index ? <SFCheck size={16} weight="regular" /> : <FlexRemixIcon name="copy" size={16} />}<span>{copied === index ? "Másolva" : "Másolás"}</span></button>}
+            {item.role === "assistant" && <button type="button" className="evo-chat-copy" aria-label="Válasz másolása" onClick={() => void copyMessage(item.content, index)}>{copied === index ? <Check size={16} /> : <Copy size={16} />}<span>{copied === index ? "Másolva" : "Másolás"}</span></button>}
           </div>
         </div>)}
         {busy && !streaming && <div className="evo-chat-entry evo-chat-entry--assistant"><span className="evo-chat-thinking" role="status">Válasz írása<span className="evo-chat-dots">…</span></span></div>}
@@ -377,18 +369,18 @@ export default function ChatInterface() {
       <input ref={cameraInput} type="file" accept="image/*" capture="environment" hidden onChange={event => { void chooseAttachment(event.target.files?.[0]); event.target.value = "" }} />
       <input ref={fileInput} type="file" accept="image/jpeg,image/png,image/webp,.txt,.md,.csv,.json,.tsv" hidden onChange={event => { void chooseAttachment(event.target.files?.[0]); event.target.value = "" }} />
       {attachMenuOpen && <div className="evo-chat-popover" role="menu" aria-label="Melléklet hozzáadása">
-        <button type="button" role="menuitem" onClick={() => { setAttachMenuOpen(false); cameraInput.current?.click() }}><SFCamera size={19} weight="regular" /><span><strong>Fotó készítése</strong><small>Új kép a kamerával</small></span></button>
-        <button type="button" role="menuitem" onClick={() => { setAttachMenuOpen(false); fileInput.current?.click() }}><SFImage size={19} weight="regular" /><span><strong>Kép a galériából</strong><small>JPG, PNG vagy WebP</small></span></button>
-        <button type="button" role="menuitem" onClick={() => { setAttachMenuOpen(false); fileInput.current?.click() }}><SFFileText size={19} weight="regular" /><span><strong>Jegyzet vagy fájl</strong><small>TXT, MD, CSV, JSON vagy TSV</small></span></button>
+        <button type="button" role="menuitem" onClick={() => { setAttachMenuOpen(false); cameraInput.current?.click() }}><Camera size={19} /><span><strong>Fotó készítése</strong><small>Új kép a kamerával</small></span></button>
+        <button type="button" role="menuitem" onClick={() => { setAttachMenuOpen(false); fileInput.current?.click() }}><ImageIcon size={19} /><span><strong>Kép a galériából</strong><small>JPG, PNG vagy WebP</small></span></button>
+        <button type="button" role="menuitem" onClick={() => { setAttachMenuOpen(false); fileInput.current?.click() }}><FileText size={19} /><span><strong>Jegyzet vagy fájl</strong><small>TXT, MD, CSV, JSON vagy TSV</small></span></button>
 
       </div>}
       <form onSubmit={submit} className="evo-chat-composer" data-focused={inputFocused}>
         <textarea ref={input} autoFocus value={draft} onChange={event => { setDraft(event.target.value); resizeInput() }} onFocus={handleInputFocus} onBlur={handleInputBlur} onKeyDown={keyDown} rows={1} maxLength={4000} enterKeyHint="send" autoComplete="off" aria-label="Üzenet írása" placeholder="Írj egy üzenetet…" />
         <div className="evo-chat-composer-controls">
-          <button type="button" className="evo-chat-attach" aria-label="Melléklet hozzáadása" aria-expanded={attachMenuOpen} onClick={() => setAttachMenuOpen(value => !value)} disabled={busy}><SFPlus size={21} weight="regular" /></button>
+          <button type="button" className="evo-chat-attach" aria-label="Melléklet hozzáadása" aria-expanded={attachMenuOpen} onClick={() => setAttachMenuOpen(value => !value)} disabled={busy}><Plus size={21} /></button>
 
-          <button type="button" className="evo-chat-mic" aria-label="Hangbevitel hamarosan" title="Hangbevitel hamarosan" disabled><SFMicrophone size={18} weight="regular" /></button>
-          <ArcButton type="submit" variant="primary" className="evo-chat-send evo-arc-primary" loading={busy} disabled={!draft.trim() && !attachment} aria-label="Üzenet küldése"><SFArrowUp size={20} weight="bold" /></ArcButton>
+          <button type="button" className="evo-chat-mic" aria-label="Hangbevitel hamarosan" title="Hangbevitel hamarosan" disabled><Mic size={18} strokeWidth={1.8} /></button>
+          <ArcButton type="submit" variant="primary" className="evo-chat-send evo-arc-primary" loading={busy} disabled={!draft.trim() && !attachment} aria-label="Üzenet küldése"><ArrowUp size={20} strokeWidth={1.75} /></ArcButton>
         </div>
       </form>
       </div>
