@@ -36,7 +36,7 @@ export default function ChatInterface() {
   const [inputFocused, setInputFocused] = useState(false)
   const [sessionId, setSessionId] = useState("")
   const scroll = useRef<HTMLDivElement>(null)
-  const input = useRef<HTMLTextAreaElement>(null)
+  const input = useRef<HTMLInputElement>(null)
   const turnSpacer = useRef<HTMLDivElement>(null)
   const latestSentUser = useRef<string | null>(null)
   const followNewestTurn = useRef(true)
@@ -219,13 +219,6 @@ export default function ChatInterface() {
     }, 250)
   }
 
-  const resizeInput = () => {
-    const field = input.current
-    if (!field) return
-    field.style.height = "auto"
-    field.style.height = `${Math.min(field.scrollHeight, 144)}px`
-  }
-
   async function send(text: string) {
     const content = text.trim()
     if ((!content && !attachment) || busy) return
@@ -245,7 +238,6 @@ export default function ChatInterface() {
     setAttachment(null)
     setBusy(true)
     setError("")
-    if (input.current) input.current.style.height = "auto"
 
     let answered = false
     let completed = false
@@ -404,8 +396,8 @@ export default function ChatInterface() {
     void send(draft)
   }
 
-  function keyDown(event: KeyboardEvent<HTMLTextAreaElement>) {
-    if (event.key === "Enter" && !event.shiftKey && !event.nativeEvent.isComposing && window.matchMedia("(pointer: fine)").matches) {
+  function keyDown(event: KeyboardEvent<HTMLInputElement>) {
+    if (event.key === "Enter" && !event.nativeEvent.isComposing) {
       event.preventDefault()
       void send(draft)
     }
@@ -433,8 +425,8 @@ export default function ChatInterface() {
     }
   }
 
-  return <><style>{`\n.evo-chat-frame{background:transparent!important;border:0!important;border-radius:0!important;color:#181818;min-height:0;}\n.evo-chat-messages{min-height:0!important;flex:1!important}.evo-chat-bottom{width:100%!important}.evo-chat-composer{max-width:100%!important}.evo-chat-toolbar{background:transparent!important;border:0!important;box-shadow:none!important;}\n.evo-chat-title{display:flex;align-items:center;gap:6px}.evo-chat-title span{display:none}.evo-chat-title strong{font-size:var(--evo-size-row);font-weight:650}\n.evo-chat-welcome{padding-top:12vh}.evo-chat-welcome h1{font-size:var(--evo-size-hero);letter-spacing:-.8px}.evo-chat-welcome p{color:#6b7280;font-size:var(--evo-size-support)}\n.evo-chat-mark{background:transparent!important;border:0!important;box-shadow:none!important;width:68px;height:68px;margin-inline:auto}.evo-chat-mark img{width:100%;height:100%;object-fit:contain}\n.evo-chat-composer{background:#fff!important;border:1px solid #e9e9ed!important;border-radius:26px !important;box-shadow:0 5px 22px #33415513!important;display:flex;align-items:center;gap:7px;padding:7px 9px!important;min-height:54px}\n.evo-chat-composer[data-focused="true"]{border-radius:14px!important;box-shadow:0 5px 20px #33415518!important}.evo-composer-surface:has(.evo-chat-composer[data-focused="true"]){border-radius:18px!important}\n.evo-chat-composer textarea{flex:1;min-width:0;font-size:var(--evo-size-body) !important;background:transparent!important;resize:none}.evo-chat-attach,.evo-chat-mic{display:grid;place-items:center;flex:none;width:30px;height:36px;border:0;background:transparent;color:#9da1aa;padding:0}.evo-chat-model{display:flex;align-items:center;gap:5px;flex:none;min-height:32px;padding:0 9px;border:1px solid #e8e8ec;border-radius:999px;background:#fafafa;color:#45464a;font-size:var(--evo-size-meta);white-space:nowrap}.evo-chat-send{flex:none;border-radius:50%!important;width:38px!important;height:38px!important;background:#e3e5e9!important;color:#414650!important}.evo-chat-send:not(:disabled){background:#242424!important;color:#fff!important}.evo-chat-bottom{background:transparent!important;border:0!important;padding-inline:12px}.evo-chat-messages{scrollbar-width:none}.evo-chat-entry--assistant .evo-chat-bubble{background:transparent!important;box-shadow:none!important}.evo-chat-entry--user .evo-chat-bubble{border-radius:18px !important}\n.evo-chat-composer-controls{display:contents}.evo-chat-attach{order:1}.evo-chat-composer textarea{order:2}.evo-chat-model{order:3}.evo-chat-send{order:4}
-@media(max-width:480px){.ref-view-chat .evo-chat-composer{display:flex!important;flex-direction:row!important;align-items:center!important;gap:5px!important;min-height:58px!important;padding:7px 10px!important;border-radius:999px!important}.ref-view-chat .evo-chat-composer textarea{order:2!important;flex:1 1 0!important;width:0!important;min-width:0!important;min-height:36px!important;max-height:110px!important;padding:7px 2px!important;line-height:22px!important;overflow-y:auto;scrollbar-width:none}.ref-view-chat .evo-chat-composer-controls{display:contents!important}.ref-view-chat .evo-chat-attach{order:1!important;width:32px!important;min-width:32px!important;height:40px!important;color:#262830!important}.ref-view-chat .evo-chat-model{order:3!important;min-height:38px!important;padding:0 3px!important;border:0!important;background:transparent!important;color:#292b31!important;font-size:13px!important;font-weight:600!important}.evo-chat-model-prefix{display:none}.ref-view-chat .evo-chat-mic{order:4!important;width:29px!important;min-width:29px!important;height:40px!important;color:#292b31!important}.ref-view-chat .evo-chat-send{order:5!important;width:36px!important;min-width:36px!important;height:36px!important;margin-left:0!important}}
+  return <><style>{`\n.evo-chat-frame{background:transparent!important;border:0!important;border-radius:0!important;color:#181818;min-height:0;}\n.evo-chat-messages{min-height:0!important;flex:1!important}.evo-chat-bottom{width:100%!important}.evo-chat-composer{max-width:100%!important}.evo-chat-toolbar{background:transparent!important;border:0!important;box-shadow:none!important;}\n.evo-chat-title{display:flex;align-items:center;gap:6px}.evo-chat-title span{display:none}.evo-chat-title strong{font-size:var(--evo-size-row);font-weight:650}\n.evo-chat-welcome{padding-top:12vh}.evo-chat-welcome h1{font-size:var(--evo-size-hero);letter-spacing:-.8px}.evo-chat-welcome p{color:#6b7280;font-size:var(--evo-size-support)}\n.evo-chat-mark{background:transparent!important;border:0!important;box-shadow:none!important;width:68px;height:68px;margin-inline:auto}.evo-chat-mark img{width:100%;height:100%;object-fit:contain}\n.evo-chat-composer{background:#fff!important;border:1px solid #e9e9ed!important;border-radius:26px !important;box-shadow:0 5px 22px #33415513!important;display:flex;align-items:center;gap:7px;padding:7px 9px!important;min-height:54px}\n.evo-chat-composer[data-focused="true"]{border-radius:14px!important;box-shadow:0 5px 20px #33415518!important}.evo-composer-surface:has(.evo-chat-composer[data-focused="true"]){border-radius:18px!important}\n.evo-chat-composer input{flex:1;min-width:0;font-size:var(--evo-size-body) !important;background:transparent!important;resize:none}.evo-chat-attach,.evo-chat-mic{display:grid;place-items:center;flex:none;width:30px;height:36px;border:0;background:transparent;color:#9da1aa;padding:0}.evo-chat-model{display:flex;align-items:center;gap:5px;flex:none;min-height:32px;padding:0 9px;border:1px solid #e8e8ec;border-radius:999px;background:#fafafa;color:#45464a;font-size:var(--evo-size-meta);white-space:nowrap}.evo-chat-send{flex:none;border-radius:50%!important;width:38px!important;height:38px!important;background:#e3e5e9!important;color:#414650!important}.evo-chat-send:not(:disabled){background:#242424!important;color:#fff!important}.evo-chat-bottom{background:transparent!important;border:0!important;padding-inline:12px}.evo-chat-messages{scrollbar-width:none}.evo-chat-entry--assistant .evo-chat-bubble{background:transparent!important;box-shadow:none!important}.evo-chat-entry--user .evo-chat-bubble{border-radius:18px !important}\n.evo-chat-composer-controls{display:contents}.evo-chat-attach{order:1}.evo-chat-composer input{order:2}.evo-chat-model{order:3}.evo-chat-send{order:4}
+@media(max-width:480px){.ref-view-chat .evo-chat-composer{display:flex!important;flex-direction:row!important;align-items:center!important;gap:5px!important;min-height:58px!important;padding:7px 10px!important;border-radius:999px!important}.ref-view-chat .evo-chat-composer input{order:2!important;flex:1 1 0!important;width:0!important;min-width:0!important;min-height:36px!important;max-height:110px!important;padding:7px 2px!important;line-height:22px!important;overflow-y:auto;scrollbar-width:none}.ref-view-chat .evo-chat-composer-controls{display:contents!important}.ref-view-chat .evo-chat-attach{order:1!important;width:32px!important;min-width:32px!important;height:40px!important;color:#262830!important}.ref-view-chat .evo-chat-model{order:3!important;min-height:38px!important;padding:0 3px!important;border:0!important;background:transparent!important;color:#292b31!important;font-size:13px!important;font-weight:600!important}.evo-chat-model-prefix{display:none}.ref-view-chat .evo-chat-mic{order:4!important;width:29px!important;min-width:29px!important;height:40px!important;color:#292b31!important}.ref-view-chat .evo-chat-send{order:5!important;width:36px!important;min-width:36px!important;height:36px!important;margin-left:0!important}}
 @media(max-width:390px){.ref-view-chat .evo-chat-composer{gap:3px!important;padding-inline:8px!important}.ref-view-chat .evo-chat-model{font-size:12px!important}.ref-view-chat .evo-chat-attach{width:30px!important;min-width:30px!important}.ref-view-chat .evo-chat-mic{width:26px!important;min-width:26px!important}}\n.evo-chat-attachment-preview{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:9px 13px;margin-bottom:8px;border:1px solid #e5e7eb;border-radius:16px;background:#f7f7f8;color:#444;font-size:var(--evo-size-meta)}.evo-chat-attachment-preview span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.evo-chat-attachment-preview button{flex:none;width:28px;height:28px;border:0;background:transparent;color:#666;font-size:var(--evo-size-section)}\n`}</style><div className="evo-chat-frame">
     <div className={`evo-chat-messages${messages.length ? " has-messages" : ""}`} ref={scroll}
       onTouchMove={() => { followNewestTurn.current = false }}
@@ -477,7 +469,7 @@ export default function ChatInterface() {
 
       </div>}
       <form onSubmit={submit} className="evo-chat-composer" data-focused={inputFocused}>
-        <textarea ref={input} autoFocus value={draft} onChange={event => { setDraft(event.target.value); resizeInput() }} onFocus={handleInputFocus} onBlur={handleInputBlur} onKeyDown={keyDown} rows={1} maxLength={4000} enterKeyHint="send" autoComplete="off" aria-label="Üzenet írása" placeholder="Írj egy üzenetet…" />
+        <input ref={input} type="text" autoFocus value={draft} onChange={event => setDraft(event.target.value)} onFocus={handleInputFocus} onBlur={handleInputBlur} onKeyDown={keyDown} maxLength={4000} enterKeyHint="send" autoComplete="off" autoCorrect="off" spellCheck={false} aria-label="Üzenet írása" placeholder="Írj egy üzenetet…" />
         <div className="evo-chat-composer-controls">
           <button type="button" className="evo-chat-attach" aria-label="Melléklet hozzáadása" aria-expanded={attachMenuOpen} onClick={() => setAttachMenuOpen(value => !value)} disabled={busy}><Plus size={21} /></button>
 
