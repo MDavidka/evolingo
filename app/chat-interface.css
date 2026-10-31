@@ -288,12 +288,17 @@ body:has(.ref-view-chat) { touch-action: pan-y; background: transparent !importa
   .ref-view-chat .evo-chat-attach,
   .ref-view-chat .evo-chat-mic { width: 30px !important; }
 }
+/* In a standalone iOS PWA with the default status-bar style, WebKit
+   owns the native status-bar strip above the CSS viewport. A full-screen
+   dark backdrop tints that strip while the white drawer cannot paint there,
+   leaving the apparent grey "cut off" band shown on iPhone. Only dim the
+   exposed page to the right of the shared drawer. */
 .evo-sidebar-backdrop {
   position: fixed;
-  inset: 0;
+  inset: 0 0 0 min(84vw, 320px);
   z-index: 190;
-  width: 100%;
-  height: 100%;
+  width: auto;
+  height: 100dvh;
   background: rgba(0,0,0,.35);
   animation: evo-sidebar-fade-in 180ms ease-out both;
 }
@@ -311,7 +316,9 @@ body:has(.ref-view-chat) { touch-action: pan-y; background: transparent !importa
   animation: evo-sidebar-slide-in 240ms ease-out both;
   touch-action: pan-y;
 }
-.evo-sidebar-safe { display:flex; flex-direction:column; height:100%; padding:calc(env(safe-area-inset-top, 0px) + 14px) 17px calc(env(safe-area-inset-bottom, 0px) + 15px); }
+/* Keep content beneath the real iOS safe-area inset when the viewport is
+   edge-to-edge; with the default opaque status bar, the inset is 0. */
+.evo-sidebar-safe { display:flex; flex-direction:column; min-height:0; height:100%; box-sizing:border-box; padding:calc(env(safe-area-inset-top, 0px) + 14px) 17px calc(env(safe-area-inset-bottom, 0px) + 15px); }
 .evo-sidebar-heading { display:flex; align-items:center; justify-content:space-between; min-height:58px; padding:0 2px 8px; color:#111318; }
 .evo-sidebar-brand { font-size:1.375rem; font-weight:680; letter-spacing:-.7px; }
 .evo-sidebar-tools { display:flex; align-items:center; gap:8px; }
