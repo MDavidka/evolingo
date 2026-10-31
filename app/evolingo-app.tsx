@@ -969,6 +969,35 @@ export default function App() {
     setLives(5)
     setScreen("task")
   }
+  // Swipe across the main Evölingo tabs; retain native iOS edge-back gestures.
+  const referenceSwipeOrigin = useRef<{ x: number; y: number } | null>(null)
+  const referenceSwipeTabs: ReferenceView[] = ["home", "chat", "space", "utility", "profile"]
+  const onReferenceSwipeStart = (event: ReactTouchEvent<HTMLElement>) => {
+    referenceSwipeOrigin.current = null
+    if (!referenceView || !referenceSwipeTabs.includes(referenceView) || event.touches.length !== 1) return
+    const target = event.target
+    if (!(target instanceof HTMLElement) || target.closest(
+      'button, a, input, textarea, select, [contenteditable="true"], [role="slider"], [role="dialog"], [data-swipe-exempt], .evo-chat-composer, .evo-chat-popover, .evo-chat-sheet, .evo-iui-root, [data-radix-scroll-area-viewport]'
+    )) return
+    const touch = event.touches[0]
+    if (touch.clientX < 26 || touch.clientX > window.innerWidth - 26) return
+    referenceSwipeOrigin.current = { x: touch.clientX, y: touch.clientY }
+  }
+  const onReferenceSwipeEnd = (event: ReactTouchEvent<HTMLElement>) => {
+    const origin = referenceSwipeOrigin.current
+    referenceSwipeOrigin.current = null
+    if (!origin || !referenceView || !event.changedTouches.length) return
+    const touch = event.changedTouches[0]
+    const dx = touch.clientX - origin.x
+    const dy = touch.clientY - origin.y
+    if (Math.abs(dx) < 95 || Math.abs(dx) < Math.abs(dy) * 1.8) return
+    const current = referenceSwipeTabs.indexOf(referenceView)
+    if (current < 0) return
+    const next = current + (dx < 0 ? 1 : -1)
+    if (next < 0 || next >= referenceSwipeTabs.length) return
+    playUiSound("swipe")
+    navigateReference(referenceSwipeTabs[next])
+  }
   const mainSwipeOrigin = useRef<{ x: number; y: number } | null>(null)
   const mainTabs: Screen[] = ["home", "friends", "leaderboard", "profile"]
   const onMainSwipeStart = (event: ReactTouchEvent<HTMLElement>) => {
@@ -1019,7 +1048,7 @@ export default function App() {
     setScreen(target)
   }
   return <><main className={"app-shell " + (referenceView ? "reference-shell " : "") + ((screen === "lessonIntro" || screen === "task" || screen === "flashcards" || screen === "chestOpen") ? "lesson-open" : "") + (screen === "skill" ? " skill-open" : "") + (screen === "leaderboard" ? " leaderboard-app" : "")}>
-    <section onTouchStart={onMainSwipeStart} onTouchEnd={onMainSwipeEnd} onTouchCancel={() => { mainSwipeOrigin.current = null }} className={"screen-content " + (screen === "home" ? "learn-home-content " : "") + ((screen === "lessonIntro" || screen === "task" || screen === "flashcards" || screen === "chestOpen") ? "lesson-page " : "") + (screen === "skill" ? "skill-page " : "") + (screen === "leaderboard" ? "leaderboard-screen-content" : "")}>
+    <section onTouchStart={event => { onMainSwipeStart(event); onReferenceSwipeStart(event) }} onTouchEnd={event => { onMainSwipeEnd(event); onReferenceSwipeEnd(event) }} onTouchCancel={() => { mainSwipeOrigin.current = null; referenceSwipeOrigin.current = null }} className={"screen-content " + (screen === "home" ? "learn-home-content " : "") + ((screen === "lessonIntro" || screen === "task" || screen === "flashcards" || screen === "chestOpen") ? "lesson-page " : "") + (screen === "skill" ? "skill-page " : "") + (screen === "leaderboard" ? "leaderboard-screen-content" : "")}>
       {referenceView && <ReferenceScreens
         view={referenceView}
         onUploadFile={() => { setReferenceView("space"); setTimeout(() => document.querySelector<HTMLInputElement>(".ref-space input[type=file]")?.click(), 0) }}
