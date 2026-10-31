@@ -164,7 +164,11 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-
 .ref-view-chat .evo-chat-composer,
 .ref-view-chat .evo-chat-composer[data-focused="true"] { border-radius: 999px !important; }
 .evo-chat-entry--user .evo-chat-bubble { background: var(--evo-surface-muted); }
-html:has(.ref-view-chat) { background: #9cacc9; }
+/* iOS (PWA and Safari 26) tints the status-bar / Dynamic Island strip from the
+   root background colour, not from the gradient layer painted above it. The
+   chat used a blue-grey root colour, so the whole top strip looked grey even
+   with the sidebar closed. Keep the root white; the gradient lives in ::before. */
+html, html:has(.ref-view-chat) { background-color: #fff; }
 html:has(.ref-view-chat)::before {
   background: linear-gradient(180deg, #ffffff 0%, #ffffff 28%, #f9faff 42%, #dce3ef 67%, #9cacc9 100%) !important;
 }
