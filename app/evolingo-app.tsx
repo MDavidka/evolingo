@@ -543,7 +543,6 @@ export default function App() {
   const [answeredTasks, setAnsweredTasks] = useState<string[]>([])
   const [xp, setXp] = useState(0)
   const [stars, setStars] = useState(0)
-  const [showSplash, setShowSplash] = useState(true)
   const [systemNotice, setSystemNotice] = useState<"permission" | "daily" | "chest" | "friend" | null>(null)
   const [purchasedItems, setPurchasedItems] = useState<string[]>([])
   const [lives, setLives] = useState(5)
@@ -589,7 +588,7 @@ export default function App() {
   }, [weeklyStudyReady, weeklyStudySeconds])
 
   useEffect(() => {
-    if (!weeklyStudyReady || showSplash || (screen !== "lessonIntro" && screen !== "task")) return
+    if (!weeklyStudyReady || (screen !== "lessonIntro" && screen !== "task")) return
     let lastTick = Date.now()
     const record = () => {
       const now = Date.now()
@@ -610,41 +609,11 @@ export default function App() {
       document.removeEventListener("visibilitychange", onVisibilityChange)
       record()
     }
-  }, [weeklyStudyReady, showSplash, screen])
+  }, [weeklyStudyReady, screen])
 
   useEffect(() => {
-    let cancelled = false
-    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches
-    const minimumDisplayTime = reducedMotion ? 450 : 1450
-    const startedAt = Date.now()
-    const assets = [foxIcon, "/images/path-symbols.png", "/images/lesson-level-6.png", "/images/evoskill-cutouts-v3/vocabulary-gray.webp"]
-
-    const preload = (src: string) => new Promise<void>((resolve) => {
-      const image = new Image()
-      image.onload = () => resolve()
-      image.onerror = () => resolve()
-      image.src = src
-    })
-
-    const finishSplash = async () => {
-      await Promise.race([
-        Promise.all(assets.map(preload)),
-        new Promise<void>((resolve) => window.setTimeout(resolve, 1000)),
-      ])
-      const remaining = Math.max(0, minimumDisplayTime - (Date.now() - startedAt))
-      window.setTimeout(() => { if (!cancelled) setShowSplash(false) }, remaining)
-    }
-
-    void finishSplash()
-    return () => { cancelled = true }
-  }, [])
-
-  useEffect(() => {
-    if (!showSplash) playTaskSound("welcome")
-  }, [showSplash])
-
-  useEffect(() => {
-    if (showSplash) return
+    // Keep first chat render free of permission sheets and startup interstitials.
+    if (referenceView === "chat") return
     try {
       if (!localStorage.getItem("evolingo.notification-intro.v1")) {
         setSystemNotice("permission")
@@ -655,7 +624,7 @@ export default function App() {
     } catch {
       setSystemNotice("daily")
     }
-  }, [showSplash])
+  }, [referenceView])
 
   const requestSystemNotifications = async () => {
     try {
@@ -1152,17 +1121,7 @@ export default function App() {
     onAllowNotifications={requestSystemNotifications}
     onOpenFriends={() => { setSystemNotice(null); setScreen("friends") }}
   />}
-  {showSplash && <SplashScreen />}</>
-}
-
-function SplashScreen() {
-  return <div className="learn-splash" role="status" aria-label="Evölingo betöltése">
-    <img src={foxIcon} alt="" aria-hidden="true" />
-    <strong>Evölingo</strong>
-    <span>Tanulj angolul az AI-jal, naponta 5 perc.</span>
-    <div className="learn-splash-progress" aria-hidden="true"><span /></div>
-    <small className="learn-splash-footnote">A tanulás itt kezdődik.</small>
-  </div>
+  </>
 }
 
 function AppConfirmSheet({ confirmation, onCancel, onConfirm }: {
