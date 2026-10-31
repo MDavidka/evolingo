@@ -350,3 +350,121 @@
   }
   .app-shell.reference-shell .library-space .library-add-primary { transition: none !important; }
 }
+
+/* Library action group — faithful to the provided white outlined pill and
+   three independent circular controls, without affecting floating navigation. */
+.app-shell.reference-shell .library-space .library-title-row {
+  align-items: flex-start;
+  min-height: 0;
+  margin-bottom: 18px;
+}
+.app-shell.reference-shell .library-space .library-actions-panel {
+  width: 100%;
+  padding: 17px 16px 14px;
+  margin-bottom: 20px;
+  border-radius: 28px;
+  background: #f5f5f7;
+}
+.app-shell.reference-shell .library-space .library-actions-panel .library-add-primary.evo-wide-action {
+  display: inline-flex !important;
+  width: 100% !important;
+  min-height: 60px !important;
+  height: 60px !important;
+  margin: 0 !important;
+  padding: 0 18px !important;
+  border: 1.5px solid #d1d1d5 !important;
+  border-radius: 999px !important;
+  background: #fff !important;
+  background-image: none !important;
+  color: #19191b !important;
+  font-size: 19px !important;
+  line-height: 1.2 !important;
+  font-weight: 540 !important;
+  letter-spacing: -.025em;
+  box-shadow: none !important;
+}
+.app-shell.reference-shell .library-space .library-actions-panel .library-add-primary.evo-wide-action > span,
+.app-shell.reference-shell .library-space .library-actions-panel .library-add-primary.evo-wide-action > svg {
+  display: inline-flex !important;
+  color: #19191b !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+.app-shell.reference-shell .library-space .library-actions-panel .library-add-primary.evo-wide-action:active {
+  background: #f9f9fa !important;
+}
+.app-shell.reference-shell .library-space .library-action-shortcuts {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  padding-top: 15px;
+}
+.app-shell.reference-shell .library-space .library-action-shortcuts .library-action-circle {
+  display: grid !important;
+  width: 52px !important;
+  height: 52px !important;
+  min-width: 52px !important;
+  min-height: 52px !important;
+  flex: 0 0 52px;
+  place-items: center;
+  padding: 0 !important;
+  border: 1px solid transparent !important;
+  border-radius: 50% !important;
+  background: #fff !important;
+  color: #19191b !important;
+  box-shadow: none !important;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.app-shell.reference-shell .library-space .library-action-shortcuts .library-action-circle svg {
+  color: inherit !important;
+}
+.app-shell.reference-shell .library-space .library-action-shortcuts .library-action-circle:active {
+  background: #e9e9ec !important;
+}
+.app-shell.reference-shell .library-space .library-action-shortcuts .library-action-circle:focus-visible,
+.app-shell.reference-shell .library-space .library-actions-panel .library-add-primary.evo-wide-action:focus-visible {
+  outline: 2px solid #202127;
+  outline-offset: 3px;
+}
+.app-shell.reference-shell .library-space .library-search {
+  margin-top: 0;
+  margin-bottom: 9px;
+}
+.app-shell.reference-shell .library-space .library-controls {
+  min-height: 32px;
+  margin-bottom: 9px;
+  padding: 0;
+}
+.app-shell.reference-shell .library-space .library-sort-caption {
+  min-width: 0;
+  max-width: 70%;
+  color: #85858b;
+  font-size: 12px;
+  line-height: 1.4;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+@media (max-width: 375px) {
+  .app-shell.reference-shell .library-space .library-actions-panel {
+    padding: 14px 12px 12px;
+    border-radius: 24px;
+  }
+  .app-shell.reference-shell .library-space .library-actions-panel .library-add-primary.evo-wide-action {
+    min-height: 56px !important;
+    height: 56px !important;
+    font-size: 18px !important;
+  }
+  .app-shell.reference-shell .library-space .library-action-shortcuts {
+    gap: 10px;
+  }
+  .app-shell.reference-shell .library-space .library-action-shortcuts .library-action-circle {
+    width: 50px !important;
+    height: 50px !important;
+    min-width: 50px !important;
+    min-height: 50px !important;
+    flex-basis: 50px;
+  }
+}
