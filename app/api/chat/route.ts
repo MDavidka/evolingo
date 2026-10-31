@@ -150,7 +150,7 @@ export async function POST(request: NextRequest) {
   let messages: Message[]
   let interactive = false
   let attachment: ChatAttachment | null = null
-request state removed  try {
+  try {
     const raw = await request.text()
     if (raw.length > 3_100_000) return fail("Az üzenet túl hosszú.", 413)
     const body: unknown = JSON.parse(raw)
