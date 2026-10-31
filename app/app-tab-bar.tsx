@@ -1,27 +1,33 @@
 "use client"
 
 import { useCallback, useEffect, useRef, useState, type KeyboardEvent as ReactKeyboardEvent } from "react"
+import { SidebarSimpleIcon } from "@phosphor-icons/react/dist/csr/SidebarSimple"
 import { XIcon } from "@phosphor-icons/react/dist/csr/X"
 import { PlusIcon } from "@phosphor-icons/react/dist/csr/Plus"
 import { DotsThreeIcon } from "@phosphor-icons/react/dist/csr/DotsThree"
 import { PencilSimpleIcon } from "@phosphor-icons/react/dist/csr/PencilSimple"
 import { TrashIcon } from "@phosphor-icons/react/dist/csr/Trash"
-import FlexRemixIcon, { type FlexRemixName } from "./flex-remix-icon"
+import { MagnifyingGlassIcon } from "@phosphor-icons/react/dist/csr/MagnifyingGlass"
+import { BooksIcon } from "@phosphor-icons/react/dist/csr/Books"
+import { FoldersIcon } from "@phosphor-icons/react/dist/csr/Folders"
+import { PuzzlePieceIcon } from "@phosphor-icons/react/dist/csr/PuzzlePiece"
+import { LightbulbIcon } from "@phosphor-icons/react/dist/csr/Lightbulb"
+import { ChatCircleDotsIcon } from "@phosphor-icons/react/dist/csr/ChatCircleDots"
+import { NotePencilIcon } from "@phosphor-icons/react/dist/csr/NotePencil"
+import { UserCircleIcon } from "@phosphor-icons/react/dist/csr/UserCircle"
 import { deleteChatSession, notifyChatSessionAction, readChatSessions, renameChatSession, type ChatSession } from "./chat-sessions"
 
 export type AppTab = "learn" | "ai" | "files" | "tools" | "profile" | "brainstorm"
 type Props = { activeTab: AppTab; onSelect: (tab: AppTab) => void; avatarImage: string; avatar: string; userName: string; stars?: number; streak?: number; onOpenLeaderboard?: () => void }
 
-/* Each item pairs a web-safe Phosphor glyph with the native SF Symbol name.
-   Apple's original SF Symbol assets must NOT be shipped inside this web app. */
-const quickLinks: ReadonlyArray<{ label: string; icon: FlexRemixName; target: AppTab }> = [
-  { label: "AI chat", icon: "chat", target: "ai" },
-  { label: "Témák", icon: "topics", target: "learn" },
-  { label: "Könyvtár", icon: "files", target: "files" },
-  { label: "Eszközök", icon: "tools", target: "tools" },
-  { label: "Ötletbörze", icon: "brainstorm", target: "brainstorm" },
-  { label: "Profil", icon: "profile", target: "profile" },
-]
+const quickLinks = [
+  { label: "AI chat", Icon: ChatCircleDotsIcon, target: "ai" },
+  { label: "Témák", Icon: BooksIcon, target: "learn" },
+  { label: "Könyvtár", Icon: FoldersIcon, target: "files" },
+  { label: "Eszközök", Icon: PuzzlePieceIcon, target: "tools" },
+  { label: "Ötletbörze", Icon: LightbulbIcon, target: "brainstorm" },
+  { label: "Profil", Icon: UserCircleIcon, target: "profile" },
+] as const
 
 function dateGroup(timestamp: number) {
   const date = new Date(timestamp)
@@ -130,7 +136,7 @@ export default function AppTabBar({ activeTab, onSelect, avatarImage, userName }
   return <div className="evo-sidebar-host">
     <button type="button" className="evo-global-profile-button" onClick={onProfile} aria-label={`${userName} profilja`} aria-current={activeTab === "profile" ? "page" : undefined}>{avatarImage ? <img src={avatarImage} alt="" /> : <span className="evo-profile-initials">{usernameInitials}</span>}</button>
     <div className={`evo-morph-anchor ${open ? "is-sidebar-open" : ""}`}>
-      <button ref={trigger} type="button" className="evo-morph-toggle" aria-label={open ? "Menü bezárása" : "Menü megnyitása"} aria-expanded={open} onClick={() => open ? close() : show()}><FlexRemixIcon name="sidebar" size={24} /></button>
+      <button ref={trigger} type="button" className="evo-morph-toggle" aria-label={open ? "Menü bezárása" : "Menü megnyitása"} aria-expanded={open} onClick={() => open ? close() : show()}><SidebarSimpleIcon size={24} weight="regular" aria-hidden="true" /></button>
     </div>
     {open && <>
       <button className="evo-sidebar-backdrop" type="button" aria-label="Menü bezárása" onClick={() => close()} />
@@ -138,13 +144,13 @@ export default function AppTabBar({ activeTab, onSelect, avatarImage, userName }
         <div className="evo-sidebar-safe">
           <div className="evo-sidebar-heading">
             <strong className="evo-sidebar-brand">Evölingo</strong>
-            <div className="evo-sidebar-tools"><button type="button" className="evo-sidebar-tool" aria-label="Beszélgetések keresése" aria-expanded={searchOpen} onClick={() => { setSearchOpen(value => !value); setQuery("") }}><FlexRemixIcon name="search" size={20} /></button><button type="button" className="evo-sidebar-tool evo-sidebar-close" onClick={() => close()} aria-label="Menü bezárása"><XIcon size={20} weight="regular" /></button></div>
+            <div className="evo-sidebar-tools"><button type="button" className="evo-sidebar-tool" aria-label="Beszélgetések keresése" aria-expanded={searchOpen} onClick={() => { setSearchOpen(value => !value); setQuery("") }}><MagnifyingGlassIcon size={21} weight="regular" /></button><button type="button" className="evo-sidebar-tool evo-sidebar-close" onClick={() => close()} aria-label="Menü bezárása"><XIcon size={20} weight="regular" /></button></div>
           </div>
           <nav className="evo-sidebar-nav" aria-label="Fő navigáció">
-            {quickLinks.map(({ label, icon, target }) => <button key={label} type="button" aria-current={activeTab === target ? "page" : undefined} onClick={() => select(target)}><FlexRemixIcon name={icon} size={22} /><span>{label}</span></button>)}
+            {quickLinks.map(({ label, Icon, target }) => <button key={label} type="button" aria-current={activeTab === target ? "page" : undefined} onClick={() => select(target)}><Icon size={22} weight="regular" /><span>{label}</span></button>)}
           </nav>
           <div className="evo-sidebar-recent-heading"><span>Legutóbbiak</span><button type="button" aria-label="Új beszélgetés" onClick={startNew}><PlusIcon size={19} weight="regular" /></button></div>
-          {searchOpen && <label className="evo-sidebar-search"><FlexRemixIcon name="search" size={16} /><input autoFocus value={query} onChange={event => setQuery(event.target.value)} placeholder="Keresés a beszélgetésekben" /></label>}
+          {searchOpen && <label className="evo-sidebar-search"><MagnifyingGlassIcon size={16} weight="regular" /><input autoFocus value={query} onChange={event => setQuery(event.target.value)} placeholder="Keresés a beszélgetésekben" /></label>}
           <div className="evo-sidebar-history">
             {visibleChats.length ? visibleChats.map(({ group, items }) => <section key={group}><h3>{group}</h3>{items.map(chat => <div className="evo-sidebar-chat" key={chat.id}>
               <button type="button" className="evo-sidebar-chat-title" onClick={() => openChat(chat.id)} title={chat.title}>{chat.title}</button>
@@ -152,7 +158,7 @@ export default function AppTabBar({ activeTab, onSelect, avatarImage, userName }
               {menuFor === chat.id && <div className="evo-sidebar-chat-actions"><button type="button" onClick={() => { const title = window.prompt("Beszélgetés átnevezése", chat.title); if (title !== null) renameChatSession(chat.id, title); setMenuFor(null) }}><PencilSimpleIcon size={15} weight="regular" /> Átnevezés</button><button type="button" onClick={() => { deleteChatSession(chat.id); setMenuFor(null) }}><TrashIcon size={15} weight="regular" /> Törlés</button></div>}
             </div>)}</section>) : <p className="evo-sidebar-empty">{query ? "Nincs ilyen beszélgetés." : "A beszélgetéseid itt jelennek meg."}</p>}
           </div>
-          <div className="evo-sidebar-footer"><button type="button" className="evo-sidebar-chat-action" onClick={startNew}><FlexRemixIcon name="compose" size={20} /> Új beszélgetés</button><a className="evo-sidebar-icon-credit" href="https://www.streamlinehq.com/icons/flex-remix-free" target="_blank" rel="noopener noreferrer">Ikonok: Streamline · CC BY 4.0</a></div>
+          <div className="evo-sidebar-footer"><button type="button" className="evo-sidebar-chat-action" onClick={startNew}><NotePencilIcon size={20} weight="regular" /> Új beszélgetés</button></div>
         </div>
       </aside>
     </>}
