@@ -9,8 +9,8 @@ type LessonContext = { id: number; title: string; summary: string; level: string
 type ChatRole = "system" | "user"
 type ChatMessage = { role: ChatRole; content: string }
 
-const NVIDIA_URL = "https://integrate.api.nvidia.com/v1/chat/completions"
-const MODEL = process.env.EVO_AI_MODEL?.trim() || "poolside/laguna-xs-2.1"
+const API_URL = "https://openrouter.ai/api/v1/chat/completions"
+const MODEL = process.env.EVO_AI_MODEL?.trim() || "nvidia/nemotron-3.5-super-vl:free"
 const WINDOW_MS = 10 * 60 * 1000
 const MAX_REQUESTS_PER_WINDOW = 28
 const throttle = new Map<string, { count: number; resetAt: number }>()
@@ -64,7 +64,7 @@ async function infer(messages: ChatMessage[], maxTokens = 1200): Promise<Record<
   for (const model of candidates) {
     let response: Response
     try {
-      response = await fetch(NVIDIA_URL, {
+      response = await fetch(API_URL, {
         method: "POST",
         headers: { Authorization: "Bearer " + key, "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -83,7 +83,7 @@ async function infer(messages: ChatMessage[], maxTokens = 1200): Promise<Record<
     if (!response.ok) {
       lastStatus = response.status
       // Never log credentials or upstream response bodies.
-      console.error("[skill-ai] NVIDIA status", response.status, "model", model)
+      console.error("[skill-ai] AI status", response.status, "model", model)
       if (response.status === 401 || response.status === 403) throw new Error("auth")
       if (response.status === 410) throw new Error("retired")
       if (response.status === 429) throw new Error("rate_limited")
@@ -230,13 +230,13 @@ export async function POST(request: NextRequest) {
     return error("Ismeretlen gyakorlattípus.", 400)
   } catch (cause) {
     const message = cause instanceof Error ? cause.message : "upstream"
-    if (message === "rate_limited") return error("Az NVIDIA modell túlterhelt. Próbáld újra.", 429)
-    if (message === "auth") return error("Az NVIDIA API-kulcsot a szolgáltató elutasította. Ellenőrizd az EVO_Ai beállítást.", 502)
-    if (message === "model" || message === "retired") return error("A kiválasztott NVIDIA modell már nem érhető el. Ellenőrizd az EVO_AI_MODEL beállítást (minimaxai/minimax-m3.1-flash).", 502)
-    if (message === "timeout") return error("Az NVIDIA válasza túl sokáig tartott. Próbáld újra.", 504)
+    if (message === "rate_limited") return error("Az AI modell túlterhelt. Próbáld újra.", 429)
+    if (message === "auth") return error("Az AI API-kulcsot a szolgáltató elutasította. Ellenőrizd az EVO_Ai beállítást.", 502)
+    if (message === "model" || message === "retired") return error("A kiválasztott AI modell már nem érhető el. Ellenőrizd az EVO_AI_MODEL beállítást (nvidia/nemotron-3.5-super-vl:free).", 502)
+    if (message === "timeout") return error("Az AI válasza túl sokáig tartott. Próbáld újra.", 504)
     if (message === "missing_key") return error("Az AI szolgáltatás nincs beállítva.", 503)
     if (message === "bad_response") return error("A modell nem adott megfelelő választ. Próbáld újra.", 502)
-    if (message.startsWith("upstream_")) return error("Az NVIDIA API hibát adott (HTTP " + message.slice(9) + "). Próbáld újra, vagy ellenőrizd az NVIDIA API-hozzáférést.", 502)
+    if (message.startsWith("upstream_")) return error("Az AI API hibát adott (HTTP " + message.slice(9) + "). Próbáld újra, vagy ellenőrizd az AI API-hozzáférést.", 502)
     console.error("[skill-ai] Unhandled error code:", message.slice(0, 100))
     return error("Az AI értékelés most nem érhető el (" + (["upstream", "bad_response", "invalid_json"].includes(message) ? message : "internal") + ").", 502)
   }

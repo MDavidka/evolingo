@@ -16,7 +16,7 @@ export type AgentRunOptions = {
   streamFinal: (system: string) => Promise<string>
 }
 
-const API_URL = "https://integrate.api.nvidia.com/v1/chat/completions"
+const API_URL = "https://openrouter.ai/api/v1/chat/completions"
 const FAST_MODEL = () => process.env.EVO_AI_FAST_MODEL?.trim() || ""
 
 /** Non-streamed, short intermediate drafts: used only for real subtasks. */
@@ -38,7 +38,7 @@ async function shortCompletion(
       temperature: 0.2,
       max_tokens: maxTokens,
       stream: false,
-      ...(model.startsWith("nvidia/nemotron-3.5-") ? { chat_template_kwargs: { enable_thinking: false } } : {}),
+      ...(model.startsWith("nvidia/nemotron-3.5-") ? { reasoning: { effort: "none" } } : {}),
     }),
     cache: "no-store",
     signal: AbortSignal.any([parentSignal, AbortSignal.timeout(timeoutMs)]),

@@ -11,8 +11,8 @@ type Role = "user" | "assistant"
 type Message = { role: Role; content: string }
 type ProviderMessage = { role: Role; content: unknown }
 
-const API_URL = "https://integrate.api.nvidia.com/v1/chat/completions"
-const MODEL = process.env.EVO_AI_MODEL?.trim() || "poolside/laguna-xs-2.1"
+const API_URL = "https://openrouter.ai/api/v1/chat/completions"
+const MODEL = process.env.EVO_AI_MODEL?.trim() || "nvidia/nemotron-3.5-super-vl:free"
 const rateLimits = new Map<string, { count: number; resetAt: number }>()
 const headers = { "Cache-Control": "no-store", "X-Content-Type-Options": "nosniff" }
 
@@ -48,7 +48,7 @@ async function streamProviderText(
       temperature: 0.7,
       max_tokens: options.maxTokens ?? 1200,
       stream: true,
-      ...(MODEL.startsWith("nvidia/nemotron-3.5-") ? { chat_template_kwargs: { enable_thinking: false } } : {}),
+      ...(MODEL.startsWith("nvidia/nemotron-3.5-") ? { reasoning: { effort: "none" } } : {}),
     }),
     cache: "no-store",
     signal: AbortSignal.any([...(options.signal ? [options.signal] : []), AbortSignal.timeout((options.maxTokens ?? 1200) > 1200 ? 24500 : 30000)]),
