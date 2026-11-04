@@ -19,7 +19,6 @@ const DEFAULT_PROFILE: PublicProfile = {
   compactMode: false,
 }
 const TAB_PATH: Record<AppTab, string> = {
-  learn: "/chat",
   ai: "/chat",
   schedule: "/utemezes",
   files: "/konyvtar",
