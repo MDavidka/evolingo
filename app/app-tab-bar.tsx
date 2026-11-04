@@ -9,7 +9,6 @@ const DotsThreeIcon = mage("dots-horizontal")
 const PencilSimpleIcon = mage("edit-pen")
 const TrashIcon = mage("trash")
 const MagnifyingGlassIcon = mage("search")
-const BooksIcon = mage("book-text")
 const FoldersIcon = mage("folder")
 const PuzzlePieceIcon = mage("dashboard-4")
 const LightbulbIcon = mage("light-bulb")
@@ -21,7 +20,6 @@ export type AppTab = "learn" | "ai" | "files" | "tools" | "profile" | "brainstor
 type Props = { activeTab: AppTab; onSelect: (tab: AppTab) => void; avatarImage: string; avatar: string; userName: string; stars?: number; streak?: number; onOpenLeaderboard?: () => void }
 
 const quickLinks = [
-  { label: "Témák", Icon: BooksIcon, target: "learn" },
   { label: "Könyvtár", Icon: FoldersIcon, target: "files" },
   { label: "Eszközök", Icon: PuzzlePieceIcon, target: "tools" },
   { label: "Ötletbörze", Icon: LightbulbIcon, target: "brainstorm" },
