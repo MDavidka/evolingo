@@ -95,6 +95,15 @@ export default function LibrarySpace() {
   const [qrValue, setQrValue] = useState("")
   const [qrError, setQrError] = useState("")
   useEffect(() => {
+    // A ToolsHub feltöltési parancsa a valódi könyvtári feltöltő sheetet nyitja.
+    const search = new URLSearchParams(window.location.search)
+    if (search.get("upload") !== "1") return
+    setSheet("new")
+    search.delete("upload")
+    window.history.replaceState(window.history.state, "", window.location.pathname + (search.size ? "?" + search.toString() : "") + window.location.hash)
+  }, [])
+
+  useEffect(() => {
     try {
       const trashed = JSON.parse(localStorage.getItem(TRASH_KEY) || "[]")
       if (Array.isArray(trashed)) setDeletedEntries(trashed.filter((entry): entry is SpaceEntry => entry && typeof entry.id === "string"))
