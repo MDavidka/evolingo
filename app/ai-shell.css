@@ -1,0 +1,64 @@
+/* Evölingo AI-only shell. Token-backed new surfaces. */
+html, body { background: var(--color-bg, #fff); color: var(--color-text, #171717); font-family: var(--font-sans, system-ui, sans-serif); }
+body { -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+.app-shell.evo-ai-app-shell { min-height: 100dvh; width: 100%; background: var(--color-bg); }
+.evo-ai-screen-content { min-height: 100dvh; }
+.evo-ai-app-shell .ref-app { min-height: 100dvh; max-width: none; margin: 0 auto; background: var(--color-bg) !important; }
+.evo-ai-app-shell .ref-view-profile { max-width: 760px; }
+.evo-ai-app-shell .ref-view-profile > .ref-profile {
+  padding-top: calc(var(--safe-top, 0px) + 100px);
+  padding-bottom: max(48px, calc(var(--safe-bottom, 0px) + 28px));
+}
+.evo-ai-app-shell .ref-view-utility { background: var(--color-bg) !important; }
+.evo-ai-app-shell :is(.ref-view-profile, .ref-view-brainstorm, .ref-view-utility) h1 { color: var(--color-text); font-weight: 700; letter-spacing: -.6px; }
+.evo-ai-app-shell .ref-view-profile .ref-settings-group,
+.evo-ai-app-shell .ref-view-profile .ref-profile-identity { border-color: var(--color-separator); }
+.evo-ai-app-shell .ref-view-profile .ref-setting-row { min-height: 60px; }
+.evo-ai-app-shell .ref-view-profile .ref-setting-row > svg:last-child { width: 17px; height: 17px; color: var(--color-text-3); }
+.evo-ai-app-shell .ref-view-profile .ref-dark-pill,
+.evo-ai-app-shell .ref-view-auth .ref-auth-submit { background: var(--color-action) !important; color: white !important; border: 0 !important; box-shadow: none !important; }
+.evo-ai-app-shell .ref-view-auth .ref-auth-submit { min-height: 50px; max-width: 400px; width: 100%; margin-inline: auto; border-radius: 999px !important; }
+.evo-ai-app-shell .ref-view-auth h1 { font: var(--text-large-title); }
+.evo-ai-app-shell .ref-view-auth input:not([type="checkbox"]) { min-height: 44px; font-size: 17px !important; }
+.evo-ai-app-shell .ref-view-auth .ref-auth-header button { min-width: 44px; min-height: 44px; }
+.evo-ai-app-shell .ref-view-auth .ref-auth-provider { display: none; }
+.evo-ai-app-shell .ref-view-auth .ref-auth-forgot { min-height: 44px; }
+.evo-ai-system-page {
+  display: flex; min-height: 100dvh; flex-direction: column; align-items: center;
+  justify-content: center; gap: 16px; padding: max(30px, var(--safe-top, 0px)) 20px;
+  box-sizing: border-box; text-align: center; color: var(--color-text); background: var(--color-bg);
+}
+.evo-ai-system-page > svg { color: var(--color-text-3); }
+.evo-ai-system-page h1 { margin: 0; font: var(--text-title2); }
+.evo-ai-system-page p { max-width: 340px; margin: 0; font: var(--text-subhead); color: var(--color-text-2); }
+.evo-ai-system-page > a, .evo-ai-system-page > button {
+  display: inline-flex; min-height: 44px; align-items: center; justify-content: center;
+  padding: 0 20px; border: 0; border-radius: var(--radius-full);
+  background: var(--color-action); color: var(--color-on-action); font: var(--text-subhead);
+  font-weight: 600; text-decoration: none; cursor: pointer;
+}
+.evo-ai-system-loading > div { width: min(100%, 340px); border-radius: 14px; background: var(--color-surface-2); }
+.evo-ai-system-loading .evo-ai-skeleton-title { height: 32px; width: min(65%, 240px); }
+.evo-ai-system-loading .evo-ai-skeleton-row { height: 53px; }
+.evo-ai-system-loading span { color: var(--color-text-2); font-size: 13px; }
+.evo-ai-profile-notice {
+  position: fixed; z-index: var(--z-toast, 90); bottom: max(24px, calc(var(--safe-bottom, 0px) + 18px));
+  left: 50%; width: min(calc(100% - 32px), 480px); transform: translateX(-50%);
+  display: flex; align-items: center; gap: 12px; justify-content: space-between;
+  border-radius: 18px; padding: 13px 15px; box-sizing: border-box;
+  background: var(--color-action); color: #fff; box-shadow: var(--shadow-3);
+  font-size: 14px;
+}
+.evo-ai-profile-notice button { flex: none; border: 0; background: none; color: white; font-weight: 600; min-height: 44px; }
+.evo-ai-app-shell :is(button, input, textarea, select):focus-visible {
+  outline: 2px solid var(--color-focus); outline-offset: 2px;
+}
+@media (min-width: 1024px) {
+  .evo-ai-app-shell .ref-view-chat .ref-chat { max-width: 768px !important; }
+  .evo-ai-app-shell .ref-view-profile { max-width: 760px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .evo-ai-app-shell *, .evo-ai-app-shell *::before, .evo-ai-app-shell *::after {
+    animation-duration: .01ms !important; transition-duration: .01ms !important;
+  }
+}
