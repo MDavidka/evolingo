@@ -373,7 +373,7 @@ export default function LibrarySpace() {
 
   const toggleSelection = (id: string) => setSelected(current => { const next = new Set(current); if (next.has(id)) next.delete(id); else next.add(id); return next })
   const beginLongPress = (entry: SpaceEntry, event: ReactPointerEvent<HTMLButtonElement>) => {
-    if (location === "trash" || selectionMode || event.pointerType === "mouse") return
+    if (location === "trash" || location === "downloads" || selectionMode || event.pointerType === "mouse") return
     suppressClick.current = false
     pointerOrigin.current = { x: event.clientX, y: event.clientY }
     if (longPress.current) clearTimeout(longPress.current)
@@ -451,7 +451,7 @@ export default function LibrarySpace() {
       </div>}
       <div className="library-toolbar-actions">
         <button className="library-view-button" type="button" aria-label="Nézet és rendezés" aria-haspopup="dialog" onClick={() => setSheet("view")}>{view === "list" ? <Grid2X2 size={22} strokeWidth={1.85} aria-hidden="true" /> : <List size={22} strokeWidth={1.85} aria-hidden="true" />}</button>
-        <button className="library-add-primary" type="button" aria-label="Új fájl vagy mappa hozzáadása" onClick={() => { setDraftName(""); setSheet("new") }}><Plus size={20} strokeWidth={1.85} aria-hidden="true" /><span>Új</span></button>
+        <button className="library-add-primary" type="button" aria-label="Új fájl vagy mappa hozzáadása" onClick={() => { if (location === "trash" || location === "downloads") { setLocation("files"); setFolder(null) } setDraftName(""); setSheet("new") }}><Plus size={20} strokeWidth={1.85} aria-hidden="true" /><span>Új</span></button>
       </div>
     </div>
     {location === "home" && !normalizedQuery && <div className="library-home">
@@ -480,7 +480,7 @@ export default function LibrarySpace() {
 
     {(location === "home" && !normalizedQuery) ? null : loading ? <div className="library-loading" role="status"><span /> <span /> <span /></div> : visible.length ? <div className={`library-files ${view === "grid" ? "is-grid" : "is-list"}`}>
       {visible.map(entry => <article className={`library-file ${selected.has(entry.id) ? "is-selected" : ""}`} key={entry.id}>
-        <button className="library-file-open" type="button" aria-label={selectionMode ? `${entry.name} kijelölése` : entry.kind === "folder" ? `${entry.name} mappa megnyitása` : `${entry.name} előnézete`} aria-pressed={selectionMode ? selected.has(entry.id) : undefined} onPointerDown={event => beginLongPress(entry, event)} onPointerMove={moveLongPress} onPointerUp={cancelLongPress} onPointerCancel={cancelLongPress} onPointerLeave={cancelLongPress} onClick={() => location === "trash" ? restoreEntry(entry) : openEntry(entry)}>
+        <button className="library-file-open" type="button" aria-label={location === "trash" ? `${entry.name} visszaállítása` : selectionMode ? `${entry.name} kijelölése` : entry.kind === "folder" ? `${entry.name} mappa megnyitása` : `${entry.name} előnézete`} aria-pressed={selectionMode ? selected.has(entry.id) : undefined} onPointerDown={event => beginLongPress(entry, event)} onPointerMove={moveLongPress} onPointerUp={cancelLongPress} onPointerCancel={cancelLongPress} onPointerLeave={cancelLongPress} onClick={() => location === "trash" ? restoreEntry(entry) : openEntry(entry)}>
           <span className="library-file-icon"><FileIcon kind={entry.kind} /></span>
           <span className="library-file-copy"><strong title={entry.name}>{entry.name}</strong><small>{entry.kind === "folder" ? `${folderCounts.get(entry.id) || 0} elem` : `${formatSize(entry.size)} · ${formatDate(entry.modifiedAt)}`}</small></span>
           {location === "trash" && <span className="library-restore-label">Visszaállítás</span>}
@@ -488,12 +488,12 @@ export default function LibrarySpace() {
         </button>
         {location === "trash" ? <button className="library-file-more" type="button" aria-label={entry.name + " végleges törlése"} onClick={() => permanentlyDelete(entry)}><Trash2 size={19} /></button> : !selectionMode && <button className="library-file-more" type="button" aria-label={`${entry.name} műveletei`} onClick={() => openActions(entry)}><MoreHorizontal size={21} /></button>}
       </article>)}
-    </div> : !folder && !query ? <div className="library-empty library-empty--quiet" role="status">
+    </div> : location === "files" && !folder && !query ? <div className="library-empty library-empty--quiet" role="status">
       <span className="library-visually-hidden">A Könyvtár üres. Az Új gombbal létrehozhatsz mappát vagy feltölthetsz fájlt.</span>
     </div> : <div className="library-empty">
       <FolderOpen size={38} strokeWidth={1.5} />
-      <h2>{query ? "Nincs találat" : "Ez a mappa üres"}</h2>
-      <p>{query ? "Próbálj más kifejezést, vagy töröld a keresést." : "Itt még nincsenek fájlok."}</p>
+      <h2>{query ? "Nincs találat" : location === "trash" ? "Nincsenek törölt elemek" : location === "downloads" ? "Még nincs letöltés" : "Ez a mappa üres"}</h2>
+      <p>{query ? "Próbálj más kifejezést, vagy töröld a keresést." : location === "downloads" ? "Az Evölingóból letöltött fájlok itt jelennek meg." : location === "trash" ? "A törölt fájlok és mappák itt állíthatók vissza." : "Itt még nincsenek fájlok."}</p>
       {query && <button className="library-empty-clear" type="button" onClick={() => setQuery("")}>Keresés törlése</button>}
     </div>}
 
