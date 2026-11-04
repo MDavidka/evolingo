@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState, type ChangeEvent, type PointerEvent as ReactPointerEvent } from "react"
 import { mage } from "./mage-icons"
-import { QrCode } from "lucide-react"
+import { ChevronRight, QrCode } from "lucide-react"
 const ArrowDownToLine = mage("arrow-down")
 const ArrowUpRight = mage("arrow-up-right")
 const Check = mage("check")
@@ -36,6 +36,9 @@ const ENTRIES_KEY = "evolingo.space.v1"
 const BLOBS_KEY = "evolingo.space-blobs.v1"
 const VIEW_KEY = "evolingo.library.view.v2"
 const SORT_KEY = "evolingo.library.sort.v1"
+const TRASH_KEY = "evolingo.library.trash.v1"
+const DOWNLOADS_KEY = "evolingo.library.downloads.v1"
+type LibraryLocation = "home" | "files" | "downloads" | "trash"
 const MAX_FILE_SIZE = 2 * 1024 * 1024
 const SORT_LABELS: Record<SortKey, string> = {
   date: "Legutóbbi", name: "Név szerint", size: "Méret szerint", type: "Típus szerint",
@@ -94,6 +97,9 @@ export default function LibrarySpace() {
   const [entries, setEntries] = useState<SpaceEntry[]>([])
   const [view, setView] = useState<"list" | "grid">("list")
   const [folder, setFolder] = useState<string | null>(null)
+  const [location, setLocation] = useState<LibraryLocation>("home")
+  const [deletedEntries, setDeletedEntries] = useState<SpaceEntry[]>([])
+  const [downloadedIds, setDownloadedIds] = useState<string[]>([])
   const [query, setQuery] = useState("")
   const [sort, setSort] = useState<SortKey>("date")
   const [sheet, setSheet] = useState<Sheet>(null)
@@ -109,6 +115,10 @@ export default function LibrarySpace() {
   const [qrError, setQrError] = useState("")
   useEffect(() => {
     try {
+      const trashed = JSON.parse(localStorage.getItem(TRASH_KEY) || "[]")
+      if (Array.isArray(trashed)) setDeletedEntries(trashed.filter((entry): entry is SpaceEntry => entry && typeof entry.id === "string"))
+      const downloads = JSON.parse(localStorage.getItem(DOWNLOADS_KEY) || "[]")
+      if (Array.isArray(downloads)) setDownloadedIds(downloads.filter((id): id is string => typeof id === "string"))
       const v = localStorage.getItem(VIEW_KEY)
       if (v === "list" || v === "grid") setView(v)
       const o = localStorage.getItem(SORT_KEY)
@@ -183,8 +193,8 @@ export default function LibrarySpace() {
   }, [entries])
   const localBytes = useMemo(() => entries.reduce((sum, entry) => sum + (entry.kind === "folder" ? 0 : (entry.size || 0)), 0), [entries])
   const normalizedQuery = normalizeSearch(query)
-  const visible = useMemo(() => entries
-    .filter(item => normalizedQuery ? normalizeSearch(item.name).includes(normalizedQuery) : item.parent === (folder || undefined))
+  const visible = useMemo(() => (location === "trash" ? deletedEntries.filter(item => !item.parent || !deletedEntries.some(parent => parent.id === item.parent)) : location === "downloads" ? entries.filter(item => downloadedIds.includes(item.id)) : entries)
+    .filter(item => normalizedQuery ? normalizeSearch(item.name).includes(normalizedQuery) : location === "files" ? item.parent === (folder || undefined) : true)
     .sort((a, b) => {
       if (a.kind === "folder" && b.kind !== "folder") return -1
       if (b.kind === "folder" && a.kind !== "folder") return 1
@@ -192,7 +202,7 @@ export default function LibrarySpace() {
       if (sort === "size") return (b.size || 0) - (a.size || 0)
       if (sort === "type") return kindLabel(a.kind).localeCompare(kindLabel(b.kind), "hu-HU") || a.name.localeCompare(b.name, "hu-HU")
       return (b.modifiedAt || 0) - (a.modifiedAt || 0) || a.name.localeCompare(b.name, "hu-HU")
-    }), [entries, folder, normalizedQuery, sort])
+    }), [entries, deletedEntries, downloadedIds, location, folder, normalizedQuery, sort])
 
   const uploadFile = (event: ChangeEvent<HTMLInputElement>) => {
     const files = [...(event.target.files || [])]
@@ -225,7 +235,7 @@ export default function LibrarySpace() {
   const openEntry = (entry: SpaceEntry) => {
     if (suppressClick.current) { suppressClick.current = false; return }
     if (selectionMode) { toggleSelection(entry.id); return }
-    if (entry.kind === "folder") { setFolder(entry.id); setQuery(""); return }
+    if (entry.kind === "folder") { setLocation("files"); setFolder(entry.id); setQuery(""); return }
     const url = readBlobs()[entry.id]
     if (!url) { setNotice(`${entry.name} tartalma nem érhető el ezen az eszközön.`); return }
     setActive(entry); setSheet("preview")
@@ -235,6 +245,9 @@ export default function LibrarySpace() {
     const url = readBlobs()[entry.id]
     if (!url) { setNotice(`${entry.name} tartalma nem érhető el ezen az eszközön.`); return }
     const link = document.createElement("a"); link.href = url; link.download = entry.name; link.click(); setSheet(null)
+    const next = [entry.id, ...downloadedIds.filter(id => id !== entry.id)]
+    setDownloadedIds(next)
+    try { localStorage.setItem(DOWNLOADS_KEY, JSON.stringify(next)) } catch {}
   }
 
   const duplicate = (entry: SpaceEntry) => {
@@ -319,14 +332,48 @@ export default function LibrarySpace() {
     const withChildren = new Set(ids)
     let changed = true
     while (changed) { changed = false; entries.forEach(item => { if (item.parent && withChildren.has(item.parent) && !withChildren.has(item.id)) { withChildren.add(item.id); changed = true } }) }
-    persist(entries.filter(item => !withChildren.has(item.id)))
-    const blobs = readBlobs(); withChildren.forEach(id => delete blobs[id]); try { localStorage.setItem(BLOBS_KEY, JSON.stringify(blobs)) } catch {}
-    setSheet(null); setActive(null); setSelected(new Set()); setSelectionMode(false); setNotice("Törölve.")
+    const removed = entries.filter(item => withChildren.has(item.id))
+    const next = [...deletedEntries.filter(item => !withChildren.has(item.id)), ...removed]
+    try {
+      localStorage.setItem(TRASH_KEY, JSON.stringify(next))
+      setDeletedEntries(next)
+      persist(entries.filter(item => !withChildren.has(item.id)))
+      setSheet(null); setActive(null); setSelected(new Set()); setSelectionMode(false)
+      setNotice("Áthelyezve a Nemrég töröltek közé.")
+    } catch { setNotice("Nem sikerült áthelyezni a fájlokat.") }
+  }
+  const restoreEntry = (entry: SpaceEntry) => {
+    const restoreIds = new Set([entry.id])
+    let changed = true
+    while (changed) { changed = false; deletedEntries.forEach(item => { if (item.parent && restoreIds.has(item.parent) && !restoreIds.has(item.id)) { restoreIds.add(item.id); changed = true } }) }
+    const restored = deletedEntries.filter(item => restoreIds.has(item.id))
+      .map(item => ({ ...item, parent: item.parent && (restoreIds.has(item.parent) || entries.some(existing => existing.id === item.parent)) ? item.parent : undefined }))
+    const remaining = deletedEntries.filter(item => !restoreIds.has(item.id))
+    try {
+      localStorage.setItem(TRASH_KEY, JSON.stringify(remaining))
+      setDeletedEntries(remaining)
+      persist([...entries, ...restored])
+      setNotice("Visszaállítva a Saját fájlok közé.")
+    } catch { setNotice("Nem sikerült visszaállítani.") }
+  }
+  const permanentlyDelete = (entry: SpaceEntry) => {
+    if (!window.confirm("Véglegesen törlöd ezt az elemet? Ez nem vonható vissza.")) return
+    const ids = new Set([entry.id])
+    let changed = true
+    while (changed) { changed = false; deletedEntries.forEach(item => { if (item.parent && ids.has(item.parent) && !ids.has(item.id)) { ids.add(item.id); changed = true } }) }
+    const next = deletedEntries.filter(item => !ids.has(item.id))
+    try {
+      localStorage.setItem(TRASH_KEY, JSON.stringify(next))
+      const blobs = readBlobs(); ids.forEach(id => delete blobs[id]); localStorage.setItem(BLOBS_KEY, JSON.stringify(blobs))
+      setDeletedEntries(next)
+      setDownloadedIds(current => { const updated = current.filter(id => !ids.has(id)); try { localStorage.setItem(DOWNLOADS_KEY, JSON.stringify(updated)) } catch {} return updated })
+      setNotice("Véglegesen törölve.")
+    } catch { setNotice("Nem sikerült véglegesen törölni.") }
   }
 
   const toggleSelection = (id: string) => setSelected(current => { const next = new Set(current); if (next.has(id)) next.delete(id); else next.add(id); return next })
   const beginLongPress = (entry: SpaceEntry, event: ReactPointerEvent<HTMLButtonElement>) => {
-    if (selectionMode || event.pointerType === "mouse") return
+    if (location === "trash" || selectionMode || event.pointerType === "mouse") return
     suppressClick.current = false
     pointerOrigin.current = { x: event.clientX, y: event.clientY }
     if (longPress.current) clearTimeout(longPress.current)
@@ -388,14 +435,14 @@ export default function LibrarySpace() {
 
     <div className="library-search" role="search">
       <Search size={20} strokeWidth={1.8} aria-hidden="true" />
-      <input ref={searchInput} type="search" value={query} onChange={event => setQuery(event.target.value)} onKeyDown={event => { if (event.key === "Escape") setQuery("") }} placeholder="Alkalmazások keresése" aria-label="Fájlok és mappák keresése" enterKeyHint="search" autoComplete="off" />
+      <input ref={searchInput} type="search" value={query} onChange={event => setQuery(event.target.value)} onKeyDown={event => { if (event.key === "Escape") setQuery("") }} placeholder="Fájlok és mappák keresése" aria-label="Fájlok és mappák keresése" enterKeyHint="search" autoComplete="off" />
       {query && <button type="button" aria-label="Keresés törlése" onClick={() => { setQuery(""); searchInput.current?.focus() }}><X size={16} /></button>}
     </div>
 
     <div className="library-toolbar">
-      {folder ? <div className="library-location">
-        <button className="library-back" type="button" aria-label="Vissza az előző mappába" onClick={() => setFolder(entries.find(item => item.id === folder)?.parent || null)}><ChevronLeft size={20} aria-hidden="true" /></button>
-        <h1 title={folderName}>{folderName}</h1>
+      {folder || location !== "home" ? <div className="library-location">
+        <button className="library-back" type="button" aria-label="Vissza" onClick={() => { if (folder) setFolder(entries.find(item => item.id === folder)?.parent || null); else setLocation("home"); setQuery("") }}><ChevronLeft size={20} aria-hidden="true" /></button>
+        <h1 title={folderName}>{folder ? folderName : location === "files" ? "Saját fájlok" : location === "downloads" ? "Letöltések" : "Nemrég töröltek"}</h1>
       </div> : <div className="library-quick-actions">
         <button className="library-quick-button" type="button" aria-label="Tárhely áttekintése" aria-haspopup="dialog" onClick={() => setSheet("storage")}>
           <span className="library-storage-ring" style={usagePercent === null ? undefined : { background: `conic-gradient(#5e5e62 ${usagePercent}%, #dedee1 0)` }} aria-hidden="true"><span /></span>
@@ -407,6 +454,22 @@ export default function LibrarySpace() {
         <button className="library-add-primary" type="button" aria-label="Új fájl vagy mappa hozzáadása" onClick={() => { setDraftName(""); setSheet("new") }}><Plus size={20} strokeWidth={1.85} aria-hidden="true" /><span>Új</span></button>
       </div>
     </div>
+    {location === "home" && !normalizedQuery && <div className="library-home">
+      <section aria-labelledby="library-favorites-heading">
+        <h2 id="library-favorites-heading" className="library-home-heading">Kedvencek <ChevronDown size={18} /></h2>
+        <div className="library-home-group">
+          <button type="button" onClick={() => { setLocation("downloads"); setFolder(null) }}><ArrowDownToLine size={21} /><span>Letöltések</span><ChevronRight size={20} /></button>
+        </div>
+      </section>
+      <section aria-labelledby="library-locations-heading">
+        <h2 id="library-locations-heading" className="library-home-heading">Helyek <ChevronDown size={18} /></h2>
+        <div className="library-home-group">
+          <button type="button" onClick={() => { setLocation("files"); setFolder(null) }}><Cloud size={21} /><span>Saját fájlok</span><ChevronRight size={20} /></button>
+          {entries.filter(item => item.kind === "folder" && !item.parent).map(entry => <button type="button" key={entry.id} onClick={() => { setLocation("files"); setFolder(entry.id) }}><Folder size={21} /><span>{entry.name}<small>{folderCounts.get(entry.id) || 0} elem</small></span><ChevronRight size={20} /></button>)}
+          <button type="button" onClick={() => { setLocation("trash"); setFolder(null) }}><Trash2 size={21} /><span>Nemrég töröltek{deletedEntries.length > 0 && <small>{deletedEntries.length} elem</small>}</span><ChevronRight size={20} /></button>
+        </div>
+      </section>
+    </div>}
     {normalizedQuery && <p className="library-results-status" aria-live="polite">{visible.length} találat</p>}
 
     {selectionMode && <div className="library-selection-bar">
@@ -415,14 +478,15 @@ export default function LibrarySpace() {
       <button type="button" disabled={!selected.size} aria-label="Kijelöltek törlése" onClick={() => setSheet("delete")}><Trash2 size={20} /></button>
     </div>}
 
-    {loading ? <div className="library-loading" role="status"><span /> <span /> <span /></div> : visible.length ? <div className={`library-files ${view === "grid" ? "is-grid" : "is-list"}`}>
+    {(location === "home" && !normalizedQuery) ? null : loading ? <div className="library-loading" role="status"><span /> <span /> <span /></div> : visible.length ? <div className={`library-files ${view === "grid" ? "is-grid" : "is-list"}`}>
       {visible.map(entry => <article className={`library-file ${selected.has(entry.id) ? "is-selected" : ""}`} key={entry.id}>
-        <button className="library-file-open" type="button" aria-label={selectionMode ? `${entry.name} kijelölése` : entry.kind === "folder" ? `${entry.name} mappa megnyitása` : `${entry.name} előnézete`} aria-pressed={selectionMode ? selected.has(entry.id) : undefined} onPointerDown={event => beginLongPress(entry, event)} onPointerMove={moveLongPress} onPointerUp={cancelLongPress} onPointerCancel={cancelLongPress} onPointerLeave={cancelLongPress} onClick={() => openEntry(entry)}>
+        <button className="library-file-open" type="button" aria-label={selectionMode ? `${entry.name} kijelölése` : entry.kind === "folder" ? `${entry.name} mappa megnyitása` : `${entry.name} előnézete`} aria-pressed={selectionMode ? selected.has(entry.id) : undefined} onPointerDown={event => beginLongPress(entry, event)} onPointerMove={moveLongPress} onPointerUp={cancelLongPress} onPointerCancel={cancelLongPress} onPointerLeave={cancelLongPress} onClick={() => location === "trash" ? restoreEntry(entry) : openEntry(entry)}>
           <span className="library-file-icon"><FileIcon kind={entry.kind} /></span>
           <span className="library-file-copy"><strong title={entry.name}>{entry.name}</strong><small>{entry.kind === "folder" ? `${folderCounts.get(entry.id) || 0} elem` : `${formatSize(entry.size)} · ${formatDate(entry.modifiedAt)}`}</small></span>
-          {selectionMode && <span className="library-check" aria-hidden="true">{selected.has(entry.id) && <Check size={15} />}</span>}
+          {location === "trash" && <span className="library-restore-label">Visszaállítás</span>}
+          {selectionMode && location !== "trash" && <span className="library-check" aria-hidden="true">{selected.has(entry.id) && <Check size={15} />}</span>}
         </button>
-        {!selectionMode && <button className="library-file-more" type="button" aria-label={`${entry.name} műveletei`} onClick={() => openActions(entry)}><MoreHorizontal size={21} /></button>}
+        {location === "trash" ? <button className="library-file-more" type="button" aria-label={entry.name + " végleges törlése"} onClick={() => permanentlyDelete(entry)}><Trash2 size={19} /></button> : !selectionMode && <button className="library-file-more" type="button" aria-label={`${entry.name} műveletei`} onClick={() => openActions(entry)}><MoreHorizontal size={21} /></button>}
       </article>)}
     </div> : !folder && !query ? <div className="library-empty library-empty--quiet" role="status">
       <span className="library-visually-hidden">A Könyvtár üres. Az Új gombbal létrehozhatsz mappát vagy feltölthetsz fájlt.</span>
@@ -487,7 +551,7 @@ export default function LibrarySpace() {
 
         {sheet === "move" && <div className="library-sheet-actions"><button type="button" onClick={() => moveTo()}><FolderOpen size={20} /><span><strong>Saját fájlok</strong><small>Gyökérmappa</small></span></button>{folders.map(item => <button type="button" key={item.id} onClick={() => moveTo(item.id)}><Folder size={20} /><span><strong>{item.name}</strong></span></button>)}</div>}
 
-        {sheet === "delete" && <div className="library-confirm"><Trash2 size={28} /><p>{selected.size > 1 ? `${selected.size} elem véglegesen törlődik.` : `A(z) „${active?.name || entries.find(item => selected.has(item.id))?.name || "kijelölt elem"}” véglegesen törlődik.`}</p><div><button type="button" onClick={() => setSheet(null)}>Mégse</button><button className="is-destructive" type="button" onClick={() => deleteEntries(selected.size ? selected : new Set(active ? [active.id] : []))}>Törlés</button></div></div>}
+        {sheet === "delete" && <div className="library-confirm"><Trash2 size={28} /><p>{selected.size > 1 ? `${selected.size} elem a Nemrég töröltek közé kerül.` : `A(z) „${active?.name || entries.find(item => selected.has(item.id))?.name || "kijelölt elem"}” véglegesen törlődik.`}</p><div><button type="button" onClick={() => setSheet(null)}>Mégse</button><button className="is-destructive" type="button" onClick={() => deleteEntries(selected.size ? selected : new Set(active ? [active.id] : []))}>Törlés</button></div></div>}
 
         {sheet === "preview" && active && <div className="library-preview"><iframe src={readBlobs()[active.id]} title={`${active.name} előnézete`} sandbox="" /><div><button type="button" onClick={() => download(active)}><ArrowDownToLine size={19} /> Letöltés</button><button type="button" onClick={() => void share(active)}><Share2 size={19} /> Megosztás</button></div></div>}
       </div>
