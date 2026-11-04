@@ -92,38 +92,11 @@
   color: var(--evo-page-ink, #20242d);
   background: var(--color-surface, #fff);
 }
-.profile-page-back { margin: 10px auto 0; align-self: flex-start; }
-.friends-header .friends-title-group { flex: 1; }
-.leaderboard-home-header .evo-child-back { width: 36px; min-width: 36px; height: 36px; }
-.lesson-intro-layout .exit-lesson,
-.task-exercise-layout .exit-lesson {
-  display: grid !important;
-  width: 44px !important;
-  min-width: 44px !important;
-  height: 44px !important;
-  padding: 0 !important;
-  place-items: center;
-}
-.chest-opening-back svg { transform: none; }
 .app-shell.reference-shell .ref-app:not(.ref-view-chat) .ref-course-wrap {
   position: absolute;
   z-index: 35;
   top: calc(env(safe-area-inset-top, 0px) + 92px);
   left: var(--evo-page-gutter);
-}
-.app-shell.reference-shell .ref-course {
-  min-height: 42px;
-  border-radius: 999px;
-  border: 1px solid var(--evo-page-line) !important;
-  background: rgba(248,249,252,.96);
-  box-shadow: none;
-}
-.app-shell.reference-shell .ref-course-menu {
-  z-index: 120;
-  min-width: 190px;
-  border-color: var(--evo-page-line);
-  border-radius: 16px;
-  box-shadow: 0 14px 30px rgba(40,53,78,.10);
 }
 
 /* Unified screen widths, consistent 8pt spacing, and a clean type hierarchy. */
