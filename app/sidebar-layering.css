@@ -4,8 +4,8 @@
    right, leaving one third visible. It is NOT a separate narrow side panel. */
 @media (max-width: 767px) {
   :root {
-    --evo-layer-reveal: 66.6667vw;
-    --evo-layer-radius: 48px;
+    --evo-layer-reveal: min(74vw, 320px);
+    --evo-layer-radius: 36px;
     --evo-layer-duration: 380ms;
     --evo-layer-ease: cubic-bezier(.22, 1, .36, 1);
   }
@@ -175,4 +175,39 @@
   animation: none;
   opacity: 0;
   transition: opacity 180ms ease;
+}
+
+/* 0.2: calm raised-page treatment. Closed PWA remains pure white; only the
+   exposed SECOND layer is the warm neutral surface. */
+.evo-sidebar-brand-action {
+  display: inline-flex; align-items: center;
+  min-height: 44px; max-width: calc(100% - 45px);
+  padding: 0 3px; border: 0; border-radius: 10px;
+  background: transparent; color: #202127; text-align: left; cursor: pointer;
+}
+.evo-sidebar-brand-action:focus-visible { outline: 2px solid #252831; outline-offset: 2px; }
+.evo-sidebar-host .evo-sidebar-tool { border: 1px solid #e8e8ec; background: #fff; box-shadow: none; }
+.evo-sidebar-host .evo-sidebar-nav { gap: 4px; border-color: #e4e4e8; }
+.evo-sidebar-host .evo-sidebar-nav button { min-height: 48px; border-radius: 13px; font-weight: 520; }
+.evo-sidebar-host .evo-sidebar-nav button[aria-current="page"] { background: #e9e9ed; }
+.evo-sidebar-host .evo-sidebar-chat-action { background: #252831; border-color: #252831; color: #fff; box-shadow: none; }
+.evo-sidebar-host .evo-sidebar-chat-action:hover { background: #373a44; }
+.evo-sidebar-host :is(.evo-sidebar-tool,.evo-sidebar-chat-action,.evo-sidebar-nav button):focus-visible { outline: 2px solid #252831; outline-offset: 2px; }
+@media (max-width: 767px) {
+  html.evo-sidebar-layer-open, html.evo-sidebar-layer-open body,
+  html.evo-sidebar-layer-open body:has(.ref-view-chat),
+  html.evo-sidebar-layer-open:has(.ref-view-chat)::before { background-color: #f5f5f7 !important; background: #f5f5f7 !important; }
+  html.evo-sidebar-layer-active .evo-sidebar-host .evo-sidebar { background: #f5f5f7 !important; }
+  html.evo-sidebar-layer-active .evo-sidebar-host .evo-sidebar-safe {
+    padding-inline: max(15px, env(safe-area-inset-left, 0px)) 14px !important;
+  }
+  html.evo-sidebar-layer-open body .app-shell {
+    border: 1px solid #e7e7eb !important;
+    border-right: none !important;
+    box-shadow: -16px 0 46px rgba(18,19,28,.14), -1px 0 5px rgba(18,19,28,.045) !important;
+  }
+  html.evo-sidebar-layer-active .evo-sidebar-host .evo-sidebar-history { scrollbar-width: none; }
+  html.evo-sidebar-layer-active .evo-sidebar-host .evo-sidebar-history::-webkit-scrollbar { display: none; }
+  html.evo-sidebar-layer-active .evo-sidebar-host .evo-sidebar-chat-action { width: 100%; min-width: 0; }
+  html.evo-sidebar-layer-active .evo-sidebar-host .evo-sidebar-nav button:active { background: #e7e7eb; }
 }
