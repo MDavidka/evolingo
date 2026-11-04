@@ -380,3 +380,53 @@
   .evo-tools-hub .evo-tools-provider-logo img { width: 34px; height: 34px; }
   .evo-tools-hub .evo-tools-row-copy strong { font-size: 16px; }
 }
+
+
+/* 0.2 Utilities: clean cloud-and-connectors dashboard. */
+.app-shell.reference-shell .ref-app.ref-view-utility { min-height: 100dvh; background: #fff; }
+.app-shell.reference-shell .ref-app .evo-tools-hub {
+  max-width: 560px;
+  margin: 0 auto;
+  padding-top: calc(env(safe-area-inset-top, 0px) + 112px) !important;
+  padding-bottom: max(65px, calc(env(safe-area-inset-bottom, 0px) + 45px)) !important;
+}
+.evo-tools-hub .evo-tools-storage-section { margin-top: 49px; }
+.evo-tools-hub .evo-tools-storage-heading { margin-bottom: 24px; }
+.evo-tools-hub .evo-tools-storage-heading h1 { color: #4e4e52; font-size: clamp(23px, 6vw, 27px); }
+.evo-tools-hub .evo-tools-storage-grid {
+  width: 100%; max-width: none;
+  grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 13px;
+}
+.evo-tools-hub .evo-tools-storage-card {
+  min-height: 143px; height: auto;
+  padding: 16px 14px 14px; border: 1px solid #e2e2e7; border-radius: 19px;
+  box-shadow: 0 1px 2px rgba(20,20,30,.02);
+}
+.evo-tools-hub .evo-tools-card-bottom strong {
+  font-size: 16px; font-weight: 610; letter-spacing: -.28px;
+  white-space: normal; overflow-wrap: anywhere;
+}
+.evo-tools-hub .evo-tools-card-bottom small {
+  font-size: 12px; line-height: 1.45; white-space: normal; color: #919197;
+}
+.evo-tools-hub .evo-tools-storage-upload {
+  display: inline-flex; align-items: center; justify-content: center; gap: 4px;
+  min-height: 40px; padding: 0 6px; border: 0; background: none;
+  color: #8e8e93; font-size: 12px; font-weight: 500; white-space: nowrap;
+}
+.evo-tools-hub .evo-tools-apps-section { margin-top: 54px; }
+.evo-tools-hub .evo-tools-provider-logo { border: 1px solid #ececf0; border-radius: 16px; }
+.evo-tools-hub .evo-tools-app-row { min-height: 91px; }
+.evo-tools-hub .evo-tools-app-row > svg:last-child { stroke-width: 1.6px; }
+.evo-tools-hub .evo-tools-machine-form { display: flex; flex-direction: column; gap: 16px; }
+.evo-tools-hub .evo-tools-machine-form label { display: flex; flex-direction: column; gap: 8px; font-size: 13px; font-weight: 560; color: #515159; }
+.evo-tools-hub .evo-tools-machine-form input { width: 100%; min-height: 47px; padding: 0 12px; border: 1px solid #e5e5ea; border-radius: 12px; background: #f8f8fa; color: #202127; font-size: 16px; }
+.evo-tools-hub .evo-tools-machine-form p { margin: 0; }
+.evo-tools-hub .evo-tools-machine-form .evo-tools-machine-error { color: #ba3030; }
+.evo-tools-hub .evo-tools-machine-link,
+.evo-tools-hub .evo-tools-machine-delete { display: flex; width: 100%; min-height: 47px; align-items: center; justify-content: center; gap: 9px; padding: 10px; border: 1px solid #e5e5ea; border-radius: 999px; background: #fff; color: #202127; text-decoration: none; font-size: 14px; font-weight: 560; margin-top: 10px; }
+.evo-tools-hub .evo-tools-machine-delete { color: #b73737; cursor: pointer; }
+@media (max-width: 360px) {
+  .evo-tools-hub .evo-tools-storage-grid { gap: 9px; }
+  .evo-tools-hub .evo-tools-card-bottom strong { font-size: 14px; }
+}
