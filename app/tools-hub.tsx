@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useMemo, useState } from "react"
-import { BarChart3, ChevronRight, FolderOpen, Plus, Search, Users, X } from "lucide-react"
+import { BarChart3, ChevronRight, ExternalLink, FolderOpen, Plus, Search, Server, Trash2, Users, X } from "lucide-react"
 import UnifiedSheet from "./unified-sheet"
 
 type ToolHubProps = {
@@ -10,6 +10,9 @@ type ToolHubProps = {
   onFriends: () => void
   onLeaderboard: () => void
 }
+
+type MachineRecord = { id: string; name: string; url: string }
+const MACHINES_KEY = "evolingo.utility.machines.v1"
 
 type Integration = {
   id: string
@@ -77,12 +80,23 @@ export default function ToolsHub({ onUpload, onOpenLibrary, onFriends, onLeaderb
   const [requestedProviders, setRequestedProviders] = useState<string[]>([])
   const [fileCount, setFileCount] = useState<number | null>(null)
   const [storage, setStorage] = useState<{ used: number; total: number } | null>(null)
+  const [machines, setMachines] = useState<MachineRecord[]>([])
+  const [machineForm, setMachineForm] = useState(false)
+  const [machineInfo, setMachineInfo] = useState<string | null>(null)
+  const [machineName, setMachineName] = useState("")
+  const [machineUrl, setMachineUrl] = useState("")
+  const [machineError, setMachineError] = useState("")
 
   useEffect(() => {
     try {
       const stored = JSON.parse(localStorage.getItem("evolingo.integration-interest.v1") || "[]")
       setRequestedProviders(Array.isArray(stored) ? stored.filter((id): id is string => typeof id === "string") : [])
     } catch { setRequestedProviders([]) }
+
+    try {
+      const storedMachines = JSON.parse(localStorage.getItem(MACHINES_KEY) || "[]") as MachineRecord[]
+      if (Array.isArray(storedMachines)) setMachines(storedMachines.filter(item => item && typeof item.id === "string" && typeof item.name === "string" && typeof item.url === "string"))
+    } catch {}
 
     // The library supports local files, with server-backed space when available.
     // Only show a quota meter when the API supplies a genuine used/total value.
@@ -114,9 +128,10 @@ export default function ToolsHub({ onUpload, onOpenLibrary, onFriends, onLeaderb
   const search = normalize(query)
   const matches = (value: string) => normalize(value).includes(search)
   const storageActions = useMemo(() => [
-    { id: "library", name: "Könyvtár", description: fileCount === null ? "Saját fájlok" : fileCount + " fájl", Icon: FolderOpen, action: onOpenLibrary },
-    { id: "upload", name: "Új fájl", description: "Fájl feltöltése", Icon: Plus, action: onUpload },
-  ], [fileCount, onOpenLibrary, onUpload])
+    { id: "library", name: "Saját tárhely", description: fileCount === null ? "Fájlok" : fileCount + " fájl", Icon: FolderOpen, action: onOpenLibrary },
+    ...machines.map(machine => ({ id: machine.id, name: machine.name, description: "Külső gép · vezérlőpult", Icon: Server, action: () => setMachineInfo(machine.id) })),
+    { id: "new-machine", name: "Új gép", description: "Szerver hozzáadása", Icon: Plus, action: () => { setMachineName(""); setMachineUrl(""); setMachineError(""); setMachineForm(true) } },
+  ], [fileCount, onOpenLibrary, machines])
   const visibleStorage = storageActions.filter(item => matches(item.name + " " + item.description + " fájl tárhely felhő"))
   const community = [
     { id: "friends", name: "Barátok", description: "Kapcsolatok és közös tanulás", Icon: Users, action: onFriends },
@@ -124,10 +139,27 @@ export default function ToolsHub({ onUpload, onOpenLibrary, onFriends, onLeaderb
   ]
   const visibleCommunity = community.filter(item => matches(item.name + " " + item.description))
   const matchingIntegrations = integrations.filter(item => matches(item.title + " " + item.description + " " + item.keywords))
-  const visibleIntegrations = search || showAll ? matchingIntegrations : matchingIntegrations.slice(0, 5)
+  const visibleIntegrations = search || showAll ? matchingIntegrations : matchingIntegrations.slice(0, 3)
   const selected = integrations.find(item => item.id === selectedId)
   const usage = storage && storage.total > 0 ? Math.min(100, Math.max(0, 100 * storage.used / storage.total)) : null
   const hasResults = visibleStorage.length + visibleCommunity.length + matchingIntegrations.length > 0
+
+  const persistMachines = (next: MachineRecord[]) => {
+    try {
+      localStorage.setItem(MACHINES_KEY, JSON.stringify(next))
+      setMachines(next)
+      return true
+    } catch { setMachineError("Nem sikerült menteni a gépet."); return false }
+  }
+  const addMachine = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    let url: URL
+    try { url = new URL(machineUrl.trim()) } catch { setMachineError("Adj meg egy érvényes HTTPS-címet."); return }
+    if (url.protocol !== "https:" || url.username || url.password) { setMachineError("Csak biztonságos HTTPS-cím használható."); return }
+    if (!machineName.trim()) { setMachineError("Add meg a gép nevét."); return }
+    if (persistMachines([...machines, { id: crypto.randomUUID(), name: machineName.trim().slice(0, 80), url: url.toString() }])) setMachineForm(false)
+  }
+  const currentMachine = machines.find(machine => machine.id === machineInfo)
 
   const saveInterest = (id: string) => {
     const next = Array.from(new Set([...requestedProviders, id]))
@@ -156,7 +188,7 @@ export default function ToolsHub({ onUpload, onOpenLibrary, onFriends, onLeaderb
           <div className="evo-tools-storage-track" role="progressbar" aria-label="Tárhelyhasználat" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(usage)}>
             <span style={{ width: usage + "%" }} />
           </div>
-        </div> : <span className="evo-tools-storage-subtitle">Helyi fájlok</span>}
+        </div> : <button type="button" className="evo-tools-storage-upload" onClick={onUpload}><Plus size={16} /> Fájl feltöltése</button>}
       </div>
       <div className="evo-tools-storage-grid">
         {visibleStorage.map(({ id, name, description, Icon, action }) =>
@@ -226,6 +258,22 @@ export default function ToolsHub({ onUpload, onOpenLibrary, onFriends, onLeaderb
         onClick={() => saveInterest(selected.id)}
       >{requestedProviders.includes(selected.id) ? "Érdeklődés mentve" : "Érdekel ez az integráció"}</button>
       <p className="evo-tools-dialog-footnote">Az érdeklődés csak ezen az eszközön mentődik; nem jelent feliratkozást vagy értesítést.</p>
+    </UnifiedSheet>}
+    {machineForm && <UnifiedSheet backdropClassName="evo-tools-dialog-backdrop" sheetClassName="evo-tools-dialog evo-tools-machine-dialog" labelledBy="evo-tools-machine-heading" onClose={() => setMachineForm(false)}>
+      <div className="evo-tools-dialog-heading"><h2 id="evo-tools-machine-heading">Új gép</h2><button type="button" className="evo-tools-dialog-close" onClick={() => setMachineForm(false)} aria-label="Bezárás"><X size={20} /></button></div>
+      <form className="evo-tools-machine-form" onSubmit={addMachine}>
+        <label>Gép neve<input value={machineName} onChange={event => setMachineName(event.target.value)} placeholder="Saját szerver" maxLength={80} required /></label>
+        <label>HTTPS vezérlőpult címe<input type="url" value={machineUrl} onChange={event => setMachineUrl(event.target.value)} placeholder="https://example.com" required /></label>
+        <p>Ez egy külső gép vezérlőpultjának helyben mentett hivatkozása. Az Evölingo még nem kapcsolódik a szerverhez, és nem jelzi annak állapotát.</p>
+        {machineError && <p role="alert" className="evo-tools-machine-error">{machineError}</p>}
+        <button className="evo-tools-dialog-connect" type="submit">Gép hozzáadása</button>
+      </form>
+    </UnifiedSheet>}
+    {currentMachine && <UnifiedSheet backdropClassName="evo-tools-dialog-backdrop" sheetClassName="evo-tools-dialog" labelledBy="evo-tools-machine-details" onClose={() => setMachineInfo(null)}>
+      <div className="evo-tools-dialog-heading"><h2 id="evo-tools-machine-details">{currentMachine.name}</h2><button type="button" className="evo-tools-dialog-close" onClick={() => setMachineInfo(null)} aria-label="Bezárás"><X size={20} /></button></div>
+      <p>Külső gép · a kapcsolat állapota nincs ellenőrizve.</p>
+      <a className="evo-tools-machine-link" href={currentMachine.url} target="_blank" rel="noopener noreferrer"><ExternalLink size={18} /> Vezérlőpult megnyitása</a>
+      <button className="evo-tools-machine-delete" type="button" onClick={() => { if (window.confirm("Eltávolítod a gép hivatkozását?")) { persistMachines(machines.filter(item => item.id !== currentMachine.id)); setMachineInfo(null) } }}><Trash2 size={17} /> Hivatkozás eltávolítása</button>
     </UnifiedSheet>}
   </div>
 }
