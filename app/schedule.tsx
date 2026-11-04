@@ -80,6 +80,17 @@ export default function Schedule() {
     const step = Math.min(item.totalSteps, item.step + 1)
     update(item.id, { step, status: step === item.totalSteps ? "completed" : "active" })
   }
+  const completeScheduled = (item: ScheduledTask) => {
+    if (item.repeat === "once") { update(item.id, { status: "completed", step: 1 }); return }
+    // Repeating tasks are manually ticked off; advance their next planned day.
+    // This does not represent execution by a background worker.
+    const today = new Date(); today.setHours(12, 0, 0, 0)
+    const planned = item.due ? new Date(item.due + "T12:00:00") : today
+    const base = Number.isFinite(planned.getTime()) && planned > today ? planned : today
+    base.setDate(base.getDate() + (item.repeat === "daily" ? 1 : 7))
+    const due = [base.getFullYear(), String(base.getMonth() + 1).padStart(2, "0"), String(base.getDate()).padStart(2, "0")].join("-")
+    update(item.id, { due, status: "active", step: 0 })
+  }
   return <div className="evo-schedule">
     <nav className="evo-schedule-tabs" aria-label="Feladatok állapota">
       {TABS.map(item => <button key={item.value} type="button" aria-current={tab === item.value ? "page" : undefined} className={tab === item.value ? "is-active" : ""} onClick={() => { setTab(item.value); setMenu(null) }}>{item.label}</button>)}
@@ -102,7 +113,7 @@ export default function Schedule() {
           <button className="is-destructive" type="button" onClick={() => { setTasks(current => current.filter(task => task.id !== item.id)); setMenu(null) }}><Trash2 size={16} /> Törlés</button>
         </div>}
         {item.kind === "long" && item.status === "active" && <button type="button" className="evo-schedule-next" onClick={() => advance(item)}><Check size={16} /> Következő lépés kész</button>}
-        {item.kind === "scheduled" && item.status === "active" && <button type="button" className="evo-schedule-next" onClick={() => update(item.id, { status: "completed", step: 1 })}><Check size={16} /> Késznek jelölés</button>}
+        {item.kind === "scheduled" && item.status === "active" && <button type="button" className="evo-schedule-next" onClick={() => completeScheduled(item)}><Check size={16} /> {item.repeat === "once" ? "Késznek jelölés" : "Alkalom kész"}</button>}
       </article>) : <div className="evo-schedule-empty"><CalendarClock size={26} strokeWidth={1.5} /><strong>{query ? "Nincs találat" : tab === "active" ? "Nincs aktív feladat" : tab === "paused" ? "Nincs szüneteltetett feladat" : "Még nincs befejezett feladat"}</strong><p>{query ? "Próbálj másik keresést." : "A saját feladataid itt jelennek meg. Újat alul hozhatsz létre."}</p></div>}
     </section>
     <div className="evo-schedule-bottom">
