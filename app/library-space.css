@@ -807,3 +807,86 @@
 @media (prefers-reduced-motion:reduce) {
   .app-shell.reference-shell .library-space :is(.library-quick-button,.library-add-primary,.library-file) { transition: none !important; }
 }
+
+
+/* 0.2 Library: Files-style entry surface, with working file management underneath. */
+.app-shell.reference-shell .ref-app.ref-view-space .library-space {
+  padding-top: calc(env(safe-area-inset-top, 0px) + 90px) !important;
+  padding-bottom: max(135px, calc(env(safe-area-inset-bottom, 0px) + 115px)) !important;
+}
+.app-shell.reference-shell .library-space .library-toolbar {
+  margin: 20px 0 14px;
+  min-height: 52px;
+}
+.app-shell.reference-shell .library-space .library-quick-button {
+  width: 47px;
+  min-width: 47px;
+  height: 47px;
+  border-color: #e5e5e9;
+  box-shadow: none;
+}
+.app-shell.reference-shell .library-space .library-view-button { color: #696a70; }
+.app-shell.reference-shell .library-space .library-search {
+  position: fixed;
+  z-index: 35;
+  width: min(calc(100vw - 36px), 480px);
+  height: 54px;
+  bottom: max(19px, calc(env(safe-area-inset-bottom, 0px) + 15px));
+  left: 50%;
+  margin: 0;
+  transform: translateX(-50%);
+  background: #fff;
+  border-color: #dedee3;
+  border-radius: 999px;
+  box-shadow: 0 4px 16px rgba(18, 19, 26, .055);
+}
+.app-shell.reference-shell .library-space .library-home { display: flex; flex-direction: column; gap: 31px; margin-top: 42px; }
+.app-shell.reference-shell .library-space .library-home section { min-width: 0; }
+.app-shell.reference-shell .library-space .library-home-heading {
+  display: flex; align-items: center; justify-content: space-between;
+  margin: 0 3px 12px; color: #222329; font-size: 19px; font-weight: 680; line-height: 1.3;
+  letter-spacing: -.4px;
+}
+.app-shell.reference-shell .library-space .library-home-heading > svg { flex: none; color: #94949a; }
+.app-shell.reference-shell .library-space .library-home-group {
+  overflow: hidden; border: 1px solid #e5e5e9; border-radius: 20px; background: #fff;
+}
+.app-shell.reference-shell .library-space .library-home-group button {
+  display: flex; width: 100%; min-height: 65px; align-items: center; gap: 15px;
+  padding: 13px 17px; border: 0; background: transparent; color: #24252b;
+  cursor: pointer; text-align: left; font-size: 16px; font-weight: 500;
+}
+.app-shell.reference-shell .library-space .library-home-group button + button {
+  border-top: 1px solid #ededf0;
+}
+.app-shell.reference-shell .library-space .library-home-group button > svg:first-child {
+  flex: 0 0 22px; width: 22px; color: #696a71; stroke-width: 1.7px;
+}
+.app-shell.reference-shell .library-space .library-home-group button > svg:last-child {
+  flex: none; width: 19px; margin-left: auto; color: #abadb3; stroke-width: 1.6px;
+}
+.app-shell.reference-shell .library-space .library-home-group button > span {
+  flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 5px;
+  overflow: hidden; text-overflow: ellipsis;
+}
+.app-shell.reference-shell .library-space .library-home-group button small {
+  color: #929299; font-size: 12px; font-weight: 400;
+}
+.app-shell.reference-shell .library-space .library-home-group button:active { background: #f7f7f9; }
+.app-shell.reference-shell .library-space .library-home-group button:focus-visible { outline: 2px solid #252831; outline-offset: -3px; }
+.app-shell.reference-shell .library-space .library-restore-label {
+  display: inline-flex; padding: 5px 8px; border-radius: 999px;
+  background: #f4f4f6; color: #55565d; font-size: 11px; white-space: nowrap;
+}
+.app-shell.reference-shell .library-space .library-results-status { margin-top: 22px; }
+@media (min-width: 768px) {
+  .app-shell.reference-shell .library-space .library-search {
+    position: sticky; width: 100%; left: auto; bottom: 20px; margin-top: auto;
+    transform: none; align-self: center;
+  }
+}
+@media (max-width: 375px) {
+  .app-shell.reference-shell .library-space .library-home { margin-top: 32px; gap: 24px; }
+  .app-shell.reference-shell .library-space .library-home-group button { min-height: 59px; padding-inline: 13px; }
+  .app-shell.reference-shell .library-space .library-home-heading { font-size: 18px; }
+}
