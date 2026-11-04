@@ -1,4 +1,4 @@
-/* Reference screen set: proportions follow the supplied 390 × 844 iPhone captures. */
+
 .app-shell.reference-shell {
   width: 100%;
   min-height: 100dvh;
@@ -249,7 +249,7 @@
   .ref-app *, .ref-app *::before, .ref-app *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
 }
 
-/* Topic detail, assessment and account pages from the latest mobile references. */
+
 .ref-topic-detail { width: min(100%, 760px); padding: 0 24px 36px; margin: 56px auto 0; }
 .ref-topic-breadcrumb { display: flex; min-height: 44px; align-items: center; gap: 12px; padding: 0; border: 0; background: transparent; color: #5b6472 !important; font-size: 0.9375rem; }
 .ref-topic-breadcrumb > svg:first-child { transform: rotate(180deg); }
@@ -295,7 +295,7 @@
 .study-flashcard > strong { margin: auto 0; }
 .study-flashcard span { display: inline-flex; align-items: center; gap: 10px; margin: auto 0 0; }
 
-/* Shared practice action area keeps the primary decision visible above the safe area. */
+
 .practice-action-bar {
   position: sticky;
   z-index: 3;
