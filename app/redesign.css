@@ -1,11 +1,11 @@
-/* Evölingo — Learning Path screen. Loaded after globals.css; !important is required because globals.css declares ~1900 !important rules. Scope: home screen only (header, headings, white surface, level badge, path nodes, labels). */
 
-/* ---------- Screen ---------- */
+
+
 html body{background:#ffffff !important;color:#171717 !important;overflow-x:hidden !important}
 body .app-shell{width:100% !important;max-width:none !important;min-height:100dvh !important;margin:0 !important;background:#ffffff !important;padding:0 0 calc(96px + env(safe-area-inset-bottom)) !important}
 body .screen-content{padding:calc(env(safe-area-inset-top) + 16px) clamp(18px,5.6vw,24px) 0 !important;min-height:0 !important;background:#ffffff !important}
 
-/* ---------- Existing header, kept intact ---------- */
+
 body .home-header{display:flex !important;align-items:center !important;justify-content:space-between !important;gap:12px !important;padding:0 0 4px !important;background:transparent !important;box-shadow:none !important}
 body .home-header .brand{flex:1 1 auto !important;min-width:0 !important;gap:12px !important}
 body .home-header .brand img{width:clamp(50px,14vw,62px) !important;height:clamp(50px,14vw,62px) !important;object-fit:contain !important;border-radius:0 !important;background:transparent !important}
@@ -16,40 +16,40 @@ body .home-currencies .health{color:#ef4358 !important}
 body .home-currencies strong{color:#171717 !important;font-size:clamp(16px,4.6vw,19px) !important;font-weight:800 !important;font-variant-numeric:tabular-nums !important}
 body .home-currencies svg{width:clamp(17px,4.8vw,21px) !important;height:clamp(17px,4.8vw,21px) !important}
 
-/* ---------- ANGOL / Tanulási útvonal ---------- */
+
 body .home-heading{display:block !important;margin:clamp(16px,4.6vw,24px) 0 0 !important}
 body .home-heading .eyebrow{font-size:clamp(12px,3.2vw,14px) !important;font-weight:700 !important;letter-spacing:2px !important;color:#5b6472 !important;text-transform:uppercase !important;margin:0 0 8px !important}
 body .home-heading h2{font-size:clamp(26px,8.4vw,32px) !important;font-weight:800 !important;letter-spacing:-.025em !important;line-height:1.1 !important;color:#171717 !important;margin:0 !important;text-align:left !important}
 
-/* ---------- Notice (only shows when there is one) ---------- */
+
 body .inline-notice{display:flex !important;align-items:center !important;justify-content:space-between !important;gap:10px !important;width:100% !important;margin:14px 0 0 !important;padding:12px 14px !important;border-radius:16px !important;background:#fafafa !important;border:1px solid #ededed !important;font-size:0.8125rem !important;text-align:left !important}
 body .unit-progress-card{display:none !important}
 
-/* ---------- White learning surface ---------- */
+
 body .compact-learning-path{position:relative !important;display:flex !important;flex-direction:column !important;align-items:center !important;gap:0 !important;margin:clamp(18px,5vw,26px) 0 0 !important;padding:0 0 24px !important;background:#ffffff !important;border:0 !important;border-radius:56px 56px 0 0 !important;box-shadow:none !important;min-height:0 !important}
 body .compact-learning-path::before{content:"" !important;position:absolute !important;z-index:-1 !important;top:0 !important;bottom:calc(-1 * (96px + env(safe-area-inset-bottom))) !important;left:calc(-1 * clamp(18px,5.6vw,24px) - 1px) !important;right:calc(-1 * clamp(18px,5.6vw,24px) - 1px) !important;background:#ffffff !important;border-radius:56px 56px 0 0 !important;box-shadow:0 -10px 30px rgba(17,24,39,.05) !important}
 
-/* ---------- United Kingdom B2 badge ---------- */
+
 body .level-badge{display:inline-flex !important;align-items:center !important;justify-content:center !important;gap:clamp(10px,3vw,14px) !important;height:clamp(50px,13.6vw,62px) !important;min-width:clamp(118px,34vw,142px) !important;padding:0 clamp(14px,4vw,18px) !important;background:#ffffff !important;border:2.5px solid #e5e5e5 !important;border-radius:999px !important;box-shadow:none !important;white-space:nowrap !important}
 body .level-flag{font-size:clamp(26px,7.6vw,34px) !important;line-height:1 !important}
 body .level-text{font-size:clamp(18px,5.4vw,23px) !important;font-weight:600 !important;color:#5b6472 !important;letter-spacing:.01em !important}
 body .active-ring,body .compact-lesson-extrusion,body .compact-lesson-icon-button::before,body .compact-lesson-icon-button::after{display:none !important}
 
-/* ---------- Narrow phones ---------- */
+
 @media (max-width:360px){
   body .level-badge{min-width:112px !important}
 }
 
-/* ---------- Short screens: tighter rhythm ---------- */
+
 @media (max-height:700px){
   body .screen-content{padding-top:calc(env(safe-area-inset-top) + 10px) !important}
 }
 
-/* ---------- Taller phones: reference proportions ---------- */
+
 @media (min-height:840px){
 }
 
-/* ---------- Wider screens: centred mobile column, never stretched ---------- */
+
 @media (min-width:560px){
   body .app-shell{max-width:480px !important;margin:0 auto !important}
 }
@@ -60,12 +60,7 @@ body .active-ring,body .compact-lesson-extrusion,body .compact-lesson-icon-butto
 @media (max-width:360px){}
 @media (prefers-reduced-motion:reduce){}
 @media(max-width:360px){}
-
-/* Lesson names follow the square tile;
 @media(max-width:360px){}
-
-
-/* Illustrated path symbols cut from the supplied sheet;
 @media(max-width:360px){}
 @media(max-width:360px){
 }
@@ -77,7 +72,7 @@ body .active-ring,body .compact-lesson-extrusion,body .compact-lesson-icon-butto
 }
 
 
-/* Shared Home/Csillag palette, sourced from the Home selectors above. */
+
 :root{
   --evo-bg:#fff;--evo-surface:#fff;--evo-headline:#1e1b3a;--evo-secondary:#85858f;
   --evo-green:#52b926;--evo-green-edge:#43a41d;--evo-gold:#d39b25;
@@ -96,10 +91,7 @@ body .active-ring,body .compact-lesson-extrusion,body .compact-lesson-icon-butto
 }
 
 
-/* Remove the outer summary panel;
 
-
-/* System notification sheets: shared for lesson, chest, notification permission and friend requests. */
 body .system-notice-backdrop{
   position:fixed!important;z-index:90!important;inset:0!important;display:flex!important;align-items:flex-end!important;
   justify-content:center!important;padding:max(16px,env(safe-area-inset-top)) 0 0!important;background:rgba(20,24,35,.28)!important;
@@ -415,7 +407,7 @@ body .profile-learning-card{animation-delay:.12s!important}
 }
 
 
-/* Profile achievement controls: transparent rail, layered Home-style medals. */
+
 body .profile-badges{
   margin:0 0 24px!important;
   padding:0!important;
@@ -700,7 +692,7 @@ body .profile-badge>span:last-child{
 }
 
 
-/* Profile reference layout: fluid from 360px to 430px and safe with long names. */
+
 body .profile-reference-hero{
   min-height:clamp(420px,115vw,470px)!important;
 }
@@ -811,7 +803,7 @@ body .nav-selection-indicator.is-dragging{
   to{transform:translateX(230%)}
 }
 
-/* White, content-sized system sheets with matching monochrome iconography. */
+
 body .system-notice-backdrop{background:rgba(25,25,32,.27) !important}
 body .system-notice-sheet{
   min-height:0 !important;
@@ -869,10 +861,6 @@ body .system-notice-chest-art{
 @media(prefers-reduced-motion:reduce){
   body .nav-selection-indicator{transition:none !important}
 }
-
-
-/* Uploaded Evölingo SVG tiles — single artwork owns the fill, bevel and icon.
-   No CSS tile background;
 @media(max-width:359px){
 }
 @media(prefers-reduced-motion:reduce){
