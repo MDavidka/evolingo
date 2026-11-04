@@ -1,14 +1,12 @@
 "use client"
 
 import { useEffect, useMemo, useState } from "react"
-import { BarChart3, ChevronRight, ExternalLink, FolderOpen, Plus, Search, Server, Trash2, Users, X } from "lucide-react"
+import { ChevronRight, ExternalLink, FolderOpen, Plus, Search, Server, Trash2, X } from "lucide-react"
 import UnifiedSheet from "./unified-sheet"
 
 type ToolHubProps = {
   onUpload: () => void
   onOpenLibrary: () => void
-  onFriends: () => void
-  onLeaderboard: () => void
 }
 
 type MachineRecord = { id: string; name: string; url: string }
@@ -73,7 +71,7 @@ function ProviderLogo({ provider }: { provider: Integration }) {
   </span>
 }
 
-export default function ToolsHub({ onUpload, onOpenLibrary, onFriends, onLeaderboard }: ToolHubProps) {
+export default function ToolsHub({ onUpload, onOpenLibrary }: ToolHubProps) {
   const [query, setQuery] = useState("")
   const [showAll, setShowAll] = useState(false)
   const [selectedId, setSelectedId] = useState<string | null>(null)
@@ -133,16 +131,11 @@ export default function ToolsHub({ onUpload, onOpenLibrary, onFriends, onLeaderb
     { id: "new-machine", name: "Új gép", description: "Szerver hozzáadása", Icon: Plus, action: () => { setMachineName(""); setMachineUrl(""); setMachineError(""); setMachineForm(true) } },
   ], [fileCount, onOpenLibrary, machines])
   const visibleStorage = storageActions.filter(item => matches(item.name + " " + item.description + " fájl tárhely felhő"))
-  const community = [
-    { id: "friends", name: "Barátok", description: "Kapcsolatok és közös tanulás", Icon: Users, action: onFriends },
-    { id: "leaderboard", name: "Ranglista", description: "Heti verseny csillagokért", Icon: BarChart3, action: onLeaderboard },
-  ]
-  const visibleCommunity = community.filter(item => matches(item.name + " " + item.description))
   const matchingIntegrations = integrations.filter(item => matches(item.title + " " + item.description + " " + item.keywords))
   const visibleIntegrations = search || showAll ? matchingIntegrations : matchingIntegrations.slice(0, 3)
   const selected = integrations.find(item => item.id === selectedId)
   const usage = storage && storage.total > 0 ? Math.min(100, Math.max(0, 100 * storage.used / storage.total)) : null
-  const hasResults = visibleStorage.length + visibleCommunity.length + matchingIntegrations.length > 0
+  const hasResults = visibleStorage.length + matchingIntegrations.length > 0
 
   const persistMachines = (next: MachineRecord[]) => {
     try {
@@ -212,19 +205,6 @@ export default function ToolsHub({ onUpload, onOpenLibrary, onFriends, onLeaderb
           <button key={provider.id} type="button" className="evo-tools-app-row" onClick={() => setSelectedId(provider.id)} aria-label={provider.title + " részletei"}>
             <ProviderLogo provider={provider} />
             <span className="evo-tools-row-copy"><strong>{provider.title}</strong><small>{provider.description}</small></span>
-            <ChevronRight size={21} strokeWidth={1.7} aria-hidden="true" />
-          </button>
-        )}
-      </div>
-    </section>}
-
-    {visibleCommunity.length > 0 && <section className="evo-tools-community-section" aria-labelledby="evo-tools-community-title">
-      <div className="evo-tools-section-heading"><h2 id="evo-tools-community-title">Közösség</h2></div>
-      <div className="evo-tools-apps-list">
-        {visibleCommunity.map(({ id, name, description, Icon, action }) =>
-          <button key={id} type="button" className="evo-tools-app-row" onClick={action}>
-            <span className="evo-tools-community-icon"><Icon size={23} strokeWidth={1.75} aria-hidden="true" /></span>
-            <span className="evo-tools-row-copy"><strong>{name}</strong><small>{description}</small></span>
             <ChevronRight size={21} strokeWidth={1.7} aria-hidden="true" />
           </button>
         )}
