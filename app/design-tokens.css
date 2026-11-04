@@ -301,3 +301,94 @@ html:has(.ref-view-chat)::before {
 }
 .evo-liquid-root .evo-liquid-surface { background: var(--evo-surface); }
 .task-action-bar { background: linear-gradient(to top, var(--evo-bg) 82%, transparent) !important; }
+
+
+/* Design Spec v1.0 — AI-only application tokens.
+   Compatibility mappings above remain until every retained component migrates. */
+:root {
+  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Inter", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monos;
+  --text-large-title: 700 34px/41px var(--font-sans);
+  --text-title1: 700 28px/34px var(--font-sans);
+  --text-title2: 700 22px/28px var(--font-sans);
+  --text-title3: 600 20px/25px var(--font-sans);
+  --text-headline: 600 17px/22px var(--font-sans);
+  --text-body: 400 17px/22px var(--font-sans);
+  --text-callout: 400 16px/21px var(--font-sans);
+  --text-subhead: 400 15px/20px var(--font-sans);
+  --text-footnote: 400 13px/18px var(--font-sans);
+  --text-caption1: 400 12px/16px var(--font-sans);
+  --text-caption2: 400 11px/13px var(--font-sans);
+
+  --color-bg: #fff;
+  --color-bg-grouped: #f7f7f8;
+  --color-surface: #fff;
+  --color-surface-2: #f2f2f3;
+  --color-fill: rgba(0,0,0,.05);
+  --color-fill-pressed: rgba(0,0,0,.09);
+  --color-text: #171717;
+  --color-text-2: #626267;
+  --color-text-3: #8e8e93;
+  --color-separator: #e5e5e8;
+  --color-separator-strong: #d1d1d6;
+  --color-action: #242424;
+  --color-action-hover: #000;
+  --color-on-action: #fff;
+  --color-focus: #242424;
+  --color-danger: #d92d20;
+  --color-success: #242424;
+  --color-sidebar: #f9f9f9;
+  --color-overlay: rgba(0,0,0,.32);
+
+  --space-0: 0px;
+  --space-1: 4px; --space-2: 8px; --space-3: 12px; --space-4: 16px;
+  --space-5: 20px; --space-6: 24px; --space-8: 32px; --space-10: 40px;
+  --space-12: 48px; --space-16: 64px;
+  --radius-xs: 6px; --radius-sm: 8px; --radius-md: 12px;
+  --radius-lg: 16px; --radius-xl: 20px; --radius-2xl: 24px; --radius-full: 9999px;
+  --shadow-0: none;
+  --shadow-1: 0 1px 2px rgba(0,0,0,.06);
+  --shadow-2: 0 2px 8px rgba(0,0,0,.06), 0 0 0 1px rgba(0,0,0,.04);
+  --shadow-3: 0 8px 24px rgba(0,0,0,.10), 0 0 0 1px rgba(0,0,0,.04);
+  --shadow-4: 0 16px 48px rgba(0,0,0,.16);
+  --z-base: 0; --z-raised: 1; --z-sticky: 10; --z-header: 20;
+  --z-sidebar-toggle: 30; --z-sidebar-scrim: 40; --z-sidebar: 50;
+  --z-dropdown: 60; --z-sheet-scrim: 70; --z-sheet: 80;
+  --z-toast: 90; --z-tooltip: 100;
+  --dur-instant: 100ms; --dur-fast: 160ms; --dur-base: 240ms;
+  --dur-slow: 360ms; --dur-sheet: 420ms;
+  --ease-standard: cubic-bezier(.2,0,0,1);
+  --ease-decelerate: cubic-bezier(0,0,0,1);
+  --ease-accelerate: cubic-bezier(.3,0,1,1);
+  --ease-spring: cubic-bezier(.32,.72,0,1);
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+  --header-h: 52px; --header-total: calc(var(--header-h) + var(--safe-top));
+
+  /* Existing component compatibility, still monochrome. */
+  --evo-success: var(--color-action);
+  --evo-achievement: var(--color-text-2);
+  --evo-danger: var(--color-danger);
+  --evo-focus: var(--color-focus);
+  --evo-action: var(--color-action);
+  --evo-action-hover: var(--color-action-hover);
+  --evo-accent: var(--color-action);
+  --evo-font-body: var(--text-body);
+}
+.t-large-title { font: var(--text-large-title); }
+.t-title1 { font: var(--text-title1); }
+.t-title2 { font: var(--text-title2); }
+.t-title3 { font: var(--text-title3); }
+.t-headline { font: var(--text-headline); }
+.t-body { font: var(--text-body); }
+.t-callout { font: var(--text-callout); }
+.t-subhead { font: var(--text-subhead); }
+.t-footnote { font: var(--text-footnote); }
+.t-caption1 { font: var(--text-caption1); }
+.t-caption2 { font: var(--text-caption2); }
+@media (min-width: 1024px) { .t-large-title { font-size: 40px; line-height: 48px; } }
+@media (prefers-reduced-motion: reduce) {
+  .t-large-title, .t-title1, .t-title2, .t-title3 { scroll-behavior: auto; }
+}
