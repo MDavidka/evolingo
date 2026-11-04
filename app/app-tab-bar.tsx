@@ -3,12 +3,12 @@
 import { useCallback, useEffect, useRef, useState, type KeyboardEvent as ReactKeyboardEvent } from "react"
 import { mage } from "./mage-icons"
 const SidebarSimpleIcon = mage("dash-menu")
-const XIcon = mage("x")
 const PlusIcon = mage("plus")
 const DotsThreeIcon = mage("dots-horizontal")
 const PencilSimpleIcon = mage("edit-pen")
 const TrashIcon = mage("trash")
 const MagnifyingGlassIcon = mage("search")
+const ScheduleIcon = mage("calendar")
 const FoldersIcon = mage("folder")
 const PuzzlePieceIcon = mage("dashboard-4")
 const LightbulbIcon = mage("light-bulb")
@@ -16,10 +16,11 @@ const NotePencilIcon = mage("note-text")
 
 import { deleteChatSession, notifyChatSessionAction, readChatSessions, renameChatSession, type ChatSession } from "./chat-sessions"
 
-export type AppTab = "learn" | "ai" | "files" | "tools" | "profile" | "brainstorm"
+export type AppTab = "learn" | "ai" | "schedule" | "files" | "tools" | "profile" | "brainstorm"
 type Props = { activeTab: AppTab; onSelect: (tab: AppTab) => void; avatarImage: string; avatar: string; userName: string; stars?: number; streak?: number; onOpenLeaderboard?: () => void }
 
 const quickLinks = [
+  { label: "Ütemezés", Icon: ScheduleIcon, target: "schedule" },
   { label: "Könyvtár", Icon: FoldersIcon, target: "files" },
   { label: "Eszközök", Icon: PuzzlePieceIcon, target: "tools" },
   { label: "Ötletbörze", Icon: LightbulbIcon, target: "brainstorm" },
@@ -209,8 +210,8 @@ export default function AppTabBar({ activeTab, onSelect, avatarImage, userName }
       <aside id="evo-global-sidebar" ref={dialog} className={`evo-sidebar ${open ? "" : "is-closing"}`} role="dialog" aria-modal={open} aria-hidden={!open} aria-label="Menü" onKeyDown={trapFocus} >
         <div className="evo-sidebar-safe">
           <div className="evo-sidebar-heading">
-            <strong className="evo-sidebar-brand">Evölingo</strong>
-            <div className="evo-sidebar-tools"><button type="button" className="evo-sidebar-tool" aria-label="Beszélgetések keresése" aria-expanded={searchOpen} onClick={() => { setSearchOpen(value => !value); setQuery("") }}><MagnifyingGlassIcon size={21} weight="regular" /></button><button type="button" className="evo-sidebar-tool evo-sidebar-close" onClick={() => close()} aria-label="Menü bezárása"><XIcon size={20} weight="regular" /></button></div>
+            <button className="evo-sidebar-brand evo-sidebar-brand-action" type="button" onClick={() => close()} aria-label="Menü bezárása">Evölingo</button>
+            <div className="evo-sidebar-tools"><button type="button" className="evo-sidebar-tool" aria-label="Beszélgetések keresése" aria-expanded={searchOpen} onClick={() => { setSearchOpen(value => !value); setQuery("") }}><MagnifyingGlassIcon size={21} weight="regular" /></button></div>
           </div>
           <nav className="evo-sidebar-nav" aria-label="Fő navigáció">
             {quickLinks.map(({ label, Icon, target }) => <button key={label} type="button" aria-current={activeTab === target ? "page" : undefined} onClick={() => select(target)}><Icon size={22} weight="regular" /><span>{label}</span></button>)}
