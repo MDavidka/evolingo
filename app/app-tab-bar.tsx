@@ -208,7 +208,7 @@ export default function AppTabBar({ activeTab, onSelect, avatarImage, userName }
     else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus() }
   }
 
-  const select = (tab: AppTab) => { savedPageScroll.current = 0; onSelect(tab); close(false) }
+  const select = (tab: AppTab) => { savedPageScroll.current = 0; onSelect(tab); if (!desktop) close(false); else setMenuFor(null) }
   const startNew = () => { notifyChatSessionAction("new"); select("ai") }
   const openChat = (id: string) => { notifyChatSessionAction("open", id); select("ai") }
   const onProfile = () => select("profile")
