@@ -14,6 +14,7 @@ const titles: Record<string, string> = {
   konyvtar: "Könyvtár",
   eszkozok: "Eszközök",
   otletborze: "Ötletbörze",
+  utemezes: "Ütemezés",
   belepes: "Bejelentkezés",
   regisztracio: "Regisztráció",
 }
@@ -43,7 +44,7 @@ export default async function RoutePage({ params }: { params: Promise<{ slug: st
   if (section === "tudasfelmeres") notFound()
 
   const valid = section === "chat" && slug.length === 1
-    || ["utvonal", "otletborze", "profil", "baratok", "ranglista", "konyvtar", "eszkozok", "belepes", "regisztracio", "bolt"].includes(section) && slug.length === 1
+    || ["utvonal", "utemezes", "otletborze", "profil", "baratok", "ranglista", "konyvtar", "eszkozok", "belepes", "regisztracio", "bolt"].includes(section) && slug.length === 1
     || section === "temak" && (slug.length === 1 || slug.length === 2 && /^\d+$/.test(slug[1]))
     || section === "lecke" && (slug.length === 2 && /^\d+$/.test(slug[1]) || slug.length === 3 && /^\d+$/.test(slug[1]) && slug[2] === "tanulas")
     || section === "gyakorlas" && (slug.length === 2 && /^\d+$/.test(slug[1]) || slug.length === 3 && /^\d+$/.test(slug[1]) && slug[2] === "keszseg")
