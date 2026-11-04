@@ -1,19 +1,12 @@
 "use client"
 
 import { useCallback, useEffect, useRef, useState, type KeyboardEvent as ReactKeyboardEvent } from "react"
-import { mage } from "./mage-icons"
-const SidebarSimpleIcon = mage("dash-menu")
-const PlusIcon = mage("plus")
-const DotsThreeIcon = mage("dots-horizontal")
-const PencilSimpleIcon = mage("edit-pen")
-const TrashIcon = mage("trash")
-const MagnifyingGlassIcon = mage("search")
-const ScheduleIcon = mage("calendar")
-const FoldersIcon = mage("folder")
-const PuzzlePieceIcon = mage("dashboard-4")
-const LightbulbIcon = mage("light-bulb")
-const NotePencilIcon = mage("note-text")
-
+import {
+  PanelLeft as SidebarSimpleIcon, Plus as PlusIcon, Ellipsis as DotsThreeIcon,
+  Pencil as PencilSimpleIcon, Trash2 as TrashIcon, Search as MagnifyingGlassIcon,
+  CalendarDays as ScheduleIcon, FolderOpen as FoldersIcon, LayoutGrid as PuzzlePieceIcon,
+  Lightbulb as LightbulbIcon, SquarePen as NotePencilIcon, ChevronRight,
+} from "lucide-react"
 import { deleteChatSession, notifyChatSessionAction, readChatSessions, renameChatSession, type ChatSession } from "./chat-sessions"
 
 export type AppTab = "learn" | "ai" | "schedule" | "files" | "tools" | "profile" | "brainstorm"
@@ -36,6 +29,7 @@ function dateGroup(timestamp: number) {
 
 export default function AppTabBar({ activeTab, onSelect, avatarImage, userName }: Props) {
   const [open, setOpen] = useState(false)
+  const [desktop, setDesktop] = useState(false)
   const [renderSidebar, setRenderSidebar] = useState(false)
   const [chats, setChats] = useState<ChatSession[]>([])
   const [menuFor, setMenuFor] = useState<string | null>(null)
@@ -51,6 +45,7 @@ export default function AppTabBar({ activeTab, onSelect, avatarImage, userName }
   const refresh = useCallback(() => setChats(readChatSessions()), [])
   const close = useCallback((restoreFocus = true) => {
     setOpen(false)
+    if (window.matchMedia("(min-width: 1024px)").matches) { try { localStorage.setItem("evolingo.sidebar.desktop.v1", "closed") } catch {} }
     setMenuFor(null)
     document.body.style.overflow = ""
     if (restoreFocus) requestAnimationFrame(() => trigger.current?.focus({ preventScroll: true }))
@@ -65,7 +60,28 @@ export default function AppTabBar({ activeTab, onSelect, avatarImage, userName }
     }
     setRenderSidebar(true)
     setOpen(true)
+    if (window.matchMedia("(min-width: 1024px)").matches) { try { localStorage.setItem("evolingo.sidebar.desktop.v1", "open") } catch {} }
   }, [])
+
+  useEffect(() => {
+    const media = window.matchMedia("(min-width: 1024px)")
+    const sync = () => {
+      setDesktop(media.matches)
+      if (media.matches) {
+        let enabled = true
+        try { enabled = localStorage.getItem("evolingo.sidebar.desktop.v1") !== "closed" } catch {}
+        setOpen(enabled); setRenderSidebar(enabled)
+      } else { setOpen(false); setRenderSidebar(false) }
+    }
+    sync()
+    media.addEventListener("change", sync)
+    return () => media.removeEventListener("change", sync)
+  }, [])
+
+  useEffect(() => {
+    document.documentElement.classList.toggle("evo-desktop-sidebar-open", desktop && open)
+    return () => document.documentElement.classList.remove("evo-desktop-sidebar-open")
+  }, [desktop, open])
 
   useEffect(() => {
     refresh()
@@ -128,11 +144,11 @@ export default function AppTabBar({ activeTab, onSelect, avatarImage, userName }
   }, [close, refresh, show])
 
   useEffect(() => {
-    if (open) {
+    if (open && !desktop) {
       document.body.style.overflow = "hidden"
       requestAnimationFrame(() => dialog.current?.querySelector<HTMLElement>("button")?.focus())
     }
-  }, [open])
+  }, [open, desktop])
 
   // Keep the underlying navigation mounted until the foreground sheet has
   // completed its return animation; remove both classes on unmount.
@@ -184,7 +200,7 @@ export default function AppTabBar({ activeTab, onSelect, avatarImage, userName }
   }, [open, renderSidebar])
 
   const trapFocus = (event: ReactKeyboardEvent<HTMLElement>) => {
-    if (event.key !== "Tab" || !dialog.current) return
+    if (desktop || event.key !== "Tab" || !dialog.current) return
     const items = [...dialog.current.querySelectorAll<HTMLElement>('button:not([disabled]), a[href], input:not([disabled]), [tabindex]:not([tabindex="-1"])')]
     if (!items.length) return
     const first = items[0], last = items[items.length - 1]
@@ -203,29 +219,30 @@ export default function AppTabBar({ activeTab, onSelect, avatarImage, userName }
   return <div className="evo-sidebar-host">
     <button type="button" className="evo-global-profile-button" onClick={onProfile} aria-label={`${userName} profilja`} aria-current={activeTab === "profile" ? "page" : undefined}>{avatarImage ? <img src={avatarImage} alt="" /> : <span className="evo-profile-initials">{usernameInitials}</span>}</button>
     <div className={`evo-morph-anchor ${open ? "is-sidebar-open" : ""}`}>
-      <button ref={trigger} type="button" className="evo-morph-toggle" aria-label={open ? "Menü bezárása" : "Menü megnyitása"} aria-expanded={open} aria-controls="evo-global-sidebar" onClick={() => open ? close() : show()}><SidebarSimpleIcon size={24} weight="regular" aria-hidden="true" /></button>
+      <button ref={trigger} type="button" className="evo-morph-toggle" aria-label={open ? "Menü bezárása" : "Menü megnyitása"} aria-expanded={open} aria-controls="evo-global-sidebar" onClick={() => open ? close() : show()}><SidebarSimpleIcon size={24} aria-hidden="true" /></button>
     </div>
     {renderSidebar && <>
       <button className={`evo-sidebar-backdrop ${open ? "" : "is-closing"}`} type="button" aria-label="Menü bezárása" onClick={() => close()} />
-      <aside id="evo-global-sidebar" ref={dialog} className={`evo-sidebar ${open ? "" : "is-closing"}`} role="dialog" aria-modal={open} aria-hidden={!open} aria-label="Menü" onKeyDown={trapFocus} >
+      <aside id="evo-global-sidebar" ref={dialog} className={`evo-sidebar ${open ? "" : "is-closing"}`} role={desktop ? "complementary" : "dialog"} aria-modal={desktop ? undefined : open} aria-hidden={!open} aria-label="Menü" onKeyDown={trapFocus} >
         <div className="evo-sidebar-safe">
           <div className="evo-sidebar-heading">
             <button className="evo-sidebar-brand evo-sidebar-brand-action" type="button" onClick={() => close()} aria-label="Menü bezárása">Evölingo</button>
-            <div className="evo-sidebar-tools"><button type="button" className="evo-sidebar-tool" aria-label="Beszélgetések keresése" aria-expanded={searchOpen} onClick={() => { setSearchOpen(value => !value); setQuery("") }}><MagnifyingGlassIcon size={21} weight="regular" /></button></div>
+            <div className="evo-sidebar-tools"><button type="button" className="evo-sidebar-tool" aria-label="Beszélgetések keresése" aria-expanded={searchOpen} onClick={() => { setSearchOpen(value => !value); setQuery("") }}><MagnifyingGlassIcon size={21} /></button></div>
           </div>
+          <div className="evo-sidebar-new-chat"><button type="button" className="evo-sidebar-chat-action" onClick={startNew}><NotePencilIcon size={20} /> Új beszélgetés</button></div>
           <nav className="evo-sidebar-nav" aria-label="Fő navigáció">
-            {quickLinks.map(({ label, Icon, target }) => <button key={label} type="button" aria-current={activeTab === target ? "page" : undefined} onClick={() => select(target)}><Icon size={22} weight="regular" /><span>{label}</span></button>)}
+            {quickLinks.map(({ label, Icon, target }) => <button key={label} type="button" aria-current={activeTab === target ? "page" : undefined} onClick={() => select(target)}><Icon size={22} /><span>{label}</span></button>)}
           </nav>
-          <div className="evo-sidebar-recent-heading"><span>Legutóbbiak</span><button type="button" aria-label="Új beszélgetés" onClick={startNew}><PlusIcon size={19} weight="regular" /></button></div>
-          {searchOpen && <label className="evo-sidebar-search"><MagnifyingGlassIcon size={16} weight="regular" /><input autoFocus value={query} onChange={event => setQuery(event.target.value)} placeholder="Keresés a beszélgetésekben" /></label>}
+          <div className="evo-sidebar-recent-heading"><span>Legutóbbiak</span><button type="button" aria-label="Új beszélgetés" onClick={startNew}><PlusIcon size={19} /></button></div>
+          {searchOpen && <label className="evo-sidebar-search"><MagnifyingGlassIcon size={16} /><input autoFocus value={query} onChange={event => setQuery(event.target.value)} placeholder="Keresés a beszélgetésekben" /></label>}
           <div className="evo-sidebar-history">
             {visibleChats.length ? visibleChats.map(({ group, items }) => <section key={group}><h3>{group}</h3>{items.map(chat => <div className="evo-sidebar-chat" key={chat.id}>
               <button type="button" className="evo-sidebar-chat-title" onClick={() => openChat(chat.id)} title={chat.title}>{chat.title}</button>
-              <button type="button" className="evo-sidebar-chat-menu" aria-label={`${chat.title} műveletei`} aria-expanded={menuFor === chat.id} onClick={() => setMenuFor(menuFor === chat.id ? null : chat.id)}><DotsThreeIcon size={20} weight="bold" /></button>
-              {menuFor === chat.id && <div className="evo-sidebar-chat-actions"><button type="button" onClick={() => { const title = window.prompt("Beszélgetés átnevezése", chat.title); if (title !== null) renameChatSession(chat.id, title); setMenuFor(null) }}><PencilSimpleIcon size={15} weight="regular" /> Átnevezés</button><button type="button" onClick={() => { deleteChatSession(chat.id); setMenuFor(null) }}><TrashIcon size={15} weight="regular" /> Törlés</button></div>}
+              <button type="button" className="evo-sidebar-chat-menu" aria-label={`${chat.title} műveletei`} aria-expanded={menuFor === chat.id} onClick={() => setMenuFor(menuFor === chat.id ? null : chat.id)}><DotsThreeIcon size={20} /></button>
+              {menuFor === chat.id && <div className="evo-sidebar-chat-actions"><button type="button" onClick={() => { const title = window.prompt("Beszélgetés átnevezése", chat.title); if (title !== null) renameChatSession(chat.id, title); setMenuFor(null) }}><PencilSimpleIcon size={15} /> Átnevezés</button><button type="button" onClick={() => { deleteChatSession(chat.id); setMenuFor(null) }}><TrashIcon size={15} /> Törlés</button></div>}
             </div>)}</section>) : <p className="evo-sidebar-empty">{query ? "Nincs ilyen beszélgetés." : "A beszélgetéseid itt jelennek meg."}</p>}
           </div>
-          <div className="evo-sidebar-footer"><button type="button" className="evo-sidebar-chat-action" onClick={startNew}><NotePencilIcon size={20} weight="regular" /> Új beszélgetés</button></div>
+          <div className="evo-sidebar-footer"><button type="button" className="evo-sidebar-account" onClick={onProfile}>{avatarImage ? <img src={avatarImage} alt="" /> : <span className="evo-profile-initials">{usernameInitials}</span>}<span className="evo-sidebar-account-name">{userName}</span><ChevronRight size={17} /></button></div>
         </div>
       </aside>
     </>}
