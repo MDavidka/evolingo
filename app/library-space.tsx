@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState, type ChangeEvent, type PointerEvent as ReactPointerEvent } from "react"
 import { mage } from "./mage-icons"
-import { ChevronRight, QrCode } from "lucide-react"
+import { ChevronDown, ChevronRight, QrCode } from "lucide-react"
 const ArrowDownToLine = mage("arrow-down")
 const ArrowUpRight = mage("arrow-up-right")
 const Check = mage("check")
