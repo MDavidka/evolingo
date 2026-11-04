@@ -1000,7 +1000,7 @@ export default function App() {
   }
   const navigateReference = (view: ReferenceView) => {
     setReferenceView(view)
-    if (view === "home" || view === "topic" || view === "selector" || view === "space" || view === "auth") setScreen("home")
+    if (view === "home" || view === "topic" || view === "selector" || view === "space" || view === "schedule" || view === "auth") setScreen("home")
     else if (view === "profile") setScreen("profile")
   }
   const currentAppTab: AppTab = referenceView === "chat" ? "ai"
