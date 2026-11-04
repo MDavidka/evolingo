@@ -54,10 +54,11 @@ type LucideIcon = ReturnType<typeof mage>
    General AI chat stays available on the first paint. */
 const Brainstorm = dynamic(() => import("./brainstorm"), { ssr: false })
 const LibrarySpace = dynamic(() => import("./library-space"), { ssr: false })
+const Schedule = dynamic(() => import("./schedule"), { ssr: false })
 const ToolsHub = dynamic(() => import("./tools-hub"), { ssr: false })
 const IntelligentResponse = dynamic(() => import("./intelligent-ui/renderer"), { ssr: false })
 
-export type ReferenceView = "home" | "topic" | "selector" | "chat" | "brainstorm" | "space" | "utility" | "profile" | "auth"
+export type ReferenceView = "home" | "topic" | "selector" | "chat" | "brainstorm" | "schedule" | "space" | "utility" | "profile" | "auth"
 
 type Props = {
   view: ReferenceView
@@ -316,14 +317,15 @@ export default function ReferenceScreens(props: Props) {
   else if (view === "chat") content = <ChatInterface />
   else if (view === "brainstorm") content = <Brainstorm />
   else if (view === "space") content = <LibrarySpace />
+  else if (view === "schedule") content = <Schedule />
   else if (view === "utility") content = <ToolsHub onUpload={props.onUploadFile} onOpenLibrary={() => onView("space")} onFriends={props.onOpenFriends} onLeaderboard={props.onOpenLeaderboard} />
   else if (view === "auth") content = <AuthScreen onBack={onAppBack} initialRegister={registerAuth} onModeChange={onAuthModeChange} />
   else content = <Profile name={userName} avatarImage={avatarImage} avatarFallback={avatarFallback} onEdit={onEditProfile} onEditAvatar={props.onEditAvatar} onLogin={() => onView("auth")} />
 
   if (view === "auth") return <main className="ref-app ref-view-auth">{content}</main>
   return <main className={`ref-app ref-view-${view}`}>
-    {/* Könyvtár uses the app-level floating sidebar/profile; do not render an empty page header. */}
-    {view !== "space" && <Header key={view} name={userName} avatarImage={avatarImage} avatarFallback={avatarFallback} onProfile={() => onView("profile")} onHome={() => onView("home")} onSelectCourse={id => { onSelectTopic(id); onView("topic") }} topics={topics} selectedTopicId={selectedTopicId} showCourse={view === "home" || view === "topic"} courseName={selectedTopicId === -1 ? "Összes lecke" : (selectedTopic?.title || "Témáim").replace(/\s+A1[–-]B2\s*$/, "")} />}
+    {/* Standalone tools use the shared floating sidebar/profile only. */}
+    {view !== "space" && view !== "schedule" && <Header key={view} name={userName} avatarImage={avatarImage} avatarFallback={avatarFallback} onProfile={() => onView("profile")} onHome={() => onView("home")} onSelectCourse={id => { onSelectTopic(id); onView("topic") }} topics={topics} selectedTopicId={selectedTopicId} showCourse={view === "home" || view === "topic"} courseName={selectedTopicId === -1 ? "Összes lecke" : (selectedTopic?.title || "Témáim").replace(/\s+A1[–-]B2\s*$/, "")} />}
     {content}
   </main>
 }
