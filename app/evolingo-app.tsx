@@ -434,7 +434,7 @@ function routeState(pathname: string): RouteState {
     ? { ...defaults, screen: "skill", referenceView: null, lessonId }
     : { ...defaults, screen: "task", referenceView: null, lessonId }
   if (section === "szokartyak") return { ...defaults, screen: "flashcards", referenceView: null, lessonId }
-  const views: Record<string, ReferenceView> = { profil: "profile", konyvtar: "space", eszkozok: "utility", otletborze: "brainstorm", belepes: "auth", regisztracio: "auth" }
+  const views: Record<string, ReferenceView> = { utemezes: "schedule", profil: "profile", konyvtar: "space", eszkozok: "utility", otletborze: "brainstorm", belepes: "auth", regisztracio: "auth" }
   if (views[section]) return { ...defaults, referenceView: views[section], authPath: section === "regisztracio" ? "/regisztracio" : "/belepes" }
   if (section === "baratok") return { ...defaults, referenceView: null, screen: "friends" }
   if (section === "ranglista") return { ...defaults, referenceView: null, screen: "leaderboard" }
@@ -444,6 +444,7 @@ function routeState(pathname: string): RouteState {
 
 function routeForState(screen: Screen, referenceView: ReferenceView | null, lessonId: number, topicId: number, authPath: string) {
   if (referenceView === "chat") return "/chat"
+  if (referenceView === "schedule") return "/utemezes"
   if (referenceView === "home") return "/utvonal"
   if (referenceView === "topic") return `/temak/${topicId}`
   if (referenceView === "selector") return `/lecke/${lessonId}`
@@ -940,7 +941,7 @@ export default function App() {
   }
   // Swipe across the main Evölingo tabs; retain native iOS edge-back gestures.
   const referenceSwipeOrigin = useRef<{ x: number; y: number } | null>(null)
-  const referenceSwipeTabs: ReferenceView[] = ["home", "chat", "space", "utility", "profile"]
+  const referenceSwipeTabs: ReferenceView[] = ["home", "chat", "schedule", "space", "utility", "profile"]
   const onReferenceSwipeStart = (event: ReactTouchEvent<HTMLElement>) => {
     referenceSwipeOrigin.current = null
     if (!referenceView || !referenceSwipeTabs.includes(referenceView) || event.touches.length !== 1) return
@@ -1004,13 +1005,14 @@ export default function App() {
   }
   const currentAppTab: AppTab = referenceView === "chat" ? "ai"
     : referenceView === "brainstorm" ? "brainstorm"
+    : referenceView === "schedule" ? "schedule"
     : referenceView === "space" ? "files"
     : referenceView === "utility" || (!referenceView && (screen === "friends" || screen === "leaderboard" || screen === "shop")) ? "tools"
     : referenceView === "profile" || (!referenceView && screen === "profile") ? "profile"
     : "learn"
   const navigateAppTab = (tab: AppTab) => {
     if (currentAppTab !== tab) playUiSound("tab")
-    const target: Record<AppTab, ReferenceView> = { learn: "home", ai: "chat", files: "space", tools: "utility", profile: "profile", brainstorm: "brainstorm" }
+    const target: Record<AppTab, ReferenceView> = { learn: "home", ai: "chat", schedule: "schedule", files: "space", tools: "utility", profile: "profile", brainstorm: "brainstorm" }
     navigateReference(target[tab])
   }
   const openLegacyPage = (target: "friends" | "leaderboard") => {
