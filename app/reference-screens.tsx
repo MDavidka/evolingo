@@ -3,7 +3,7 @@ import { useEffect, useRef, useState, type ReactNode } from "react"
 import dynamic from "next/dynamic"
 import UnifiedSheet from "./unified-sheet"
 import { AppHeader } from "@/components/app-header"
-import { RefreshCw, ArrowUpRight, BookOpen, ChevronLeft, ChevronRight, CircleHelp, Eye, EyeOff, Info, LogIn, ShieldCheck, UserRound, X, Crown } from "lucide-react"
+import { RefreshCw, ArrowUpRight, BookOpen, ChevronLeft, ChevronRight, CircleHelp, Eye, EyeOff, Info, LogIn, ShieldCheck, UserRound, X, Crown, Bell, FolderOpen, CalendarDays, Settings2, LogOut } from "lucide-react"
 
 const Brainstorm = dynamic(() => import("./brainstorm"), { ssr: false })
 const LibrarySpace = dynamic(() => import("./library-space"), { ssr: false })
@@ -55,10 +55,12 @@ function AuthScreen({ onBack, initialRegister, onModeChange }: { onBack: () => v
   </div>
 }
 
-function Profile({ name, avatarImage, avatarFallback, onEdit, onEditAvatar, onLogin }: {
+function Profile({ name, avatarImage, avatarFallback, onEdit, onEditAvatar, onLogin, onView, notifications, onChangeNotifications, onLogout }: {
   name: string; avatarImage: string; avatarFallback: string; onEdit: (name: string) => void; onEditAvatar: (file: File) => void; onLogin: () => void
+  onView: (view: ReferenceView) => void; notifications: boolean; onChangeNotifications: (enabled: boolean) => void; onLogout: () => void
 }) {
   const [editing, setEditing] = useState(false)
+  const [permissionHint, setPermissionHint] = useState("")
   const [draft, setDraft] = useState(name)
   const [profileSheet, setProfileSheet] = useState<"security" | "subscription" | "help" | "about" | null>(null)
   const [restartState, setRestartState] = useState<"idle" | "busy" | "error">("idle")
@@ -67,7 +69,24 @@ function Profile({ name, avatarImage, avatarFallback, onEdit, onEditAvatar, onLo
   const handle = name.normalize("NFKD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "").slice(0, 20) || "tanulo"
   return <div className="ref-profile"><h1>Profil</h1><div className="ref-profile-identity"><Avatar name={name} src={avatarImage} fallback={avatarFallback} /><div><strong>{name}</strong><span>@{handle}</span></div><button type="button" className="ref-outline-pill" onClick={() => { setDraft(name); setEditing(true) }}>Szerkesztés</button></div><hr />
     <div className="ref-settings-group"><h2>Fiók</h2><SettingRow icon={LogIn} title="Bejelentkezés" subtitle="Fiók létrehozása vagy belépés" onClick={onLogin} /><SettingRow icon={UserRound} title="Személyes adatok" subtitle="Név, profilkép és felhasználónév" onClick={() => { setDraft(name); setEditing(true) }} /><SettingRow icon={ShieldCheck} title="Biztonság" subtitle="Jelszó és bejelentkezési védelem" onClick={() => setProfileSheet("security")} /><SettingRow icon={Crown} title="Előfizetés" subtitle="Csomagok és előfizetési előnyök" onClick={() => setProfileSheet("subscription")} /></div>
+    <div className="ref-settings-group"><h2>AI és adatok</h2>
+      <SettingRow icon={BookOpen} title="Beszélgetések" subtitle="AI chat és előzmények" onClick={() => onView("chat")} />
+      <SettingRow icon={FolderOpen} title="Könyvtár" subtitle="Fájlok és dokumentumok" onClick={() => onView("space")} />
+      <SettingRow icon={CalendarDays} title="Ütemezés" subtitle="Saját feladatok" onClick={() => onView("schedule")} />
+      <SettingRow icon={Settings2} title="Alkalmazások" subtitle="Csatlakoztatható eszközök" onClick={() => onView("utility")} />
+    </div>
+    <div className="ref-settings-group"><h2>Értesítések</h2>
+      <button type="button" className="ref-setting-row" role="switch" aria-checked={notifications} onClick={async () => {
+        if (notifications) { onChangeNotifications(false); return }
+        if (!("Notification" in window)) { setPermissionHint("A böngésző nem támogatja az értesítéseket."); return }
+        try { const permission = await Notification.requestPermission(); if (permission === "granted") onChangeNotifications(true); else setPermissionHint("Az értesítési engedély nem lett megadva.") }
+        catch { setPermissionHint("Az értesítéseket most nem lehet engedélyezni.") }
+      }}><Bell size={20} strokeWidth={1.75} /><span><strong>Böngészőértesítések</strong><small>{notifications ? "Engedélyezve" : "Kikapcsolva"}</small></span><span className={"evo-ai-settings-toggle" + (notifications ? " is-on" : "")} aria-hidden="true"><span /></span></button>
+      {permissionHint && <p role="status" className="evo-ai-settings-hint">{permissionHint}</p>}
+    </div>
+    <div className="ref-settings-group"><h2>Megjelenés</h2><SettingRow icon={Settings2} title="Világos mód" subtitle="A sötét mód később érkezik" /></div>
     <div className="ref-settings-group ref-support-group"><h2>Támogatás</h2><SettingRow icon={CircleHelp} title="Súgó és támogatás" subtitle="Segítség az AI-eszközök használatához" onClick={() => setProfileSheet("help")} /><SettingRow icon={Info} title="Az alkalmazásról" subtitle="Evölingo · AI-asszisztens" onClick={() => setProfileSheet("about")} /></div>
+    <div className="ref-settings-group"><SettingRow icon={LogOut} title="Kijelentkezés" subtitle="Vendégfiók" onClick={onLogout} /></div>
     {process.env.NODE_ENV === "development" && <div className="ref-settings-group"><h2>Fejlesztői eszközök</h2><button type="button" className="ref-setting-row" disabled={restartState === "busy"} onClick={async () => { if (!window.confirm("A fejlesztői szerver frissül a legújabb main commitra, majd újraindul. Folytatod?")) return; setRestartState("busy"); setRestartMessage("Frissítés és újraindítás…"); try { const response = await fetch("/api/dev/restart", { method: "POST" }); const data = await response.json() as { commit?: string; error?: string }; if (!response.ok) throw new Error(data.error || "Az újraindítás nem sikerült."); setRestartMessage(`Újraindítás a ${data.commit} commiton…`) } catch (error) { setRestartState("error"); setRestartMessage(error instanceof Error ? error.message : "Az újraindítás nem sikerült.") } }}><RefreshCw size={19} /><span><strong>{restartState === "busy" ? "Újraindítás…" : "Szerver újraindítása a legújabb commiton"}</strong><small>A main ág legújabb változatának betöltése</small></span><ChevronRight size={18} /></button>{restartMessage && <p role="status" className="profile-restart-status">{restartMessage}</p>}</div>}
     {profileSheet && <UnifiedSheet backdropClassName="ref-modal-backdrop" sheetClassName="ref-edit-modal ref-profile-info-modal" labelledBy="ref-profile-info-title" onClose={() => setProfileSheet(null)}><div className="ref-profile-info-heading"><h2 id="ref-profile-info-title">{{ security: "Biztonság", subscription: "Előfizetés", help: "Súgó és támogatás", about: "Az alkalmazásról" }[profileSheet]}</h2><button type="button" aria-label="Bezárás" onClick={() => setProfileSheet(null)}><X size={20} /></button></div>{profileSheet === "help" ? <p>Az AI-csevegésben kérdéseket tehetsz fel, a fájljaidat a Könyvtárban, a feladataidat az Ütemezésben kezelheted.</p> : profileSheet === "about" ? <p>Az Evölingo AI-asszisztens beszélgetéshez, fájlkezeléshez és feladatok szervezéséhez.</p> : <><p>{profileSheet === "security" ? "A biztonsági beállítások megnyitásához előbb jelentkezz be." : "Az előfizetési csomagok megtekintéséhez előbb jelentkezz be."}</p><button className="ref-dark-pill evo-wide-action" type="button" onClick={onLogin}>Bejelentkezés</button></>}</UnifiedSheet>}
     {editing && <UnifiedSheet backdropClassName="ref-modal-backdrop" sheetClassName="ref-edit-modal" labelledBy="ref-edit-title" onClose={() => setEditing(false)}><form onSubmit={event => { event.preventDefault(); if (draft.trim()) onEdit(draft.trim()); setEditing(false) }}><div><h2 id="ref-edit-title">Profil szerkesztése</h2><button type="button" aria-label="Bezárás" onClick={() => setEditing(false)}><X size={20} /></button></div><label htmlFor="ref-name">Megjelenített név</label><input id="ref-name" value={draft} maxLength={32} onChange={event => setDraft(event.target.value)} /><input ref={avatarPicker} type="file" accept="image/*" hidden onChange={event => { const file = event.target.files?.[0]; if (file) onEditAvatar(file); event.target.value = "" }} /><button className="ref-avatar-edit" type="button" onClick={() => avatarPicker.current?.click()}>Profilkép módosítása</button><button className="ref-dark-pill evo-wide-action" type="submit">Mentés</button></form></UnifiedSheet>}
@@ -88,6 +107,7 @@ export default function ReferenceScreens(props: Props) {
   else if (view === "space") content = <LibrarySpace />
   else if (view === "utility") content = <ToolsHub onUpload={props.onUploadFile} onOpenLibrary={() => onView("space")} />
   else if (view === "auth") content = <AuthScreen onBack={props.onAppBack} initialRegister={props.registerAuth} onModeChange={props.onAuthModeChange} />
-  else content = <Profile name={userName} avatarImage={avatarImage} avatarFallback={avatarFallback} onEdit={props.onEditProfile} onEditAvatar={props.onEditAvatar} onLogin={() => onView("auth")} />
+  else content = <Profile name={userName} avatarImage={avatarImage} avatarFallback={avatarFallback} onEdit={props.onEditProfile} onEditAvatar={props.onEditAvatar} onLogin={() => onView("auth")}
+    onView={onView} notifications={props.notifications} onChangeNotifications={props.onChangeNotifications} onLogout={props.onLogout} />
   return <main className={"ref-app ref-view-" + view}>{content}</main>
 }
