@@ -1,0 +1,60 @@
+/* Schedule: quiet iOS task board, visually aligned with Library and Utilities. */
+.app-shell.reference-shell .ref-app.ref-view-schedule { min-height: 100dvh; background: #fff; }
+.evo-schedule {
+  width: min(100%, 560px);
+  min-height: 100dvh;
+  margin: 0 auto;
+  padding: calc(env(safe-area-inset-top, 0px) + 112px) clamp(18px, 5vw, 26px) 170px;
+  color: #202127;
+  background: #fff;
+  box-sizing: border-box;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", Inter, system-ui, sans-serif;
+}
+.evo-schedule-tabs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: center; gap: 8px; }
+.evo-schedule-tabs button { min-height: 48px; padding: 0 6px; border: 0; border-radius: 999px; background: transparent; color: #929298; font-size: clamp(13px, 3.7vw, 16px); font-weight: 500; cursor: pointer; }
+.evo-schedule-tabs button.is-active { background: #f4f4f6; color: #24252a; font-weight: 650; }
+.evo-schedule-rule { height: 1px; margin: 17px 8px 46px; background: #e6e6e9; }
+.evo-schedule-list { display: flex; flex-direction: column; gap: 15px; min-height: 240px; }
+.evo-schedule-card { position: relative; padding: 17px; border: 1px solid #e5e5ea; border-radius: 22px; background: #fff; }
+.evo-schedule-card-head { display: flex; align-items: center; gap: 13px; min-width: 0; }
+.evo-schedule-icon { width: 48px; height: 48px; flex: 0 0 48px; display: grid; place-items: center; border-radius: 15px; background: #f5f5f7; color: #25262d; }
+.evo-schedule-card-copy { display: flex; min-width: 0; flex: 1; flex-direction: column; gap: 5px; }
+.evo-schedule-card-copy strong { font-size: 16px; font-weight: 620; line-height: 1.3; overflow-wrap: anywhere; }
+.evo-schedule-card-copy small { font-size: 13px; color: #8e8e93; }
+.evo-schedule-more { display: grid; width: 35px; height: 44px; flex: 0 0 35px; place-items: center; padding: 0; border: 0; background: none; color: #88898f; cursor: pointer; }
+.evo-schedule-progress { margin-top: 13px; }
+.evo-schedule-progress > div { height: 5px; border-radius: 999px; background: #f0f0f2; overflow: hidden; }
+.evo-schedule-progress > div span { display: block; height: 100%; border-radius: inherit; background: #282a32; transition: width .2s; }
+.evo-schedule-progress small { display: block; margin-top: 8px; font-size: 12px; color: #919198; }
+.evo-schedule-note { margin: 12px 0 0; color: #686972; font-size: 13px; line-height: 1.5; overflow-wrap: anywhere; }
+.evo-schedule-date { display: flex; gap: 6px; align-items: center; color: #86868d; margin: 10px 0 0; font-size: 12px; }
+.evo-schedule-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; margin-top: 14px; padding-top: 12px; border-top: 1px solid #ededf0; }
+.evo-schedule-actions button { display: flex; gap: 6px; align-items: center; justify-content: center; min-height: 39px; padding: 6px; border: 1px solid #ececf0; border-radius: 12px; background: #f7f7f9; color: #45464b; font-size: 12px; cursor: pointer; }
+.evo-schedule-actions button.is-destructive { color: #c43a3a; }
+.evo-schedule-next { display: inline-flex; align-items: center; gap: 7px; min-height: 37px; margin-top: 13px; padding: 0 12px; border: 1px solid #e7e7eb; border-radius: 999px; background: #fff; color: #4a4a50; font-size: 12px; cursor: pointer; }
+.evo-schedule-empty { display: flex; align-items: center; flex-direction: column; justify-content: center; gap: 12px; min-height: 285px; padding: 25px 16px; text-align: center; color: #8f9097; }
+.evo-schedule-empty strong { color: #34343a; font-size: 16px; font-weight: 610; }
+.evo-schedule-empty p { max-width: 270px; margin: 0; font-size: 13px; line-height: 1.5; }
+.evo-schedule-bottom { position: fixed; z-index: 30; left: 50%; bottom: max(20px, calc(env(safe-area-inset-bottom, 0px) + 15px)); width: min(100% - 36px, 510px); transform: translateX(-50%); display: flex; flex-direction: column; gap: 12px; pointer-events: none; }
+.evo-schedule-bottom > * { pointer-events: auto; }
+.evo-schedule-create { display: flex; justify-content: flex-end; gap: 9px; }
+.evo-schedule-create button { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 0 15px; border: 1px solid #e1e1e6; border-radius: 999px; background: #fff; color: #22232a; font-size: 14px; font-weight: 540; white-space: nowrap; cursor: pointer; }
+.evo-schedule-create .evo-schedule-new { border-color: #252831; background: #252831; color: #fff; }
+.evo-schedule-search { display: flex; align-items: center; gap: 12px; height: 55px; padding: 0 17px; border: 1px solid #dedee3; border-radius: 999px; background: #fff; color: #929298; box-shadow: 0 4px 16px #11111809; }
+.evo-schedule-search input { flex: 1; min-width: 0; border: 0; outline: 0; background: transparent; color: #202127; font-size: 16px; }
+.evo-schedule-search input::placeholder { color: #98989e; }
+.evo-schedule-dialog-backdrop { position: fixed; z-index: 250; inset: 0; display: flex; align-items: flex-end; justify-content: center; background: #13141b40; }
+.evo-schedule-dialog { width: min(100%, 530px); max-height: 90dvh; overflow-y: auto; padding: 22px 22px max(25px, env(safe-area-inset-bottom)); border-radius: 28px 28px 0 0; background: #fff; box-sizing: border-box; display: flex; flex-direction: column; gap: 17px; }
+.evo-schedule-dialog-head { display: flex; align-items: center; justify-content: space-between; }
+.evo-schedule-dialog-head h2 { margin: 0; font-size: 23px; font-weight: 680; }
+.evo-schedule-dialog-head button { width: 40px; height: 40px; border: 0; background: #f5f5f7; border-radius: 50%; }
+.evo-schedule-dialog label { display: flex; flex-direction: column; gap: 8px; color: #55555c; font-size: 14px; font-weight: 550; }
+.evo-schedule-dialog :is(input, textarea, select) { width: 100%; min-height: 45px; padding: 12px; box-sizing: border-box; border: 1px solid #e5e5ea; border-radius: 12px; background: #fafafa; color: #24252a; font: inherit; font-size: 16px; outline-offset: 2px; }
+.evo-schedule-dialog textarea { resize: vertical; }
+.evo-schedule-disclaimer { margin: 0; color: #8e8e93; font-size: 12px; line-height: 1.5; }
+.evo-schedule-submit { display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 49px; border: 0; border-radius: 999px; background: #252831; color: #fff; font-size: 15px; }
+.evo-schedule-error { color: #b33333; font-size: 13px; }
+.evo-schedule :is(button,input,textarea,select):focus-visible { outline: 2px solid #252831; outline-offset: 3px; }
+@media (max-width: 360px) { .evo-schedule { padding-inline: 17px; } .evo-schedule-card { padding: 13px; } .evo-schedule-create button { padding-inline: 11px; font-size: 13px; } }
+@media (min-width: 768px) { .evo-schedule-bottom { position: sticky; bottom: 20px; margin: 30px auto 0; left: auto; transform: none; width: 100%; } .evo-schedule-dialog { margin: auto; border-radius: 26px; } }
+@media (prefers-reduced-motion: reduce) { .evo-schedule-progress > div span { transition: none; } }
