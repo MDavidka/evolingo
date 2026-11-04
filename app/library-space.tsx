@@ -1,31 +1,12 @@
 "use client"
 
 import { useEffect, useMemo, useRef, useState, type ChangeEvent, type PointerEvent as ReactPointerEvent } from "react"
-import { mage } from "./mage-icons"
-import { ChevronDown, ChevronRight, QrCode } from "lucide-react"
-const ArrowDownToLine = mage("arrow-down")
-const ArrowUpRight = mage("arrow-up-right")
-const Check = mage("check")
-const CheckSquare2 = mage("check-square")
-const ChevronLeft = mage("arrow-left")
-const Copy = mage("copy")
-const File = mage("file")
-const FileText = mage("file-records")
-const Folder = mage("folder")
-const FolderOpen = mage("folder-open")
-const Cloud = mage("archive")
-const Grid2X2 = mage("layout-grid")
-const List = mage("playlist")
-const MoreHorizontal = mage("dots-horizontal")
-const Move = mage("arrows-all-direction")
-const Pencil = mage("edit-pen")
-const Plus = mage("plus")
-const Search = mage("search")
-const SlidersHorizontal = mage("settings")
-const Share2 = mage("arrow-up-right")
-const Trash2 = mage("trash")
-const Upload = mage("file-upload")
-const X = mage("x")
+import {
+  ArrowDownToLine, ArrowUpRight, Check, SquareCheckBig as CheckSquare2,
+  ChevronLeft, ChevronDown, ChevronRight, QrCode, Copy, File, FileText,
+  Folder, FolderOpen, Cloud, Grid2X2, List, Ellipsis as MoreHorizontal,
+  Move, Pencil, Plus, Search, SlidersHorizontal, Share2, Trash2, Upload, X,
+} from "lucide-react"
 
 type FileKind = "folder" | "pdf" | "note"
 type SpaceEntry = { id: string; name: string; detail: string; kind: FileKind; parent?: string; size?: number; modifiedAt?: number }
