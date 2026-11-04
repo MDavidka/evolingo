@@ -1,16 +1,7 @@
 "use client"
 
 import { useEffect, useRef, useState, type FormEvent, type KeyboardEvent, type ClipboardEvent, type FormEventHandler } from "react"
-import { mage } from "./mage-icons"
-const ArrowUp = mage("arrow-up")
-const Check = mage("check")
-const Copy = mage("copy")
-const Plus = mage("plus")
-const Camera = mage("camera")
-const ImageIcon = mage("image")
-const FileText = mage("file")
-const Mic = mage("microphone")
-const X = mage("x")
+import { ArrowUp, Check, Copy, Plus, Camera, Image as ImageIcon, FileText, Mic, X } from "lucide-react"
 import { Button as AppsButton } from "@openai/apps-sdk-ui/components/Button"
 import ChatRichText from "./chat-rich-text"
 import AgentPlanView from "./chat-agent-plan-view"
