@@ -9,7 +9,7 @@ import {
 } from "lucide-react"
 import { deleteChatSession, notifyChatSessionAction, readChatSessions, renameChatSession, type ChatSession } from "./chat-sessions"
 
-export type AppTab = "learn" | "ai" | "schedule" | "files" | "tools" | "profile" | "brainstorm"
+export type AppTab = "ai" | "schedule" | "files" | "tools" | "profile" | "brainstorm"
 type Props = { activeTab: AppTab; onSelect: (tab: AppTab) => void; avatarImage: string; avatar: string; userName: string; stars?: number; streak?: number; onOpenLeaderboard?: () => void }
 
 const quickLinks = [
