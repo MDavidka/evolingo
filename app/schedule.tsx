@@ -16,6 +16,7 @@ type ScheduledTask = {
   step: number
   totalSteps: number
   due: string
+  time?: string
   createdAt: number
 }
 const KEY = "evolingo.schedule.v1"
@@ -25,6 +26,9 @@ const TABS: { value: Status; label: string }[] = [
   { value: "completed", label: "Befejezett" },
 ]
 const repeatLabel: Record<Repeat, string> = { once: "Egyszeri", daily: "Naponta", weekly: "Hetente" }
+function dateKey(date: Date) {
+  return [date.getFullYear(), String(date.getMonth() + 1).padStart(2, "0"), String(date.getDate()).padStart(2, "0")].join("-")
+}
 function readTasks(): ScheduledTask[] {
   try {
     const stored = JSON.parse(localStorage.getItem(KEY) || "[]") as ScheduledTask[]
@@ -42,6 +46,8 @@ export default function Schedule() {
   const [note, setNote] = useState("")
   const [repeat, setRepeat] = useState<Repeat>("once")
   const [due, setDue] = useState("")
+  const [time, setTime] = useState("09:00")
+  const [selectedDay, setSelectedDay] = useState(() => dateKey(new Date()))
   const [total, setTotal] = useState(5)
   const [menu, setMenu] = useState<string | null>(null)
   const [error, setError] = useState("")
@@ -52,6 +58,14 @@ export default function Schedule() {
     try { localStorage.setItem(KEY, JSON.stringify(tasks)) } catch { setError("A feladatokat nem sikerült elmenteni ezen az eszközön.") }
   }, [tasks, ready])
 
+  const weekDays = useMemo(() => {
+    const start = new Date(selectedDay + "T12:00:00")
+    start.setDate(start.getDate() - (start.getDay() + 6) % 7)
+    return Array.from({ length: 7 }, (_, index) => {
+      const date = new Date(start); date.setDate(start.getDate() + index)
+      return { key: dateKey(date), date: date.getDate(), label: ["H", "K", "Sze", "Cs", "P", "Szo", "V"][index] }
+    })
+  }, [selectedDay])
   const visible = useMemo(() => tasks
     .filter(item => item.status === tab && (item.title + " " + item.note).toLocaleLowerCase("hu").includes(query.trim().toLocaleLowerCase("hu")))
     .sort((a, b) => b.createdAt - a.createdAt), [tasks, tab, query])
@@ -61,7 +75,7 @@ export default function Schedule() {
     setMenu(null)
   }
   const start = (kind: Kind) => {
-    setFormKind(kind); setTitle(""); setNote(""); setDue(""); setTotal(5); setRepeat("once"); setError("")
+    setFormKind(kind); setTitle(""); setNote(""); setDue(kind === "scheduled" ? selectedDay : ""); setTime("09:00"); setTotal(5); setRepeat("once"); setError("")
   }
   const create = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -71,7 +85,7 @@ export default function Schedule() {
       id: crypto.randomUUID(), title: value, note: note.trim(), kind: formKind,
       repeat: formKind === "long" ? "once" : repeat, status: "active", step: 0,
       totalSteps: formKind === "long" ? Math.max(2, Math.min(20, total)) : 1,
-      due: formKind === "scheduled" ? due : "", createdAt: Date.now(),
+      due: formKind === "scheduled" ? due : "", time: formKind === "scheduled" ? time : "", createdAt: Date.now(),
     }
     setTasks(current => [next, ...current])
     setFormKind(null); setTab("active")
@@ -92,6 +106,12 @@ export default function Schedule() {
     update(item.id, { due, status: "active", step: 0 })
   }
   return <div className="evo-schedule">
+    <header className="evo-schedule-heading"><h1>Ütemezés</h1><p>Saját feladatok és emlékeztetők</p></header>
+    <div className="evo-schedule-week" aria-label="Dátum kiválasztása az új feladathoz">
+      {weekDays.map(day => <button key={day.key} type="button" aria-label={day.key} aria-pressed={day.key === selectedDay}
+        className={(day.key === selectedDay ? "is-selected " : "") + (day.key === dateKey(new Date()) ? "is-today" : "")}
+        onClick={() => setSelectedDay(day.key)}><span>{day.label}</span><strong>{day.date}</strong></button>)}
+    </div>
     <nav className="evo-schedule-tabs" aria-label="Feladatok állapota">
       {TABS.map(item => <button key={item.value} type="button" aria-current={tab === item.value ? "page" : undefined} className={tab === item.value ? "is-active" : ""} onClick={() => { setTab(item.value); setMenu(null) }}>{item.label}</button>)}
     </nav>
@@ -105,7 +125,7 @@ export default function Schedule() {
         </div>
         {item.kind === "long" && <div className="evo-schedule-progress"><div role="progressbar" aria-label="Feladat haladása" aria-valuenow={item.step} aria-valuemin={0} aria-valuemax={item.totalSteps}><span style={{ width: 100 * item.step / item.totalSteps + "%" }} /></div><small>{item.step}. lépés / {item.totalSteps}</small></div>}
         {item.note && <p className="evo-schedule-note">{item.note}</p>}
-        {item.due && <p className="evo-schedule-date"><Clock3 size={14} /> {new Date(item.due + "T12:00:00").toLocaleDateString("hu-HU", { year: "numeric", month: "short", day: "numeric" })}</p>}
+        {item.due && <p className="evo-schedule-date"><Clock3 size={14} /> {item.time ? <strong>{item.time}</strong> : null} {new Date(item.due + "T12:00:00").toLocaleDateString("hu-HU", { year: "numeric", month: "short", day: "numeric" })}</p>}
         {menu === item.id && <div className="evo-schedule-actions">
           {item.status === "active" && <button type="button" onClick={() => update(item.id, { status: "paused" })}><CirclePause size={16} /> Szüneteltetés</button>}
           {item.status !== "active" && <button type="button" onClick={() => update(item.id, { status: "active", ...(item.step === item.totalSteps ? { step: 0 } : {}) })}><Check size={16} /> Újraindítás</button>}
@@ -131,7 +151,8 @@ export default function Schedule() {
         <label>Leírás (opcionális)<textarea rows={3} maxLength={800} value={note} onChange={event => setNote(event.target.value)} placeholder="Részletek…" /></label>
         {formKind === "long" ? <label>Lépések száma<input type="number" min={2} max={20} value={total} onChange={event => setTotal(Number(event.target.value) || 2)} /></label> : <>
           <label>Ismétlődés<select value={repeat} onChange={event => setRepeat(event.target.value as Repeat)}><option value="once">Egyszer</option><option value="daily">Naponta</option><option value="weekly">Hetente</option></select></label>
-          <label>Dátum (opcionális)<input type="date" value={due} onChange={event => setDue(event.target.value)} /></label>
+          <label>Dátum<input type="date" value={due} onChange={event => setDue(event.target.value)} /></label>
+          <label>Időpont<input type="time" value={time} onChange={event => setTime(event.target.value)} /></label>
         </>}
         <p className="evo-schedule-disclaimer">A feladatok ezen az eszközön mentődnek. Automatikus háttérfuttatás és értesítés még nincs összekapcsolva.</p>
         <button className="evo-schedule-submit" type="submit"><Plus size={19} /> Létrehozás</button>
