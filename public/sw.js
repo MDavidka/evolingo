@@ -1,5 +1,5 @@
-const CACHE_NAME = "evolingo-shell-v1"
-const APP_SHELL = ["/", "/icon.svg"]
+const CACHE_NAME = "evolingo-shell-v2"
+const APP_SHELL = ["/chat", "/offline.html", "/icon.svg"]
 
 self.addEventListener("install", event => {
   event.waitUntil(
@@ -23,17 +23,31 @@ self.addEventListener("fetch", event => {
   if (request.method !== "GET") return
   const url = new URL(request.url)
   if (url.origin !== self.location.origin) return
-  if (url.pathname.startsWith("/api/") || url.pathname.startsWith("/_next/")) return
+  if (url.pathname.startsWith("/api/")) return
+  // Versioned Next.js bundles are immutable and safe to cache by full request URL.
+  if (url.pathname.startsWith("/_next/static/")) {
+    event.respondWith(
+      caches.match(request).then(cached => cached || fetch(request).then(response => {
+        if (response.ok) {
+          const copy = response.clone()
+          caches.open(CACHE_NAME).then(cache => cache.put(request, copy)).catch(() => undefined)
+        }
+        return response
+      }))
+    )
+    return
+  }
+  if (url.pathname.startsWith("/_next/")) return
 
   if (request.mode === "navigate") {
     event.respondWith(
       fetch(request).then(response => {
         if (response.ok) {
           const copy = response.clone()
-          caches.open(CACHE_NAME).then(cache => cache.put("/", copy)).catch(() => undefined)
+          caches.open(CACHE_NAME).then(cache => cache.put(request, copy)).catch(() => undefined)
         }
         return response
-      }).catch(async () => (await caches.match(request)) || (await caches.match("/")) || Response.error())
+      }).catch(async () => (await caches.match(request)) || (await caches.match("/chat")) || (await caches.match("/offline.html")) || Response.error())
     )
     return
   }
@@ -54,9 +68,9 @@ self.addEventListener("push", event => {
   const plain = value => typeof value === "string" ? value.replace(/\s+/g, " ").trim() : ""
   const title = plain(payload.title).slice(0, 80) || "Evölingo"
   const body = plain(payload.body).slice(0, 220) || "Új esemény vár rád az Evölingóban."
-  const tag = plain(payload.tag).slice(0, 100) || (payload.type === "friend" ? "evolingo-friend-request" : "evolingo-update")
+  const tag = plain(payload.tag).slice(0, 100) || "evolingo-update"
   const path = plain(payload.url)
-  const url = path.startsWith("/") && !path.startsWith("//") ? path : "/"
+  const url = path.startsWith("/") && !path.startsWith("//") ? path : "/chat"
   event.waitUntil(
     self.registration.showNotification(title, {
       body,
@@ -71,7 +85,7 @@ self.addEventListener("push", event => {
 
 self.addEventListener("notificationclick", event => {
   event.notification.close()
-  const targetPath = event.notification.data?.url || "/"
+  const targetPath = event.notification.data?.url || "/chat"
   const url = new URL(targetPath, self.location.origin).href
   event.waitUntil(
     self.clients.matchAll({ type: "window", includeUncontrolled: true })

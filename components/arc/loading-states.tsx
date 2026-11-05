@@ -15,7 +15,7 @@ export function SkeletonList({ count = 4, variant = "row" }: { count?: number; v
 }
 
 export function EmptyState({ title, description, action, icon }: { title: string; description?: string; action?: ReactNode; icon?: ReactNode }) {
-  return <div className="arc-empty-state" role="alert">
+  return <div className="arc-empty-state" role="status">
     {icon && <span className="arc-empty-state-icon" aria-hidden="true">{icon}</span>}
     <strong>{title}</strong>
     {description && <p>{description}</p>}

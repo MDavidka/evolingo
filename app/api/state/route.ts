@@ -29,17 +29,12 @@ type UserDocument = {
 }
 
 const allowed = new Set([
-  "userName", "avatar", "notifications", "compactMode", "theme", "avatarImage", "bannerImage", "showOnLeaderboard",
-  "readLessons", "completedLessons", "answeredTasks", "xp", "stars", "purchasedItems", "lives",
-  "friends", "friendRequests", "dailyStreak", "lastStudyDate", "todayActivityCount", "activityDate", "dailyGoal",
+  "userName", "avatar", "notifications", "compactMode", "theme", "avatarImage", "bannerImage",
   "createdAt", "updatedAt", "clientUpdatedAt",
 ])
-const isStringArray = (v: unknown) => Array.isArray(v) && v.length <= 1000 && v.every(x => typeof x === "string" && x.length <= 160)
-const isNumberArray = (v: unknown) => Array.isArray(v) && v.length <= 500 && v.every(x => typeof x === "number" && Number.isInteger(x) && x >= 0 && x <= 10000)
-const isDateKey = (v: unknown) => typeof v === "string" && (v === "" || /^\d{4}-\d{2}-\d{2}$/.test(v))
-
 function safeState(doc: Record<string, unknown>) {
-  const { _id, ...state } = doc
+  const state: Record<string, unknown> = {}
+  for (const key of allowed) if (key in doc) state[key] = doc[key]
   return state
 }
 
@@ -68,12 +63,9 @@ export async function GET() {
     const users = db.collection<UserDocument>("users")
     await users.updateOne({ _id: id }, { $setOnInsert: {
       userName: makeGuestName(id), avatar: "fox", notifications: false, compactMode: false, theme: "mist",
-      readLessons: [], completedLessons: [], answeredTasks: [], xp: 0, stars: 0, purchasedItems: [],
-      lives: 5, friends: [], friendRequests: [], dailyStreak: 0, lastStudyDate: "",
-      todayActivityCount: 0, activityDate: "", dailyGoal: 1, clientUpdatedAt: 0, createdAt: new Date(),
+      clientUpdatedAt: 0, createdAt: new Date(),
     }, $set: { lastSeenAt: new Date(), isGuest: true } }, { upsert: true })
-    // Older sessions used "MDavid" or an empty name as a placeholder. Repair only
-    // those names; all lesson history, XP, purchases, settings and streaks stay untouched.
+    // Older sessions used placeholders. Keep every pre-existing document field untouched.
     await users.updateOne({
       _id: id,
       $or: [{ userName: "MDavid" }, { userName: "" }, { userName: { $exists: false } }],
@@ -96,26 +88,18 @@ export async function PATCH(request: NextRequest) {
     const update: Record<string, unknown> = {}
     for (const [key, value] of Object.entries(body as Record<string, unknown>)) {
       if (!allowed.has(key) || key === "createdAt" || key === "updatedAt") continue
-      if (["readLessons", "completedLessons"].includes(key) && !isNumberArray(value)) continue
-      if (["answeredTasks", "purchasedItems", "friends", "friendRequests"].includes(key) && !isStringArray(value)) continue
       if (key === "userName" && (typeof value !== "string" || value.trim().length < 1 || value.length > 32)) continue
       if (key === "avatar" && (typeof value !== "string" || !["fox","book","star","spark"].includes(value))) continue
       if (["notifications","compactMode"].includes(key) && typeof value !== "boolean") continue
-      if (key === "showOnLeaderboard" && typeof value !== "boolean") continue
       if (key === "theme" && !["mist","sage"].includes(String(value))) continue
-      if (["xp","stars"].includes(key) && (typeof value !== "number" || !Number.isInteger(value) || value < 0 || value > 100000000)) continue
-      if (["dailyStreak", "todayActivityCount"].includes(key) && (typeof value !== "number" || !Number.isInteger(value) || value < 0 || value > 100000)) continue
-      if (["lastStudyDate", "activityDate"].includes(key) && !isDateKey(value)) continue
-      if (key === "dailyGoal" && (typeof value !== "number" || ![1, 3, 5].includes(value))) continue
       if (key === "clientUpdatedAt" && (typeof value !== "number" || !Number.isSafeInteger(value) || value < 0)) continue
-      if (key === "lives" && (typeof value !== "number" || !Number.isInteger(value) || value < 0 || value > 5)) continue
       if (["avatarImage","bannerImage"].includes(key) && (typeof value !== "string" || value.length > 5_000_000 || (value !== "" && !value.startsWith("data:image/")))) continue
       update[key] = value
     }
     if (!Object.keys(update).length) return NextResponse.json({ error: "Nincs menthető adat." }, { status: 400 })
     // The anonymous browser session itself is the guest profile. If the first GET
     // failed, let a retry create the MongoDB document from the locally preserved state.
-    if (!update.userName || update.userName === "MDavid") update.userName = makeGuestName(id)
+    if (update.userName === "MDavid") update.userName = makeGuestName(id)
     update.isGuest = true
     update.isSynced = true
     update.updatedAt = new Date()
@@ -131,10 +115,8 @@ export async function PATCH(request: NextRequest) {
       }
     }
     const defaults: Record<string, unknown> = {
-      avatar: "fox", notifications: false, compactMode: false, theme: "mist",
-      readLessons: [], completedLessons: [], answeredTasks: [], xp: 0, stars: 0, purchasedItems: [],
-      lives: 5, friends: [], friendRequests: [], dailyStreak: 0, lastStudyDate: "",
-      todayActivityCount: 0, activityDate: "", dailyGoal: 1, clientUpdatedAt: 0,
+      userName: makeGuestName(id), avatar: "fox", notifications: false,
+      compactMode: false, theme: "mist", clientUpdatedAt: 0,
     }
     // MongoDB rejects updating the same field with both $set and $setOnInsert.
     for (const key of Object.keys(update)) delete defaults[key]

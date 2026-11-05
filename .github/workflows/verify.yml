@@ -2,7 +2,7 @@ name: Evölingo quality checks
 
 on:
   push:
-    branches: [main]
+    branches: [main, chore/remove-english-learning-ai-restyle]
   pull_request:
 
 jobs:

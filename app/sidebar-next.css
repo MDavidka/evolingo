@@ -1,0 +1,112 @@
+/* AI-only ChatGPT-inspired responsive navigation. Loaded after legacy layering. */
+.evo-sidebar-host .evo-sidebar { background: var(--color-sidebar, #f9f9f9) !important; color: var(--color-text); }
+.evo-sidebar-host .evo-sidebar-safe { background: var(--color-sidebar, #f9f9f9); }
+.evo-sidebar-host .evo-sidebar :is(button, input):focus-visible { outline: 2px solid var(--color-focus); outline-offset: 2px; }
+.evo-sidebar-host .evo-sidebar svg { stroke-width: 1.75px; }
+.evo-sidebar-host .evo-sidebar-heading { min-height: 56px; padding: 0 0 12px; }
+.evo-sidebar-host .evo-sidebar-brand-action { color: var(--color-text); font-size: 20px; font-weight: 700; }
+.evo-sidebar-host .evo-sidebar-new-chat { margin: 9px 0 12px; }
+.evo-sidebar-host .evo-sidebar-new-chat .evo-sidebar-chat-action {
+  display: flex; align-items: center; justify-content: flex-start; gap: 12px;
+  width: auto; min-width: 0; min-height: 44px; padding: 0 13px;
+  border: 0; border-radius: var(--radius-md); background: transparent;
+  color: var(--color-text); font-size: 15px; font-weight: 600; box-shadow: none;
+}
+.evo-sidebar-host .evo-sidebar-new-chat .evo-sidebar-chat-action:hover { background: var(--color-fill); }
+.evo-sidebar-host .evo-sidebar-nav { padding: 0 0 17px; gap: 4px; border-color: var(--color-separator); }
+.evo-sidebar-host .evo-sidebar-nav button {
+  min-height: 44px; padding: 0 12px; border-radius: var(--radius-md);
+  font-size: 15px; font-weight: 500; color: var(--color-text);
+}
+.evo-sidebar-host .evo-sidebar-nav button[aria-current="page"] { background: var(--color-fill); font-weight: 600; }
+.evo-sidebar-host .evo-sidebar-nav button:hover { background: var(--color-fill); }
+.evo-sidebar-host .evo-sidebar-recent-heading {
+  margin: 12px 0 0; text-transform: none; letter-spacing: 0;
+  color: var(--color-text-2); font-size: 13px; font-weight: 600;
+}
+.evo-sidebar-host .evo-sidebar-history h3 { color: var(--color-text-2); font-size: 13px; }
+.evo-sidebar-host .evo-sidebar-chat-title { font-size: 14px; font-weight: 400; }
+.evo-sidebar-host .evo-sidebar-footer { padding: 12px 0 0; border-color: var(--color-separator); }
+.evo-sidebar-host .evo-sidebar-account {
+  display: flex; align-items: center; width: 100%; min-height: 54px; gap: 10px;
+  padding: 6px; border: 0; border-radius: var(--radius-md);
+  background: transparent; color: var(--color-text); text-align: left; cursor: pointer;
+}
+.evo-sidebar-host .evo-sidebar-account:hover { background: var(--color-fill); }
+.evo-sidebar-host .evo-sidebar-account > :is(img,.evo-profile-initials) {
+  width: 37px; height: 37px; flex: 0 0 37px; display: grid; place-items: center;
+  object-fit: cover; border-radius: 50%; background: #e9e9ed; font-size: 12px; font-weight: 600;
+}
+.evo-sidebar-host .evo-sidebar-account-name {
+  flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  font-size: 14px; font-weight: 600;
+}
+.evo-sidebar-host .evo-sidebar-account > svg:last-child { color: var(--color-text-3); }
+.evo-sidebar-host .evo-morph-toggle,
+.evo-sidebar-host .evo-global-profile-button {
+  border: 1px solid var(--color-separator) !important;
+  background: rgba(255,255,255,.94) !important;
+  box-shadow: var(--shadow-1) !important;
+  backdrop-filter: none !important;
+}
+@media (max-width: 1023px) {
+  /* Fixed 85vw drawer instead of translating the whole active screen. */
+  html.evo-sidebar-layer-open,
+  html.evo-sidebar-layer-open body { background: var(--color-sidebar) !important; }
+  html.evo-sidebar-layer-active .evo-sidebar-host { z-index: 400 !important; }
+  html.evo-sidebar-layer-active body .app-shell,
+  html.evo-sidebar-layer-open body .app-shell {
+    transform: none !important; border-radius: 0 !important;
+    box-shadow: none !important; border: 0 !important;
+    width: 100vw !important; max-width: none !important; min-width: 0 !important;
+    margin: 0 !important;
+  }
+  html.evo-sidebar-layer-active .evo-sidebar-host .evo-sidebar {
+    inset: 0 auto 0 0 !important;
+    width: min(85vw, 320px) !important; max-width: min(85vw, 320px) !important;
+    height: 100dvh !important; border-radius: 0 20px 20px 0 !important;
+    border: 0 !important; box-shadow: 12px 0 38px rgba(0,0,0,.10) !important;
+    background: var(--color-sidebar) !important;
+    transform: translateX(0) !important; opacity: 1 !important;
+    transition: transform 300ms var(--ease-spring), opacity 200ms ease !important;
+  }
+  html.evo-sidebar-layer-active .evo-sidebar-host .evo-sidebar.is-closing {
+    transform: translateX(-100%) !important; opacity: 0 !important;
+  }
+  html.evo-sidebar-layer-active .evo-sidebar-host .evo-sidebar-safe {
+    width: 100% !important; max-width: none !important;
+    padding: calc(var(--safe-top) + 12px) 16px calc(var(--safe-bottom) + 12px) !important;
+  }
+  html.evo-sidebar-layer-active .evo-sidebar-host .evo-sidebar-backdrop {
+    inset: 0 !important; width: 100vw !important; height: 100dvh !important;
+    background: var(--color-overlay) !important;
+    opacity: 1 !important; animation: none !important;
+    transition: opacity 200ms ease !important;
+  }
+  html.evo-sidebar-layer-active .evo-sidebar-host .evo-sidebar-backdrop.is-closing { opacity: 0 !important; }
+  html.evo-sidebar-layer-open .evo-sidebar-host .evo-global-profile-button,
+  html.evo-sidebar-layer-open .evo-sidebar-host .evo-morph-anchor {
+    opacity: 0 !important; pointer-events: none !important;
+  }
+}
+@media (min-width: 1024px) {
+  html.evo-desktop-sidebar-open body .app-shell.evo-ai-app-shell {
+    width: calc(100% - 260px) !important; min-width: 0 !important;
+    margin-left: 260px !important; transform: none !important;
+  }
+  html.evo-desktop-sidebar-open .evo-sidebar-host .evo-sidebar {
+    inset: 0 auto 0 0 !important; width: 260px !important; height: 100dvh !important;
+    border-radius: 0 !important; border-right: 1px solid var(--color-separator) !important;
+    box-shadow: none !important; transform: none !important; opacity: 1 !important;
+    animation: none !important;
+  }
+  html.evo-desktop-sidebar-open .evo-sidebar-host .evo-sidebar-safe {
+    width: 100% !important; max-width: none !important; padding: 18px 13px !important;
+  }
+  html.evo-desktop-sidebar-open .evo-sidebar-host .evo-sidebar-backdrop { display: none !important; }
+  html.evo-desktop-sidebar-open .evo-sidebar-host .evo-morph-anchor { display: none !important; }
+  html.evo-desktop-sidebar-open .evo-sidebar-host .evo-global-profile-button { right: 24px !important; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .evo-sidebar-host .evo-sidebar { transition: none !important; animation: none !important; }
+}

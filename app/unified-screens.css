@@ -1,7 +1,4 @@
-/* Evölingo 2026 — one visual language on every application screen.
- * AI home keeps its dedicated full-height gradient and chat-specific viewport rules.
- * This layer standardises navigation, header, pages and touch/scroll behaviour.
- */
+
 
 .app-shell.reference-shell {
   --evo-page-ink: #20242d;
@@ -92,41 +89,14 @@
   color: var(--evo-page-ink, #20242d);
   background: var(--color-surface, #fff);
 }
-.profile-page-back { margin: 10px auto 0; align-self: flex-start; }
-.friends-header .friends-title-group { flex: 1; }
-.leaderboard-home-header .evo-child-back { width: 36px; min-width: 36px; height: 36px; }
-.lesson-intro-layout .exit-lesson,
-.task-exercise-layout .exit-lesson {
-  display: grid !important;
-  width: 44px !important;
-  min-width: 44px !important;
-  height: 44px !important;
-  padding: 0 !important;
-  place-items: center;
-}
-.chest-opening-back svg { transform: none; }
 .app-shell.reference-shell .ref-app:not(.ref-view-chat) .ref-course-wrap {
   position: absolute;
   z-index: 35;
   top: calc(env(safe-area-inset-top, 0px) + 92px);
   left: var(--evo-page-gutter);
 }
-.app-shell.reference-shell .ref-course {
-  min-height: 42px;
-  border-radius: 999px;
-  border: 1px solid var(--evo-page-line) !important;
-  background: rgba(248,249,252,.96);
-  box-shadow: none;
-}
-.app-shell.reference-shell .ref-course-menu {
-  z-index: 120;
-  min-width: 190px;
-  border-color: var(--evo-page-line);
-  border-radius: 16px;
-  box-shadow: 0 14px 30px rgba(40,53,78,.10);
-}
 
-/* Unified screen widths, consistent 8pt spacing, and a clean type hierarchy. */
+
 .app-shell.reference-shell .ref-screen-heading,
 .app-shell.reference-shell .ref-profile > h1,
 .app-shell.reference-shell .ref-space-heading h1,
@@ -278,7 +248,7 @@
 .app-shell.reference-shell .ref-utility-community-link { min-height: 58px; }
 .app-shell.reference-shell .ref-coming { min-height: 110px; }
 
-/* File manager: title first, storage meter and list remain independently usable. */
+
 .app-shell.reference-shell .ref-space-heading {
   margin: 0 0 24px;
   align-items: center;
@@ -307,7 +277,7 @@
 }
 .app-shell.reference-shell .ref-back-link { margin: 0 0 16px; }
 
-/* Profile and settings: consistent spacing, readable metadata and natural wrapping. */
+
 .app-shell.reference-shell .ref-profile-identity {
   min-width: 0;
   flex-wrap: wrap;
@@ -330,7 +300,7 @@
   border-radius: 999px;
 }
 
-/* Keep overlays within an iPhone's visible bounds, above the persistent nav. */
+
 .app-shell.reference-shell .ref-modal-backdrop {
   position: fixed;
   z-index: 150;
@@ -411,7 +381,7 @@ body:has(.ref-modal-backdrop) .evo-morph-anchor,
   pointer-events: none;
 }
 
-/* The same actual icon, same position and same one-piece morph on every page. */
+
 .evo-morph-anchor {
   position: fixed;
   z-index: 100;
@@ -490,7 +460,7 @@ body:has(.ref-modal-backdrop) .evo-morph-anchor,
   pointer-events: auto;
 }
 
-/* Accessibility: native touch targets, keyboard focus and motion preferences. */
+
 .app-shell.reference-shell .ref-app button:focus-visible,
 .evo-morph-anchor button:focus-visible {
   outline: 2px solid #617fae !important;
