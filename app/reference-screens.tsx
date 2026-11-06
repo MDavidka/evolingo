@@ -2,8 +2,10 @@
 import { useEffect, useRef, useState, type ReactNode } from "react"
 import dynamic from "next/dynamic"
 import UnifiedSheet from "./unified-sheet"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
 import { AppHeader } from "@/components/app-header"
-import { RefreshCw, ArrowUpRight, BookOpen, ChevronLeft, ChevronRight, CircleHelp, Eye, EyeOff, Info, LogIn, ShieldCheck, UserRound, X, Crown, Bell, FolderOpen, CalendarDays, Settings2, LogOut } from "lucide-react"
+import { RefreshCw, ArrowUpRight, BookOpen, ChevronLeft, ChevronRight, CircleHelp, Eye, EyeOff, Info, LogIn, ShieldCheck, UserRound, X, Crown, Bell, FolderOpen, CalendarDays, Settings2, LogOut, Component, Search, CheckCircle2, AlertCircle, LoaderCircle } from "lucide-react"
 
 const Brainstorm = dynamic(() => import("./brainstorm"), { ssr: false })
 const LibrarySpace = dynamic(() => import("./library-space"), { ssr: false })
@@ -55,10 +57,31 @@ function AuthScreen({ onBack, initialRegister, onModeChange }: { onBack: () => v
   </div>
 }
 
+function DemoLibrary({ onBack }: { onBack: () => void }) {
+  const [query, setQuery] = useState("")
+  const categories = [
+    { id: "buttons", title: "Gombok", keywords: "button buttons", content: <div className="evo-demo-preview"><Button>Elsődleges</Button><Button variant="secondary">Másodlagos</Button><Button variant="outline">Körvonalas</Button><Button variant="ghost">Egyszerű</Button><Button disabled>Letiltva</Button></div> },
+    { id: "inputs", title: "Beviteli mezők", keywords: "input search", content: <div className="evo-demo-preview"><Input aria-label="Példa szövegmező" placeholder="Írj ide…" /><Input aria-label="Példa keresőmező" type="search" placeholder="Keresés…" /><Input aria-label="Letiltott mező" placeholder="Letiltva" disabled /></div> },
+    { id: "settings", title: "Beállítások és navigáció", keywords: "settings navigation rows", content: <div className="evo-demo-preview"><SettingRow icon={Settings2} title="Beállítási sor" subtitle="Meglévő közös komponens" /><SettingRow icon={Info} title="Információ" subtitle="Csak előnézet" /></div> },
+    { id: "icons", title: "Ikonok és visszajelzés", keywords: "icons feedback status", content: <div className="evo-demo-preview evo-demo-icons"><CheckCircle2 aria-label="Siker" /><AlertCircle aria-label="Figyelmeztetés" /><LoaderCircle aria-label="Betöltés" /><Search aria-label="Keresés" /><Component aria-label="Komponens" /></div> },
+    { id: "typography", title: "Tipográfia", keywords: "typography text", content: <div className="evo-demo-preview"><h2>Címsor</h2><p>Normál szöveg a jelenlegi globális betűstílussal.</p><small>Másodlagos szöveg</small></div> },
+  ]
+  const visible = categories.filter(category => (category.title + " " + category.keywords).toLocaleLowerCase("hu").includes(query.trim().toLocaleLowerCase("hu")))
+  return <div className="ref-profile evo-demo-library">
+    <button type="button" className="evo-demo-back" onClick={onBack}><ChevronLeft size={20} /> Vissza a profilhoz</button>
+    <h1>Demo</h1>
+    <p className="evo-demo-description">A jelenleg elérhető felületi elemek és globális stílusok. Csak előnézet, a beállítások nem változnak.</p>
+    <label className="evo-demo-search"><Search size={18} /><input type="search" value={query} onChange={event => setQuery(event.target.value)} placeholder="Komponensek keresése" aria-label="Komponensek keresése" /></label>
+    {visible.map(category => <section className="ref-settings-group evo-demo-section" key={category.id}><h2>{category.title}</h2>{category.content}</section>)}
+    {visible.length === 0 && <p>Nincs találat.</p>}
+  </div>
+}
+
 function Profile({ name, avatarImage, avatarFallback, onEdit, onEditAvatar, onLogin, onView, notifications, onChangeNotifications, onLogout }: {
   name: string; avatarImage: string; avatarFallback: string; onEdit: (name: string) => void; onEditAvatar: (file: File) => void; onLogin: () => void
   onView: (view: ReferenceView) => void; notifications: boolean; onChangeNotifications: (enabled: boolean) => void; onLogout: () => void
 }) {
+  const [demoOpen, setDemoOpen] = useState(false)
   const [editing, setEditing] = useState(false)
   const [permissionHint, setPermissionHint] = useState("")
   const [draft, setDraft] = useState(name)
@@ -67,6 +90,7 @@ function Profile({ name, avatarImage, avatarFallback, onEdit, onEditAvatar, onLo
   const [restartMessage, setRestartMessage] = useState("")
   const avatarPicker = useRef<HTMLInputElement>(null)
   const handle = name.normalize("NFKD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "").slice(0, 20) || "tanulo"
+  if (demoOpen) return <DemoLibrary onBack={() => setDemoOpen(false)} />
   return <div className="ref-profile"><h1>Profil</h1><div className="ref-profile-identity"><Avatar name={name} src={avatarImage} fallback={avatarFallback} /><div><strong>{name}</strong><span>@{handle}</span></div><button type="button" className="ref-outline-pill" onClick={() => { setDraft(name); setEditing(true) }}>Szerkesztés</button></div><hr />
     <div className="ref-settings-group"><h2>Fiók</h2><SettingRow icon={LogIn} title="Bejelentkezés" subtitle="Fiók létrehozása vagy belépés" onClick={onLogin} /><SettingRow icon={UserRound} title="Személyes adatok" subtitle="Név, profilkép és felhasználónév" onClick={() => { setDraft(name); setEditing(true) }} /><SettingRow icon={ShieldCheck} title="Biztonság" subtitle="Jelszó és bejelentkezési védelem" onClick={() => setProfileSheet("security")} /><SettingRow icon={Crown} title="Előfizetés" subtitle="Csomagok és előfizetési előnyök" onClick={() => setProfileSheet("subscription")} /></div>
     <div className="ref-settings-group"><h2>AI és adatok</h2>
@@ -84,7 +108,7 @@ function Profile({ name, avatarImage, avatarFallback, onEdit, onEditAvatar, onLo
       }}><Bell size={20} strokeWidth={1.75} /><span><strong>Böngészőértesítések</strong><small>{notifications ? "Engedélyezve" : "Kikapcsolva"}</small></span><span className={"evo-ai-settings-toggle" + (notifications ? " is-on" : "")} aria-hidden="true"><span /></span></button>
       {permissionHint && <p role="status" className="evo-ai-settings-hint">{permissionHint}</p>}
     </div>
-    <div className="ref-settings-group"><h2>Megjelenés</h2><SettingRow icon={Settings2} title="Világos mód" subtitle="A sötét mód később érkezik" /></div>
+    <div className="ref-settings-group"><h2>Megjelenés</h2><SettingRow icon={Settings2} title="Világos mód" subtitle="A sötét mód később érkezik" /><SettingRow icon={Component} title="Demo" subtitle="Komponenskönyvtár és globális stílusok" onClick={() => setDemoOpen(true)} /></div>
     <div className="ref-settings-group ref-support-group"><h2>Támogatás</h2><SettingRow icon={CircleHelp} title="Súgó és támogatás" subtitle="Segítség az AI-eszközök használatához" onClick={() => setProfileSheet("help")} /><SettingRow icon={Info} title="Az alkalmazásról" subtitle="Evölingo · AI-asszisztens" onClick={() => setProfileSheet("about")} /></div>
     <div className="ref-settings-group"><SettingRow icon={LogOut} title="Kijelentkezés" subtitle="Vendégfiók" onClick={onLogout} /></div>
     {process.env.NODE_ENV === "development" && <div className="ref-settings-group"><h2>Fejlesztői eszközök</h2><button type="button" className="ref-setting-row" disabled={restartState === "busy"} onClick={async () => { if (!window.confirm("A fejlesztői szerver frissül a legújabb main commitra, majd újraindul. Folytatod?")) return; setRestartState("busy"); setRestartMessage("Frissítés és újraindítás…"); try { const response = await fetch("/api/dev/restart", { method: "POST" }); const data = await response.json() as { commit?: string; error?: string }; if (!response.ok) throw new Error(data.error || "Az újraindítás nem sikerült."); setRestartMessage(`Újraindítás a ${data.commit} commiton…`) } catch (error) { setRestartState("error"); setRestartMessage(error instanceof Error ? error.message : "Az újraindítás nem sikerült.") } }}><RefreshCw size={19} /><span><strong>{restartState === "busy" ? "Újraindítás…" : "Szerver újraindítása a legújabb commiton"}</strong><small>A main ág legújabb változatának betöltése</small></span><ChevronRight size={18} /></button>{restartMessage && <p role="status" className="profile-restart-status">{restartMessage}</p>}</div>}
