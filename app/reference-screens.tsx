@@ -2,13 +2,15 @@
 import { useEffect, useRef, useState, type ReactNode } from "react"
 import dynamic from "next/dynamic"
 import UnifiedSheet from "./unified-sheet"
-import OverlaysShowcase from "./evolingo-overlays-demo"
+import BottomSheetShowcase from "./evo-ui-kit/bottom-sheet-demo"
+import { UIButton } from "./evo-ui-kit/button"
 import CardsShowcase from "./evolingo-cards-demo"
 import DesignSystemShowcase from "./evolingo-design-system-demo"
 import IconsShowcase from "./evolingo-icons-demo"
 import AIComponentsShowcase from "./evolingo-ai-components-demo"
 import MenusShowcase from "./evolingo-menus-demo"
 import "./evolingo-button-demo.css"
+import "./evo-ui-kit/library-normalize.css"
 import { AppHeader } from "@/components/app-header"
 import { RefreshCw, ArrowUp, ArrowUpRight, Plus, SlidersHorizontal, ChevronDown, Ellipsis, Check, BookOpen, ChevronLeft, ChevronRight, CircleHelp, Eye, EyeOff, Info, LogIn, ShieldCheck, UserRound, X, Crown, Bell, FolderOpen, CalendarDays, Settings2, LogOut, Component, Search } from "lucide-react"
 
@@ -65,43 +67,51 @@ function AuthScreen({ onBack, initialRegister, onModeChange }: { onBack: () => v
 function ButtonsShowcase() {
   const [segment, setSegment] = useState("All")
   const [selectedChip, setSelectedChip] = useState(true)
-  const base = "evo-buttons-demo__control"
-  return <div className="evo-buttons-demo" aria-label="Modern iOS és ChatGPT stílusú gombok">
+  return <div className="evo-buttons-demo evo-ui-scope" aria-label="Reusable Apple Neutral buttons">
     <div className="evo-buttons-demo__group">
-      <div className="evo-buttons-demo__heading">01 — Primary actions <span>iOS / ChatGPT</span></div>
+      <div className="evo-buttons-demo__heading">01 — Core actions <span>50px · Full width</span></div>
       <div className="evo-buttons-demo__stack">
-        <button type="button" className={base + " evo-buttons-demo__control--primary"}>Continue <ArrowUpRight aria-hidden="true" /></button>
-        <button type="button" className={base + " evo-buttons-demo__control--secondary"}>Secondary action</button>
-        <button type="button" className={base + " evo-buttons-demo__control--soft"}>Tertiary action</button>
+        <UIButton variant="primary" fullWidth>Continue <ArrowUpRight aria-hidden="true" /></UIButton>
+        <UIButton variant="secondary" fullWidth>Secondary action</UIButton>
+        <UIButton variant="tertiary" fullWidth>Tertiary action</UIButton>
+        <UIButton variant="danger" fullWidth>Destructive action</UIButton>
       </div>
     </div>
     <div className="evo-buttons-demo__group">
-      <div className="evo-buttons-demo__heading">02 — Glass &amp; floating</div>
-      <div className="evo-buttons-demo__floating">
-        <button type="button" className={base + " evo-buttons-demo__control--glass evo-buttons-demo__control--floating"}><SlidersHorizontal aria-hidden="true" />Customize</button>
-        <button type="button" className={base + " evo-buttons-demo__control--glass evo-buttons-demo__control--round"} aria-label="További lehetőségek"><Ellipsis aria-hidden="true" /></button>
-        <button type="button" className={base + " evo-buttons-demo__control--primary evo-buttons-demo__control--round"} aria-label="Új elem"><Plus aria-hidden="true" /></button>
-      </div>
-      <p className="evo-buttons-demo__caption">Floating toolbar · Translucent surface · Circular action</p>
-    </div>
-    <div className="evo-buttons-demo__group">
-      <div className="evo-buttons-demo__heading">03 — ChatGPT-style controls</div>
+      <div className="evo-buttons-demo__heading">02 — Floating & icon <span>44px touch targets</span></div>
       <div className="evo-buttons-demo__row">
-        <button type="button" className={base + " evo-buttons-demo__control--soft evo-buttons-demo__control--compact"}><Plus aria-hidden="true" />Add files</button>
-        <button type="button" className={base + " evo-buttons-demo__control--soft evo-buttons-demo__control--compact"}><SlidersHorizontal aria-hidden="true" />Tools</button>
-        <button type="button" className={base + " evo-buttons-demo__control--primary evo-buttons-demo__control--round-compact"} aria-label="Küldés"><ArrowUp aria-hidden="true" /></button>
+        <UIButton variant="glass" size="compact"><SlidersHorizontal aria-hidden="true" /> Customize</UIButton>
+        <UIButton variant="glass" size="icon" aria-label="More options"><Ellipsis aria-hidden="true" /></UIButton>
+        <UIButton variant="primary" size="icon" aria-label="New item"><Plus aria-hidden="true" /></UIButton>
+      </div>
+      <p className="evo-buttons-demo__caption">Floating toolbar · Compact height 44px · Icon 44 × 44px</p>
+    </div>
+    <div className="evo-buttons-demo__group">
+      <div className="evo-buttons-demo__heading">03 — Chat controls <span>Compact 44px</span></div>
+      <div className="evo-buttons-demo__row">
+        <UIButton variant="tertiary" size="compact"><Plus aria-hidden="true" /> Add files</UIButton>
+        <UIButton variant="tertiary" size="compact"><SlidersHorizontal aria-hidden="true" /> Tools</UIButton>
+        <UIButton variant="primary" size="icon" aria-label="Send"><ArrowUp aria-hidden="true" /></UIButton>
       </div>
     </div>
     <div className="evo-buttons-demo__group">
-      <div className="evo-buttons-demo__heading">04 — Selection &amp; segmented</div>
-      <div className="evo-buttons-demo__segment" role="group" aria-label="Szűrő választása">
+      <div className="evo-buttons-demo__heading">04 — Segments & selections <span>44px minimum</span></div>
+      <div className="evo-buttons-demo__segment" role="group" aria-label="Filter">
         {["All", "Active", "Done"].map(item => <button key={item} type="button" aria-pressed={segment === item} onClick={() => setSegment(item)}>{item}</button>)}
       </div>
       <div className="evo-buttons-demo__row evo-buttons-demo__chips">
-        <button type="button" aria-pressed={selectedChip} onClick={() => setSelectedChip(!selectedChip)} className={base + " evo-buttons-demo__chip " + (selectedChip ? "evo-buttons-demo__chip--selected" : "evo-buttons-demo__chip--unselected")}>{selectedChip && <Check aria-hidden="true" />}Selected</button>
-        <button type="button" aria-pressed={!selectedChip} onClick={() => setSelectedChip(!selectedChip)} className={base + " evo-buttons-demo__chip " + (!selectedChip ? "evo-buttons-demo__chip--selected" : "evo-buttons-demo__chip--unselected")}>Unselected</button>
-        <button type="button" disabled className={base + " evo-buttons-demo__chip evo-buttons-demo__chip--disabled"}>Disabled</button>
+        <button type="button" aria-pressed={selectedChip} onClick={() => setSelectedChip(true)} className={"evo-buttons-demo__chip " + (selectedChip ? "evo-buttons-demo__chip--selected" : "evo-buttons-demo__chip--unselected")}>{selectedChip && <Check aria-hidden="true"/>} Selected</button>
+        <button type="button" aria-pressed={!selectedChip} onClick={() => setSelectedChip(false)} className={"evo-buttons-demo__chip " + (!selectedChip ? "evo-buttons-demo__chip--selected" : "evo-buttons-demo__chip--unselected")}>Unselected</button>
+        <button type="button" disabled className="evo-buttons-demo__chip evo-buttons-demo__chip--disabled">Disabled</button>
       </div>
+    </div>
+    <div className="evo-buttons-demo__group">
+      <div className="evo-buttons-demo__heading">05 — States <span>Same component API</span></div>
+      <div className="evo-buttons-demo__stack">
+        <UIButton variant="primary" fullWidth disabled>Disabled primary</UIButton>
+        <UIButton variant="secondary" fullWidth><RefreshCw aria-hidden="true" /> Retry</UIButton>
+      </div>
+      <p className="evo-buttons-demo__caption">Import UIButton from app/evo-ui-kit/button — variant, size, fullWidth, disabled.</p>
     </div>
   </div>
 }
@@ -136,7 +146,7 @@ function DemoLibrary({ onBack }: { onBack: () => void }) {
     { id: "inputs", title: "Inputs", content: <InputsShowcase /> },
     { id: "cards", title: "Cards", content: <CardsShowcase /> },
     { id: "design-system", title: "Design System", content: <DesignSystemShowcase /> },
-    { id: "overlays", title: "Popups & Alerts", content: <OverlaysShowcase /> },
+    { id: "overlays", title: "Bottom Sheets & Forms", content: <BottomSheetShowcase /> },
     { id: "settings", title: "Menus & Settings", content: <MenusShowcase /> },
     { id: "icons", title: "Icons", content: <IconsShowcase /> },
     { id: "ai-components", title: "AI Components", content: <AIComponentsShowcase /> },
