@@ -72,7 +72,7 @@
 .evo-design-demo__layer--emphasis { background: var(--evo-ui-text, #202127); border-color: var(--evo-ui-text, #202127); color: #fff; }
 .evo-design-demo__layer--emphasis strong { color: #fff; }
 .evo-design-demo__layer--emphasis small, .evo-design-demo__layer--emphasis > span { color: #c7c7cc; }
-.evo-design-demo__radii { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 10px; }
+.evo-design-demo__radii { display: grid; grid-template-columns: repeat(5,minmax(0,1fr)); gap: 10px; }
 .evo-design-demo__radius { display: flex; flex-direction: column; text-align: center; align-items: stretch; gap: 5px; }
 .evo-design-demo__radius > span { height: 60px; display: block; background: var(--evo-ui-surface, #f5f5f7); border: 1px solid var(--evo-ui-border-strong, #d1d1d6); margin-bottom: 3px; }
 .evo-design-demo__radius strong { font-size: 11px; font-weight: 600; }
