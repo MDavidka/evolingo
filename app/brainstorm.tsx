@@ -4,6 +4,20 @@ import { useEffect, useState, type FormEvent } from "react"
 import { AlignLeft, BadgeCheck, Blocks, BookOpen, Bug, Check, Circle, FileText, Lightbulb, LoaderCircle, Palette, Plus, Puzzle, Repeat2, Target, Type, Wrench, X } from "lucide-react"
 import { EmptyState, SkeletonList } from "@/components/arc/loading-states"
 
+export type BrainstormCategory = "style" | "optimize" | "redesign" | "features"
+const MAX_TASKS = 200
+const categories: { id: BrainstormCategory; label: string }[] = [
+  { id: "style", label: "Style" }, { id: "optimize", label: "Optimize" },
+  { id: "redesign", label: "Redesign" }, { id: "features", label: "Features" },
+]
+function inferCategory(name: string, description: string): BrainstormCategory {
+  const text = `${name} ${description}`.toLocaleLowerCase()
+  if (/redesign|újratervez|újraépít|új struktúra/.test(text)) return "redesign"
+  if (/feature|funkció|hozzáad|bevezet|integrál/.test(text)) return "features"
+  if (/optimal|gyors|teljesítmény|méret|terhel|cache|tömörít/.test(text)) return "optimize"
+  return "style"
+}
+
 export type BuilderTask = {
   id: string
   icon: string
@@ -13,6 +27,7 @@ export type BuilderTask = {
   markdown: string
   approved: boolean
   createdAt: number
+  category?: BrainstormCategory
 }
 
 const KEY = "evolingo.brainstorm.v1"
@@ -51,6 +66,7 @@ export function readBrainstormItems(): BuilderTask[] {
         markdown: typeof value.markdown === "string" ? value.markdown : taskMarkdown(name, description, plan),
         approved: value.approved === true,
         createdAt: typeof value.createdAt === "number" ? value.createdAt : Date.now(),
+        category: categories.some(item => item.id === value.category) ? value.category as BrainstormCategory : inferCategory(name, description),
       }]
     })
   } catch { return [] }
@@ -79,13 +95,13 @@ async function syncSharedTasks() {
 }
 
 /** AI builders can enqueue a draft for explicit user approval through this client event. */
-export async function queueBuilderTask(input: { icon?: string; name: string; description: string; plan?: string; markdown?: string }) {
+export async function queueBuilderTask(input: { icon?: string; name: string; description: string; plan?: string; markdown?: string; category?: BrainstormCategory }) {
   const icon = input.icon?.trim().slice(0, 8) || ""
   const name = input.name.trim().slice(0, 80)
   const description = input.description.trim().slice(0, 500)
   const plan = input.plan?.trim().slice(0, 10000) || ""
   if (!name || !description || typeof window === "undefined") return
-  const task: BuilderTask = { id: crypto.randomUUID(), icon, name, description, plan, markdown: input.markdown?.trim().slice(0, 12000) || taskMarkdown(name, description, plan), approved: false, createdAt: Date.now() }
+  const task: BuilderTask = { id: crypto.randomUUID(), icon, name, description, plan, markdown: input.markdown?.trim().slice(0, 12000) || taskMarkdown(name, description, plan), approved: false, createdAt: Date.now(), category: input.category || inferCategory(name, description) }
   const response = await fetch("/api/brainstorm", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(task) })
   if (!response.ok) throw new Error("A feladat mentése nem sikerült.")
   await syncSharedTasks()
@@ -100,6 +116,7 @@ export async function readApprovedBrainstormItems(): Promise<string[]> {
 export default function Brainstorm() {
   const [tasks, setTasks] = useState<BuilderTask[]>([])
   const [formOpen, setFormOpen] = useState(false)
+  const [category, setCategory] = useState<BrainstormCategory>("style")
   const [icon, setIcon] = useState("")
   const [name, setName] = useState("")
   const [description, setDescription] = useState("")
@@ -197,8 +214,9 @@ export default function Brainstorm() {
     if (saving) return
     setSaving(true); setNotice("")
     try {
-      await queueBuilderTask({ icon, name: title, description: shortDescription, plan })
-      setName(""); setDescription(""); setPlan(""); setIcon(""); setFormOpen(false)
+      if (tasks.length >= MAX_TASKS) { setNotice(`Az ötletbörze elérte a ${MAX_TASKS} feladatos maximumot.`); return }
+      await queueBuilderTask({ icon, name: title, description: shortDescription, plan, category })
+      setName(""); setDescription(""); setPlan(""); setIcon(""); setCategory("style"); setFormOpen(false)
       setTasks(readBrainstormItems()); setNotice("Feladat elmentve")
       window.setTimeout(() => setNotice(current => current === "Feladat elmentve" ? "" : current), 2600)
     } catch { setNotice("A feladat mentése nem sikerült. Próbáld újra.") }
@@ -209,23 +227,30 @@ export default function Brainstorm() {
   return <main className="evo-brainstorm">
     <header className="evo-brainstorm-header">
       <span className="evo-brainstorm-icon"><Lightbulb size={22} /></span>
-      <div><h1>Ötletbörze</h1><p>Közös AI builder munkaterv, minden felhasználó számára. A feladat jóváhagyás után aktív.</p></div>
+      <div><h1>Ötletbörze</h1><p>Ötletek négy témában: megjelenés, optimalizálás, újratervezés és új funkciók.</p></div>
     </header>
     <section className="evo-brainstorm-section">
-      <div className="evo-brainstorm-section-title"><div><h2>Builder feladatok</h2><p>{waiting ? `${waiting} feladat vár jóváhagyásra` : "Nincs jóváhagyásra váró feladat"}</p></div><div className="evo-brainstorm-section-tools"><span className="evo-brainstorm-count">{tasks.length}</span><button className="evo-brainstorm-add-button" type="button" aria-label="Feladat hozzáadása" title="Feladat hozzáadása" onClick={() => setFormOpen(open => !open)}><Plus size={19} /></button></div></div>
+      <div className="evo-brainstorm-section-title"><div><h2>Témák</h2><p>{tasks.length} / {MAX_TASKS} feladat · {waiting ? `${waiting} vár jóváhagyásra` : "nincs függő jóváhagyás"}</p></div><div className="evo-brainstorm-section-tools"><span className="evo-brainstorm-count">{tasks.length}</span><button className="evo-brainstorm-add-button" type="button" aria-label="Feladat hozzáadása" title="Feladat hozzáadása" disabled={tasks.length >= MAX_TASKS} onClick={() => setFormOpen(open => !open)}><Plus size={19} /></button></div></div>
       {notice && <p className="evo-brainstorm-notice" role="status">{notice}</p>}
       {formOpen && <form className="evo-brainstorm-form" onSubmit={submitTask}>
+        <label><span>Téma</span><select value={category} onChange={event => setCategory(event.target.value as BrainstormCategory)}>{categories.map(item => <option key={item.id} value={item.id}>{item.label}</option>)}</select></label>
         <label className="evo-brainstorm-icon-field"><span>Ikon</span><input value={icon} onChange={event => setIcon(event.target.value)} maxLength={8} placeholder="✨" aria-label="Feladat ikonja" /></label>
         <label><span>Rövid cím</span><input required value={name} onChange={event => setName(event.target.value)} maxLength={80} placeholder="Például: Mobilnézet javítása" /></label>
         <label><span>Rövid leírás</span><input required value={description} onChange={event => setDescription(event.target.value)} maxLength={500} placeholder="Mit kell elkészíteni?" /></label>
         <label><span>Hosszú terv</span><textarea value={plan} onChange={event => setPlan(event.target.value)} maxLength={10000} rows={5} placeholder="Lépések, elfogadási feltételek, érintett fájlok…" /></label>
-        <div className="evo-brainstorm-form-footer"><span>Minden felhasználó számára látható lesz.</span><button type="submit" disabled={saving || !name.trim() || !description.trim()}>{saving && <LoaderCircle size={15} className="arc-save-spinner" aria-hidden="true" />}{saving ? "Mentés…" : "Mentés feladatként"}</button></div>
+        <div className="evo-brainstorm-form-footer"><span>Minden felhasználó számára látható lesz. Maximum {MAX_TASKS} feladat.</span><button type="submit" disabled={saving || tasks.length >= MAX_TASKS || !name.trim() || !description.trim()}>{saving && <LoaderCircle size={15} className="arc-save-spinner" aria-hidden="true" />}{saving ? "Mentés…" : "Mentés feladatként"}</button></div>
       </form>}
-      {loading ? <SkeletonList count={4} variant="card" /> : loadError ? <EmptyState title="Nem sikerült betölteni" description="A közös feladatlista most nem érhető el." action={<button className="evo-brainstorm-retry" type="button" onClick={() => void retryLoad()}>Újra</button>} /> : tasks.length ? <div className="evo-brainstorm-list">{tasks.map(task => <article key={task.id} className={`evo-brainstorm-task${task.approved ? " is-approved" : ""}`}>
+      {loading ? <SkeletonList count={4} variant="card" /> : loadError ? <EmptyState title="Nem sikerült betölteni" description="A közös feladatlista most nem érhető el." action={<button className="evo-brainstorm-retry" type="button" onClick={() => void retryLoad()}>Újra</button>} /> : <div className="evo-brainstorm-topics">{categories.map(topic => {
+        const topicTasks = tasks.filter(task => (task.category || inferCategory(task.name, task.description)) === topic.id)
+        return <section className={`evo-brainstorm-topic topic-${topic.id}`} key={topic.id}>
+          <header><h2>{topic.label}</h2><span>{topicTasks.length}</span></header>
+          {topicTasks.length ? <div className="evo-brainstorm-list">{topicTasks.map(task => <article key={task.id} className={`evo-brainstorm-task${task.approved ? " is-approved" : ""}`}>
         <div className="evo-brainstorm-task-heading"><span className="evo-brainstorm-task-icon">{(() => { const Icon = taskIcons[task.icon] ?? FileText; return <Icon size={17} strokeWidth={1.75} aria-hidden="true" /> })()}</span><div className="evo-brainstorm-task-copy"><h3>{task.name}</h3><p>{task.description}</p></div>{task.approved && <span className="evo-brainstorm-check"><Check size={15} /></span>}</div>
         <button className="evo-brainstorm-file" type="button" onClick={() => download(task)}><FileText size={16} /><span>{task.name.replace(/[^a-zA-Z0-9\u00C0-\u024F]+/g, "-").replace(/^-|-$/g, "").toLowerCase() || "feladat"}.md</span><span className="evo-brainstorm-file-action">Letöltés</span></button>
         <div className="evo-brainstorm-task-footer"><small>{new Date(task.createdAt).toLocaleDateString("hu-HU")} · {task.approved ? "Jóváhagyva" : "Jóváhagyásra vár"}</small><div>{!task.approved && <button type="button" className="evo-brainstorm-dismiss" disabled={saving} aria-label="Feladat elvetése" onClick={() => void update(old => old.filter(item => item.id !== task.id))}><X size={17} /></button>}<button type="button" className="evo-brainstorm-approve" disabled={saving} onClick={() => void update(old => old.map(item => item.id === task.id ? { ...item, approved: !item.approved } : item))}>{saving && <LoaderCircle size={14} className="arc-save-spinner" aria-hidden="true" />}{task.approved ? "Visszavonás" : "Jóváhagyás"}</button></div></div>
-      </article>)}</div> : <div className="evo-brainstorm-empty"><span><FileText size={22} /></span><strong>A munkaterület üres</strong><p>Az AI builder rövid nevű és leírású feladatokat, valamint hozzájuk tartozó .md fájlokat tesz ide ellenőrzésre.</p></div>}
+          </article>)}</div> : <p className="evo-brainstorm-topic-empty">Még nincs ötlet ebben a témában.</p>}
+        </section>
+      })}</div>}
     </section>
   </main>
 }

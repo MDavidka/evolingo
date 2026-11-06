@@ -44,11 +44,23 @@ export default function AppTabBar({ activeTab, onSelect, avatarImage, userName }
 
   const refresh = useCallback(() => setChats(readChatSessions()), [])
   const close = useCallback((restoreFocus = true) => {
+    const mobile = !window.matchMedia("(min-width: 1024px)").matches
+    if (restoreFocus && mobile && dialog.current?.contains(document.activeElement)) {
+      const opener = trigger.current
+      if (!opener?.isConnected) return
+      // Disable open-state handlers before moving focus out of the dialog.
+      openRef.current = false
+      opener.focus({ preventScroll: true })
+      if (dialog.current.contains(document.activeElement)) {
+        openRef.current = true
+        return
+      }
+    }
     setOpen(false)
     if (window.matchMedia("(min-width: 1024px)").matches) { try { localStorage.setItem("evolingo.sidebar.desktop.v1", "closed") } catch {} }
     setMenuFor(null)
     document.body.style.overflow = ""
-    if (restoreFocus) requestAnimationFrame(() => trigger.current?.focus({ preventScroll: true }))
+    if (restoreFocus && !mobile) requestAnimationFrame(() => trigger.current?.focus({ preventScroll: true }))
   }, [])
   const show = useCallback(() => {
     document.querySelector<HTMLTextAreaElement>(".ref-view-chat textarea")?.blur()

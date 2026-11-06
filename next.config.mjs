@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  allowedDevOrigins: ['urban-offline-corporation-integrated.trycloudflare.com'],
+  allowedDevOrigins: ['urban-offline-corporation-integrated.trycloudflare.com', '3001-agqxd3e74c7cuqxdchaoifqdnq.instabox.tech'],
   devIndicators: false,
   async redirects() {
     return [

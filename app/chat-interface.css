@@ -614,3 +614,9 @@ html.evo-keyboard-open:has(.ref-view-chat) .ref-view-chat .evo-chat-composer {
   color: #9b9ba2;
   pointer-events: none;
 }
+
+@media (max-width: 767px) {
+  .ref-view-chat .evo-chat-composer [contenteditable][data-empty="true"]::before {
+    color: rgb(110, 110, 118) !important;
+  }
+}
