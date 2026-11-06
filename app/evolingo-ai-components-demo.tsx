@@ -2,7 +2,7 @@
 
 import { useState, type ReactNode } from "react"
 import {
-  AlertCircle, ArrowUp, AudioLines, BookOpen, BrainCircuit, CalendarDays,
+  AlertCircle, ArrowUp, AudioLines, BookOpen, CalendarDays,
   ChartNoAxesColumn, Check, CheckCircle2, ChevronDown, ChevronRight, Circle,
   Clock3, Code2, Copy, FileText, Globe, Image, ListChecks, LoaderCircle,
   Mic, MicOff, MoreHorizontal, Paperclip, Plus, RefreshCw, Search,
