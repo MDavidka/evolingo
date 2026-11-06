@@ -7,6 +7,7 @@ import CardsShowcase from "./evolingo-cards-demo"
 import DesignSystemShowcase from "./evolingo-design-system-demo"
 import IconsShowcase from "./evolingo-icons-demo"
 import AIComponentsShowcase from "./evolingo-ai-components-demo"
+import MenusShowcase from "./evolingo-menus-demo"
 import "./evolingo-button-demo.css"
 import { AppHeader } from "@/components/app-header"
 import { RefreshCw, ArrowUp, ArrowUpRight, Plus, SlidersHorizontal, ChevronDown, Ellipsis, Check, BookOpen, ChevronLeft, ChevronRight, CircleHelp, Eye, EyeOff, Info, LogIn, ShieldCheck, UserRound, X, Crown, Bell, FolderOpen, CalendarDays, Settings2, LogOut, Component, Search } from "lucide-react"
@@ -136,7 +137,7 @@ function DemoLibrary({ onBack }: { onBack: () => void }) {
     { id: "cards", title: "Cards", content: <CardsShowcase /> },
     { id: "design-system", title: "Design System", content: <DesignSystemShowcase /> },
     { id: "overlays", title: "Popups & Alerts", content: <OverlaysShowcase /> },
-    { id: "settings", title: "Settings", content: <div className="evo-demo-preview"><SettingRow icon={Settings2} title="Beállítási sor" subtitle="Meglévő közös komponens" /><SettingRow icon={Info} title="Információ" subtitle="Csak előnézet" /></div> },
+    { id: "settings", title: "Menus & Settings", content: <MenusShowcase /> },
     { id: "icons", title: "Icons", content: <IconsShowcase /> },
     { id: "ai-components", title: "AI Components", content: <AIComponentsShowcase /> },
     { id: "typography", title: "Typography", content: <div className="evo-demo-preview"><h2>Címsor</h2><p>Normál szöveg a jelenlegi globális betűstílussal.</p><small>Másodlagos szöveg</small></div> },
