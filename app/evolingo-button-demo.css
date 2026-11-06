@@ -1,10 +1,10 @@
 /* Button specimens used only in Profile > Demo > Buttons. */
 .evo-buttons-demo {
-  --evo-btn-ink: #202124;
+  --evo-btn-ink: var(--evo-ui-text, #202127);
   --evo-btn-soft: #e9e9ec;
   --evo-btn-muted: #777980;
   padding: 14px;
-  background: #f5f5f7;
+  background: var(--evo-ui-surface, #f5f5f7);
   border-radius: 22px;
   color: var(--evo-btn-ink);
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", system-ui, sans-serif;
@@ -54,7 +54,7 @@
 .evo-buttons-demo__control:focus-visible { outline: 2px solid #4887eb; outline-offset: 3px; }
 .evo-buttons-demo__control:disabled { opacity: .5; cursor: not-allowed; }
 .evo-buttons-demo__control svg { width: 18px; height: 18px; stroke-width: 1.8; flex-shrink: 0; }
-.evo-buttons-demo__control--primary { background: #202124; color: #fff; }
+.evo-buttons-demo__control--primary { background: var(--evo-ui-text, #202127); color: #fff; }
 .evo-buttons-demo__control--secondary { background: #fff; border-color: #e6e6e8; }
 .evo-buttons-demo__control--soft { background: #e9e9ec; }
 .evo-buttons-demo__control--glass {
@@ -101,7 +101,7 @@
   transition: background 140ms ease-out, transform 140ms ease-out;
 }
 .evo-buttons-demo__segment button[aria-pressed="true"] {
-  color: #202124;
+  color: var(--evo-ui-text, #202127);
   background: white;
   font-weight: 600;
   box-shadow: 0 1px 3px rgba(0,0,0,.055);
@@ -110,7 +110,7 @@
 .evo-buttons-demo__segment button:focus-visible { outline: 2px solid #4887eb; outline-offset: 2px; }
 .evo-buttons-demo__chips { margin-top: 12px; }
 .evo-buttons-demo__chip { min-height: 34px; padding-inline: 15px; font-size: 13px; }
-.evo-buttons-demo__chip--selected { background: #202124; color: white; }
+.evo-buttons-demo__chip--selected { background: var(--evo-ui-text, #202127); color: white; }
 .evo-buttons-demo__chip--unselected { background: white; border-color: #e6e6e8; }
 .evo-buttons-demo__chip--disabled { background: #e3e3e6; color: #88888e; opacity: 1 !important; }
 @media (max-width: 375px) {
@@ -128,11 +128,11 @@
   align-items: center;
   gap: 7px;
   margin: 16px 0 12px;
-  color: #8e8e93;
+  color: var(--evo-ui-muted, #8e8e93);
   font-size: 13px;
   line-height: 20px;
 }
-.evo-demo-library--segmented .evo-demo-breadcrumb__current { color: #202124; font-weight: 600; }
+.evo-demo-library--segmented .evo-demo-breadcrumb__current { color: var(--evo-ui-text, #202127); font-weight: 600; }
 .evo-demo-library--segmented .evo-demo-category-tabs {
   display: flex;
   align-items: center;
@@ -141,7 +141,7 @@
   overflow-x: auto;
   scrollbar-width: none;
   border-radius: 999px;
-  background: #f2f2f4;
+  background: var(--evo-ui-surface, #f5f5f7);
   -webkit-overflow-scrolling: touch;
 }
 .evo-demo-library--segmented .evo-demo-category-tabs::-webkit-scrollbar { display: none; }
@@ -159,7 +159,7 @@
 }
 .evo-demo-library--segmented .evo-demo-category-tabs button[aria-pressed="true"] {
   background: #fff;
-  color: #202124;
+  color: var(--evo-ui-text, #202127);
   font-weight: 600;
   box-shadow: 0 1px 4px rgba(0,0,0,.06);
 }
@@ -190,47 +190,47 @@
 }
 
 /* iOS / ChatGPT input specimens — scoped to the UI Library. */
-.evo-inputs-demo { display: grid; gap: 0; color: #202124; font-family: -apple-system,BlinkMacSystemFont,"SF Pro Text",Inter,system-ui,sans-serif; }
+.evo-inputs-demo { display: grid; gap: 0; color: var(--evo-ui-text, #202127); font-family: -apple-system,BlinkMacSystemFont,"SF Pro Text",Inter,system-ui,sans-serif; }
 .evo-inputs-demo__item { display: grid; gap: 11px; padding: 18px 0 22px; }
 .evo-inputs-demo__item + .evo-inputs-demo__item { border-top: 1px solid #ededf0; }
-.evo-inputs-demo__eyebrow { color: #8e8e93; font-size: 10px; font-weight: 600; letter-spacing: .075em; text-transform: uppercase; }
-.evo-inputs-demo__item small { font-size: 11px; color: #8e8e93; }
-.evo-inputs-demo input,.evo-inputs-demo textarea { min-width: 0; font-family: inherit; font-size: 16px; color: #202124; outline: none; }
-.evo-inputs-demo input::placeholder,.evo-inputs-demo textarea::placeholder { color: #8e8e93; opacity: 1; }
-.evo-inputs-demo__field { width: 100%; height: 54px; padding: 0 16px; border: 1.5px solid transparent; border-radius: 18px; background: #f2f2f4; transition: border-color 150ms ease-out; }
+.evo-inputs-demo__eyebrow { color: var(--evo-ui-muted, #8e8e93); font-size: 10px; font-weight: 600; letter-spacing: .075em; text-transform: uppercase; }
+.evo-inputs-demo__item small { font-size: 11px; color: var(--evo-ui-muted, #8e8e93); }
+.evo-inputs-demo input,.evo-inputs-demo textarea { min-width: 0; font-family: inherit; font-size: 16px; color: var(--evo-ui-text, #202127); outline: none; }
+.evo-inputs-demo input::placeholder,.evo-inputs-demo textarea::placeholder { color: var(--evo-ui-muted, #8e8e93); opacity: 1; }
+.evo-inputs-demo__field { width: 100%; height: 54px; padding: 0 16px; border: 1.5px solid transparent; border-radius: 18px; background: var(--evo-ui-surface, #f5f5f7); transition: border-color 150ms ease-out; }
 .evo-inputs-demo__field--outline { background: #fff; border-color: #e8e8eb; }
 .evo-inputs-demo__field:focus-visible { border-color: #a0a0a6; }
 .evo-inputs-demo__field--focus { background: #fff; border-color: #a0a0a6; }
-.evo-inputs-demo__search { width: 100%; height: 48px; padding: 0 16px; display: flex; align-items: center; gap: 11px; border-radius: 999px; background: #f2f2f4; color: #8e8e93; border: 1.5px solid transparent; }
+.evo-inputs-demo__search { width: 100%; height: 48px; padding: 0 16px; display: flex; align-items: center; gap: 11px; border-radius: 999px; background: var(--evo-ui-surface, #f5f5f7); color: var(--evo-ui-muted, #8e8e93); border: 1.5px solid transparent; }
 .evo-inputs-demo__search:focus-within { border-color: #a0a0a6; }
 .evo-inputs-demo__search input { width: 100%; height: 100%; background: transparent; border: 0; }
-.evo-inputs-demo__inline { min-height: 51px; display: flex; align-items: center; gap: 9px; border-bottom: 1px solid #e5e5ea; font-size: 15px; font-weight: 600; }
-.evo-inputs-demo__inline input { flex: 1; width: 30%; text-align: right; font-size: 15px; font-weight: 400; color: #8e8e93; border: 0; background: transparent; }
+.evo-inputs-demo__inline { min-height: 51px; display: flex; align-items: center; gap: 9px; border-bottom: 1px solid var(--evo-ui-border, #e5e5ea); font-size: 15px; font-weight: 600; }
+.evo-inputs-demo__inline input { flex: 1; width: 30%; text-align: right; font-size: 15px; font-weight: 400; color: var(--evo-ui-muted, #8e8e93); border: 0; background: transparent; }
 .evo-inputs-demo__inline svg { color: #c7c7cc; }
-.evo-inputs-demo__floating { height: 64px; padding: 9px 16px; display: flex; flex-direction: column; justify-content: center; border: 1.5px solid transparent; border-radius: 18px; background: #f2f2f4; }
+.evo-inputs-demo__floating { height: 64px; padding: 9px 16px; display: flex; flex-direction: column; justify-content: center; border: 1.5px solid transparent; border-radius: 18px; background: var(--evo-ui-surface, #f5f5f7); }
 .evo-inputs-demo__floating:focus-within { border-color: #a0a0a6; }
-.evo-inputs-demo__floating span { color: #8e8e93; font-size: 12px; }
+.evo-inputs-demo__floating span { color: var(--evo-ui-muted, #8e8e93); font-size: 12px; }
 .evo-inputs-demo__floating input { width: 100%; background: transparent; border: 0; }
 .evo-inputs-demo__compact { display: flex; align-items: center; gap: 8px; }
 .evo-inputs-demo__compact .evo-inputs-demo__search { flex: 1; height: 42px; }
-.evo-inputs-demo__compact > button { display: grid; place-items: center; flex: 0 0 42px; width: 42px; height: 42px; border: 0; border-radius: 999px; background: #f2f2f4; color: #202124; cursor: pointer; }
-.evo-inputs-demo__composer { display: grid; gap: 12px; padding: 14px 13px 11px; border: 1.5px solid transparent; border-radius: 26px; background: #f2f2f4; }
+.evo-inputs-demo__compact > button { display: grid; place-items: center; flex: 0 0 42px; width: 42px; height: 42px; border: 0; border-radius: 999px; background: var(--evo-ui-surface, #f5f5f7); color: var(--evo-ui-text, #202127); cursor: pointer; }
+.evo-inputs-demo__composer { display: grid; gap: 12px; padding: 14px 13px 11px; border: 1.5px solid transparent; border-radius: 26px; background: var(--evo-ui-surface, #f5f5f7); }
 .evo-inputs-demo__composer:focus-within { border-color: #a0a0a6; }
 .evo-inputs-demo__composer textarea { width: 100%; min-height: 44px; resize: vertical; border: 0; background: transparent; }
 .evo-inputs-demo__composer-actions,.evo-inputs-demo__composer-actions > div { display: flex; align-items: center; gap: 12px; }
 .evo-inputs-demo__composer-actions { justify-content: space-between; }
-.evo-inputs-demo__composer-actions button { display: inline-flex; align-items: center; justify-content: center; gap: 5px; padding: 0; border: 0; background: transparent; color: #202124; font-size: 14px; cursor: pointer; }
-.evo-inputs-demo__composer-actions .evo-inputs-demo__send { width: 38px; height: 38px; border-radius: 999px; background: #202124; color: white; }
-.evo-inputs-demo__multiline { width: 100%; min-height: 116px; padding: 16px; resize: vertical; border: 1.5px solid transparent; border-radius: 18px; background: #f2f2f4; }
+.evo-inputs-demo__composer-actions button { display: inline-flex; align-items: center; justify-content: center; gap: 5px; padding: 0; border: 0; background: transparent; color: var(--evo-ui-text, #202127); font-size: 14px; cursor: pointer; }
+.evo-inputs-demo__composer-actions .evo-inputs-demo__send { width: 38px; height: 38px; border-radius: 999px; background: var(--evo-ui-text, #202127); color: white; }
+.evo-inputs-demo__multiline { width: 100%; min-height: 116px; padding: 16px; resize: vertical; border: 1.5px solid transparent; border-radius: 18px; background: var(--evo-ui-surface, #f5f5f7); }
 .evo-inputs-demo__multiline:focus-visible { border-color: #a0a0a6; }
 .evo-inputs-demo__otp { position: relative; }
 .evo-inputs-demo__otp input { position: absolute; inset: 0; z-index: 1; width: 100%; height: 100%; opacity: .01; cursor: text; }
 .evo-inputs-demo__otp > div { display: grid; grid-template-columns: repeat(6,minmax(0,1fr)); gap: 8px; pointer-events: none; }
-.evo-inputs-demo__otp span { display: grid; place-items: center; height: 52px; border-radius: 12px; background: #f2f2f4; font-size: 20px; font-weight: 600; }
+.evo-inputs-demo__otp span { display: grid; place-items: center; height: 52px; border-radius: 12px; background: var(--evo-ui-surface, #f5f5f7); font-size: 20px; font-weight: 600; }
 .evo-inputs-demo__otp:focus-within span { outline: 1px solid #a0a0a6; }
-.evo-inputs-demo__password { display: flex; align-items: center; gap: 8px; height: 54px; padding: 0 14px 0 16px; border-radius: 18px; background: #f2f2f4; border: 1.5px solid transparent; }
+.evo-inputs-demo__password { display: flex; align-items: center; gap: 8px; height: 54px; padding: 0 14px 0 16px; border-radius: 18px; background: var(--evo-ui-surface, #f5f5f7); border: 1.5px solid transparent; }
 .evo-inputs-demo__password:focus-within { border-color: #a0a0a6; }
 .evo-inputs-demo__password input { flex: 1; width: 100%; background: transparent; border: 0; }
-.evo-inputs-demo__password button { display: grid; place-items: center; color: #8e8e93; background: transparent; border: 0; cursor: pointer; }
+.evo-inputs-demo__password button { display: grid; place-items: center; color: var(--evo-ui-muted, #8e8e93); background: transparent; border: 0; cursor: pointer; }
 .evo-inputs-demo button:focus-visible { outline: 2px solid #a0a0a6; outline-offset: 2px; }
 @media (prefers-reduced-motion: reduce) { .evo-inputs-demo__field { transition: none; } }
