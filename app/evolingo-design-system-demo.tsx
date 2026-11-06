@@ -99,11 +99,11 @@ const radii = [
   { name: "Capsule", px: "999px" },
 ] as const
 
-function DemoHeading({ number, title, subtitle }: { number: string; title: string; subtitle: string }) {
+function DemoHeading({ id, number, title, subtitle }: { id: string; number: string; title: string; subtitle: string }) {
   return (
     <header className="evo-design-demo__heading">
       <span className="evo-design-demo__eyebrow">{number}</span>
-      <h3>{title}</h3>
+      <h3 id={id}>{title}</h3>
       <p>{subtitle}</p>
     </header>
   )
@@ -127,7 +127,7 @@ export default function DesignSystemShowcase() {
       </div>
 
       <section className="evo-design-demo__section" aria-labelledby="evo-design-colors">
-        <DemoHeading number="01 / COLORS" title="Color presets" subtitle="Four ready-to-use palettes, each with five semantic roles." />
+        <DemoHeading id="evo-design-colors" number="01 / COLORS" title="Color presets" subtitle="Four ready-to-use palettes, each with five semantic roles." />
         <div className="evo-design-demo__palette-grid">
           {palettes.map((palette) => (
             <article className="evo-design-demo__palette" key={palette.id}>
@@ -150,7 +150,7 @@ export default function DesignSystemShowcase() {
       </section>
 
       <section className="evo-design-demo__section" aria-labelledby="evo-design-type">
-        <DemoHeading number="02 / TYPOGRAPHY" title="Font styles" subtitle="A consistent native-feeling hierarchy with reusable text tokens." />
+        <DemoHeading id="evo-design-type" number="02 / TYPOGRAPHY" title="Font styles" subtitle="A consistent native-feeling hierarchy with reusable text tokens." />
         <div className="evo-design-demo__font-grid">
           {fontPresets.map((font) => (
             <article className="evo-design-demo__font-card" key={font.name}>
@@ -173,7 +173,7 @@ export default function DesignSystemShowcase() {
       </section>
 
       <section className="evo-design-demo__section" aria-labelledby="evo-design-spacing">
-        <DemoHeading number="03 / SPACING" title="Spacing & padding" subtitle="4px increments, with 8px as the default rhythm." />
+        <DemoHeading id="evo-design-spacing" number="03 / SPACING" title="Spacing & padding" subtitle="4px increments, with 8px as the default rhythm." />
         <div className="evo-design-demo__spacing-list">
           {spacing.map((px) => (
             <div className="evo-design-demo__spacing-row" key={px}>
@@ -190,7 +190,7 @@ export default function DesignSystemShowcase() {
       </section>
 
       <section className="evo-design-demo__section" aria-labelledby="evo-design-layers">
-        <DemoHeading number="04 / LAYERS" title="Surfaces & elevation" subtitle="Depth through neutral surfaces and borders—not heavy effects." />
+        <DemoHeading id="evo-design-layers" number="04 / LAYERS" title="Surfaces & elevation" subtitle="Depth through neutral surfaces and borders—not heavy effects." />
         <div className="evo-design-demo__layers">
           <div className="evo-design-demo__layer evo-design-demo__layer--canvas">
             <div><strong>Layer 0 · Canvas</strong><small>White · Main page background</small></div>
@@ -212,7 +212,7 @@ export default function DesignSystemShowcase() {
       </section>
 
       <section className="evo-design-demo__section" aria-labelledby="evo-design-radius">
-        <DemoHeading number="05 / SHAPE" title="Corner radii" subtitle="Compact controls, soft content cards and capsule actions." />
+        <DemoHeading id="evo-design-radius" number="05 / SHAPE" title="Corner radii" subtitle="Compact controls, soft content cards and capsule actions." />
         <div className="evo-design-demo__radii">
           {radii.map((radius) => (
             <div className="evo-design-demo__radius" key={radius.name}>
@@ -225,7 +225,7 @@ export default function DesignSystemShowcase() {
       </section>
 
       <section className="evo-design-demo__section" aria-labelledby="evo-design-presets">
-        <DemoHeading number="06 / PRESETS" title="Component presets" subtitle="Static examples that combine tokens into finished interface patterns." />
+        <DemoHeading id="evo-design-presets" number="06 / PRESETS" title="Component presets" subtitle="Static examples that combine tokens into finished interface patterns." />
         <div className="evo-design-demo__specimens">
           <article className="evo-design-demo__specimen">
             <h4>Apple grouped</h4>
@@ -267,7 +267,7 @@ export default function DesignSystemShowcase() {
       </section>
 
       <section className="evo-design-demo__section evo-design-demo__section--last" aria-labelledby="evo-design-tokens">
-        <DemoHeading number="07 / BASE TOKENS" title="Recommended defaults" subtitle="Starting values for future Evolingo components." />
+        <DemoHeading id="evo-design-tokens" number="07 / BASE TOKENS" title="Recommended defaults" subtitle="Starting values for future Evolingo components." />
         <div className="evo-design-demo__tokens">
           {[
             { label: "Primary text & buttons", token: "#1C1C1E", color: "#1C1C1E" },
