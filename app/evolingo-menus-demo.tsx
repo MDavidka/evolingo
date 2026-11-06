@@ -275,7 +275,7 @@ export default function MenusShowcase() {
         <SectionHeader index="02" title="Switches & toggles" summary="10 styles including labeled, disabled, dependent, system-managed and pending." count="10 variants" />
         <div className="evo-menus__group">
           {switchVariants.map(item => {
-            const blocked = Boolean(item.disabled) || (Boolean(item.dependsOn) && !enabled("master", true))
+            const blocked = ("disabled" in item && item.disabled) || ("dependsOn" in item && Boolean(item.dependsOn) && !enabled("master", true))
             return <SettingRow key={item.id} title={item.title} description={item.description}
               trailing={<div className="evo-menus__toggle-trail">
                 {"labeled" in item && <span className="evo-menus__value">{enabled(item.id, item.default) ? "On" : "Off"}</span>}
