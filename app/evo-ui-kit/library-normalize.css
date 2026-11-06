@@ -1,0 +1,90 @@
+/* Universal UI Library audit layer.
+ * Only the demo library opts in; real screens are intentionally unaffected.
+ * Mobile-first compact control sizes are consistent across galleries.
+ */
+.evo-demo-library {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: clip;
+  background: var(--evo-ui-canvas, #fff);
+  color: var(--evo-ui-text, #202127);
+  font-family: var(--evo-ui-font, -apple-system, "Inter", sans-serif);
+}
+.evo-demo-library *, .evo-demo-library *::before, .evo-demo-library *::after { box-sizing: border-box; }
+.evo-demo-library :is(.evo-buttons-demo, .evo-inputs-demo, .evo-cards-demo, .evo-design-demo, .evo-icons-demo, .evo-ai-showcase, .evo-menus, .evo-sheet-demo) {
+  max-width: min(100%, var(--evo-ui-content-max, 720px));
+  width: 100%;
+  min-width: 0;
+  margin-inline: auto;
+  color: var(--evo-ui-text, #202127);
+  font-family: var(--evo-ui-font, -apple-system, "Inter", sans-serif);
+}
+.evo-demo-library--segmented .evo-demo-category-tabs { max-width: 100%; overflow-x: auto; padding-block: 8px; }
+.evo-demo-library--segmented .evo-demo-category-tabs button { min-height: var(--evo-ui-control-compact, 44px); }
+.evo-demo-library .evo-demo-active-content { width: 100%; max-width: 100%; min-width: 0; }
+.evo-demo-library .evo-demo-active-content > h2 { font-size: clamp(16px, 4.3vw, 20px); }
+.evo-demo-library button { max-width: 100%; }
+.evo-demo-library button:focus-visible, .evo-demo-library a:focus-visible {
+  outline: 2px solid var(--evo-ui-focus, #007aff);
+  outline-offset: 2px;
+}
+.evo-demo-library .evo-buttons-demo {
+  background: transparent;
+  border-radius: 0;
+  padding: 0;
+}
+.evo-demo-library .evo-buttons-demo__stack { width: 100%; }
+.evo-demo-library .evo-buttons-demo__stack .evo-ui-button { width: 100%; }
+.evo-demo-library .evo-buttons-demo__group + .evo-buttons-demo__group { border-top: 1px solid var(--evo-ui-border,#e5e5ea); }
+.evo-demo-library .evo-buttons-demo__heading { color: var(--evo-ui-muted,#8e8e93); }
+.evo-demo-library .evo-buttons-demo__row { display:flex; align-items:center; min-width:0; flex-wrap:wrap; gap:8px; }
+.evo-demo-library .evo-buttons-demo__row > .evo-ui-button:not(.evo-ui-button--icon) { flex: 1 1 auto; }
+.evo-demo-library .evo-buttons-demo__segment { width:100%; }
+.evo-demo-library .evo-buttons-demo__segment button { min-height:44px; }
+.evo-demo-library .evo-buttons-demo__chip { min-height:44px; padding:8px 14px; display:inline-flex; align-items:center; justify-content:center; gap:6px; border-radius:999px; font-size:13px; flex:1 1 auto; }
+.evo-demo-library .evo-buttons-demo__chip svg { width:16px; height:16px; }
+.evo-demo-library .evo-inputs-demo { background:transparent; padding:0; }
+.evo-demo-library .evo-inputs-demo :is(input,textarea,select) { font-size:16px; max-width:100%; }
+.evo-demo-library .evo-inputs-demo__field, .evo-demo-library .evo-inputs-demo__password { min-height:50px; height:auto; border-radius:var(--evo-ui-radius-md,14px); }
+.evo-demo-library .evo-inputs-demo__search { min-height:50px; border-radius:var(--evo-ui-radius-md,14px); }
+.evo-demo-library .evo-inputs-demo__compact > button,
+.evo-demo-library .evo-inputs-demo__composer-actions .evo-inputs-demo__send { flex:0 0 44px; min-width:44px; width:44px; height:44px; min-height:44px; }
+.evo-demo-library .evo-inputs-demo__password button { min-width:44px; min-height:44px; }
+.evo-demo-library .evo-inputs-demo__composer-actions button:not(.evo-inputs-demo__send) { min-height:44px; }
+.evo-demo-library .evo-cards-demo__grid > *, .evo-demo-library .evo-design-demo__palette-grid > *, .evo-demo-library .evo-design-demo__specimens > * {min-width:0;}
+.evo-demo-library :is(.evo-cards-demo__image-card,.evo-cards-demo__folder-card,.evo-cards-demo__icon-card,.evo-design-demo__palette,.evo-ai-showcase__rich-card) { border-radius:var(--evo-ui-radius-card,16px); }
+.evo-demo-library .evo-ai-showcase__filters button,
+.evo-demo-library .evo-ai-showcase__state-choices button,
+.evo-demo-library .evo-menus__filters button,
+.evo-demo-library .evo-menus__pill-choices button,
+.evo-demo-library .evo-icons-demo button[aria-pressed] { min-height:44px; }
+.evo-demo-library .evo-ai-showcase__composer-send { min-width:44px !important; width:44px !important; min-height:44px !important; height:44px !important; }
+.evo-demo-library .evo-ai-showcase__action-icon { min-width:44px; min-height:44px; width:44px; height:44px; }
+.evo-demo-library .evo-ai-showcase__approval-actions button,
+.evo-demo-library .evo-ai-showcase__approval-result button { min-height:44px; }
+.evo-demo-library .evo-menus__choice-button,
+.evo-demo-library .evo-menus__segmented button,
+.evo-demo-library .evo-menus__icon-choices button,
+.evo-demo-library .evo-menus__minor-button { min-height:44px; }
+.evo-demo-library .evo-menus__row { min-height:52px; }
+.evo-demo-library .evo-menus__switch { min-height:31px; }
+.evo-demo-library .evo-menus__switch::before { content:""; position:absolute; inset:-7px 0; }
+.evo-demo-library .evo-menus__states { grid-template-columns:repeat(2,minmax(0,1fr)); }
+.evo-demo-library :is(.evo-menus__group,.evo-menus__slider-group,.evo-ai-showcase__tool-summary) { border-radius:var(--evo-ui-radius-card,16px); }
+@media (max-width: 480px) {
+  .evo-demo-library { padding-inline: 0; }
+  .evo-demo-library :is(.evo-cards-demo__grid,.evo-design-demo__palette-grid,.evo-design-demo__specimens,.evo-ai-showcase__rich-grid) { grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; }
+  .evo-demo-library .evo-design-demo__palette-grid,.evo-demo-library .evo-design-demo__specimens { grid-template-columns:1fr; }
+  .evo-demo-library .evo-buttons-demo__row .evo-ui-button:not(.evo-ui-button--icon) { flex:1 1 auto; }
+  .evo-demo-library .evo-menus__presentations { grid-template-columns:1fr; }
+}
+@media (max-width: 360px) {
+  .evo-demo-library :is(.evo-cards-demo__grid,.evo-ai-showcase__rich-grid) { gap:7px; }
+  .evo-demo-library .evo-buttons-demo__row .evo-ui-button:not(.evo-ui-button--icon) { flex:1 1 100%; }
+  .evo-demo-library .evo-buttons-demo__chips > button { flex:1 1 calc(50% - 4px); }
+  .evo-demo-library .evo-menus__states { grid-template-columns:1fr 1fr; gap:7px; }
+}
+@media (prefers-reduced-motion:reduce) {
+  .evo-demo-library button { transition:none!important; animation:none!important; }
+}
