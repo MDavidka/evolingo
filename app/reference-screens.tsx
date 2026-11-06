@@ -102,22 +102,31 @@ function ButtonsShowcase() {
 }
 
 function DemoLibrary({ onBack }: { onBack: () => void }) {
-  const [query, setQuery] = useState("")
+  const [activeCategory, setActiveCategory] = useState("buttons")
   const categories = [
-    { id: "buttons", title: "Buttons", keywords: "button buttons gombok ios chatgpt glass floating segmented pill capsule", content: <ButtonsShowcase /> },
-    { id: "inputs", title: "Beviteli mezők", keywords: "input search", content: <div className="evo-demo-preview"><Input aria-label="Példa szövegmező" placeholder="Írj ide…" /><Input aria-label="Példa keresőmező" type="search" placeholder="Keresés…" /><Input aria-label="Letiltott mező" placeholder="Letiltva" disabled /></div> },
-    { id: "settings", title: "Beállítások és navigáció", keywords: "settings navigation rows", content: <div className="evo-demo-preview"><SettingRow icon={Settings2} title="Beállítási sor" subtitle="Meglévő közös komponens" /><SettingRow icon={Info} title="Információ" subtitle="Csak előnézet" /></div> },
-    { id: "icons", title: "Ikonok és visszajelzés", keywords: "icons feedback status", content: <div className="evo-demo-preview evo-demo-icons"><CheckCircle2 aria-label="Siker" /><AlertCircle aria-label="Figyelmeztetés" /><LoaderCircle aria-label="Betöltés" /><Search aria-label="Keresés" /><Component aria-label="Komponens" /></div> },
-    { id: "typography", title: "Tipográfia", keywords: "typography text", content: <div className="evo-demo-preview"><h2>Címsor</h2><p>Normál szöveg a jelenlegi globális betűstílussal.</p><small>Másodlagos szöveg</small></div> },
+    { id: "buttons", title: "Buttons", content: <ButtonsShowcase /> },
+    { id: "inputs", title: "Inputs", content: <div className="evo-demo-preview"><Input aria-label="Példa szövegmező" placeholder="Írj ide…" /><Input aria-label="Példa keresőmező" type="search" placeholder="Keresés…" /><Input aria-label="Letiltott mező" placeholder="Letiltva" disabled /></div> },
+    { id: "settings", title: "Settings", content: <div className="evo-demo-preview"><SettingRow icon={Settings2} title="Beállítási sor" subtitle="Meglévő közös komponens" /><SettingRow icon={Info} title="Információ" subtitle="Csak előnézet" /></div> },
+    { id: "icons", title: "Icons", content: <div className="evo-demo-preview evo-demo-icons"><CheckCircle2 aria-label="Siker" /><AlertCircle aria-label="Figyelmeztetés" /><LoaderCircle aria-label="Betöltés" /><Search aria-label="Keresés" /><Component aria-label="Komponens" /></div> },
+    { id: "typography", title: "Typography", content: <div className="evo-demo-preview"><h2>Címsor</h2><p>Normál szöveg a jelenlegi globális betűstílussal.</p><small>Másodlagos szöveg</small></div> },
   ]
-  const visible = categories.filter(category => (category.title + " " + category.keywords).toLocaleLowerCase("hu").includes(query.trim().toLocaleLowerCase("hu")))
-  return <div className="ref-profile evo-demo-library">
+  const active = categories.find(category => category.id === activeCategory) ?? categories[0]
+  return <div className="ref-profile evo-demo-library evo-demo-library--segmented">
     <button type="button" className="evo-demo-back" onClick={onBack}><ChevronLeft size={20} /> Vissza a profilhoz</button>
-    <h1>Buttons</h1>
-    <p className="evo-demo-description">Modern iOS és ChatGPT-stílusú gombok, további meglévő felületi elemekkel. A gombok itt csak előnézetek, a globális stílusok nem változnak.</p>
-    <label className="evo-demo-search"><Search size={18} /><input type="search" value={query} onChange={event => setQuery(event.target.value)} placeholder="Komponensek keresése" aria-label="Komponensek keresése" /></label>
-    {visible.map(category => <section className="ref-settings-group evo-demo-section" key={category.id}><h2>{category.title}</h2>{category.content}</section>)}
-    {visible.length === 0 && <p>Nincs találat.</p>}
+    <h1>UI Library</h1>
+    <p className="evo-demo-description">iOS és ChatGPT stílusú UI-elemek. Válassz kategóriát a navigációban; a bemutató nem módosítja a globális stílusokat.</p>
+    <nav className="evo-demo-breadcrumb" aria-label="UI-elemek kategóriái">
+      <span className="evo-demo-breadcrumb__root">Components</span>
+      <ChevronRight size={15} aria-hidden="true" />
+      <span className="evo-demo-breadcrumb__current">{active.title}</span>
+    </nav>
+    <div className="evo-demo-category-tabs" role="group" aria-label="UI elem típusa">
+      {categories.map(category => <button key={category.id} type="button" aria-pressed={activeCategory === category.id} onClick={() => setActiveCategory(category.id)}>{category.title}</button>)}
+    </div>
+    <section className="evo-demo-active-content" aria-label={active.title}>
+      <h2>{active.title}</h2>
+      {active.content}
+    </section>
   </div>
 }
 
