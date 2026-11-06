@@ -85,6 +85,28 @@
   .evo-demo-library .evo-buttons-demo__chips > button { flex:1 1 calc(50% - 4px); }
   .evo-demo-library .evo-menus__states { grid-template-columns:1fr 1fr; gap:7px; }
 }
+
+/* Consistency audit: selection chips, steppers, incidental actions and cards. */
+.evo-demo-library .evo-buttons-demo__chip {
+  appearance:none;
+  -webkit-appearance:none;
+  border:1px solid var(--evo-ui-border,#e5e5ea);
+  background:var(--evo-ui-surface,#f5f5f7);
+  color:var(--evo-ui-text,#202127);
+  cursor:pointer;
+  font-weight:600;
+}
+.evo-demo-library .evo-buttons-demo__chip--selected { background:var(--evo-ui-primary,#202127); border-color:var(--evo-ui-primary,#202127); color:var(--evo-ui-on-primary,#fff); }
+.evo-demo-library .evo-buttons-demo__chip:disabled {opacity:.42;cursor:not-allowed;}
+.evo-demo-library .evo-menus__stepper button {width:44px;height:44px;min-width:44px;min-height:44px;}
+.evo-demo-library .evo-menus__choice-row input {width:22px;height:22px;}
+.evo-demo-library .evo-ai-showcase__tool-toggle {min-height:44px;}
+.evo-demo-library .evo-design-demo__primary-action {min-height:50px;}
+.evo-demo-library .evo-design-demo__menu-row {min-height:52px;}
+.evo-demo-library .evo-design-demo__radius {min-width:0;}
+.evo-demo-library :is(.evo-cards-demo,.evo-design-demo,.evo-ai-showcase,.evo-menus,.evo-icons-demo) svg {flex-shrink:0;}
+.evo-demo-library :is(.evo-cards-demo,.evo-design-demo,.evo-ai-showcase,.evo-menus,.evo-icons-demo) :is(button,input,textarea,select):focus-visible {outline:2px solid var(--evo-ui-focus,#007aff);outline-offset:2px;}
+
 @media (prefers-reduced-motion:reduce) {
   .evo-demo-library button { transition:none!important; animation:none!important; }
 }
