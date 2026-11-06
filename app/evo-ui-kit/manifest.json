@@ -1,0 +1,202 @@
+{
+  "name": "Evolingo UI Kit",
+  "version": "1.0.0",
+  "status": "ready",
+  "purpose": "Canonical Apple Neutral and ChatGPT iOS-like mobile UI. AI-readable source of truth for new UI components.",
+  "entrypoints": {
+    "react": "app/evo-ui-kit/index.ts",
+    "tokens": "app/evo-ui-kit/tokens.css",
+    "components": [
+      "app/evo-ui-kit/button.tsx",
+      "app/evo-ui-kit/bottom-sheet.tsx"
+    ],
+    "demos": [
+      "app/evo-ui-kit/bottom-sheet-demo.tsx",
+      "app/reference-screens.tsx"
+    ],
+    "documentation": "UI_LIBRARY.md",
+    "agentInstructions": "AGENTS.md"
+  },
+  "tokens": {
+    "colors": {
+      "canvas": "#FFFFFF",
+      "surface": "#F5F5F7",
+      "raised": "#FFFFFF",
+      "text": "#202127",
+      "muted": "#8E8E93",
+      "border": "#E5E5EA",
+      "borderStrong": "#D1D1D6",
+      "primary": "#202127",
+      "onPrimary": "#FFFFFF",
+      "link": "#007AFF",
+      "success": "#34C759",
+      "danger": "#FF3B30"
+    },
+    "radiiPx": {
+      "small": 10,
+      "medium": 14,
+      "card": 16,
+      "sheetTop": 26,
+      "pill": 999
+    },
+    "spacingPx": [
+      4,
+      8,
+      12,
+      16,
+      20,
+      24
+    ],
+    "controlSizePx": {
+      "primaryHeight": 50,
+      "compactHeight": 44,
+      "iconSize": 44,
+      "touchMinimum": 44
+    },
+    "icon": {
+      "library": "lucide-react",
+      "defaultSizePx": 20,
+      "strokeWidth": 1.75
+    },
+    "typography": {
+      "family": "-apple-system, BlinkMacSystemFont, SF Pro Text, Inter, system-ui, sans-serif",
+      "controlFontSizePx": 15,
+      "bodyFontSizePx": 14,
+      "secondaryFontSizePx": 12
+    },
+    "motionMs": {
+      "fast": 150,
+      "standard": 240,
+      "entrance": 280,
+      "exit": 200
+    },
+    "layout": {
+      "baselineViewportWidthPx": 390,
+      "supportViewportWidthsPx": [
+        360,
+        390,
+        430
+      ],
+      "contentMaxPx": 720,
+      "sidePaddingPx": 16,
+      "safeAreas": true,
+      "overflow": "Never allow horizontal page scroll in a component preview"
+    }
+  },
+  "button": {
+    "module": "app/evo-ui-kit/button.tsx",
+    "namedExport": "UIButton",
+    "variants": [
+      "primary",
+      "secondary",
+      "tertiary",
+      "ghost",
+      "danger",
+      "glass"
+    ],
+    "sizes": [
+      "standard",
+      "compact",
+      "icon"
+    ],
+    "defaultVariant": "primary",
+    "defaultSize": "standard",
+    "props": {
+      "variant": "UIButtonVariant",
+      "size": "UIButtonSize",
+      "fullWidth": "boolean",
+      "children": "ReactNode",
+      "disabled": "boolean",
+      "onClick": "ButtonHTMLAttributes['onClick']"
+    },
+    "rules": [
+      "Use UIButton instead of ad-hoc buttons for new primary/secondary/compact/icon actions.",
+      "Standard 50px, compact 44px, icon 44x44px; do not invent arbitrary heights.",
+      "Long labels wrap. Full-width primary actions should use fullWidth.",
+      "Button text and icons must remain visible at 360px viewport width."
+    ]
+  },
+  "bottomSheet": {
+    "module": "app/evo-ui-kit/bottom-sheet.tsx",
+    "namedExport": "BottomSheet",
+    "sizes": [
+      "compact",
+      "medium",
+      "expanded"
+    ],
+    "defaultSize": "compact",
+    "props": {
+      "title": "string",
+      "description": "string?",
+      "children": "ReactNode",
+      "footer": "ReactNode?",
+      "onClose": "()=>void",
+      "size": "BottomSheetSize",
+      "dismissible": "boolean",
+      "role": "dialog|alertdialog",
+      "closeLabel": "string?"
+    },
+    "demos": [
+      "actions",
+      "context",
+      "confirm",
+      "create",
+      "edit",
+      "single",
+      "multiple",
+      "search",
+      "filters",
+      "date",
+      "permission",
+      "files",
+      "wizard",
+      "progress",
+      "agent"
+    ],
+    "rules": [
+      "All new application pop-ups use a viewport-bottom-attached BottomSheet (no centered or floating app pop-ups).",
+      "Sheet outer shell spans full viewport width and has zero bottom gap; only top corners are rounded.",
+      "Sheet background extends through the bottom safe area, while actions stay above the home indicator.",
+      "Use a header and sticky footer; scroll only sheet content.",
+      "Handle iOS Safari visual viewport keyboard changes; inputs must remain visible.",
+      "Do not allow backdrop/swipe dismiss for unsaved forms or dangerous operations.",
+      "Esc closes dismissible sheets, focus is constrained and restored, reduced motion is honored.",
+      "The full-width shell remains on desktop; only content width is constrained."
+    ]
+  },
+  "gallery": {
+    "location": "Profile > Fejlesztői eszközök > UI Library",
+    "categories": {
+      "Buttons": "app/reference-screens.tsx",
+      "Inputs": "app/reference-screens.tsx",
+      "Cards": "app/evolingo-cards-demo.tsx",
+      "Design System": "app/evolingo-design-system-demo.tsx",
+      "Bottom Sheets & Forms": "app/evo-ui-kit/bottom-sheet-demo.tsx",
+      "Menus & Settings": "app/evolingo-menus-demo.tsx",
+      "Icons": "app/evolingo-icons-demo.tsx",
+      "AI Components": "app/evolingo-ai-components-demo.tsx",
+      "Typography": "app/reference-screens.tsx"
+    }
+  },
+  "validation": {
+    "mustBeMobileResponsive": true,
+    "browserTargets": [
+      "iOS Safari PWA",
+      "desktop browser"
+    ],
+    "baselineWidths": [
+      360,
+      390,
+      430,
+      768,
+      1280
+    ],
+    "focusVisible": true,
+    "prefersReducedMotion": true,
+    "demoSideEffects": "No real permissions, account changes, storage operations, or AI actions performed from gallery specimens.",
+    "scope": "Gallery styling must not globally change production app screens until a component is opted in.",
+    "build": "npm run build",
+    "typecheck": "npm run typecheck"
+  },
+  "useGuidance": "Read AGENTS.md then UI_LIBRARY.md and manifest.json. Reuse source components and tokens rather than generating similar-looking substitutes."
+}
