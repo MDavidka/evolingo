@@ -211,7 +211,7 @@ export default function DesignSystemShowcase() {
           </div>
           <div className="evo-design-demo__layer evo-design-demo__layer--group">
             <div><strong>Layer 1 · Grouped</strong><small>Settings, folders, secondary cards</small></div>
-            <span>#F2F2F7</span>
+            <span>#F5F5F7</span>
           </div>
           <div className="evo-design-demo__layer evo-design-demo__layer--elevated">
             <div><strong>Layer 2 · Elevated</strong><small>Menus, popovers and sheets</small></div>
@@ -219,7 +219,7 @@ export default function DesignSystemShowcase() {
           </div>
           <div className="evo-design-demo__layer evo-design-demo__layer--emphasis">
             <div><strong>Layer 3 · Emphasis</strong><small>Primary action and focus</small></div>
-            <span>#1C1C1E</span>
+            <span>#202127</span>
           </div>
         </div>
       </section>
