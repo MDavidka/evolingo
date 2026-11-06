@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, type ReactNode } from "react"
 import {
   AlertCircle, ArrowUp, AudioLines, BookOpen, BrainCircuit, CalendarDays,
   ChartNoAxesColumn, Check, CheckCircle2, ChevronDown, ChevronRight, Circle,
@@ -36,7 +36,7 @@ function ActionLabel({ Icon, label }: { Icon: LucideIcon; label: string }) {
   return <span className="evo-ai-showcase__action-icon" title={label} aria-label={label}><Icon size={17} strokeWidth={1.7} aria-hidden="true" /></span>
 }
 
-function Section({ id, children }: { id: string; children: React.ReactNode }) {
+function Section({ id, children }: { id: string; children: ReactNode }) {
   return <section className="evo-ai-showcase__section" id={id}>{children}</section>
 }
 
