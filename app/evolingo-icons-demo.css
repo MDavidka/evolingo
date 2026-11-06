@@ -1,0 +1,54 @@
+/* Scoped Icons tab for Evolingo UI Library. */
+.evo-icons-showcase { width: 100%; max-width: 920px; margin-inline: auto; min-width: 0; color: #202124; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", Inter, system-ui, sans-serif; font-size: 14px; }
+.evo-icons-showcase *, .evo-icons-showcase *::before, .evo-icons-showcase *::after { box-sizing: border-box; }
+.evo-icons-showcase h3, .evo-icons-showcase h4, .evo-icons-showcase p { margin: 0; }
+.evo-icons-showcase__intro { padding: 4px 0 17px; }
+.evo-icons-showcase__eyebrow { display: block; color: #8e8e93; font-size: 10px; font-weight: 650; letter-spacing: .06em; }
+.evo-icons-showcase__intro h3 { margin-top: 7px; font-size: 23px; font-weight: 700; letter-spacing: -.03em; line-height: 1.2; }
+.evo-icons-showcase__intro p { margin-top: 7px; font-size: 12px; line-height: 1.55; color: #77777d; }
+.evo-icons-showcase__search { height: 43px; width: 100%; display: flex; align-items: center; gap: 9px; padding: 0 13px; border-radius: 12px; background: #f2f2f7; color: #8e8e93; }
+.evo-icons-showcase__search input { border: 0; outline: 0; background: transparent; flex: 1; min-width: 0; width: 100%; font: inherit; font-size: 14px; color: #202124; }
+.evo-icons-showcase__search input::placeholder { color: #8e8e93; }
+.evo-icons-showcase__search:focus-within { outline: 2px solid #007aff; outline-offset: 2px; }
+.evo-icons-showcase__filters { display: flex; gap: 6px; padding: 13px 0 7px; overflow-x: auto; scrollbar-width: none; }
+.evo-icons-showcase__filters::-webkit-scrollbar { display: none; }
+.evo-icons-showcase__filters button { flex: none; min-height: 34px; border: 0; border-radius: 100px; padding: 0 12px; background: #f2f2f7; color: #202124; font-size: 12px; font-weight: 550; cursor: pointer; }
+.evo-icons-showcase__filters button[aria-pressed="true"] { background: #202124; color: #fff; }
+.evo-icons-showcase__count { min-height: 29px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 6px; color: #8e8e93; font-size: 11px; font-variant-numeric: tabular-nums; }
+.evo-icons-showcase__feedback { color: #202124; }
+.evo-icons-showcase__empty { padding: 30px 10px; text-align: center; color: #8e8e93; }
+.evo-icons-showcase__group { padding: 17px 0 20px; border-top: 1px solid #ededf0; }
+.evo-icons-showcase__group-heading { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; margin-bottom: 12px; }
+.evo-icons-showcase__group-heading h4 { font-size: 15px; line-height: 1.2; font-weight: 650; letter-spacing: -.015em; }
+.evo-icons-showcase__group-heading span { color: #8e8e93; font-size: 11px; }
+.evo-icons-showcase__grid { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 5px; }
+.evo-icons-showcase__tile { min-width: 0; min-height: 81px; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 5px; border: 1px solid transparent; background: #fff; border-radius: 13px; padding: 8px 3px; color: #202124; cursor: pointer; }
+.evo-icons-showcase__tile:hover { background: #f7f7f8; border-color: #ededf0; }
+.evo-icons-showcase__tile:active { background: #f2f2f7; }
+.evo-icons-showcase__tile > svg { flex: none; }
+.evo-icons-showcase__tile > span { display: block; width: 100%; text-align: center; font-size: 11px; line-height: 1.25; font-weight: 550; overflow-wrap: anywhere; }
+.evo-icons-showcase__tile > small { display: block; width: 100%; text-align: center; font-size: 9px; line-height: 1.2; color: #a1a1a6; overflow-wrap: anywhere; }
+.evo-icons-showcase button:focus-visible { outline: 2px solid #007aff; outline-offset: 2px; }
+.evo-icons-showcase__hint { color: #8e8e93; font-size: 12px; margin: -4px 0 15px !important; }
+.evo-icons-showcase__controls { display: grid; gap: 12px; }
+.evo-icons-showcase__control { display: grid; gap: 7px; }
+.evo-icons-showcase__control > span { color: #66666b; font-size: 12px; font-weight: 550; }
+.evo-icons-showcase__control > div[role="group"]:not(.evo-icons-showcase__colors) { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 4px; padding: 3px; border-radius: 12px; background: #f2f2f7; }
+.evo-icons-showcase__control > div[role="group"]:not(.evo-icons-showcase__colors) button { min-width: 0; height: 33px; border: 0; background: transparent; color: #68686f; border-radius: 9px; font-size: 12px; cursor: pointer; }
+.evo-icons-showcase__control > div[role="group"]:not(.evo-icons-showcase__colors) button[aria-pressed="true"] { background: #fff; color: #202124; box-shadow: 0 1px 3px rgba(0,0,0,.08); font-weight: 600; }
+.evo-icons-showcase__colors { display: flex; align-items: center; gap: 10px; }
+.evo-icons-showcase__colors button { width: 30px; height: 30px; display: grid; place-items: center; color: #fff; border-radius: 100%; border: 2px solid transparent; cursor: pointer; }
+.evo-icons-showcase__colors button[aria-pressed="true"] { outline: 2px solid #c7c7cc; outline-offset: 2px; }
+.evo-icons-showcase__example { min-height: 75px; margin-top: 14px; display: flex; align-items: center; justify-content: space-around; gap: 10px; border: 1px solid #e5e5ea; border-radius: 15px; padding: 10px; }
+.evo-icons-showcase__spec { margin-top: 9px !important; text-align: center; color: #8e8e93; font-size: 11px; }
+.evo-icons-showcase__buttons { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 8px; }
+.evo-icons-showcase__buttons > div { display: grid; justify-items: center; gap: 7px; }
+.evo-icons-showcase__buttons small { color: #8e8e93; font-size: 11px; }
+.evo-icons-showcase__button { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 999px; }
+.evo-icons-showcase__button--plain { background: #fff; }
+.evo-icons-showcase__button--soft { background: #f2f2f7; }
+.evo-icons-showcase__button--primary { background: #202124; color: #fff; }
+.evo-icons-showcase__button--outline { border: 1px solid #e5e5ea; background: #fff; }
+.evo-icons-showcase__note { padding: 10px 0 2px; border-top: 1px solid #ededf0; color: #8e8e93; line-height: 1.6; font-size: 11px; }
+@media (max-width: 360px) { .evo-icons-showcase__grid { grid-template-columns: repeat(3,minmax(0,1fr)); } }
+@media (prefers-reduced-motion: reduce) { .evo-icons-showcase * { scroll-behavior: auto !important; } }
