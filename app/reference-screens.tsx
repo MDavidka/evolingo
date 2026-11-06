@@ -2,10 +2,10 @@
 import { useEffect, useRef, useState, type ReactNode } from "react"
 import dynamic from "next/dynamic"
 import UnifiedSheet from "./unified-sheet"
-import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import "./evolingo-button-demo.css"
 import { AppHeader } from "@/components/app-header"
-import { RefreshCw, ArrowUpRight, BookOpen, ChevronLeft, ChevronRight, CircleHelp, Eye, EyeOff, Info, LogIn, ShieldCheck, UserRound, X, Crown, Bell, FolderOpen, CalendarDays, Settings2, LogOut, Component, Search, CheckCircle2, AlertCircle, LoaderCircle } from "lucide-react"
+import { RefreshCw, ArrowUp, ArrowUpRight, Plus, SlidersHorizontal, Ellipsis, Check, BookOpen, ChevronLeft, ChevronRight, CircleHelp, Eye, EyeOff, Info, LogIn, ShieldCheck, UserRound, X, Crown, Bell, FolderOpen, CalendarDays, Settings2, LogOut, Component, Search, CheckCircle2, AlertCircle, LoaderCircle } from "lucide-react"
 
 const Brainstorm = dynamic(() => import("./brainstorm"), { ssr: false })
 const LibrarySpace = dynamic(() => import("./library-space"), { ssr: false })
@@ -57,10 +57,54 @@ function AuthScreen({ onBack, initialRegister, onModeChange }: { onBack: () => v
   </div>
 }
 
+function ButtonsShowcase() {
+  const [segment, setSegment] = useState("All")
+  const [selectedChip, setSelectedChip] = useState(true)
+  const base = "evo-buttons-demo__control"
+  return <div className="evo-buttons-demo" aria-label="Modern iOS és ChatGPT stílusú gombok">
+    <div className="evo-buttons-demo__group">
+      <div className="evo-buttons-demo__heading">01 — Primary actions <span>iOS / ChatGPT</span></div>
+      <div className="evo-buttons-demo__stack">
+        <button type="button" className={base + " evo-buttons-demo__control--primary"}>Continue <ArrowUpRight aria-hidden="true" /></button>
+        <button type="button" className={base + " evo-buttons-demo__control--secondary"}>Secondary action</button>
+        <button type="button" className={base + " evo-buttons-demo__control--soft"}>Tertiary action</button>
+      </div>
+    </div>
+    <div className="evo-buttons-demo__group">
+      <div className="evo-buttons-demo__heading">02 — Glass &amp; floating</div>
+      <div className="evo-buttons-demo__floating">
+        <button type="button" className={base + " evo-buttons-demo__control--glass evo-buttons-demo__control--floating"}><SlidersHorizontal aria-hidden="true" />Customize</button>
+        <button type="button" className={base + " evo-buttons-demo__control--glass evo-buttons-demo__control--round"} aria-label="További lehetőségek"><Ellipsis aria-hidden="true" /></button>
+        <button type="button" className={base + " evo-buttons-demo__control--primary evo-buttons-demo__control--round"} aria-label="Új elem"><Plus aria-hidden="true" /></button>
+      </div>
+      <p className="evo-buttons-demo__caption">Floating toolbar · Translucent surface · Circular action</p>
+    </div>
+    <div className="evo-buttons-demo__group">
+      <div className="evo-buttons-demo__heading">03 — ChatGPT-style controls</div>
+      <div className="evo-buttons-demo__row">
+        <button type="button" className={base + " evo-buttons-demo__control--soft evo-buttons-demo__control--compact"}><Plus aria-hidden="true" />Add files</button>
+        <button type="button" className={base + " evo-buttons-demo__control--soft evo-buttons-demo__control--compact"}><SlidersHorizontal aria-hidden="true" />Tools</button>
+        <button type="button" className={base + " evo-buttons-demo__control--primary evo-buttons-demo__control--round-compact"} aria-label="Küldés"><ArrowUp aria-hidden="true" /></button>
+      </div>
+    </div>
+    <div className="evo-buttons-demo__group">
+      <div className="evo-buttons-demo__heading">04 — Selection &amp; segmented</div>
+      <div className="evo-buttons-demo__segment" role="group" aria-label="Szűrő választása">
+        {["All", "Active", "Done"].map(item => <button key={item} type="button" aria-pressed={segment === item} onClick={() => setSegment(item)}>{item}</button>)}
+      </div>
+      <div className="evo-buttons-demo__row evo-buttons-demo__chips">
+        <button type="button" aria-pressed={selectedChip} onClick={() => setSelectedChip(!selectedChip)} className={base + " evo-buttons-demo__chip " + (selectedChip ? "evo-buttons-demo__chip--selected" : "evo-buttons-demo__chip--unselected")}>{selectedChip && <Check aria-hidden="true" />}Selected</button>
+        <button type="button" aria-pressed={!selectedChip} onClick={() => setSelectedChip(!selectedChip)} className={base + " evo-buttons-demo__chip " + (!selectedChip ? "evo-buttons-demo__chip--selected" : "evo-buttons-demo__chip--unselected")}>Unselected</button>
+        <button type="button" disabled className={base + " evo-buttons-demo__chip evo-buttons-demo__chip--disabled"}>Disabled</button>
+      </div>
+    </div>
+  </div>
+}
+
 function DemoLibrary({ onBack }: { onBack: () => void }) {
   const [query, setQuery] = useState("")
   const categories = [
-    { id: "buttons", title: "Gombok", keywords: "button buttons", content: <div className="evo-demo-preview"><Button>Elsődleges</Button><Button variant="secondary">Másodlagos</Button><Button variant="outline">Körvonalas</Button><Button variant="ghost">Egyszerű</Button><Button disabled>Letiltva</Button></div> },
+    { id: "buttons", title: "Buttons", keywords: "button buttons gombok ios chatgpt glass floating segmented pill capsule", content: <ButtonsShowcase /> },
     { id: "inputs", title: "Beviteli mezők", keywords: "input search", content: <div className="evo-demo-preview"><Input aria-label="Példa szövegmező" placeholder="Írj ide…" /><Input aria-label="Példa keresőmező" type="search" placeholder="Keresés…" /><Input aria-label="Letiltott mező" placeholder="Letiltva" disabled /></div> },
     { id: "settings", title: "Beállítások és navigáció", keywords: "settings navigation rows", content: <div className="evo-demo-preview"><SettingRow icon={Settings2} title="Beállítási sor" subtitle="Meglévő közös komponens" /><SettingRow icon={Info} title="Információ" subtitle="Csak előnézet" /></div> },
     { id: "icons", title: "Ikonok és visszajelzés", keywords: "icons feedback status", content: <div className="evo-demo-preview evo-demo-icons"><CheckCircle2 aria-label="Siker" /><AlertCircle aria-label="Figyelmeztetés" /><LoaderCircle aria-label="Betöltés" /><Search aria-label="Keresés" /><Component aria-label="Komponens" /></div> },
