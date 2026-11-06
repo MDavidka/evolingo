@@ -1,0 +1,74 @@
+/* Profile: native settings groups with the quieter Evölingo/ChatGPT workspace palette. */
+.evo-ai-app-shell .ref-view-profile > .ref-profile {
+  width: min(100%, 760px);
+  margin: 0 auto;
+  padding: calc(env(safe-area-inset-top, 0px) + 76px) 22px max(40px, env(safe-area-inset-bottom, 24px));
+  box-sizing: border-box;
+}
+.evo-ai-app-shell .ref-view-profile .ref-profile > h1 {
+  margin: 0 0 24px;
+  color: var(--color-text, #202522);
+  font-size: 30px;
+  line-height: 1.12;
+  letter-spacing: -.8px;
+  font-weight: 700;
+}
+.evo-ai-app-shell .ref-view-profile .ref-profile-identity {
+  min-height: 86px;
+  gap: 15px;
+  padding: 14px 16px;
+  border: 1px solid var(--color-separator, #e2e5e1);
+  border-radius: 20px;
+  background: var(--color-surface-2, #f3f4f1);
+}
+.evo-ai-app-shell .ref-view-profile .ref-profile-identity .ref-avatar { width: 58px; height: 58px; }
+.evo-ai-app-shell .ref-view-profile .ref-profile-identity > div strong { font-size: 17px; font-weight: 650; letter-spacing: -.2px; }
+.evo-ai-app-shell .ref-view-profile .ref-profile-identity > div span { color: var(--color-text-2, #68716b); font-size: 14px; }
+.evo-ai-app-shell .ref-view-profile .ref-profile-identity .ref-outline-pill {
+  min-height: 40px; padding-inline: 14px; border: 1px solid var(--color-separator, #dfe4df);
+  border-radius: 999px; background: var(--color-bg, #fff); color: var(--color-text, #26322b); font-size: 14px; font-weight: 600;
+}
+.evo-ai-app-shell .ref-view-profile .ref-profile > hr { height: 0; margin: 0; background: none; }
+.evo-ai-app-shell .ref-view-profile .ref-settings-group {
+  margin-top: 26px;
+  padding: 0;
+  border: 0;
+}
+.evo-ai-app-shell .ref-view-profile .ref-settings-group h2 {
+  margin: 0 0 9px 4px;
+  color: var(--color-text-2, #626d65);
+  font-size: 13px;
+  line-height: 18px;
+  font-weight: 650;
+  letter-spacing: .01em;
+}
+.evo-ai-app-shell .ref-view-profile .ref-setting-row {
+  min-height: 62px;
+  gap: 13px;
+  padding: 9px 14px;
+  border: 0;
+  border-bottom: 1px solid var(--color-separator, #e7e9e6);
+  background: var(--color-surface-2, #fff);
+  color: var(--color-text, #202522);
+  transition: background-color 140ms ease;
+}
+.evo-ai-app-shell .ref-view-profile .ref-setting-row:first-of-type { border-radius: 16px 16px 0 0; }
+.evo-ai-app-shell .ref-view-profile .ref-setting-row:last-child { border-bottom: 0; border-radius: 0 0 16px 16px; }
+.evo-ai-app-shell .ref-view-profile .ref-setting-row:only-of-type { border-radius: 16px; }
+.evo-ai-app-shell .ref-view-profile .ref-setting-row:hover { background: var(--color-fill, #eef1ed); }
+.evo-ai-app-shell .ref-view-profile .ref-setting-row > svg:first-child { color: #526a5a; }
+.evo-ai-app-shell .ref-view-profile .ref-setting-row > span { gap: 3px; }
+.evo-ai-app-shell .ref-view-profile .ref-setting-row strong { font-size: 15px; line-height: 20px; font-weight: 550; }
+.evo-ai-app-shell .ref-view-profile .ref-setting-row small { color: var(--color-text-2, #626d65); font-size: 13px; line-height: 18px; }
+.evo-ai-app-shell .ref-view-profile .ref-setting-row > svg:last-child { color: #8b948e; }
+.evo-ai-app-shell .ref-view-profile .ref-support-group + .ref-settings-group { margin-top: 26px; }
+.evo-ai-app-shell .ref-view-profile .ref-setting-row[role="switch"] { min-height: 66px; }
+.evo-ai-app-shell .ref-view-profile .evo-ai-settings-toggle { margin-left: auto; }
+.evo-ai-app-shell .ref-view-profile :is(button,input):focus-visible { outline: 2px solid #52745c; outline-offset: 2px; }
+@media (max-width: 767px) {
+  .evo-ai-app-shell .ref-view-profile > .ref-profile { padding: calc(env(safe-area-inset-top, 0px) + 72px) 18px max(32px, env(safe-area-inset-bottom, 24px)); }
+  .evo-ai-app-shell .ref-view-profile .ref-profile > h1 { margin-bottom: 20px; font-size: 28px; }
+  .evo-ai-app-shell .ref-view-profile .ref-settings-group { margin-top: 23px; }
+  .evo-ai-app-shell .ref-view-profile .ref-setting-row { min-height: 60px; }
+}
+@media (prefers-reduced-motion: reduce) { .evo-ai-app-shell .ref-view-profile .ref-setting-row { transition: none; } }

@@ -13,7 +13,10 @@ type BuilderTask = {
   markdown: string
   approved: boolean
   createdAt: number
+  category?: "style" | "optimize" | "redesign" | "features"
 }
+
+const MAX_TASKS = 200
 
 function validTask(value: unknown): value is BuilderTask {
   if (!value || typeof value !== "object") return false
@@ -21,7 +24,8 @@ function validTask(value: unknown): value is BuilderTask {
   return typeof task.id === "string" && task.id.length <= 80 && typeof task.name === "string" && task.name.trim().length > 0 && task.name.length <= 80 &&
     typeof task.description === "string" && task.description.trim().length > 0 && task.description.length <= 500 &&
     typeof task.icon === "string" && task.icon.length <= 8 && typeof task.plan === "string" && task.plan.length <= 10000 &&
-    typeof task.markdown === "string" && task.markdown.length <= 12000 && typeof task.approved === "boolean" && typeof task.createdAt === "number"
+    typeof task.markdown === "string" && task.markdown.length <= 12000 && typeof task.approved === "boolean" && typeof task.createdAt === "number" &&
+    (task.category === undefined || ["style", "optimize", "redesign", "features"].includes(String(task.category)))
 }
 
 export async function GET() {
@@ -40,7 +44,10 @@ export async function POST(request: NextRequest) {
     const body: unknown = await request.json()
     if (!validTask(body)) return NextResponse.json({ error: "Érvénytelen feladat." }, { status: 400 })
     const db = await getDatabase()
-    await db.collection<BuilderTask>("brainstorm_tasks").updateOne({ id: body.id }, { $setOnInsert: body }, { upsert: true })
+    const tasks = db.collection<BuilderTask>("brainstorm_tasks")
+    const existing = await tasks.findOne({ id: body.id }, { projection: { _id: 1 } })
+    if (!existing && await tasks.countDocuments() >= MAX_TASKS) return NextResponse.json({ error: "Az ötletbörze elérte a 200 feladatos maximumot." }, { status: 409 })
+    await tasks.updateOne({ id: body.id }, { $setOnInsert: body }, { upsert: true })
     return NextResponse.json({ ok: true })
   } catch (error) {
     console.error("POST /api/brainstorm failed", error)

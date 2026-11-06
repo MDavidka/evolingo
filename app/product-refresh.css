@@ -1,0 +1,132 @@
+/* Mobile role map: preserve Evolingo's shipped sage and neutral palette. */
+@media (max-width: 767px) {
+  :root {
+    --mobile-canvas: #f7f8f5;
+    --mobile-surface: #ffffff;
+    --mobile-action: #285b48;
+    --mobile-accent: #537b63;
+    --mobile-text: #202522;
+    --mobile-muted: #686f6b;
+    --mobile-border: #dfe4df;
+    --mobile-focus: #315f49;
+    --color-bg: var(--mobile-canvas);
+    --color-sidebar: #f0f2ed;
+    --color-text: var(--mobile-text);
+    --color-text-2: var(--mobile-muted);
+    --color-text-3: #686f6b;
+    --color-action: var(--mobile-action);
+    --color-on-action: #fff;
+    --color-separator: var(--mobile-border);
+    --color-fill: #e7ece6;
+    --color-fill-pressed: #dce5dc;
+    --color-surface-2: #eef1ed;
+    --color-focus: var(--mobile-focus);
+    --evo-bg: var(--mobile-canvas);
+    --evo-surface: #eef1ed;
+    --evo-surface-raised: var(--mobile-surface);
+    --evo-surface-muted: #e7ece6;
+    --evo-text: var(--mobile-text);
+    --evo-text-secondary: var(--mobile-muted);
+    --evo-action: var(--mobile-action);
+    --evo-action-hover: #204b39;
+    --evo-border: var(--mobile-border);
+    --evo-focus: var(--mobile-focus);
+    --evo-font-title: 700 30px/36px Inter, Arial, sans-serif;
+    --evo-font-section: 600 19px/25px Inter, Arial, sans-serif;
+    --evo-font-body: 400 16px/24px Inter, Arial, sans-serif;
+    --evo-font-support: 500 13px/18px Inter, Arial, sans-serif;
+    --evo-target-size: 44px;
+  }
+  html, body, .app-shell, .screen-content, .evo-ai-app-shell, .evo-ai-app-shell .ref-app {
+    background: var(--mobile-canvas) !important; color: var(--mobile-text);
+  }
+  .evo-sidebar-host .evo-sidebar, .evo-sidebar-host .evo-sidebar-safe { background: #f0f2ed !important; }
+  .evo-sidebar-host .evo-sidebar-nav button[aria-current="page"] { background: #e0e9df; color: #285b48; }
+  .evo-ai-app-shell :is(button,input,textarea,[contenteditable]):focus-visible { outline: 2px solid var(--mobile-focus); outline-offset: 2px; }
+  .evo-ai-app-shell .ref-topbar { background: var(--mobile-canvas); border-color: var(--mobile-border); }
+  .evo-ai-app-shell .ref-view-chat .evo-chat-top-fade { background: linear-gradient(180deg,var(--mobile-canvas),transparent) !important; }
+  .ref-view-chat .evo-chat-composer { background: #fff !important; border-color: var(--mobile-border) !important; }
+  .ref-view-chat .evo-chat-entry--user .evo-chat-bubble { background: #e7ece6 !important; color: var(--mobile-text); }
+  .evo-ai-app-shell .ref-setting-row { border-color: var(--mobile-border); }
+  .evo-ai-app-shell .ref-setting-row:hover { background: #eef1ed; }
+  .app-shell.reference-shell .library-space .library-search { background: #fff; border-color: var(--mobile-border); }
+  .app-shell.reference-shell .library-space .library-file.is-selected { background: #e7ece6; }
+  .evo-ai-chat-suggestions button { background: #fff; border-color: var(--mobile-border); color: #285b48; }
+  .ref-view-chat .evo-chat-composer [contenteditable][data-empty="true"]::before { color: rgb(110, 110, 118) !important; }
+}
+
+/* Mobile task roll-up: header geometry, readable roles, controls and list rhythm. */
+@media (max-width: 767px) {
+  :root { --mobile-header-content: 56px; }
+  .evo-sidebar-host .evo-morph-anchor,
+  .evo-sidebar-host .evo-global-profile-button { top: calc(env(safe-area-inset-top, 0px) + 8px) !important; }
+  .ref-view-chat > .ref-topbar {
+    height: calc(env(safe-area-inset-top, 0px) + 76px) !important;
+    padding-top: calc(env(safe-area-inset-top, 0px) + 8px) !important;
+    background: var(--mobile-canvas) !important;
+  }
+  .ref-view-chat .evo-chat-frame { padding-top: calc(env(safe-area-inset-top, 0px) + 82px); }
+  .app-shell.reference-shell .ref-app:not(.ref-view-chat):not(.ref-view-auth) > .ref-topbar {
+    height: calc(env(safe-area-inset-top, 0px) + var(--mobile-header-content)) !important;
+    min-height: calc(env(safe-area-inset-top, 0px) + var(--mobile-header-content)) !important;
+    padding: env(safe-area-inset-top, 0px) 18px 0 !important;
+  }
+  .app-shell.reference-shell .ref-app.ref-view-profile,
+  .app-shell.reference-shell .ref-app.ref-view-brainstorm,
+  .app-shell.reference-shell .ref-app.ref-view-utility,
+  .app-shell.reference-shell .ref-app.ref-view-space,
+  .evo-schedule,
+  .evo-tools-hub { padding-top: calc(env(safe-area-inset-top, 0px) + 76px) !important; }
+  .app-shell.reference-shell .library-space { padding-top: 0 !important; }
+
+  /* Measured role scale; keep the shipped Inter/system stack. */
+  .evo-ai-app-shell :is(.ref-view-profile,.ref-view-brainstorm,.ref-view-utility,.ref-view-space) h1,
+  .evo-schedule-heading h1,
+  .evo-tools-storage-heading h1 { font-size: 28px !important; line-height: 34px !important; font-weight: 700 !important; letter-spacing: -.55px !important; }
+  .evo-ai-app-shell :is(h2,.ref-settings-group h2) { font-size: 19px; line-height: 25px; font-weight: 600; }
+  .evo-ai-app-shell :is(p,.ref-setting-row small,.evo-schedule-note) { line-height: 1.5; }
+  .evo-ai-app-shell :is(input,textarea,select,[contenteditable]) { font-size: max(16px, 1em) !important; }
+
+  /* One quiet control language, preserving official provider marks. */
+  .evo-ai-app-shell :is(.ref-dark-pill,.evo-schedule-new,.evo-schedule-submit,.library-add-primary,.ref-auth-submit) { min-height: 50px !important; }
+  .evo-ai-app-shell :is(.ref-outline-pill,.library-view-button,.library-back,.evo-schedule-more,.evo-sidebar-tool) { min-width: 44px; min-height: 44px; }
+  .evo-ai-app-shell :is(button,a) { transition: background-color 140ms ease, transform 120ms ease; }
+  .evo-ai-app-shell :is(button,a):active { transform: scale(.98); }
+  .evo-ai-app-shell :is(button,a):focus-visible { outline-color: var(--mobile-focus) !important; }
+
+  /* Lists sit on the canvas and separate with hairlines; avoid nested elevation. */
+  .app-shell.reference-shell .library-space .library-files,
+  .app-shell.reference-shell .library-space .library-file,
+  .evo-schedule-list,
+  .evo-tools-hub .evo-tools-storage-grid { box-shadow: none !important; }
+  .app-shell.reference-shell .library-space .library-file { border-radius: 0 !important; border-bottom: 1px solid var(--mobile-border); }
+  .app-shell.reference-shell .library-space .library-search,
+  .evo-schedule-search,.evo-tools-hub .evo-tools-search,.ref-search { min-height: 50px; border-radius: 24px !important; }
+  .evo-schedule-tabs button,.evo-schedule-filter button { color: #555e58; }
+  .evo-schedule-empty p,.evo-tools-hub .evo-tools-storage-subtitle { color: #59615c !important; }
+
+  /* Messages: assistant is reading content; only the user's turn gets a soft surface. */
+  .evo-chat-thread { gap: 22px; }
+  .evo-chat-entry--assistant .evo-chat-bubble { padding: 0 !important; font-size: 16px; line-height: 1.55; }
+  .evo-chat-entry--user .evo-chat-bubble { padding: 10px 14px; border-radius: 18px; background: #eef0ee !important; }
+  .evo-chat-copy { color: #555e58 !important; }
+  .evo-chat-composer { min-height: 52px; border-radius: 24px !important; }
+}
+@media (min-width: 768px) {
+  /* Mobile roll-up has no intended desktop visual changes. */
+}
+@media (max-width: 767px) and (prefers-reduced-motion: reduce) {
+  .evo-ai-app-shell :is(button,a) { transition: none; }
+}
+@media (max-width: 767px) {
+  .evo-ai-app-shell .evo-brainstorm { padding-top: calc(env(safe-area-inset-top, 0px) + 76px) !important; }
+  .evo-ai-app-shell .evo-brainstorm-header h1 { font-size: 28px !important; line-height: 34px !important; }
+  .evo-ai-app-shell .evo-schedule-tabs button,
+  .evo-ai-app-shell .evo-schedule-filter button { font-weight: 550; }
+  .evo-ai-app-shell .evo-schedule-empty p { color: #59615c !important; }
+  .evo-ai-app-shell .evo-tools-hub .evo-tools-storage-subtitle,
+  .evo-ai-app-shell .evo-schedule-card-copy small,
+  .evo-ai-app-shell .evo-schedule-progress small { color: #59615c !important; }
+  .evo-ai-app-shell .evo-schedule-card { border: 1px solid var(--mobile-border); box-shadow: none !important; }
+  .evo-ai-app-shell .evo-schedule-actions { border-color: var(--mobile-border); }
+}
