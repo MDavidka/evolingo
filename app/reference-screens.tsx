@@ -5,6 +5,8 @@ import UnifiedSheet from "./unified-sheet"
 import OverlaysShowcase from "./evolingo-overlays-demo"
 import CardsShowcase from "./evolingo-cards-demo"
 import DesignSystemShowcase from "./evolingo-design-system-demo"
+import IconsShowcase from "./evolingo-icons-demo"
+import AIComponentsShowcase from "./evolingo-ai-components-demo"
 import "./evolingo-button-demo.css"
 import { AppHeader } from "@/components/app-header"
 import { RefreshCw, ArrowUp, ArrowUpRight, Plus, SlidersHorizontal, ChevronDown, Ellipsis, Check, BookOpen, ChevronLeft, ChevronRight, CircleHelp, Eye, EyeOff, Info, LogIn, ShieldCheck, UserRound, X, Crown, Bell, FolderOpen, CalendarDays, Settings2, LogOut, Component, Search, CheckCircle2, AlertCircle, LoaderCircle } from "lucide-react"
@@ -135,7 +137,8 @@ function DemoLibrary({ onBack }: { onBack: () => void }) {
     { id: "design-system", title: "Design System", content: <DesignSystemShowcase /> },
     { id: "overlays", title: "Popups & Alerts", content: <OverlaysShowcase /> },
     { id: "settings", title: "Settings", content: <div className="evo-demo-preview"><SettingRow icon={Settings2} title="Beállítási sor" subtitle="Meglévő közös komponens" /><SettingRow icon={Info} title="Információ" subtitle="Csak előnézet" /></div> },
-    { id: "icons", title: "Icons", content: <div className="evo-demo-preview evo-demo-icons"><CheckCircle2 aria-label="Siker" /><AlertCircle aria-label="Figyelmeztetés" /><LoaderCircle aria-label="Betöltés" /><Search aria-label="Keresés" /><Component aria-label="Komponens" /></div> },
+    { id: "icons", title: "Icons", content: <IconsShowcase /> },
+    { id: "ai-components", title: "AI Components", content: <AIComponentsShowcase /> },
     { id: "typography", title: "Typography", content: <div className="evo-demo-preview"><h2>Címsor</h2><p>Normál szöveg a jelenlegi globális betűstílussal.</p><small>Másodlagos szöveg</small></div> },
   ]
   const active = categories.find(category => category.id === activeCategory) ?? categories[0]
