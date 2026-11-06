@@ -1,7 +1,8 @@
 "use client"
-import { useEffect, useId, useRef, useState, type PointerEvent, type ReactNode } from "react"
+import { useEffect, useId, useRef, useState, type CSSProperties, type PointerEvent, type ReactNode } from "react"
 import { createPortal } from "react-dom"
 import { X } from "lucide-react"
+import "./tokens.css"
 import "./bottom-sheet.css"
 
 export type BottomSheetSize = "compact" | "medium" | "expanded"
@@ -124,7 +125,7 @@ export function BottomSheet({
       className={"evo-ui-scope evo-ui-sheet-backdrop" + (closing ? " evo-ui-sheet-backdrop--closing" : "")}
       role="presentation"
       onPointerDown={event => { if (dismissible && event.target === event.currentTarget) requestClose() }}
-      style={{ "--evo-sheet-keyboard-offset": keyboardOffset + "px" } as React.CSSProperties}
+      style={{ "--evo-sheet-keyboard-offset": keyboardOffset + "px" } as CSSProperties}
     >
       <section
         ref={panelRef}
