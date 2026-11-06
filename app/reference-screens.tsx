@@ -2,10 +2,9 @@
 import { useEffect, useRef, useState, type ReactNode } from "react"
 import dynamic from "next/dynamic"
 import UnifiedSheet from "./unified-sheet"
-import { Input } from "@/components/ui/input"
 import "./evolingo-button-demo.css"
 import { AppHeader } from "@/components/app-header"
-import { RefreshCw, ArrowUp, ArrowUpRight, Plus, SlidersHorizontal, Ellipsis, Check, BookOpen, ChevronLeft, ChevronRight, CircleHelp, Eye, EyeOff, Info, LogIn, ShieldCheck, UserRound, X, Crown, Bell, FolderOpen, CalendarDays, Settings2, LogOut, Component, Search, CheckCircle2, AlertCircle, LoaderCircle } from "lucide-react"
+import { RefreshCw, ArrowUp, ArrowUpRight, Plus, SlidersHorizontal, ChevronDown, Ellipsis, Check, BookOpen, ChevronLeft, ChevronRight, CircleHelp, Eye, EyeOff, Info, LogIn, ShieldCheck, UserRound, X, Crown, Bell, FolderOpen, CalendarDays, Settings2, LogOut, Component, Search, CheckCircle2, AlertCircle, LoaderCircle } from "lucide-react"
 
 const Brainstorm = dynamic(() => import("./brainstorm"), { ssr: false })
 const LibrarySpace = dynamic(() => import("./library-space"), { ssr: false })
@@ -101,11 +100,34 @@ function ButtonsShowcase() {
   </div>
 }
 
+function InputsShowcase() {
+  const [displayName, setDisplayName] = useState("Mdavid")
+  const [passwordVisible, setPasswordVisible] = useState(false)
+  const [search, setSearch] = useState("")
+  const [compactSearch, setCompactSearch] = useState("")
+  const [email, setEmail] = useState("hello@example.com")
+  const [focusValue, setFocusValue] = useState("Evolingo")
+  const [otp, setOtp] = useState("")
+  return <div className="evo-inputs-demo">
+    <section className="evo-inputs-demo__item"><span className="evo-inputs-demo__eyebrow">01 — Soft system field</span><input className="evo-inputs-demo__field" aria-label="Your name" placeholder="Your name" /><small>Quiet surface · 54px · 18px radius</small></section>
+    <section className="evo-inputs-demo__item"><span className="evo-inputs-demo__eyebrow">02 — Minimal outline</span><input className="evo-inputs-demo__field evo-inputs-demo__field--outline" aria-label="Email address" placeholder="Email address" type="email" autoComplete="email" /></section>
+    <section className="evo-inputs-demo__item"><span className="evo-inputs-demo__eyebrow">03 — Apple search capsule</span><label className="evo-inputs-demo__search"><Search size={19} aria-hidden="true" /><input aria-label="Search anything" type="search" value={search} onChange={event => setSearch(event.target.value)} placeholder="Search anything" /></label></section>
+    <section className="evo-inputs-demo__item"><span className="evo-inputs-demo__eyebrow">04 — Inline editable field</span><label className="evo-inputs-demo__inline"><span>Display name</span><input aria-label="Display name" value={displayName} onChange={event => setDisplayName(event.target.value)} /><ChevronRight size={17} aria-hidden="true" /></label><small>Native Settings-style editing · no surrounding box</small></section>
+    <section className="evo-inputs-demo__item"><span className="evo-inputs-demo__eyebrow">05 — Floating label</span><label className="evo-inputs-demo__floating"><span>Email</span><input aria-label="Email" type="email" value={email} onChange={event => setEmail(event.target.value)} /></label></section>
+    <section className="evo-inputs-demo__item"><span className="evo-inputs-demo__eyebrow">06 — Compact search / filter</span><div className="evo-inputs-demo__compact"><label className="evo-inputs-demo__search"><Search size={18} aria-hidden="true" /><input type="search" aria-label="Search files" value={compactSearch} onChange={event => setCompactSearch(event.target.value)} placeholder="Search files" /></label><button type="button" aria-label="Filter options" title="Filter options"><SlidersHorizontal size={19} /></button></div></section>
+    <section className="evo-inputs-demo__item"><span className="evo-inputs-demo__eyebrow">07 — ChatGPT composer</span><div className="evo-inputs-demo__composer"><textarea aria-label="Ask anything" rows={2} placeholder="Ask anything" /><div className="evo-inputs-demo__composer-actions"><div><button type="button" aria-label="Add attachment"><Plus size={21} /></button><button type="button">Tools <ChevronDown size={15} /></button></div><button type="button" className="evo-inputs-demo__send" aria-label="Send message"><ArrowUp size={20} /></button></div></div><small>One quiet surface · no nested cards</small></section>
+    <section className="evo-inputs-demo__item"><span className="evo-inputs-demo__eyebrow">08 — Multiline writing</span><textarea className="evo-inputs-demo__multiline" aria-label="Write your response" rows={4} placeholder="Write your response..." /></section>
+    <section className="evo-inputs-demo__item"><span className="evo-inputs-demo__eyebrow">09 — OTP / verification</span><div className="evo-inputs-demo__otp"><input aria-label="Six digit verification code" autoComplete="one-time-code" inputMode="numeric" maxLength={6} pattern="[0-9]*" value={otp} onChange={event => setOtp(event.target.value.replace(/\\D/g, "").slice(0, 6))} /><div aria-hidden="true">{Array.from({ length: 6 }, (_, i) => <span key={i}>{otp[i] ?? "·"}</span>)}</div></div></section>
+    <section className="evo-inputs-demo__item"><span className="evo-inputs-demo__eyebrow">10 — Focused field</span><input className="evo-inputs-demo__field evo-inputs-demo__field--focus" aria-label="Focused example" value={focusValue} onChange={event => setFocusValue(event.target.value)} /><small>Subtle graphite focus · no blue glow</small></section>
+    <section className="evo-inputs-demo__item"><span className="evo-inputs-demo__eyebrow">11 — Password visibility</span><div className="evo-inputs-demo__password"><input aria-label="Password" placeholder="Password" type={passwordVisible ? "text" : "password"} autoComplete="current-password" /><button type="button" aria-label={passwordVisible ? "Hide password" : "Show password"} onClick={() => setPasswordVisible(!passwordVisible)}>{passwordVisible ? <EyeOff size={19} /> : <Eye size={19} />}</button></div></section>
+  </div>
+}
+
 function DemoLibrary({ onBack }: { onBack: () => void }) {
   const [activeCategory, setActiveCategory] = useState("buttons")
   const categories = [
     { id: "buttons", title: "Buttons", content: <ButtonsShowcase /> },
-    { id: "inputs", title: "Inputs", content: <div className="evo-demo-preview"><Input aria-label="Példa szövegmező" placeholder="Írj ide…" /><Input aria-label="Példa keresőmező" type="search" placeholder="Keresés…" /><Input aria-label="Letiltott mező" placeholder="Letiltva" disabled /></div> },
+    { id: "inputs", title: "Inputs", content: <InputsShowcase /> },
     { id: "settings", title: "Settings", content: <div className="evo-demo-preview"><SettingRow icon={Settings2} title="Beállítási sor" subtitle="Meglévő közös komponens" /><SettingRow icon={Info} title="Információ" subtitle="Csak előnézet" /></div> },
     { id: "icons", title: "Icons", content: <div className="evo-demo-preview evo-demo-icons"><CheckCircle2 aria-label="Siker" /><AlertCircle aria-label="Figyelmeztetés" /><LoaderCircle aria-label="Betöltés" /><Search aria-label="Keresés" /><Component aria-label="Komponens" /></div> },
     { id: "typography", title: "Typography", content: <div className="evo-demo-preview"><h2>Címsor</h2><p>Normál szöveg a jelenlegi globális betűstílussal.</p><small>Másodlagos szöveg</small></div> },
