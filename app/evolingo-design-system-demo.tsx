@@ -14,9 +14,21 @@ import "./evolingo-design-system-demo.css"
 
 const palettes = [
   {
+    id: "evolingo",
+    title: "Evolingo Neutral",
+    description: "Canonical default · reused across components",
+    swatches: [
+      { role: "Canvas", color: "#FFFFFF" },
+      { role: "Surface", color: "#F5F5F7" },
+      { role: "Border", color: "#E5E5EA" },
+      { role: "Text", color: "#202127" },
+      { role: "Accent", color: "#202127" },
+    ],
+  },
+  {
     id: "apple",
     title: "Apple System",
-    description: "Native iOS neutral",
+    description: "Optional native iOS blue accent",
     swatches: [
       { role: "Canvas", color: "#FFFFFF" },
       { role: "Surface", color: "#F2F2F7" },
@@ -82,7 +94,7 @@ const fontPresets = [
   { name: "Rounded System", info: "Friendly accent style", className: "evo-design-demo__font--rounded", sample: "Learn better, every day." },
 ] as const
 
-const spacing = [4, 8, 12, 16, 20, 24, 32] as const
+const spacing = [4, 8, 12, 16, 20, 24] as const
 const paddingPresets = [
   { name: "Screen", value: "16px horizontal" },
   { name: "Card", value: "12–16px" },
@@ -93,9 +105,10 @@ const paddingPresets = [
 ] as const
 
 const radii = [
-  { name: "Small", px: "8px" },
-  { name: "Medium", px: "12px" },
-  { name: "Large", px: "18px" },
+  { name: "Small", px: "10px" },
+  { name: "Input", px: "14px" },
+  { name: "Card", px: "16px" },
+  { name: "Sheet", px: "26px" },
   { name: "Capsule", px: "999px" },
 ] as const
 
@@ -127,13 +140,13 @@ export default function DesignSystemShowcase() {
       </div>
 
       <section className="evo-design-demo__section" aria-labelledby="evo-design-colors">
-        <DemoHeading id="evo-design-colors" number="01 / COLORS" title="Color presets" subtitle="Four ready-to-use palettes, each with five semantic roles." />
+        <DemoHeading id="evo-design-colors" number="01 / COLORS" title="Color presets" subtitle="One canonical palette and four optional alternatives." />
         <div className="evo-design-demo__palette-grid">
           {palettes.map((palette) => (
             <article className="evo-design-demo__palette" key={palette.id}>
               <div className="evo-design-demo__palette-title">
                 <div><h4>{palette.title}</h4><p>{palette.description}</p></div>
-                {palette.id === "apple" && <span className="evo-design-demo__default-tag">Default</span>}
+                {palette.id === "evolingo" && <span className="evo-design-demo__default-tag">Default</span>}
               </div>
               <div className="evo-design-demo__swatches">
                 {palette.swatches.map((swatch) => (
@@ -178,7 +191,7 @@ export default function DesignSystemShowcase() {
           {spacing.map((px) => (
             <div className="evo-design-demo__spacing-row" key={px}>
               <span>{px}px</span>
-              <div><span style={{ width: (px / 32) * 100 + "%" }} /></div>
+              <div><span style={{ width: (px / 24) * 100 + "%" }} /></div>
             </div>
           ))}
         </div>
