@@ -9,7 +9,7 @@ import IconsShowcase from "./evolingo-icons-demo"
 import AIComponentsShowcase from "./evolingo-ai-components-demo"
 import "./evolingo-button-demo.css"
 import { AppHeader } from "@/components/app-header"
-import { RefreshCw, ArrowUp, ArrowUpRight, Plus, SlidersHorizontal, ChevronDown, Ellipsis, Check, BookOpen, ChevronLeft, ChevronRight, CircleHelp, Eye, EyeOff, Info, LogIn, ShieldCheck, UserRound, X, Crown, Bell, FolderOpen, CalendarDays, Settings2, LogOut, Component, Search, CheckCircle2, AlertCircle, LoaderCircle } from "lucide-react"
+import { RefreshCw, ArrowUp, ArrowUpRight, Plus, SlidersHorizontal, ChevronDown, Ellipsis, Check, BookOpen, ChevronLeft, ChevronRight, CircleHelp, Eye, EyeOff, Info, LogIn, ShieldCheck, UserRound, X, Crown, Bell, FolderOpen, CalendarDays, Settings2, LogOut, Component, Search } from "lucide-react"
 
 const Brainstorm = dynamic(() => import("./brainstorm"), { ssr: false })
 const LibrarySpace = dynamic(() => import("./library-space"), { ssr: false })
