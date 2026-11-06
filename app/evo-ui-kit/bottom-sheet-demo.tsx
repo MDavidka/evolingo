@@ -98,6 +98,8 @@ export default function BottomSheetShowcase() {
     setValidation(false)
     setActive(id)
     if (id === "wizard") setStep(1)
+    if (id === "progress") setProgress(62)
+    if (id === "agent") setAgentApproved(false)
   }
   const toggleMulti = (value: string) => setMulti(items =>
     items.includes(value) ? items.filter(item => item !== value) : [...items, value]
@@ -117,16 +119,16 @@ export default function BottomSheetShowcase() {
 
   const footer = () => {
     switch (active) {
-      case "confirm": return pair("Cancel", "Confirm", () => simulated("Confirmation complete"))
+      case "confirm": return <div className="evo-sheet-demo__footer-pair"><UIButton variant="secondary" fullWidth onClick={close}>Cancel</UIButton><UIButton variant="danger" fullWidth onClick={() => simulated("Action confirmed; no data deleted")}>Confirm</UIButton></div>
       case "create": return <UIButton type="submit" form="evo-sheet-demo-create" fullWidth>Create folder</UIButton>
       case "edit": return pair("Cancel", "Save", () => simulated("Form changes not saved"))
       case "multiple": return <UIButton fullWidth onClick={() => simulated(multi.length + " selections applied")}>Apply selections</UIButton>
-      case "filters": return pair("Reset", "Apply", () => simulated(sort + " · " + category))
+      case "filters": return <div className="evo-sheet-demo__footer-pair"><UIButton variant="secondary" fullWidth onClick={() => { setSort("Recent"); setCategory("All") }}>Reset</UIButton><UIButton fullWidth onClick={() => simulated(sort + " · " + category)}>Apply</UIButton></div>
       case "date": return <UIButton fullWidth disabled={!date} onClick={() => simulated("Reminder date selected")}>Schedule reminder</UIButton>
       case "permission": return <div className="evo-sheet-demo__footer-stack"><UIButton fullWidth onClick={() => simulated("No device permission requested")}>Continue</UIButton><UIButton fullWidth variant="ghost" onClick={close}>Not now</UIButton></div>
-      case "wizard": return pair(step === 1 ? "Cancel" : "Back", step === 3 ? "Finish" : "Continue", () => step === 3 ? simulated("Setup completed") : setStep(value => value + 1))
+      case "wizard": return <div className="evo-sheet-demo__footer-pair"><UIButton variant="secondary" fullWidth onClick={() => step === 1 ? close() : setStep(value => Math.max(1, value - 1))}>{step === 1 ? "Cancel" : "Back"}</UIButton><UIButton fullWidth onClick={() => step === 3 ? simulated("Setup completed") : setStep(value => Math.min(3, value + 1))}>{step === 3 ? "Finish" : "Continue"}</UIButton></div>
       case "progress": return <UIButton fullWidth onClick={() => { if (progress < 100) setProgress(100); else simulated("Preview finished") }}>{progress < 100 ? "Complete preview" : "Done"}</UIButton>
-      case "agent": return pair("Reject", "Approve", () => { setAgentApproved(true); simulated("Demo agent action approved") })
+      case "agent": return <div className="evo-sheet-demo__footer-pair"><UIButton variant="secondary" fullWidth onClick={() => simulated("Agent action rejected")}>Reject</UIButton><UIButton fullWidth onClick={() => { setAgentApproved(true); simulated("Agent action approved (no task run)") }}>Approve</UIButton></div>
       default: return null
     }
   }
