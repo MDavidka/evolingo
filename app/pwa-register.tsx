@@ -6,6 +6,23 @@ export default function PwaRegister() {
   useEffect(() => {
     if (!("serviceWorker" in navigator)) return
 
+    if (process.env.NODE_ENV !== "production") {
+      let reloaded = false
+      const removeDevelopmentWorker = async () => {
+        const registrations = await navigator.serviceWorker.getRegistrations()
+        const controlled = registrations.some(registration => registration.active?.scriptURL === new URL("/sw.js", location.origin).href)
+        await Promise.all(registrations.map(registration => registration.unregister()))
+        const cacheKeys = await caches.keys()
+        await Promise.all(cacheKeys.filter(key => key.startsWith("evolingo-shell-")).map(key => caches.delete(key)))
+        if (controlled && !reloaded) {
+          reloaded = true
+          location.reload()
+        }
+      }
+      void removeDevelopmentWorker().catch(() => {})
+      return
+    }
+
     let registration: ServiceWorkerRegistration | undefined
     let updateTimer: number | undefined
     let reloaded = false
