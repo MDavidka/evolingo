@@ -1,5 +1,5 @@
-/* Profile 3.0 — ChatGPT x iOS, using canonical Evolingo UI Kit.
- * White-on-white, no tinted cards, compact profile header, borderless rows.
+/* Profile 4.0 — ChatGPT x iOS, using canonical Evolingo UI Kit.
+ * White canvas, grouped soft surfaces, compact account identity, monochrome icons.
  * Loaded last to supersede old profile-refresh and legacy page styles only
  * for the new .ref-profile-v3 markup. */
 .app-shell.reference-shell .ref-view-profile > .ref-profile.ref-profile-v3 {
@@ -17,7 +17,7 @@
   box-sizing: border-box;
 }
 .app-shell.reference-shell .ref-view-profile .ref-profile-v3 .evo-profile-v3__heading {
-  margin: 0 0 22px;
+  margin: 0 0 18px;
 }
 .app-shell.reference-shell .ref-view-profile .ref-profile-v3 .evo-profile-v3__heading h1 {
   margin: 0;
@@ -30,14 +30,14 @@
 .app-shell.reference-shell .ref-view-profile .ref-profile-v3 .evo-profile-v3__identity {
   display: flex;
   width: 100%;
-  min-height: 78px;
+  min-height: 74px;
   align-items: center;
   gap: 13px;
-  padding: 8px 0;
+  padding: 12px 14px;
   border: 0;
   border-radius: var(--evo-ui-radius-md, 14px);
   margin: 0 0 12px;
-  background: transparent;
+  background: var(--evo-ui-settings-surface, #f7f7f8);
   color: var(--evo-ui-text, #202127);
   text-align: left;
   cursor: pointer;
@@ -99,8 +99,8 @@
   flex-direction: column;
   width: 100%;
   min-width: 0;
-  gap: 25px;
-  margin-top: 12px;
+  gap: 28px;
+  margin-top: 18px;
 }
 .app-shell.reference-shell .ref-view-profile .ref-profile-v3 .evo-ui-settings-group {
   margin: 0;
@@ -112,14 +112,24 @@
   color: var(--evo-ui-muted, #8e8e93);
 }
 .app-shell.reference-shell .ref-view-profile .ref-profile-v3 .evo-ui-settings-row {
-  border: 0 !important;
-  border-radius: var(--evo-ui-radius-sm, 10px);
-  background: transparent !important;
   color: var(--evo-ui-text, #202127) !important;
   min-height: 54px;
-  padding: 10px 4px;
+  padding: 12px 4px;
   gap: 14px;
+  border-radius: 0;
+  background: transparent;
 }
+.app-shell.reference-shell .ref-view-profile .ref-profile-v3 .evo-ui-settings-group__rows {
+  background: var(--evo-ui-settings-surface, #f7f7f8);
+  border-radius: var(--evo-ui-settings-radius, 22px);
+  padding: 4px 16px;
+  overflow: hidden;
+}
+.app-shell.reference-shell .ref-view-profile .ref-profile-v3 .evo-ui-settings-group__rows > .evo-ui-settings-row:not(:last-child) {
+  border-bottom: 1px solid var(--evo-ui-settings-divider, #e5e5ea) !important;
+}
+.app-shell.reference-shell .ref-view-profile .ref-profile-v3 .evo-ui-settings-row__copy strong { font-size: 16px; font-weight: 500; }
+.app-shell.reference-shell .ref-view-profile .ref-profile-v3 .evo-ui-settings-group__heading { font-size: 13px; text-transform: none; }
 .app-shell.reference-shell .ref-view-profile .ref-profile-v3 .evo-ui-settings-row__icon {
   width: 20px;
   height: 20px;
@@ -159,12 +169,12 @@
 @media (hover:hover) and (pointer:fine) {
   .app-shell.reference-shell .ref-view-profile .ref-profile-v3 button.evo-ui-settings-row:hover,
   .app-shell.reference-shell .ref-view-profile .ref-profile-v3 .evo-profile-v3__identity:hover {
-    background: var(--evo-ui-surface, #f5f5f7) !important;
+    background: rgba(0,0,0,.035) !important;
   }
 }
 .app-shell.reference-shell .ref-view-profile .ref-profile-v3 button.evo-ui-settings-row:active,
 .app-shell.reference-shell .ref-view-profile .ref-profile-v3 .evo-profile-v3__identity:active {
-  background: var(--evo-ui-surface, #f5f5f7) !important;
+  background: rgba(0,0,0,.055) !important;
 }
 .evo-ui-sheet__content .evo-profile-v3__accessibility {
   display: flex;
@@ -183,7 +193,7 @@
     padding-right: max(20px, env(safe-area-inset-right, 0px)) !important;
     padding-left: max(20px, env(safe-area-inset-left, 0px)) !important;
   }
-  .app-shell.reference-shell .ref-view-profile .ref-profile-v3 .evo-profile-v3__sections { gap: 23px; }
+  .app-shell.reference-shell .ref-view-profile .ref-profile-v3 .evo-profile-v3__sections { gap: 26px; }
 }
 @media (max-width: 360px) {
   .app-shell.reference-shell .ref-view-profile > .ref-profile.ref-profile-v3 {
@@ -207,4 +217,22 @@ html[data-evo-reduce-motion="true"] *::after {
   .app-shell.reference-shell .ref-view-profile .ref-profile-v3 .evo-profile-v3__identity {
     transition: none;
   }
+}
+
+/* Soft monochrome profile identity, kept visually aligned with grouped settings. */
+.app-shell.reference-shell .ref-view-profile .ref-profile-v3 .evo-profile-v3__identity {
+  border-radius: 22px;
+}
+.app-shell.reference-shell .ref-view-profile .ref-profile-v3 .evo-profile-v3__edit {
+  background: #fff;
+}
+.app-shell.reference-shell .ref-view-profile .ref-profile-v3 .evo-profile-v3__signout {
+  border-top: 0;
+  padding-top: 0;
+}
+.app-shell.reference-shell .ref-view-profile .ref-profile-v3 .evo-profile-v3__signout .evo-ui-settings-row {
+  min-height: 54px;
+  border-radius: 22px;
+  background: var(--evo-ui-settings-surface, #f7f7f8);
+  padding: 12px 20px;
 }
