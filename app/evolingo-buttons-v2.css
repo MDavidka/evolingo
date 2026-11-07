@@ -1,0 +1,73 @@
+/* Buttons 2.0: library-only Soft Monochrome specimens. */
+.evo-b2{--b2-ink:#202127;--b2-white:#fff;--b2-soft:#f5f5f7;--b2-gray:#e9e9ed;--b2-border:#e5e5ea;--b2-red:#ff3b30;color:var(--b2-ink);width:100%;max-width:100%;min-width:0;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",Inter,system-ui,sans-serif}
+.evo-b2 *{box-sizing:border-box}
+.evo-b2-intro{margin:0 0 20px;font-size:13px;line-height:1.6;color:#777980}
+.evo-b2-section{padding:22px 0;border-bottom:1px solid var(--b2-border)}
+.evo-b2-section:first-of-type{padding-top:0}
+.evo-b2-heading{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-bottom:14px;color:#8e8e93;font-size:11px;font-weight:650;letter-spacing:.07em;text-transform:uppercase}
+.evo-b2-heading small{font-size:10px;letter-spacing:0;text-transform:none;text-align:right;font-weight:450;color:#8e8e93}
+.evo-b2-stack,.evo-b2-size-list{display:grid;gap:10px}
+.evo-b2-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.evo-b2 .evo-ui-button{min-width:0;max-width:100%;font-size:14px;gap:7px;overflow:hidden}
+.evo-b2 .evo-ui-button svg{width:18px;height:18px;flex-shrink:0;stroke-width:1.75}
+.evo-b2 .evo-ui-button--primary,.evo-b2 .evo-ui-button--danger{color:#fff!important}
+.evo-b2 .evo-ui-button--primary svg,.evo-b2 .evo-ui-button--danger svg{color:#fff!important;stroke:#fff!important}
+.evo-b2 .evo-ui-button--secondary,.evo-b2 .evo-ui-button--tertiary,.evo-b2 .evo-ui-button--ghost,.evo-b2 .evo-ui-button--glass{color:#202127!important}
+.evo-b2 .evo-ui-button--secondary svg,.evo-b2 .evo-ui-button--tertiary svg,.evo-b2 .evo-ui-button--ghost svg,.evo-b2 .evo-ui-button--glass svg{color:#202127!important;stroke:#202127!important}
+.evo-b2 .evo-ui-button:disabled{background:#eaeaee!important;color:#8e8e93!important;opacity:1!important}
+.evo-b2 .evo-ui-button:disabled svg{stroke:#8e8e93!important}
+.evo-b2 .evo-ui-button--full{width:100%;min-height:50px}
+.evo-b2 .evo-ui-button--icon{width:44px;height:44px;min-width:44px;min-height:44px;padding:0;border-radius:50%}
+.evo-b2 .evo-ui-button--compact{min-height:44px;padding-inline:12px}
+.evo-b2 .evo-ui-button--glass{background:#fff!important;border-color:rgba(0,0,0,.035)!important;box-shadow:0 3px 16px rgba(0,0,0,.055)!important}
+.evo-b2 button{font-family:inherit;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.evo-b2 button:focus-visible{outline:2px solid #202127;outline-offset:3px}
+.evo-b2 button:active:not(:disabled){transform:scale(.97)}
+.evo-b2-swatch{border:0;border-radius:999px;height:46px;min-width:0;padding:0 8px;font-size:13px;font-weight:600;cursor:pointer}
+.evo-b2-swatch--0{background:#202127;color:#fff}.evo-b2-swatch--1{background:#f2f2f4;color:#202127}.evo-b2-swatch--2{background:#fff;color:#202127;border:1px solid #e5e5ea}.evo-b2-swatch--3{background:#fff;color:#202127;box-shadow:0 3px 16px rgba(0,0,0,.055)}.evo-b2-swatch--4{background:#44454b;color:#fff}.evo-b2-swatch--5{background:#e5e5ea;color:#202127}.evo-b2-swatch--6{background:#eaeaee;color:#8e8e93}.evo-b2-swatch--7{background:#ff3b30;color:#fff}
+.evo-b2-icons{display:flex;justify-content:space-between;align-items:center;gap:5px;flex-wrap:wrap}
+.evo-b2-floating{display:flex;align-items:center;gap:8px;background:#f5f5f7;padding:12px 8px;border-radius:20px;min-width:0}
+.evo-b2-floating>.evo-ui-button:first-child{flex:1;min-width:0}
+.evo-b2-floating>.evo-ui-button--icon{flex:none}
+.evo-b2-chat{display:flex;gap:8px;align-items:center;min-width:0}
+.evo-b2-chat>.evo-ui-button:not(.evo-ui-button--icon){flex:1;min-width:0;padding-inline:7px;font-size:12px}
+.evo-b2-chat>.evo-ui-button--icon{flex:none}
+.evo-b2-segment{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;background:#e9e9ed;border-radius:999px;padding:4px;margin-bottom:12px}
+.evo-b2-segment--dark{grid-template-columns:repeat(2,minmax(0,1fr))}
+.evo-b2-segment button{border:0;min-width:0;min-height:44px;border-radius:999px;background:transparent;color:#202127;font-size:14px;font-weight:500;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer}
+.evo-b2-segment button[aria-pressed=true]{background:#fff;color:#202127;font-weight:650;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.evo-b2-segment--dark button[aria-pressed=true]{background:#202127;color:#fff}
+.evo-b2-segment button svg{width:17px;height:17px}
+.evo-b2-wrap{display:flex;flex-wrap:wrap;gap:8px}
+.evo-b2-chip{min-height:44px;border:1px solid #e5e5ea;background:#f5f5f7;color:#202127;border-radius:999px;padding:0 13px;display:inline-flex;align-items:center;justify-content:center;gap:6px;font-size:13px;font-weight:600}
+.evo-b2-chip[aria-pressed=true]{background:#202127;border-color:#202127;color:#fff}
+.evo-b2-chip:disabled{background:#eaeaee;color:#8e8e93}
+.evo-b2-chip svg{width:16px;height:16px}
+.evo-b2-split{display:grid;grid-template-columns:minmax(0,1fr) 52px;gap:2px;margin-bottom:10px}
+.evo-b2-split button{min-height:50px;border:0;background:#202127;color:#fff;font-size:14px;font-weight:600}
+.evo-b2-split button:first-child{border-radius:999px 0 0 999px}
+.evo-b2-split button:last-child{border-radius:0 999px 999px 0}
+.evo-b2-split svg{width:18px;height:18px}
+.evo-b2-pair{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-bottom:12px}
+.evo-b2-action-list{display:grid}
+.evo-b2-action-list>button{display:flex;align-items:center;gap:12px;border:0;border-bottom:1px solid #e5e5ea;background:#fff;color:#202127;min-height:62px;text-align:left;padding:7px 0}
+.evo-b2-action-list>button>span:nth-child(2){display:grid;gap:3px;flex:1;min-width:0}
+.evo-b2-action-list strong{font-size:14px;font-weight:600}
+.evo-b2-action-list small{font-size:12px;color:#8e8e93}
+.evo-b2-action-list>button>svg{width:17px;height:17px;color:#8e8e93}
+.evo-b2-action-icon{display:grid;place-items:center;width:44px;height:44px;flex:none;background:#f5f5f7;border-radius:50%}
+.evo-b2-action-icon svg{width:19px;height:19px}
+.evo-b2-size{border-radius:999px;background:#f5f5f7;color:#202127;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;max-width:100%}
+.evo-b2-size--large{height:52px;width:100%}.evo-b2-size--regular{height:48px;width:84%}.evo-b2-size--compact{height:44px;width:68%}.evo-b2-size--small{height:36px;width:55%}
+.evo-b2-taxonomy{display:grid;gap:0}
+.evo-b2-taxonomy>div{display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-bottom:1px solid #e5e5ea}
+.evo-b2-taxonomy>div>span{font-size:11px;color:#8e8e93;padding-top:2px}
+.evo-b2-taxonomy>div>div{display:grid;gap:3px;min-width:0}
+.evo-b2-taxonomy strong{font-size:13px;font-weight:600}
+.evo-b2-taxonomy small{font-size:11px;color:#8e8e93;line-height:1.4}
+.evo-b2-feedback{margin:14px 0 0;padding:10px 14px;border-radius:14px;background:#f5f5f7;color:#202127;font-size:12px}
+.evo-b2-inline-menu{display:grid;background:#fff;border:1px solid #e5e5ea;border-radius:16px;margin-top:8px;overflow:hidden}
+.evo-b2-inline-menu button{border:0;background:#fff;color:#202127;min-height:44px;display:flex;gap:10px;align-items:center;padding:0 14px;text-align:left}
+.evo-b2-inline-menu svg{width:18px;height:18px}
+@media(max-width:360px){.evo-b2-grid{gap:7px}.evo-b2 .evo-ui-button{font-size:12px;padding-inline:8px}.evo-b2-chat{gap:5px}.evo-b2-floating{gap:5px}.evo-b2-heading{font-size:10px}}
+@media(prefers-reduced-motion:reduce){.evo-b2 button{transition:none!important}.evo-b2 button:active{transform:none!important}}
