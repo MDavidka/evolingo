@@ -5,14 +5,15 @@ import {
   PanelLeft as SidebarSimpleIcon, Plus as PlusIcon, Ellipsis as DotsThreeIcon,
   Pencil as PencilSimpleIcon, Trash2 as TrashIcon, Search as MagnifyingGlassIcon,
   CalendarDays as ScheduleIcon, FolderOpen as FoldersIcon, LayoutGrid as PuzzlePieceIcon,
-  Lightbulb as LightbulbIcon, SquarePen as NotePencilIcon, ChevronRight,
+  UsersRound as CoworkIcon, Lightbulb as LightbulbIcon, SquarePen as NotePencilIcon, ChevronRight,
 } from "lucide-react"
 import { deleteChatSession, notifyChatSessionAction, readChatSessions, renameChatSession, type ChatSession } from "./chat-sessions"
 
-export type AppTab = "ai" | "schedule" | "files" | "tools" | "profile" | "brainstorm"
+export type AppTab = "cowork" | "ai" | "schedule" | "files" | "tools" | "profile" | "brainstorm"
 type Props = { activeTab: AppTab; onSelect: (tab: AppTab) => void; avatarImage: string; avatar: string; userName: string; stars?: number; streak?: number; onOpenLeaderboard?: () => void }
 
 const quickLinks = [
+  { label: "Cowork", Icon: CoworkIcon, target: "cowork" },
   { label: "Ütemezés", Icon: ScheduleIcon, target: "schedule" },
   { label: "Könyvtár", Icon: FoldersIcon, target: "files" },
   { label: "Eszközök", Icon: PuzzlePieceIcon, target: "tools" },
