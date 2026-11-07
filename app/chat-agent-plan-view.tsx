@@ -1,6 +1,7 @@
 "use client"
 
 import { memo, useState } from "react"
+import "./chat-agent-plan.css"
 import { Circle, CircleAlert, CircleCheck, CircleDot, Route } from "lucide-react"
 import type { AgentPlan } from "./chat-agent-plan"
 import {
