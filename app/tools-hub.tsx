@@ -81,6 +81,7 @@ export default function ToolsHub({ onUpload, onOpenLibrary }: ToolHubProps) {
   const [machines, setMachines] = useState<MachineRecord[]>([])
   const [machineForm, setMachineForm] = useState(false)
   const [machineInfo, setMachineInfo] = useState<string | null>(null)
+  const [machineDeleteConfirm, setMachineDeleteConfirm] = useState(false)
   const [machineName, setMachineName] = useState("")
   const [machineUrl, setMachineUrl] = useState("")
   const [machineError, setMachineError] = useState("")
@@ -246,11 +247,28 @@ export default function ToolsHub({ onUpload, onOpenLibrary }: ToolHubProps) {
       </form>
     </BottomSheet>}
 
-    {currentMachine && <BottomSheet title={currentMachine.name} description="Külső gép · a kapcsolat állapota nincs ellenőrizve" size="compact" onClose={() => setMachineInfo(null)}>
-      <div className="evo-tools-kit-sheet">
-        <a className="evo-tools-machine-link" href={currentMachine.url} target="_blank" rel="noopener noreferrer"><ExternalLink size={18} /> Vezérlőpult megnyitása</a>
-        <UIButton variant="secondary" fullWidth onClick={() => { if (window.confirm("Eltávolítod a gép hivatkozását?")) { persistMachines(machines.filter(item => item.id !== currentMachine.id)); setMachineInfo(null) } }}><Trash2 size={17} /> Hivatkozás eltávolítása</UIButton>
-      </div>
+    {currentMachine && <BottomSheet
+      title={machineDeleteConfirm ? "Hivatkozás eltávolítása?" : currentMachine.name}
+      description={machineDeleteConfirm ? "Ez a hivatkozás eltűnik a mentett gépek közül." : "Külső gép · a kapcsolat állapota nincs ellenőrizve"}
+      size="compact"
+      role={machineDeleteConfirm ? "alertdialog" : "dialog"}
+      dismissible={!machineDeleteConfirm}
+      onClose={() => { setMachineInfo(null); setMachineDeleteConfirm(false) }}
+      footer={machineDeleteConfirm ? <div className="evo-kit-confirm-actions">
+        <UIButton variant="secondary" fullWidth onClick={() => setMachineDeleteConfirm(false)}>Mégse</UIButton>
+        <UIButton variant="danger" fullWidth onClick={() => {
+          persistMachines(machines.filter(item => item.id !== currentMachine.id))
+          setMachineInfo(null)
+          setMachineDeleteConfirm(false)
+        }}>Eltávolítás</UIButton>
+      </div> : undefined}
+    >
+      {machineDeleteConfirm ?
+        <p className="evo-kit-confirm-description">A vezérlőpult webcímét eltávolítjuk a helyi listából. A távoli gép adatai nem változnak.</p> :
+        <div className="evo-tools-kit-sheet">
+          <a className="evo-tools-machine-link" href={currentMachine.url} target="_blank" rel="noopener noreferrer"><ExternalLink size={18} /> Vezérlőpult megnyitása</a>
+          <UIButton variant="secondary" fullWidth onClick={() => setMachineDeleteConfirm(true)}><Trash2 size={17} /> Hivatkozás eltávolítása</UIButton>
+        </div>}
     </BottomSheet>}
   </div>
 }
