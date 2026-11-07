@@ -1,6 +1,6 @@
 # Evolingo UI Library — canonical specification (v1)
 
-**Status:** UI Library + reusable React primitives + site-wide neutral theme and primary-screen migration (v1.1). For new app work, use these reusable components and the machine-readable [manifest](app/evo-ui-kit/manifest.json), not screenshots or one-off copies.
+**Status:** UI Library + reusable React primitives + site-wide neutral theme + Profile 3.0 settings primitives (v1.2). For new app work, use these reusable components and the machine-readable [manifest](app/evo-ui-kit/manifest.json), not screenshots or one-off copies.
 
 **Location in app:** Profile → Fejlesztői eszközök → UI Library.
 
@@ -45,6 +45,29 @@ import { UIButton } from "@/app/evo-ui-kit"
 ```
 
 Variants: `primary`, `secondary`, `tertiary`, `ghost`, `danger`, `glass`. Sizes: `standard` (50px), `compact` (44px), `icon` (44×44px). `fullWidth` makes the button span its container. `disabled` and normal HTML button props are supported. Use full-width submit buttons on small devices instead of inventing a fixed width. Text wraps if space is constrained.
+
+### UISettingsGroup, UISettingsRow, UISettingsSwitchRow, UISwitch
+
+The Profile 3.0 design uses reusable, borderless account/preferences rows from `app/evo-ui-kit/settings.tsx`, styled through `app/evo-ui-kit/settings.css` with the canonical kit tokens.
+
+```tsx
+import { UISettingsGroup, UISettingsRow, UISettingsSwitchRow } from "@/app/evo-ui-kit"
+import { UserRound, Bell, Palette } from "lucide-react"
+
+<UISettingsGroup title="Account">
+  <UISettingsRow icon={UserRound} title="Personal details" onClick={openProfileEditor} />
+  <UISettingsRow icon={Palette} title="Appearance" value="Light" showChevron={false}/>
+  <UISettingsSwitchRow icon={Bell} title="Notifications"
+    checked={notifications} onChange={toggleNotifications}/>
+</UISettingsGroup>
+```
+
+- White-on-white groups with no filled containers or row dividers. Section labels at 12px. Settings rows at least 54px, icons 20px/1.75 stroke.
+- Navigable rows are buttons; value-only rows are non-clickable divs. Chevron appears only when a row has a working action. Never create fake interactive settings.
+- Switches use monochrome track and accessible role/checked state, with a minimum 44px target.
+- Settings components receive app behavior through props, and never implement their own navigation, permissions or persistence.
+- Profile uses `app/profile-v3.css` scoped to `.ref-profile-v3`; it replaces oversized cards and redundant in-profile shortcuts while keeping main navigation accessible.
+- "Animációk csökkentése" is functional, per-device, saved in localStorage and applied through `html[data-evo-reduce-motion="true"]`.
 
 ### BottomSheet
 
