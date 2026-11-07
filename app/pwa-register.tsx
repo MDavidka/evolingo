@@ -44,10 +44,9 @@ export default function PwaRegister() {
           scope: "/",
           updateViaCache: "none",
         })
-        // Ask for a fresh worker at startup and whenever an installed app returns
-        // to the foreground; the timer catches long-running open app sessions.
-        checkForUpdate()
-        updateTimer = window.setInterval(checkForUpdate, 60_000)
+        // register() already performs a worker update check. Avoid a second
+        // immediate request; also check on focus/visibility and less often on idle.
+        updateTimer = window.setInterval(checkForUpdate, 10 * 60_000)
         document.addEventListener("visibilitychange", checkForUpdate)
         window.addEventListener("focus", checkForUpdate)
         navigator.serviceWorker.addEventListener("controllerchange", onControllerChange)
