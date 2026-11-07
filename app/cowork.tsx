@@ -37,7 +37,7 @@ export default function Cowork() {
     event?.preventDefault()
     const content = draft.trim()
     if (!content || busy) return
-    const next: Message[] = [...messages, { role: "user", content }].slice(-MAX_HISTORY)
+    const next: Message[] = [...messages, { role: "user" as const, content }].slice(-MAX_HISTORY)
     setMessages(next)
     setDraft("")
     setBusy(true)
