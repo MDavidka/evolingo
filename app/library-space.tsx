@@ -416,7 +416,7 @@ export default function LibrarySpace() {
       </div>}
       <div className="library-toolbar-actions">
         <button className="library-view-button" type="button" aria-label="Nézet és rendezés" aria-haspopup="dialog" onClick={() => setSheet("view")}>{view === "list" ? <Grid2X2 size={22} strokeWidth={1.85} aria-hidden="true" /> : <List size={22} strokeWidth={1.85} aria-hidden="true" />}</button>
-        <button className="library-add-primary" type="button" aria-label="Új fájl vagy mappa hozzáadása" onClick={() => { if (location === "trash" || location === "downloads") { setLocation("files"); setFolder(null) } setDraftName(""); setSheet("new") }}><Plus size={20} strokeWidth={1.85} aria-hidden="true" /><span>Új</span></button>
+        <UIButton size="compact" className="library-add-primary" type="button" aria-label="Új fájl vagy mappa hozzáadása" onClick={() => { if (location === "trash" || location === "downloads") { setLocation("files"); setFolder(null) } setDraftName(""); setSheet("new") }}><Plus size={20} strokeWidth={1.85} aria-hidden="true" /><span>Új</span></UIButton>
       </div>
     </div>
     {location === "home" && !normalizedQuery && <div className="library-home">
@@ -480,7 +480,7 @@ export default function LibrarySpace() {
           <label htmlFor="library-qr-url">HTTPS-hivatkozás</label>
           <input id="library-qr-url" type="url" inputMode="url" value={qrValue} onChange={event => { setQrValue(event.target.value); setQrError("") }} placeholder="https://..." autoCapitalize="off" spellCheck={false} />
           {qrError && <p className="library-qr-error" role="alert">{qrError}</p>}
-          <button className="library-qr-open" type="button" disabled={!safeQrUrl(qrValue)} onClick={() => { const link = safeQrUrl(qrValue); if (link) { window.open(link, "_blank", "noopener,noreferrer"); setSheet(null) } }}>Hivatkozás megnyitása</button>
+          <UIButton className="library-qr-open" type="button" fullWidth disabled={!safeQrUrl(qrValue)} onClick={() => { const link = safeQrUrl(qrValue); if (link) { window.open(link, "_blank", "noopener,noreferrer"); setSheet(null) } }}>Hivatkozás megnyitása</UIButton>
           <small>A QR-beolvasás elérhetősége a böngészőtől függ. A hivatkozást nem küldjük szerverre.</small>
         </div>}
 
