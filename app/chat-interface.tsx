@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, type FormEvent, type KeyboardEvent, type ClipboardEvent, type FormEventHandler } from "react"
 import { ArrowUp, Check, Copy, Plus, Camera, Image as ImageIcon, FileText, Mic, X } from "lucide-react"
 import { Button as AppsButton } from "@openai/apps-sdk-ui/components/Button"
+import { BottomSheet } from "./evo-ui-kit"
 import ChatRichText from "./chat-rich-text"
 import AgentPlanView from "./chat-agent-plan-view"
 import { isAgentPlan, type AgentPlan } from "./chat-agent-plan"
@@ -506,12 +507,12 @@ export default function ChatInterface() {
       {attachment && <div className="evo-chat-attachment-preview">{attachment.kind === "image" && <img src={attachment.data} alt="Csatolt kép előnézete" style={{ width: 42, height: 42, borderRadius: 10, objectFit: "cover" }} />}<span>{attachment.name}</span><button type="button" onClick={() => setAttachment(null)} aria-label="Melléklet eltávolítása">×</button></div>}
       <input ref={cameraInput} type="file" accept="image/*" capture="environment" hidden onChange={event => { void chooseAttachment(event.target.files?.[0]); event.target.value = "" }} />
       <input ref={fileInput} type="file" accept="image/jpeg,image/png,image/webp,.txt,.md,.csv,.json,.tsv" hidden onChange={event => { void chooseAttachment(event.target.files?.[0]); event.target.value = "" }} />
-      {attachMenuOpen && <div className="evo-chat-popover" role="menu" aria-label="Melléklet hozzáadása">
+      {attachMenuOpen && <BottomSheet title="Melléklet hozzáadása" size="compact" onClose={() => setAttachMenuOpen(false)}><div className="evo-chat-kit-actions">
         <button type="button" role="menuitem" onClick={() => { setAttachMenuOpen(false); cameraInput.current?.click() }}><Camera size={19} /><span><strong>Fotó készítése</strong><small>Új kép a kamerával</small></span></button>
         <button type="button" role="menuitem" onClick={() => { setAttachMenuOpen(false); fileInput.current?.click() }}><ImageIcon size={19} /><span><strong>Kép a galériából</strong><small>JPG, PNG vagy WebP</small></span></button>
         <button type="button" role="menuitem" onClick={() => { setAttachMenuOpen(false); fileInput.current?.click() }}><FileText size={19} /><span><strong>Jegyzet vagy fájl</strong><small>TXT, MD, CSV, JSON vagy TSV</small></span></button>
 
-      </div>}
+      </div></BottomSheet>}
       <form onSubmit={submit} className="evo-chat-composer" data-focused={inputFocused}>
         <div ref={input} contentEditable suppressContentEditableWarning role="textbox" aria-multiline="true" aria-label="Üzenet írása" data-placeholder="Írj egy üzenetet…" data-empty={!draft} onInput={readEditor} onPaste={pasteEditor} onFocus={handleInputFocus} onBlur={handleInputBlur} onKeyDown={keyDown} spellCheck={false} autoCorrect="off" />
         <div className="evo-chat-composer-controls">
