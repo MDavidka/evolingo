@@ -4,6 +4,7 @@ import dynamic from "next/dynamic"
 import { BottomSheet } from "./evo-ui-kit"
 import BottomSheetShowcase from "./evo-ui-kit/bottom-sheet-demo"
 import { UIButton } from "./evo-ui-kit/button"
+import { UISettingsGroup, UISettingsRow, UISettingsSwitchRow } from "./evo-ui-kit/settings"
 import CardsShowcase from "./evolingo-cards-demo"
 import ButtonsV2Showcase from "./evolingo-buttons-v2"
 import DesignSystemShowcase from "./evolingo-design-system-demo"
@@ -13,7 +14,7 @@ import MenusShowcase from "./evolingo-menus-demo"
 import "./evolingo-button-demo.css"
 import "./evo-ui-kit/library-normalize.css"
 import { AppHeader } from "@/components/app-header"
-import { RefreshCw, ArrowUp, ArrowUpRight, Plus, SlidersHorizontal, ChevronDown, Ellipsis, Check, BookOpen, ChevronLeft, ChevronRight, CircleHelp, Eye, EyeOff, Info, LogIn, ShieldCheck, UserRound, X, Crown, Bell, FolderOpen, CalendarDays, Settings2, LogOut, Component, Search } from "lucide-react"
+import { RefreshCw, ArrowUp, ArrowUpRight, Plus, SlidersHorizontal, ChevronDown, Ellipsis, Check, BookOpen, ChevronLeft, ChevronRight, CircleHelp, Eye, EyeOff, Info, LogIn, ShieldCheck, UserRound, X, Crown, Bell, FolderOpen, CalendarDays, Settings2, LogOut, Component, Search, Pencil, Palette, Accessibility, Languages, Plug } from "lucide-react"
 
 const Brainstorm = dynamic(() => import("./brainstorm"), { ssr: false })
 const LibrarySpace = dynamic(() => import("./library-space"), { ssr: false })
@@ -129,61 +130,156 @@ function Profile({ name, avatarImage, avatarFallback, onEdit, onEditAvatar, onLo
   const [demoOpen, setDemoOpen] = useState(false)
   const [editing, setEditing] = useState(false)
   const [permissionHint, setPermissionHint] = useState("")
+  const [notificationPending, setNotificationPending] = useState(false)
   const [draft, setDraft] = useState(name)
-  const [profileSheet, setProfileSheet] = useState<"security" | "subscription" | "help" | "about" | null>(null)
+  const [profileSheet, setProfileSheet] = useState<"security" | "subscription" | "help" | "about" | "accessibility" | null>(null)
+  const [reducedMotion, setReducedMotion] = useState(false)
   const [restartState, setRestartState] = useState<"idle" | "busy" | "error">("idle")
   const [restartMessage, setRestartMessage] = useState("")
   const [restartConfirm, setRestartConfirm] = useState(false)
   const avatarPicker = useRef<HTMLInputElement>(null)
+
   const handle = name.normalize("NFKD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "").slice(0, 20) || "tanulo"
+  const editProfile = () => { setDraft(name); setEditing(true) }
+
+  useEffect(() => {
+    let enabled = false
+    try {
+      const saved = localStorage.getItem("evolingo.profile.reduce-motion")
+      enabled = saved === "true" || (saved === null && window.matchMedia("(prefers-reduced-motion: reduce)").matches)
+    } catch {
+      enabled = window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    }
+    setReducedMotion(enabled)
+    document.documentElement.dataset.evoReduceMotion = enabled ? "true" : "false"
+  }, [])
+
+  const changeReducedMotion = (enabled: boolean) => {
+    setReducedMotion(enabled)
+    document.documentElement.dataset.evoReduceMotion = enabled ? "true" : "false"
+    try { localStorage.setItem("evolingo.profile.reduce-motion", String(enabled)) } catch { /* Restricted storage: session-only. */ }
+  }
+
+  const changeNotifications = async (enabled: boolean) => {
+    if (!enabled) { onChangeNotifications(false); setPermissionHint(""); return }
+    if (!("Notification" in window)) {
+      setPermissionHint("Ez a böngésző nem támogatja az értesítéseket.")
+      return
+    }
+    setNotificationPending(true)
+    try {
+      const permission = await Notification.requestPermission()
+      if (permission === "granted") {
+        onChangeNotifications(true)
+        setPermissionHint("")
+      } else {
+        setPermissionHint("Az értesítési engedélyt a böngészőben tudod módosítani.")
+      }
+    } catch {
+      setPermissionHint("Az értesítéseket most nem lehet engedélyezni.")
+    } finally {
+      setNotificationPending(false)
+    }
+  }
+
   if (demoOpen) return <DemoLibrary onBack={() => setDemoOpen(false)} />
-  return <div className="ref-profile"><h1>Profil</h1><div className="ref-profile-identity"><Avatar name={name} src={avatarImage} fallback={avatarFallback} /><div><strong>{name}</strong><span>@{handle}</span></div><UIButton variant="secondary" size="compact" className="ref-outline-pill" onClick={() => { setDraft(name); setEditing(true) }}>Szerkesztés</UIButton></div><hr />
-    <div className="ref-settings-group"><h2>Fiók</h2><SettingRow icon={LogIn} title="Bejelentkezés" subtitle="Fiók létrehozása vagy belépés" onClick={onLogin} /><SettingRow icon={UserRound} title="Személyes adatok" subtitle="Név, profilkép és felhasználónév" onClick={() => { setDraft(name); setEditing(true) }} /><SettingRow icon={ShieldCheck} title="Biztonság" subtitle="Jelszó és bejelentkezési védelem" onClick={() => setProfileSheet("security")} /><SettingRow icon={Crown} title="Előfizetés" subtitle="Csomagok és előfizetési előnyök" onClick={() => setProfileSheet("subscription")} /></div>
-    <div className="ref-settings-group"><h2>AI és adatok</h2>
-      <SettingRow icon={BookOpen} title="Beszélgetések" subtitle="AI chat és előzmények" onClick={() => onView("chat")} />
-      <SettingRow icon={FolderOpen} title="Könyvtár" subtitle="Fájlok és dokumentumok" onClick={() => onView("space")} />
-      <SettingRow icon={CalendarDays} title="Ütemezés" subtitle="Saját feladatok" onClick={() => onView("schedule")} />
-      <SettingRow icon={Settings2} title="Alkalmazások" subtitle="Csatlakoztatható eszközök" onClick={() => onView("utility")} />
+
+  return <div className="ref-profile ref-profile-v3 evo-ui-scope">
+    <header className="evo-profile-v3__heading"><h1>Profil</h1></header>
+
+    <button className="evo-profile-v3__identity" type="button" onClick={editProfile} aria-label="Profil szerkesztése">
+      <Avatar name={name} src={avatarImage} fallback={avatarFallback} />
+      <span className="evo-profile-v3__identity-copy">
+        <strong>{name}</strong>
+        <small>@{handle}</small>
+      </span>
+      <span className="evo-profile-v3__edit" aria-hidden="true"><Pencil size={18} strokeWidth={1.75}/></span>
+    </button>
+
+    <div className="evo-profile-v3__sections">
+      <UISettingsGroup title="Fiók">
+        <UISettingsRow icon={UserRound} title="Személyes adatok" onClick={editProfile}/>
+        <UISettingsRow icon={LogIn} title="Bejelentkezés" onClick={onLogin}/>
+        <UISettingsRow icon={ShieldCheck} title="Biztonság" onClick={() => setProfileSheet("security")}/>
+        <UISettingsRow icon={Crown} title="Előfizetés" onClick={() => setProfileSheet("subscription")}/>
+      </UISettingsGroup>
+
+      <UISettingsGroup title="Beállítások">
+        <UISettingsSwitchRow
+          icon={Bell} title="Értesítések"
+          description={notifications ? "Bekapcsolva" : "Kikapcsolva"}
+          checked={notifications} pending={notificationPending}
+          onChange={enabled => { void changeNotifications(enabled) }}
+        />
+        {permissionHint && <p className="evo-profile-v3__hint" role="status">{permissionHint}</p>}
+        <UISettingsRow icon={Palette} title="Megjelenés" value="Világos" showChevron={false}/>
+        <UISettingsRow icon={Accessibility} title="Kisegítő lehetőségek" onClick={() => setProfileSheet("accessibility")}/>
+        <UISettingsRow icon={Languages} title="Nyelv" value="Magyar" showChevron={false}/>
+      </UISettingsGroup>
+
+      <UISettingsGroup title="Alkalmazás">
+        <UISettingsRow icon={Plug} title="Kapcsolt szolgáltatások" onClick={() => onView("utility")}/>
+        <UISettingsRow icon={CircleHelp} title="Súgó és támogatás" onClick={() => setProfileSheet("help")}/>
+        <UISettingsRow icon={Info} title="Az alkalmazásról" onClick={() => setProfileSheet("about")}/>
+        <UISettingsRow icon={Component} title="UI Library" onClick={() => setDemoOpen(true)}/>
+      </UISettingsGroup>
+
+      {process.env.NODE_ENV === "development" && <UISettingsGroup title="Fejlesztői eszközök">
+        <UISettingsRow icon={RefreshCw} title={restartState === "busy" ? "Újraindítás…" : "Szerver újraindítása"} onClick={restartState === "busy" ? undefined : () => setRestartConfirm(true)} disabled={restartState === "busy"}/>
+        {restartMessage && <p role="status" className="evo-profile-v3__hint">{restartMessage}</p>}
+      </UISettingsGroup>}
+
+      <div className="evo-profile-v3__signout">
+        <UISettingsRow icon={LogOut} title="Kijelentkezés" showChevron={false} onClick={onLogout}/>
+      </div>
     </div>
-    <div className="ref-settings-group"><h2>Értesítések</h2>
-      <button type="button" className="ref-setting-row" role="switch" aria-checked={notifications} onClick={async () => {
-        if (notifications) { onChangeNotifications(false); return }
-        if (!("Notification" in window)) { setPermissionHint("A böngésző nem támogatja az értesítéseket."); return }
-        try { const permission = await Notification.requestPermission(); if (permission === "granted") onChangeNotifications(true); else setPermissionHint("Az értesítési engedély nem lett megadva.") }
-        catch { setPermissionHint("Az értesítéseket most nem lehet engedélyezni.") }
-      }}><Bell size={20} strokeWidth={1.75} /><span><strong>Böngészőértesítések</strong><small>{notifications ? "Engedélyezve" : "Kikapcsolva"}</small></span><span className={"evo-ai-settings-toggle" + (notifications ? " is-on" : "")} aria-hidden="true"><span /></span></button>
-      {permissionHint && <p role="status" className="evo-ai-settings-hint">{permissionHint}</p>}
-    </div>
-    <div className="ref-settings-group"><h2>Megjelenés</h2><SettingRow icon={Settings2} title="Világos mód" subtitle="A sötét mód később érkezik" /></div>
-    <div className="ref-settings-group ref-support-group"><h2>Támogatás</h2><SettingRow icon={CircleHelp} title="Súgó és támogatás" subtitle="Segítség az AI-eszközök használatához" onClick={() => setProfileSheet("help")} /><SettingRow icon={Info} title="Az alkalmazásról" subtitle="Evölingo · AI-asszisztens" onClick={() => setProfileSheet("about")} /></div>
-    <div className="ref-settings-group"><SettingRow icon={LogOut} title="Kijelentkezés" subtitle="Vendégfiók" onClick={onLogout} /></div>
-    <div className="ref-settings-group"><h2>Fejlesztői eszközök</h2><SettingRow icon={Component} title="Buttons" subtitle="iOS és ChatGPT stílusú gombok, UI előnézet" onClick={() => setDemoOpen(true)} /></div>
-    {process.env.NODE_ENV === "development" && <div className="ref-settings-group"><h2>Fejlesztői eszközök</h2><button type="button" className="ref-setting-row" disabled={restartState === "busy"} onClick={() => setRestartConfirm(true)}><RefreshCw size={19} /><span><strong>{restartState === "busy" ? "Újraindítás…" : "Szerver újraindítása a legújabb commiton"}</strong><small>A main ág legújabb változatának betöltése</small></span><ChevronRight size={18} /></button>{restartMessage && <p role="status" className="profile-restart-status">{restartMessage}</p>}</div>}
-    {restartConfirm && <BottomSheet title="Fejlesztői szerver újraindítása?" description="A legújabb main commit betöltése megszakíthatja az aktuális munkamenetet." size="compact" dismissible={false} role="alertdialog" onClose={() => setRestartConfirm(false)} footer={<div className="evo-kit-confirm-actions">
-      <UIButton variant="secondary" fullWidth onClick={() => setRestartConfirm(false)}>Mégse</UIButton>
-      <UIButton fullWidth onClick={async () => {
-        setRestartConfirm(false)
-        setRestartState("busy")
-        setRestartMessage("Frissítés és újraindítás…")
-        try {
-          const response = await fetch("/api/dev/restart", { method: "POST" })
-          const data = await response.json() as { commit?: string; error?: string }
-          if (!response.ok) throw new Error(data.error || "Az újraindítás nem sikerült.")
-          setRestartMessage("Újraindítás a " + data.commit + " commiton…")
-        } catch (error) {
-          setRestartState("error")
-          setRestartMessage(error instanceof Error ? error.message : "Az újraindítás nem sikerült.")
-        }
-      }}>Újraindítás</UIButton>
-    </div>}>
+    <footer className="evo-profile-v3__footer">Evölingo</footer>
+
+    {restartConfirm && <BottomSheet
+      title="Fejlesztői szerver újraindítása?"
+      description="A legújabb main commit betöltése megszakíthatja az aktuális munkamenetet."
+      size="compact" dismissible={false} role="alertdialog"
+      onClose={() => setRestartConfirm(false)}
+      footer={<div className="evo-kit-confirm-actions">
+        <UIButton variant="secondary" fullWidth onClick={() => setRestartConfirm(false)}>Mégse</UIButton>
+        <UIButton fullWidth onClick={async () => {
+          setRestartConfirm(false)
+          setRestartState("busy")
+          setRestartMessage("Frissítés és újraindítás…")
+          try {
+            const response = await fetch("/api/dev/restart", { method: "POST" })
+            const data = await response.json() as { commit?: string; error?: string }
+            if (!response.ok) throw new Error(data.error || "Az újraindítás nem sikerült.")
+            setRestartMessage("Újraindítás a " + data.commit + " commiton…")
+          } catch (error) {
+            setRestartState("error")
+            setRestartMessage(error instanceof Error ? error.message : "Az újraindítás nem sikerült.")
+          }
+        }}>Újraindítás</UIButton>
+      </div>}
+    >
       <p className="evo-kit-confirm-description">Folytatod a fejlesztői szerver frissítését és újraindítását?</p>
     </BottomSheet>}
+
     {profileSheet && <BottomSheet
-      title={{ security: "Biztonság", subscription: "Előfizetés", help: "Súgó és támogatás", about: "Az alkalmazásról" }[profileSheet]}
-      size="compact"
+      title={{
+        security: "Biztonság",
+        subscription: "Előfizetés",
+        help: "Súgó és támogatás",
+        about: "Az alkalmazásról",
+        accessibility: "Kisegítő lehetőségek",
+      }[profileSheet]}
+      size={profileSheet === "accessibility" ? "medium" : "compact"}
       onClose={() => setProfileSheet(null)}
     >
-      <div className="ref-profile-kit-sheet">
+      {profileSheet === "accessibility" ? <div className="evo-profile-v3__accessibility">
+        <UISettingsSwitchRow
+          icon={Accessibility} title="Animációk csökkentése"
+          description="Kevesebb mozgás és áttűnés az alkalmazásban"
+          checked={reducedMotion} onChange={changeReducedMotion}
+        />
+        <p>A szövegméretet és a további kisegítő beállításokat az iPhone vagy a böngésző rendszerbeállításaiban módosíthatod. Az animációs beállítást ezen az eszközön mentjük.</p>
+      </div> : <div className="ref-profile-kit-sheet">
         {profileSheet === "help" ?
           <p>Az AI-csevegésben kérdéseket tehetsz fel, a fájljaidat a Könyvtárban, a feladataidat az Ütemezésben kezelheted.</p> :
         profileSheet === "about" ?
@@ -193,23 +289,29 @@ function Profile({ name, avatarImage, avatarFallback, onEdit, onEditAvatar, onLo
             <UIButton fullWidth onClick={onLogin}>Bejelentkezés</UIButton>
           </>
         }
-      </div>
+      </div>}
     </BottomSheet>}
+
     {editing && <BottomSheet title="Profil szerkesztése" size="medium" dismissible={false} onClose={() => setEditing(false)}
-      footer={<UIButton fullWidth type="submit" form="ref-profile-edit-form">Mentés</UIButton>}
+      footer={<UIButton fullWidth type="submit" form="ref-profile-edit-form" disabled={!draft.trim()}>Mentés</UIButton>}
     >
-      <form id="ref-profile-edit-form" className="ref-profile-kit-form" onSubmit={event => { event.preventDefault(); if (draft.trim()) onEdit(draft.trim()); setEditing(false) }}>
+      <form id="ref-profile-edit-form" className="ref-profile-kit-form" onSubmit={event => {
+        event.preventDefault()
+        if (!draft.trim()) return
+        onEdit(draft.trim())
+        setEditing(false)
+      }}>
         <label htmlFor="ref-name">Megjelenített név</label>
-        <input id="ref-name" value={draft} maxLength={32} onChange={event => setDraft(event.target.value)} />
-        <input ref={avatarPicker} type="file" accept="image/*" hidden onChange={event => { const file = event.target.files?.[0]; if (file) onEditAvatar(file); event.target.value = "" }} />
+        <input id="ref-name" value={draft} maxLength={32} autoComplete="nickname" onChange={event => setDraft(event.target.value)} />
+        <input ref={avatarPicker} type="file" accept="image/*" hidden onChange={event => {
+          const file = event.target.files?.[0]
+          if (file) onEditAvatar(file)
+          event.target.value = ""
+        }} />
         <UIButton variant="secondary" fullWidth onClick={() => avatarPicker.current?.click()}>Profilkép módosítása</UIButton>
       </form>
     </BottomSheet>}
   </div>
-}
-
-function SettingRow({ icon: Icon, title, subtitle, onClick }: { icon: LucideIcon; title: string; subtitle?: string; onClick?: () => void }) {
-  return <button type="button" className="ref-setting-row" onClick={onClick}><Icon size={19} strokeWidth={1.75} /><span><strong>{title}</strong>{subtitle && <small>{subtitle}</small>}</span><ChevronRight size={18} /></button>
 }
 
 export default function ReferenceScreens(props: Props) {
