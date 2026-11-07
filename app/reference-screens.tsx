@@ -55,7 +55,7 @@ function AuthScreen({ onBack, initialRegister, onModeChange }: { onBack: () => v
         <label htmlFor="ref-auth-email">E-mail-cím<input id="ref-auth-email" type="email" autoComplete="email" placeholder="nev@pelda.hu" required /></label>
         <label htmlFor="ref-auth-password"><span>Jelszó</span>{!register && <button type="button" className="ref-auth-forgot" onClick={() => setNotice("A jelszó-visszaállítás még nincs beállítva.")}>Elfelejtetted?</button>}<span className="ref-auth-password"><input id="ref-auth-password" type={showPassword ? "text" : "password"} autoComplete={register ? "new-password" : "current-password"} minLength={8} placeholder="Legalább 8 karakter" required /><button type="button" aria-label={showPassword ? "Jelszó elrejtése" : "Jelszó megjelenítése"} onClick={() => setShowPassword(value => !value)}>{showPassword ? <EyeOff size={19} /> : <Eye size={19} />}</button></span></label>
         {!register && <label className="ref-auth-remember"><input type="checkbox" defaultChecked /> Bejelentkezve maradok</label>}
-        <button type="submit" className="ref-auth-submit evo-wide-action">{register ? "Regisztráció" : "Bejelentkezés"}</button>
+        <UIButton type="submit" fullWidth className="ref-auth-submit evo-wide-action">{register ? "Regisztráció" : "Bejelentkezés"}</UIButton>
       </form>
       <p className="ref-auth-switch">{register ? "Már van fiókod?" : "Még nincs fiókod?"} <button type="button" onClick={() => { const next = !register; setRegister(next); onModeChange(next); setNotice("") }}>{register ? "Bejelentkezés" : "Regisztráció"}</button></p>
       {notice && <p className="ref-auth-notice" role="status">{notice}</p>}
@@ -187,7 +187,7 @@ function Profile({ name, avatarImage, avatarFallback, onEdit, onEditAvatar, onLo
   const avatarPicker = useRef<HTMLInputElement>(null)
   const handle = name.normalize("NFKD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "").slice(0, 20) || "tanulo"
   if (demoOpen) return <DemoLibrary onBack={() => setDemoOpen(false)} />
-  return <div className="ref-profile"><h1>Profil</h1><div className="ref-profile-identity"><Avatar name={name} src={avatarImage} fallback={avatarFallback} /><div><strong>{name}</strong><span>@{handle}</span></div><button type="button" className="ref-outline-pill" onClick={() => { setDraft(name); setEditing(true) }}>Szerkesztés</button></div><hr />
+  return <div className="ref-profile"><h1>Profil</h1><div className="ref-profile-identity"><Avatar name={name} src={avatarImage} fallback={avatarFallback} /><div><strong>{name}</strong><span>@{handle}</span></div><UIButton variant="secondary" size="compact" className="ref-outline-pill" onClick={() => { setDraft(name); setEditing(true) }}>Szerkesztés</UIButton></div><hr />
     <div className="ref-settings-group"><h2>Fiók</h2><SettingRow icon={LogIn} title="Bejelentkezés" subtitle="Fiók létrehozása vagy belépés" onClick={onLogin} /><SettingRow icon={UserRound} title="Személyes adatok" subtitle="Név, profilkép és felhasználónév" onClick={() => { setDraft(name); setEditing(true) }} /><SettingRow icon={ShieldCheck} title="Biztonság" subtitle="Jelszó és bejelentkezési védelem" onClick={() => setProfileSheet("security")} /><SettingRow icon={Crown} title="Előfizetés" subtitle="Csomagok és előfizetési előnyök" onClick={() => setProfileSheet("subscription")} /></div>
     <div className="ref-settings-group"><h2>AI és adatok</h2>
       <SettingRow icon={BookOpen} title="Beszélgetések" subtitle="AI chat és előzmények" onClick={() => onView("chat")} />
