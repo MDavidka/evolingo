@@ -230,6 +230,7 @@ export default function MenusShowcase() {
   const [advancedChoice, setAdvancedChoice] = useState("default")
   const [backupChoice, setBackupChoice] = useState("weekly")
   const [showResetNotice, setShowResetNotice] = useState(false)
+  const [kitPreviewMessage, setKitPreviewMessage] = useState("")
 
   const enabled = (id: string, fallback = false) => switchValues[id] ?? fallback
   const toggle = (id: string, value: boolean) => setSwitchValues(old => ({ ...old, [id]: value }))
@@ -266,14 +267,15 @@ export default function MenusShowcase() {
         <Subheading label="Production component · Borderless profile rows" hint="UI Kit reusable primitives"/>
         <div className="evo-ui-scope evo-menus__kit-example">
           <UISettingsGroup title="Fiók">
-            <UISettingsRow icon={UserRound} title="Személyes adatok" onClick={() => {}}/>
-            <UISettingsRow icon={ShieldCheck} title="Biztonság" onClick={() => {}}/>
+            <UISettingsRow icon={UserRound} title="Személyes adatok" onClick={() => setKitPreviewMessage("Personal details opened in preview only.")}/>
+            <UISettingsRow icon={ShieldCheck} title="Biztonság" onClick={() => setKitPreviewMessage("Security opened in preview only.")}/>
           </UISettingsGroup>
           <UISettingsGroup title="Beállítások">
             <UISettingsSwitchRow icon={Bell} title="Értesítések" checked={enabled("kit-notifications",false)} onChange={value => toggle("kit-notifications",value)} />
             <UISettingsRow icon={Palette} title="Megjelenés" value="Világos" showChevron={false}/>
           </UISettingsGroup>
           <p className="evo-menus__helper">Shared UISettingsGroup, UISettingsRow and UISwitch components. The preview doesn't change profile settings.</p>
+          {kitPreviewMessage && <p className="evo-menus__helper" role="status">{kitPreviewMessage}</p>}
         </div>
         <Subheading label="Settings row anatomy" hint="15 variants"/>
         <div className="evo-menus__group">{rowVariants.map(row => <SettingRow key={row.title} {...row} />)}</div>
