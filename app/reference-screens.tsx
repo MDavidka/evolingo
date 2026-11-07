@@ -197,6 +197,11 @@ function Profile({ name, avatarImage, avatarFallback, onEdit, onEditAvatar, onLo
     </button>
 
     <div className="evo-profile-v3__sections">
+      <UISettingsGroup title="Személyre szabás">
+        <UISettingsRow icon={SlidersHorizontal} title="Személyre szabás" onClick={() => setProfileSheet("accessibility")}/>
+        <UISettingsRow icon={Palette} title="Megjelenés" value="Világos" showChevron={false}/>
+      </UISettingsGroup>
+
       <UISettingsGroup title="Fiók">
         <UISettingsRow icon={UserRound} title="Személyes adatok" onClick={editProfile}/>
         <UISettingsRow icon={LogIn} title="Bejelentkezés" onClick={onLogin}/>
@@ -204,7 +209,7 @@ function Profile({ name, avatarImage, avatarFallback, onEdit, onEditAvatar, onLo
         <UISettingsRow icon={Crown} title="Előfizetés" onClick={() => setProfileSheet("subscription")}/>
       </UISettingsGroup>
 
-      <UISettingsGroup title="Beállítások">
+      <UISettingsGroup title="Alkalmazás">
         <UISettingsSwitchRow
           icon={Bell} title="Értesítések"
           description={notifications ? "Bekapcsolva" : "Kikapcsolva"}
@@ -212,13 +217,12 @@ function Profile({ name, avatarImage, avatarFallback, onEdit, onEditAvatar, onLo
           onChange={enabled => { void changeNotifications(enabled) }}
         />
         {permissionHint && <p className="evo-profile-v3__hint" role="status">{permissionHint}</p>}
-        <UISettingsRow icon={Palette} title="Megjelenés" value="Világos" showChevron={false}/>
         <UISettingsRow icon={Accessibility} title="Kisegítő lehetőségek" onClick={() => setProfileSheet("accessibility")}/>
         <UISettingsRow icon={Languages} title="Nyelv" value="Magyar" showChevron={false}/>
+        <UISettingsRow icon={Plug} title="Kapcsolt szolgáltatások" onClick={() => onView("utility")}/>
       </UISettingsGroup>
 
-      <UISettingsGroup title="Alkalmazás">
-        <UISettingsRow icon={Plug} title="Kapcsolt szolgáltatások" onClick={() => onView("utility")}/>
+      <UISettingsGroup title="Támogatás">
         <UISettingsRow icon={CircleHelp} title="Súgó és támogatás" onClick={() => setProfileSheet("help")}/>
         <UISettingsRow icon={Info} title="Az alkalmazásról" onClick={() => setProfileSheet("about")}/>
         <UISettingsRow icon={Component} title="UI Library" onClick={() => setDemoOpen(true)}/>
