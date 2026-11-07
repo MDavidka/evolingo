@@ -173,3 +173,20 @@
   .evo-menus__switch, .evo-menus__switch-thumb { transition: none; }
   .evo-menus__spinner { animation: none; }
 }
+
+
+/* Reusable production settings specimens inside the UI Library. */
+.evo-menus__kit-example {
+  border: 1px solid var(--evo-ui-border,#e5e5ea);
+  border-radius: var(--evo-ui-radius-card,16px);
+  background: var(--evo-ui-canvas,#fff);
+  padding: 16px;
+  margin-bottom: 20px;
+  display: grid;
+  gap: 22px;
+  min-width: 0;
+}
+.evo-menus__kit-example .evo-ui-settings-group__heading {
+  color: var(--evo-ui-muted,#8e8e93);
+}
+.evo-menus__kit-example .evo-menus__helper { margin:0; }
