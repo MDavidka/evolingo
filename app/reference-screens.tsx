@@ -21,8 +21,9 @@ const LibrarySpace = dynamic(() => import("./library-space"), { ssr: false })
 const ToolsHub = dynamic(() => import("./tools-hub"), { ssr: false })
 const Schedule = dynamic(() => import("./schedule"), { ssr: false })
 const ChatInterface = dynamic(() => import("./chat-interface"), { ssr: false })
+const Cowork = dynamic(() => import("./cowork"), { ssr: false })
 
-export type ReferenceView = "chat" | "brainstorm" | "schedule" | "space" | "utility" | "profile" | "auth"
+export type ReferenceView = "cowork" | "chat" | "brainstorm" | "schedule" | "space" | "utility" | "profile" | "auth"
 type Props = {
   view: ReferenceView
   onUploadFile: () => void
@@ -322,7 +323,8 @@ export default function ReferenceScreens(props: Props) {
   const { view, onView, userName, avatarImage, avatarFallback } = props
   useEffect(() => { if (view !== "chat") window.scrollTo(0, 0) }, [view])
   let content: ReactNode
-  if (view === "chat") content = <ChatInterface />
+  if (view === "cowork") content = <Cowork />
+  else if (view === "chat") content = <ChatInterface />
   else if (view === "brainstorm") content = <Brainstorm />
   else if (view === "schedule") content = <Schedule />
   else if (view === "space") content = <LibrarySpace />
