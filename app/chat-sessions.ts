@@ -2,8 +2,10 @@ import { isAgentPlan, type AgentPlan } from "./chat-agent-plan"
 
 export type StoredChatMessage = { role: "user" | "assistant"; content: string; id?: string; ui?: unknown; plan?: AgentPlan }
 export type ChatSession = { id: string; title: string; createdAt: number; updatedAt: number; messages: StoredChatMessage[] }
+export type ChatSessionSummary = Pick<ChatSession, "id" | "title" | "createdAt" | "updatedAt">
 
 const SESSIONS_KEY = "evolingo.chat.sessions.v1"
+const SUMMARIES_KEY = "evolingo.chat.summaries.v1"
 const ACTIVE_KEY = "evolingo.chat.active-session.v1"
 const LEGACY_KEY = "evolingo.chat.session.v1"
 const MAX_SESSIONS = 40
@@ -44,9 +46,34 @@ export function readChatSessions(): ChatSession[] {
   return []
 }
 
+/** The sidebar reads this lightweight index instead of parsing every saved AI message.
+ * Existing installations are migrated once and every chat write maintains the index.
+ */
+export function readChatSessionSummaries(): ChatSessionSummary[] {
+  if (typeof window === "undefined") return []
+  try {
+    const raw = localStorage.getItem(SUMMARIES_KEY)
+    if (raw !== null) {
+      const data: unknown = JSON.parse(raw)
+      if (Array.isArray(data)) return data.filter((item): item is ChatSessionSummary =>
+        !!item && typeof item.id === "string" && typeof item.title === "string" &&
+        typeof item.updatedAt === "number" && typeof item.createdAt === "number").slice(0, MAX_SESSIONS)
+    }
+  } catch {}
+  const sessions = readChatSessions()
+  const summaries = sessions.map(({ id, title, createdAt, updatedAt }) => ({ id, title, createdAt, updatedAt }))
+  try { localStorage.setItem(SUMMARIES_KEY, JSON.stringify(summaries)) } catch {}
+  return summaries
+}
+
 export function writeChatSessions(sessions: ChatSession[]) {
   if (typeof window === "undefined") return
-  try { localStorage.setItem(SESSIONS_KEY, JSON.stringify(sessions.slice(0, MAX_SESSIONS))) } catch {}
+  try {
+    const trimmed = sessions.slice(0, MAX_SESSIONS)
+    localStorage.setItem(SESSIONS_KEY, JSON.stringify(trimmed))
+    const summaries = trimmed.map(({ id, title, createdAt, updatedAt }) => ({ id, title, createdAt, updatedAt }))
+    localStorage.setItem(SUMMARIES_KEY, JSON.stringify(summaries))
+  } catch {}
   window.dispatchEvent(new Event("evolingo:chat-history-updated"))
 }
 
