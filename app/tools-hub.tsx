@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react"
 import { ChevronRight, ExternalLink, FolderOpen, Plus, Search, Server, Trash2, X } from "lucide-react"
-import UnifiedSheet from "./unified-sheet"
+import { BottomSheet, UIButton } from "./evo-ui-kit"
 
 type ToolHubProps = {
   onUpload: () => void
@@ -218,42 +218,39 @@ export default function ToolsHub({ onUpload, onOpenLibrary }: ToolHubProps) {
       <button type="button" onClick={() => setQuery("")}>Keresés törlése</button>
     </div>}
 
-    {selected && <UnifiedSheet
-      backdropClassName="evo-tools-dialog-backdrop"
-      sheetClassName="evo-tools-dialog"
-      labelledBy="evo-tools-dialog-title"
+    {selected && <BottomSheet
+      title={selected.title}
+      description="Integráció részletei"
+      size="compact"
       onClose={() => setSelectedId(null)}
+      footer={<UIButton fullWidth variant="primary" disabled={requestedProviders.includes(selected.id)} onClick={() => saveInterest(selected.id)}>
+        {requestedProviders.includes(selected.id) ? "Érdeklődés mentve" : "Érdekel ez az integráció"}
+      </UIButton>}
     >
-      <div className="evo-tools-dialog-heading">
-        <h2 id="evo-tools-dialog-title">{selected.title}</h2>
-        <button type="button" className="evo-tools-dialog-close" aria-label="Bezárás" onClick={() => setSelectedId(null)}><X size={20} /></button>
+      <div className="evo-tools-kit-sheet">
+        <ProviderLogo provider={selected} />
+        <p>{selected.detail}</p>
+        <div className="evo-tools-dialog-status">Ez az integráció még nem csatlakoztatható az Evölingóhoz.</div>
+        <p className="evo-tools-dialog-footnote">Az érdeklődés csak ezen az eszközön mentődik; nem jelent feliratkozást vagy értesítést.</p>
       </div>
-      <ProviderLogo provider={selected} />
-      <p>{selected.detail}</p>
-      <div className="evo-tools-dialog-status">Ez az integráció még nem csatlakoztatható az Evölingóhoz.</div>
-      <button
-        className="evo-tools-dialog-connect"
-        type="button"
-        disabled={requestedProviders.includes(selected.id)}
-        onClick={() => saveInterest(selected.id)}
-      >{requestedProviders.includes(selected.id) ? "Érdeklődés mentve" : "Érdekel ez az integráció"}</button>
-      <p className="evo-tools-dialog-footnote">Az érdeklődés csak ezen az eszközön mentődik; nem jelent feliratkozást vagy értesítést.</p>
-    </UnifiedSheet>}
-    {machineForm && <UnifiedSheet backdropClassName="evo-tools-dialog-backdrop" sheetClassName="evo-tools-dialog evo-tools-machine-dialog" labelledBy="evo-tools-machine-heading" onClose={() => setMachineForm(false)}>
-      <div className="evo-tools-dialog-heading"><h2 id="evo-tools-machine-heading">Új gép</h2><button type="button" className="evo-tools-dialog-close" onClick={() => setMachineForm(false)} aria-label="Bezárás"><X size={20} /></button></div>
-      <form className="evo-tools-machine-form" onSubmit={addMachine}>
+    </BottomSheet>}
+
+    {machineForm && <BottomSheet title="Új gép" description="Külső vezérlőpult hozzáadása" size="medium" dismissible={false} onClose={() => setMachineForm(false)}
+      footer={<UIButton fullWidth type="submit" form="evo-tools-machine-form">Gép hozzáadása</UIButton>}
+    >
+      <form id="evo-tools-machine-form" className="evo-tools-machine-form evo-ui-kit-form" onSubmit={addMachine}>
         <label>Gép neve<input value={machineName} onChange={event => setMachineName(event.target.value)} placeholder="Saját szerver" maxLength={80} required /></label>
         <label>HTTPS vezérlőpult címe<input type="url" value={machineUrl} onChange={event => setMachineUrl(event.target.value)} placeholder="https://example.com" required /></label>
         <p>Ez egy külső gép vezérlőpultjának helyben mentett hivatkozása. Az Evölingo még nem kapcsolódik a szerverhez, és nem jelzi annak állapotát.</p>
         {machineError && <p role="alert" className="evo-tools-machine-error">{machineError}</p>}
-        <button className="evo-tools-dialog-connect" type="submit">Gép hozzáadása</button>
       </form>
-    </UnifiedSheet>}
-    {currentMachine && <UnifiedSheet backdropClassName="evo-tools-dialog-backdrop" sheetClassName="evo-tools-dialog" labelledBy="evo-tools-machine-details" onClose={() => setMachineInfo(null)}>
-      <div className="evo-tools-dialog-heading"><h2 id="evo-tools-machine-details">{currentMachine.name}</h2><button type="button" className="evo-tools-dialog-close" onClick={() => setMachineInfo(null)} aria-label="Bezárás"><X size={20} /></button></div>
-      <p>Külső gép · a kapcsolat állapota nincs ellenőrizve.</p>
-      <a className="evo-tools-machine-link" href={currentMachine.url} target="_blank" rel="noopener noreferrer"><ExternalLink size={18} /> Vezérlőpult megnyitása</a>
-      <button className="evo-tools-machine-delete" type="button" onClick={() => { if (window.confirm("Eltávolítod a gép hivatkozását?")) { persistMachines(machines.filter(item => item.id !== currentMachine.id)); setMachineInfo(null) } }}><Trash2 size={17} /> Hivatkozás eltávolítása</button>
-    </UnifiedSheet>}
+    </BottomSheet>}
+
+    {currentMachine && <BottomSheet title={currentMachine.name} description="Külső gép · a kapcsolat állapota nincs ellenőrizve" size="compact" onClose={() => setMachineInfo(null)}>
+      <div className="evo-tools-kit-sheet">
+        <a className="evo-tools-machine-link" href={currentMachine.url} target="_blank" rel="noopener noreferrer"><ExternalLink size={18} /> Vezérlőpult megnyitása</a>
+        <UIButton variant="secondary" fullWidth onClick={() => { if (window.confirm("Eltávolítod a gép hivatkozását?")) { persistMachines(machines.filter(item => item.id !== currentMachine.id)); setMachineInfo(null) } }}><Trash2 size={17} /> Hivatkozás eltávolítása</UIButton>
+      </div>
+    </BottomSheet>}
   </div>
 }
