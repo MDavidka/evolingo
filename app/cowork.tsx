@@ -12,6 +12,7 @@ const MAX_HISTORY = 24
 export default function Cowork() {
   const [messages, setMessages] = useState<Message[]>([])
   const [draft, setDraft] = useState("")
+  const [inputOpen, setInputOpen] = useState(false)
   const [serverSheet, setServerSheet] = useState(false)
   const [toolsSheet, setToolsSheet] = useState(false)
   const [busy, setBusy] = useState(false)
@@ -40,6 +41,8 @@ export default function Cowork() {
     const next: Message[] = [...messages, { role: "user" as const, content }].slice(-MAX_HISTORY)
     setMessages(next)
     setDraft("")
+    setInputOpen(false)
+    textarea.current?.blur()
     setBusy(true)
     setError("")
     const abort = new AbortController()
@@ -86,7 +89,7 @@ export default function Cowork() {
     }
   }
   const stop = () => { controller.current?.abort(); setBusy(false) }
-  const reset = () => { controller.current?.abort(); setMessages([]); setDraft(""); setError(""); textarea.current?.focus() }
+  const reset = () => { controller.current?.abort(); setMessages([]); setDraft(""); setError(""); setInputOpen(false); textarea.current?.blur() }
   return <section className="evo-cowork evo-ui-scope" aria-label="Cowork munkaterület">
     <div className="evo-cowork__scroll" role="log" aria-live="polite">
       {messages.length === 0 ? <div className="evo-cowork__empty" aria-hidden="true"><span className="evo-cowork__mark"><FolderOpen size={26} strokeWidth={1.5}/></span><h1>Mit építsünk?</h1><p>Tervezés, fejlesztés és közös munka egy helyen.</p></div> :
@@ -98,15 +101,22 @@ export default function Cowork() {
         <button type="button" className="evo-cowork__capsule" onClick={() => setServerSheet(true)} aria-label="Szerver kiválasztása"><Server size={17} strokeWidth={1.75}/> Main Server <ChevronDown size={16}/></button>
         <button type="button" className="evo-cowork__capsule evo-cowork__capsule--quiet" onClick={reset} aria-label="Új munkamenet"><Plus size={17}/> Új</button>
       </div>
-      <form className="evo-cowork__composer" onSubmit={send}>
-        <textarea ref={textarea} value={draft} onChange={e => setDraft(e.target.value)} placeholder="Ask anything" rows={2} maxLength={12000} aria-label="Üzenet" onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing) { e.preventDefault(); void send() } }}/>
-        <div className="evo-cowork__actions">
-          <button type="button" className="evo-cowork__icon" onClick={() => setToolsSheet(true)} aria-label="Eszközök és mód kiválasztása"><Plus size={24}/></button>
-          <button type="button" className="evo-cowork__icon" onClick={() => setToolsSheet(true)} aria-label="AI mód"><SlidersHorizontal size={23}/></button>
-          <span className="evo-cowork__action-spacer"/>
-          <button type="button" className="evo-cowork__icon" aria-label="Hangbevitel" onClick={() => setError("Hangbevitel jelenleg nem érhető el a Coworkban.")}><Mic size={23}/></button>
-          <button type={busy ? "button" : "submit"} className="evo-cowork__send" onClick={busy ? stop : undefined} disabled={!busy && !draft.trim()} aria-label={busy ? "Generálás leállítása" : "Küldés"}>{busy ? <Square size={19} fill="currentColor"/> : <ArrowUp size={24}/>}</button>
+      <form className={`evo-cowork__composer ${inputOpen ? "is-open" : "is-idle"}`} onSubmit={send}>
+        <div className="evo-cowork__input-line">
+          {!inputOpen && <button type="button" className="evo-cowork__icon evo-cowork__idle-plus" onClick={() => setToolsSheet(true)} aria-label="Eszközök"><Plus size={23}/></button>}
+          <textarea ref={textarea} value={draft} onFocus={() => setInputOpen(true)} onBlur={() => setInputOpen(false)} onChange={e => setDraft(e.target.value)} placeholder="Ask anything" rows={1} maxLength={12000} aria-label="Üzenet" onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing) { e.preventDefault(); void send() } }}/>
+          {!inputOpen && <div className="evo-cowork__idle-actions">
+            <button type="button" className="evo-cowork__icon" aria-label="Hangbevitel" onClick={() => setError("Hangbevitel jelenleg nem érhető el a Coworkban.")}><Mic size={22}/></button>
+            <button type={busy ? "button" : "submit"} className="evo-cowork__send" onClick={busy ? stop : undefined} disabled={!busy && !draft.trim()} aria-label={busy ? "Generálás leállítása" : "Küldés"}>{busy ? <Square size={18} fill="currentColor"/> : <ArrowUp size={23}/>}</button>
+          </div>}
         </div>
+        {inputOpen && <div className="evo-cowork__actions">
+          <button type="button" className="evo-cowork__icon" onMouseDown={e => e.preventDefault()} onClick={() => setToolsSheet(true)} aria-label="Eszközök és mód kiválasztása"><Plus size={23}/></button>
+          <button type="button" className="evo-cowork__icon" onMouseDown={e => e.preventDefault()} onClick={() => setToolsSheet(true)} aria-label="AI mód"><SlidersHorizontal size={22}/></button>
+          <span className="evo-cowork__action-spacer"/>
+          <button type="button" className="evo-cowork__icon" onMouseDown={e => e.preventDefault()} aria-label="Hangbevitel" onClick={() => setError("Hangbevitel jelenleg nem érhető el a Coworkban.")}><Mic size={22}/></button>
+          <button type={busy ? "button" : "submit"} className="evo-cowork__send" onMouseDown={e => e.preventDefault()} onClick={busy ? stop : undefined} disabled={!busy && !draft.trim()} aria-label={busy ? "Generálás leállítása" : "Küldés"}>{busy ? <Square size={18} fill="currentColor"/> : <ArrowUp size={23}/>}</button>
+        </div>}
       </form>
       {error && <p className="evo-cowork__error" role="status">{error} <button type="button" onClick={() => setError("")} aria-label="Bezárás"><X size={15}/></button></p>}
     </div>
