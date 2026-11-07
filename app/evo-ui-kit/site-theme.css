@@ -1,0 +1,258 @@
+/* Evolingo UI Kit v1 — app-wide adoption layer.
+ * Intentionally loaded LAST in app/layout.tsx.
+ * Use canonical semantic tokens; keep existing route state/logic and advanced iOS
+ * navigation/keyboard layouts owned by their current components.
+ */
+:root {
+  color-scheme: light;
+  --evo-bg: #ffffff;
+  --evo-surface: #f5f5f7;
+  --evo-surface-raised: #ffffff;
+  --evo-surface-muted: #f5f5f7;
+  --evo-text: #202127;
+  --evo-text-secondary: #8e8e93;
+  --evo-text-tertiary: #8e8e93;
+  --evo-action: #202127;
+  --evo-action-hover: #34353b;
+  --evo-border: #e5e5ea;
+  --evo-border-strong: #d1d1d6;
+  --evo-success: #34c759;
+  --evo-danger: #ff3b30;
+  --evo-focus: #007aff;
+  --evo-radius-xs: 10px;
+  --evo-radius-sm: 10px;
+  --evo-radius-md: 14px;
+  --evo-radius-control: 14px;
+  --evo-radius-card: 16px;
+  --evo-radius-lg: 16px;
+  --evo-radius-xl: 20px;
+  --evo-radius-2xl: 26px;
+  --evo-target-size: 44px;
+  --mobile-canvas: #ffffff;
+  --mobile-surface: #ffffff;
+  --mobile-action: #202127;
+  --mobile-accent: #202127;
+  --mobile-text: #202127;
+  --mobile-muted: #8e8e93;
+  --mobile-border: #e5e5ea;
+  --mobile-focus: #007aff;
+  --color-bg: #ffffff;
+  --color-text: #202127;
+  --color-text-2: #8e8e93;
+  --color-text-3: #8e8e93;
+  --color-surface: #ffffff;
+  --color-surface-2: #f5f5f7;
+  --color-sidebar: #f5f5f7;
+  --color-action: #202127;
+  --color-on-action: #ffffff;
+  --color-separator: #e5e5ea;
+  --color-border: #e5e5ea;
+  --color-fill: #f5f5f7;
+  --color-fill-pressed: #eaeaee;
+  --color-focus: #007aff;
+  --evo-page-ink: #202127;
+  --evo-page-muted: #8e8e93;
+  --evo-page-line: #e5e5ea;
+  --evo-page-soft: #f5f5f7;
+  --evo-page-surface: #ffffff;
+  --evo-page-radius: 16px;
+  --evo-page-gutter: clamp(16px, 4.5vw, 24px);
+}
+html, body { max-width:100%; }
+body { -webkit-font-smoothing:antialiased; }
+.app-shell.reference-shell {
+  --evo-page-ink: var(--evo-ui-text,#202127);
+  --evo-page-muted: var(--evo-ui-muted,#8e8e93);
+  --evo-page-line: var(--evo-ui-border,#e5e5ea);
+  --evo-page-soft: var(--evo-ui-surface,#f5f5f7);
+  --evo-page-surface:var(--evo-ui-canvas,#fff);
+  --evo-page-radius:16px;
+}
+.app-shell.reference-shell .ref-app:not(.ref-view-chat):not(.ref-view-auth) {
+  background:#ffffff !important;
+  color:var(--evo-ui-text,#202127);
+}
+/* Prevent old sage mobile role maps from producing a different UI on each tab. */
+@media (max-width:767px) {
+  :root {
+    --mobile-canvas:#ffffff;
+    --mobile-surface:#ffffff;
+    --mobile-action:#202127;
+    --mobile-accent:#202127;
+    --mobile-text:#202127;
+    --mobile-muted:#8e8e93;
+    --mobile-border:#e5e5ea;
+    --mobile-focus:#007aff;
+    --color-bg:#ffffff;
+    --color-surface-2:#f5f5f7;
+    --color-sidebar:#f5f5f7;
+    --color-text:#202127;
+    --color-text-2:#8e8e93;
+    --color-text-3:#8e8e93;
+    --color-action:#202127;
+    --color-separator:#e5e5ea;
+    --color-fill:#f5f5f7;
+    --evo-bg:#ffffff;
+    --evo-surface:#f5f5f7;
+    --evo-surface-muted:#f5f5f7;
+    --evo-text:#202127;
+    --evo-action:#202127;
+  }
+}
+/* Shared section headings, content-width sizing and focus ring (not a broad
+   button size override, which would break the seven-day calendar). */
+.evo-ai-app-shell :is(.ref-view-profile,.ref-view-utility,.ref-view-space,.ref-view-brainstorm,.ref-view-schedule) {
+  color:var(--evo-ui-text,#202127);
+}
+.evo-ai-app-shell :is(.ref-view-profile,.ref-view-utility,.ref-view-space,.ref-view-brainstorm,.ref-view-schedule)
+  :is(button,a,input,textarea,select):focus-visible {
+  outline:2px solid var(--evo-ui-focus,#007aff);
+  outline-offset:2px;
+}
+.evo-ai-app-shell :is(.ref-view-profile,.ref-view-utility,.ref-view-space,.ref-view-brainstorm,.ref-view-schedule)
+  :is(input,textarea,select) { max-width:100%; }
+.evo-ai-app-shell :is(.ref-view-profile,.ref-view-utility,.ref-view-space,.ref-view-brainstorm,.ref-view-schedule) input:not([type="checkbox"]),
+.evo-ai-app-shell :is(.ref-view-profile,.ref-view-utility,.ref-view-space,.ref-view-brainstorm,.ref-view-schedule) textarea {
+  font-size:16px;
+}
+/* Schedule */
+.evo-ai-app-shell .evo-schedule { color:#202127; background:#fff; width:min(100%,560px); }
+.evo-ai-app-shell .evo-schedule-card { border-radius:16px; border-color:#e5e5ea; background:#fff; }
+.evo-ai-app-shell .evo-schedule-icon { background:#f5f5f7; border-radius:14px; }
+.evo-ai-app-shell .evo-schedule-tabs button.is-active { background:#f5f5f7; color:#202127; }
+.evo-ai-app-shell .evo-schedule-more { width:44px; min-width:44px; min-height:44px; flex-basis:44px; }
+.evo-ai-app-shell .evo-schedule-actions button,
+.evo-ai-app-shell .evo-schedule-next { min-height:44px; border-color:#e5e5ea; border-radius:14px; }
+.evo-ai-app-shell .evo-schedule-create { display:flex; flex-wrap:wrap; gap:8px; min-width:0; }
+.evo-ai-app-shell .evo-schedule-create .evo-ui-button { min-width:0; max-width:100%; flex:1 1 auto; min-height:44px; border-radius:999px; }
+.evo-ai-app-shell .evo-schedule-create .evo-ui-button--primary { background:#202127 !important; color:#fff !important; border-color:#202127 !important; }
+.evo-ai-app-shell .evo-schedule-create .evo-ui-button--secondary { background:#fff !important; color:#202127 !important; border-color:#e5e5ea !important; }
+.evo-ai-app-shell .evo-schedule-search { height:50px; border-radius:14px; background:#f5f5f7; border-color:#e5e5ea; box-shadow:none; }
+.evo-ai-app-shell .evo-schedule-search input { font-size:16px; }
+/* Library */
+.app-shell.reference-shell .library-space .library-search { background:#f5f5f7; border:1px solid #e5e5ea; border-radius:14px; height:50px; }
+.app-shell.reference-shell .library-space .library-quick-button,
+.app-shell.reference-shell .library-space .library-view-button {
+  min-width:44px; min-height:44px; height:44px; border-radius:14px;
+}
+.app-shell.reference-shell .library-space .library-files .library-file { border-radius:16px; }
+.app-shell.reference-shell .library-space .library-add-primary { min-height:44px; border-radius:999px; }
+.app-shell.reference-shell .library-space .library-file-more,
+.app-shell.reference-shell .library-space .library-back { min-width:44px; min-height:44px; }
+.app-shell.reference-shell .library-space .library-home-group { border-radius:16px; }
+/* Tools & connectors */
+.evo-ai-app-shell .evo-tools-hub { color:#202127; background:#fff; }
+.evo-ai-app-shell .evo-tools-hub .evo-tools-search {
+  height:50px; background:#f5f5f7; border:1px solid #e5e5ea;
+  border-radius:14px; box-shadow:none;
+}
+.evo-ai-app-shell .evo-tools-hub .evo-tools-storage-card { border-radius:16px; border-color:#e5e5ea; background:#fff; }
+.evo-ai-app-shell .evo-tools-hub .evo-tools-app-row { min-height:56px; }
+.evo-ai-app-shell .evo-tools-hub .evo-tools-discover { min-height:44px; }
+.evo-ai-app-shell .evo-tools-hub :is(.evo-tools-storage-upload,.evo-tools-empty button) { min-height:44px; border-radius:999px; }
+/* Brainstorm */
+.evo-ai-app-shell .evo-brainstorm { color:#202127; }
+.evo-ai-app-shell .evo-brainstorm-task { border-radius:16px; border-color:#e5e5ea; background:#fff; }
+.evo-ai-app-shell .evo-brainstorm-topics .evo-brainstorm-topic-empty { background:#f5f5f7; color:#8e8e93; border-color:#e5e5ea; }
+.evo-ai-app-shell .evo-brainstorm-add-button { min-width:44px; width:44px; min-height:44px; height:44px; border-radius:50%; }
+.evo-ai-app-shell .evo-brainstorm-retry,
+.evo-ai-app-shell .evo-brainstorm-approve { min-height:44px; border-radius:999px; }
+/* Profile and auth */
+.evo-ai-app-shell .ref-view-profile .ref-profile-identity { background:#f5f5f7; border-color:#e5e5ea; border-radius:16px; }
+.evo-ai-app-shell .ref-view-profile .ref-setting-row { min-height:56px; border-color:#e5e5ea; color:#202127; background:#f5f5f7; }
+.evo-ai-app-shell .ref-view-profile .ref-settings-group h2 { color:#8e8e93; }
+.evo-ai-app-shell .ref-view-profile .ref-outline-pill { min-height:44px; color:#202127; border-color:#e5e5ea; background:#fff; }
+.evo-ai-app-shell .ref-view-profile .ref-dark-pill { min-height:50px; background:#202127 !important; color:#fff !important; }
+.evo-ai-app-shell .ref-view-auth .ref-auth-submit { min-height:50px; border-radius:999px; background:#202127 !important; color:#fff !important; }
+/* Chat: same neutral palette; maintain independent keyboard and scroll geometry. */
+html:has(.ref-view-chat)::before { background:#ffffff !important; }
+.ref-view-chat .evo-chat-entry--user .evo-chat-bubble { background:#f5f5f7 !important; color:#202127 !important; }
+.ref-view-chat .evo-chat-composer { border-color:#e5e5ea !important; background:#ffffff !important; }
+.ref-view-chat .evo-chat-attach,
+.ref-view-chat .evo-chat-mic,
+.ref-view-chat .evo-chat-send { min-width:44px; min-height:44px; }
+.evo-chat-kit-actions > button {
+  display:flex; width:100%; min-height:56px; align-items:center; gap:13px;
+  border:0; border-bottom:1px solid #e5e5ea; padding:9px 3px;
+  text-align:left; background:#fff; color:#202127; cursor:pointer;
+}
+.evo-chat-kit-actions > button:last-child { border:0; }
+.evo-chat-kit-actions > button svg { flex:none; stroke-width:1.75; }
+.evo-chat-kit-actions > button > span { display:flex; min-width:0; flex:1; flex-direction:column; gap:2px; }
+.evo-chat-kit-actions > button strong { font-size:15px; font-weight:600; }
+.evo-chat-kit-actions > button small { font-size:12px; color:#8e8e93; }
+/* Shared sheet children for legacy screen forms; shell/title/actions come from kit. */
+.evo-ui-sheet__content .evo-schedule-dialog {
+  width:100%; min-width:0; max-width:none; max-height:none; overflow:visible;
+  padding:2px 0 10px; margin:0; box-shadow:none; border:0; border-radius:0;
+  background:transparent; display:flex; flex-direction:column; gap:14px;
+}
+.evo-ui-sheet__content .evo-schedule-dialog label,
+.evo-ui-sheet__content .evo-tools-machine-form label,
+.evo-ui-sheet__content .ref-profile-kit-form label {
+  display:flex; flex-direction:column; gap:7px; color:#686870; font-size:13px; font-weight:600;
+}
+.evo-ui-sheet__content .evo-schedule-dialog :is(input,textarea,select),
+.evo-ui-sheet__content .evo-tools-machine-form input,
+.evo-ui-sheet__content .ref-profile-kit-form input:not([type="file"]),
+.evo-ui-sheet__content .library-kit-content :is(input,textarea,select),
+.evo-ui-sheet__content .evo-brainstorm-form :is(input,textarea,select) {
+  width:100%; max-width:100%; min-width:0; min-height:50px;
+  padding:12px 14px; border:1px solid #e5e5ea;
+  border-radius:14px; background:#f5f5f7; color:#202127;
+  font-size:16px; line-height:1.4; box-sizing:border-box;
+}
+.evo-ui-sheet__content :is(textarea) { resize:vertical; }
+.evo-ui-sheet__content .evo-tools-machine-form,
+.evo-ui-sheet__content .ref-profile-kit-form,
+.evo-ui-sheet__content .evo-brainstorm-form {
+  display:flex; flex-direction:column; min-width:0; gap:14px;
+  padding:0 0 10px; background:transparent; border:0;
+}
+.evo-ui-sheet__content .ref-profile-kit-sheet,
+.evo-ui-sheet__content .evo-tools-kit-sheet {
+  display:flex; flex-direction:column; align-items:stretch; gap:13px;
+  font-size:14px; line-height:1.6; color:#202127;
+}
+.evo-ui-sheet__content .ref-profile-kit-sheet p,
+.evo-ui-sheet__content .evo-tools-kit-sheet p,
+.evo-ui-sheet__content .evo-tools-machine-form p {
+  margin:0; color:#686870; font-size:14px; line-height:1.6;
+}
+.evo-ui-sheet__content .evo-tools-kit-sheet .evo-tools-provider-logo { align-self:flex-start; }
+.evo-ui-sheet__content .evo-tools-dialog-status { padding:13px; border-radius:14px; border:1px solid #e5e5ea; background:#f5f5f7; color:#686870; font-size:13px; }
+.evo-ui-sheet__content .evo-tools-machine-link {
+  min-height:50px; display:flex; align-items:center; justify-content:center; gap:8px;
+  color:#202127; text-decoration:none; background:#f5f5f7; border-radius:999px;
+}
+.evo-ui-sheet__content .evo-brainstorm-form label { display:flex; flex-direction:column; gap:7px; }
+.evo-ui-sheet__content .evo-brainstorm-kit-note { margin:0; font-size:12px; line-height:1.6; color:#8e8e93; }
+.evo-ui-sheet__content .evo-schedule-disclaimer { margin:0; color:#8e8e93; font-size:12px; line-height:1.5; }
+.evo-ui-sheet__content .library-kit-content { display:flex; flex-direction:column; gap:6px; min-width:0; }
+.evo-ui-sheet__content:has(.library-preview) { flex:1; }
+.evo-ui-sheet__content:has(.library-preview) .library-kit-content { height:100%; }
+.evo-ui-sheet__content .library-kit-content .library-preview { height:100%; min-height:0; }
+.evo-ui-sheet__content .library-kit-content .library-preview iframe { min-height:45dvh; flex:1; }
+.evo-ui-sheet__content .library-kit-content .library-sheet-actions > button { min-height:52px; }
+.evo-ui-sheet__content .library-kit-content .library-form { gap:12px; }
+.evo-ui-sheet__content .library-kit-content .library-new-folder > div { flex-wrap:wrap; }
+.evo-ui-sheet__content .library-kit-content .library-new-folder input { flex:1 1 150px; width:auto; }
+.evo-ui-sheet__content .library-kit-content .library-new-folder .evo-ui-button { flex:1 0 auto; min-height:44px; }
+.evo-ui-sheet__content .library-kit-content .library-form .evo-ui-button { width:100%; min-height:50px; }
+.evo-ui-sheet__content .library-kit-content .library-confirm button { min-height:50px; }
+.evo-ui-sheet__content .library-kit-content .library-qr-sheet { width:100%; }
+.evo-ui-sheet__content .library-kit-content .library-qr-sheet > button { min-height:50px; }
+/* Shared card and control rhythm, preserving floating navigation behavior. */
+@media (max-width:430px) {
+  .evo-ai-app-shell :is(.evo-schedule-card,.ref-profile-identity,.evo-tools-storage-card,.evo-brainstorm-task) { max-width:100%; }
+  .evo-ai-app-shell .evo-schedule-create .evo-ui-button { font-size:13px; padding-inline:12px; }
+  .evo-ai-app-shell .evo-tools-hub .evo-tools-storage-grid { gap:10px; }
+}
+@media (max-width:360px) {
+  .evo-ai-app-shell .evo-schedule-create .evo-ui-button { flex:1 1 100%; }
+  .evo-ai-app-shell .evo-tools-hub .evo-tools-storage-card { min-width:0; }
+  .evo-ui-sheet__content .library-kit-content .library-new-folder > div { gap:8px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .evo-ai-app-shell :is(.evo-schedule-card,.library-file,.evo-tools-storage-card,.evo-brainstorm-task) { transition:none!important; }
+}
