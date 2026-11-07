@@ -1,7 +1,8 @@
 "use client"
 
 import { useEffect, useMemo, useState, type FormEvent } from "react"
-import { CalendarClock, Check, ChevronDown, CirclePause, Clock3, MoreHorizontal, Plus, Search, Trash2, Workflow } from "lucide-react"
+import { CalendarClock, Check, CirclePause, Clock3, MoreHorizontal, Plus, Search, Trash2, Workflow } from "lucide-react"
+import { BottomSheet, UIButton } from "./evo-ui-kit"
 
 type Status = "active" | "paused" | "completed"
 type Kind = "scheduled" | "long"
@@ -138,15 +139,14 @@ export default function Schedule() {
     </section>
     <div className="evo-schedule-bottom">
       <div className="evo-schedule-create">
-        <button type="button" className="evo-schedule-long" onClick={() => start("long")}><Workflow size={20} /> Hosszú feladat</button>
-        <button type="button" className="evo-schedule-new" onClick={() => start("scheduled")}><Plus size={21} /> Új feladat</button>
+        <UIButton variant="secondary" size="compact" className="evo-schedule-long" onClick={() => start("long")}><Workflow size={20} /> Hosszú feladat</UIButton>
+        <UIButton variant="primary" size="compact" className="evo-schedule-new" onClick={() => start("scheduled")}><Plus size={20} /> Új feladat</UIButton>
       </div>
       <label className="evo-schedule-search"><Search size={22} strokeWidth={1.7} /><input type="search" placeholder="Feladatok keresése" aria-label="Feladatok keresése" value={query} onChange={event => setQuery(event.target.value)} /></label>
     </div>
     {error && <p className="evo-schedule-error" role="alert">{error}</p>}
-    {formKind && <div className="evo-schedule-dialog-backdrop" onMouseDown={event => { if (event.target === event.currentTarget) setFormKind(null) }}>
-      <form className="evo-schedule-dialog" onSubmit={create} aria-label="Feladat létrehozása">
-        <div className="evo-schedule-dialog-head"><h2>{formKind === "long" ? "Hosszú feladat" : "Új feladat"}</h2><button type="button" onClick={() => setFormKind(null)} aria-label="Bezárás"><ChevronDown size={22} /></button></div>
+    {formKind && <BottomSheet title={formKind === "long" ? "Hosszú feladat" : "Új feladat"} size="expanded" dismissible={false} onClose={() => setFormKind(null)} footer={<UIButton type="submit" form="evo-schedule-create-form" fullWidth><Plus size={19} /> Létrehozás</UIButton>}>
+      <form id="evo-schedule-create-form" className="evo-schedule-dialog" onSubmit={create} aria-label="Feladat létrehozása">
         <label>Feladat neve<input required maxLength={100} value={title} autoFocus onChange={event => setTitle(event.target.value)} placeholder="Mit szeretnél elvégezni?" /></label>
         <label>Leírás (opcionális)<textarea rows={3} maxLength={800} value={note} onChange={event => setNote(event.target.value)} placeholder="Részletek…" /></label>
         {formKind === "long" ? <label>Lépések száma<input type="number" min={2} max={20} value={total} onChange={event => setTotal(Number(event.target.value) || 2)} /></label> : <>
@@ -155,8 +155,7 @@ export default function Schedule() {
           <label>Időpont<input type="time" value={time} onChange={event => setTime(event.target.value)} /></label>
         </>}
         <p className="evo-schedule-disclaimer">A feladatok ezen az eszközön mentődnek. Automatikus háttérfuttatás és értesítés még nincs összekapcsolva.</p>
-        <button className="evo-schedule-submit" type="submit"><Plus size={19} /> Létrehozás</button>
-      </form>
-    </div>}
+        </form>
+    </BottomSheet>}
   </div>
 }
