@@ -5,7 +5,7 @@ import {
   PanelLeft as SidebarSimpleIcon, Plus as PlusIcon, Ellipsis as DotsThreeIcon,
   Pencil as PencilSimpleIcon, Trash2 as TrashIcon, Search as MagnifyingGlassIcon,
   CalendarDays as ScheduleIcon, FolderOpen as FoldersIcon, LayoutGrid as PuzzlePieceIcon,
-  UsersRound as CoworkIcon, Lightbulb as LightbulbIcon, SquarePen as NotePencilIcon, ChevronRight,
+  UsersRound as CoworkIcon, Lightbulb as LightbulbIcon, SquarePen as NotePencilIcon, ChevronRight, Pin as PinIcon, PinOff as PinOffIcon,
 } from "lucide-react"
 import { deleteChatSession, notifyChatSessionAction, readChatSessions, renameChatSession, type ChatSession } from "./chat-sessions"
 
@@ -33,6 +33,7 @@ export default function AppTabBar({ activeTab, onSelect, avatarImage, userName }
   const [desktop, setDesktop] = useState(false)
   const [renderSidebar, setRenderSidebar] = useState(false)
   const [chats, setChats] = useState<ChatSession[]>([])
+  const [pinnedIds, setPinnedIds] = useState<string[]>([])
   const [menuFor, setMenuFor] = useState<string | null>(null)
   const [searchOpen, setSearchOpen] = useState(false)
   const [query, setQuery] = useState("")
@@ -44,6 +45,8 @@ export default function AppTabBar({ activeTab, onSelect, avatarImage, userName }
   openRef.current = open
 
   const refresh = useCallback(() => setChats(readChatSessions()), [])
+  useEffect(() => { try { const saved: unknown = JSON.parse(localStorage.getItem("evolingo.sidebar.pinned.v1") || "[]"); if (Array.isArray(saved)) setPinnedIds(saved.filter((id): id is string => typeof id === "string")) } catch {} }, [])
+  const togglePin = (id: string) => { setPinnedIds(previous => { const next = previous.includes(id) ? previous.filter(value => value !== id) : [...previous, id]; try { localStorage.setItem("evolingo.sidebar.pinned.v1", JSON.stringify(next)) } catch {} return next }); setMenuFor(null) }
   const close = useCallback((restoreFocus = true) => {
     const mobile = !window.matchMedia("(min-width: 1024px)").matches
     if (restoreFocus && mobile && dialog.current?.contains(document.activeElement)) {
@@ -64,7 +67,7 @@ export default function AppTabBar({ activeTab, onSelect, avatarImage, userName }
     if (restoreFocus && !mobile) requestAnimationFrame(() => trigger.current?.focus({ preventScroll: true }))
   }, [])
   const show = useCallback(() => {
-    document.querySelector<HTMLTextAreaElement>(".ref-view-chat textarea")?.blur()
+    document.querySelector<HTMLTextAreaElement>(".ref-view-chat textarea, .ref-view-cowork textarea")?.blur()
     // Témák and other long pages must reveal the same full-height foreground.
     // Preserve their scroll position and restore it only after the drawer closes.
     if (window.matchMedia("(max-width: 767px)").matches) {
@@ -225,8 +228,10 @@ export default function AppTabBar({ activeTab, onSelect, avatarImage, userName }
   const startNew = () => { notifyChatSessionAction("new"); select("ai") }
   const openChat = (id: string) => { notifyChatSessionAction("open", id); select("ai") }
   const onProfile = () => select("profile")
-  const grouped = ["Ma", "Tegnap", "Korábban"].map(group => ({ group, items: chats.filter(chat => dateGroup(chat.updatedAt) === group) })).filter(group => group.items.length)
+  const pinnedChats = chats.filter(chat => pinnedIds.includes(chat.id) && (!query.trim() || chat.title.toLocaleLowerCase("hu").includes(query.trim().toLocaleLowerCase("hu"))))
+  const grouped = ["Ma", "Tegnap", "Korábban"].map(group => ({ group, items: chats.filter(chat => !pinnedIds.includes(chat.id) && dateGroup(chat.updatedAt) === group) })).filter(group => group.items.length)
   const visibleChats = grouped.map(group => ({ ...group, items: group.items.filter(chat => !query.trim() || chat.title.toLocaleLowerCase("hu").includes(query.trim().toLocaleLowerCase("hu"))) })).filter(group => group.items.length)
+  const hasVisibleChats = pinnedChats.length > 0 || visibleChats.length > 0
   const usernameInitials = userName.trim().split(/\s+/).slice(0, 2).map(part => part[0]).join("").toLocaleUpperCase("hu") || "EV"
 
   return <div className="evo-sidebar-host">
@@ -246,14 +251,19 @@ export default function AppTabBar({ activeTab, onSelect, avatarImage, userName }
           <nav className="evo-sidebar-nav" aria-label="Fő navigáció">
             {quickLinks.map(({ label, Icon, target }) => <button key={label} type="button" aria-current={activeTab === target ? "page" : undefined} onClick={() => select(target)}><Icon size={22} /><span>{label}</span></button>)}
           </nav>
-          <div className="evo-sidebar-recent-heading"><span>Legutóbbiak</span><button type="button" aria-label="Új beszélgetés" onClick={startNew}><PlusIcon size={19} /></button></div>
           {searchOpen && <label className="evo-sidebar-search"><MagnifyingGlassIcon size={16} /><input autoFocus value={query} onChange={event => setQuery(event.target.value)} placeholder="Keresés a beszélgetésekben" /></label>}
           <div className="evo-sidebar-history">
+            {pinnedChats.length > 0 && <section className="evo-sidebar-pinned"><h3>Rögzítve</h3>{pinnedChats.map(chat => <div className="evo-sidebar-chat" key={chat.id}>
+              <button type="button" className="evo-sidebar-chat-title" onClick={() => openChat(chat.id)} title={chat.title}>{chat.title}</button>
+              <button type="button" className="evo-sidebar-chat-menu" aria-label={`${chat.title} műveletei`} aria-expanded={menuFor === chat.id} onClick={() => setMenuFor(menuFor === chat.id ? null : chat.id)}><DotsThreeIcon size={20}/></button>
+              {menuFor === chat.id && <div className="evo-sidebar-chat-actions"><button type="button" onClick={() => togglePin(chat.id)}><PinOffIcon size={15}/> Rögzítés feloldása</button><button type="button" onClick={() => { const title = window.prompt("Beszélgetés átnevezése", chat.title); if (title !== null) renameChatSession(chat.id, title); setMenuFor(null) }}><PencilSimpleIcon size={15}/> Átnevezés</button><button type="button" onClick={() => { deleteChatSession(chat.id); setMenuFor(null) }}><TrashIcon size={15}/> Törlés</button></div>}
+            </div>)}</section>}
+            <div className="evo-sidebar-recent-heading"><span>Legutóbbiak</span><button type="button" aria-label="Új beszélgetés" onClick={startNew}><PlusIcon size={19}/></button></div>
             {visibleChats.length ? visibleChats.map(({ group, items }) => <section key={group}><h3>{group}</h3>{items.map(chat => <div className="evo-sidebar-chat" key={chat.id}>
               <button type="button" className="evo-sidebar-chat-title" onClick={() => openChat(chat.id)} title={chat.title}>{chat.title}</button>
               <button type="button" className="evo-sidebar-chat-menu" aria-label={`${chat.title} műveletei`} aria-expanded={menuFor === chat.id} onClick={() => setMenuFor(menuFor === chat.id ? null : chat.id)}><DotsThreeIcon size={20} /></button>
-              {menuFor === chat.id && <div className="evo-sidebar-chat-actions"><button type="button" onClick={() => { const title = window.prompt("Beszélgetés átnevezése", chat.title); if (title !== null) renameChatSession(chat.id, title); setMenuFor(null) }}><PencilSimpleIcon size={15} /> Átnevezés</button><button type="button" onClick={() => { deleteChatSession(chat.id); setMenuFor(null) }}><TrashIcon size={15} /> Törlés</button></div>}
-            </div>)}</section>) : <p className="evo-sidebar-empty">{query ? "Nincs ilyen beszélgetés." : "A beszélgetéseid itt jelennek meg."}</p>}
+              {menuFor === chat.id && <div className="evo-sidebar-chat-actions"><button type="button" onClick={() => togglePin(chat.id)}><PinIcon size={15}/> Rögzítés</button><button type="button" onClick={() => { const title = window.prompt("Beszélgetés átnevezése", chat.title); if (title !== null) renameChatSession(chat.id, title); setMenuFor(null) }}><PencilSimpleIcon size={15} /> Átnevezés</button><button type="button" onClick={() => { deleteChatSession(chat.id); setMenuFor(null) }}><TrashIcon size={15} /> Törlés</button></div>}
+            </div>)}</section>) : !hasVisibleChats && <p className="evo-sidebar-empty">{query ? "Nincs ilyen beszélgetés." : "A beszélgetéseid itt jelennek meg."}</p>}
           </div>
           <div className="evo-sidebar-footer"><button type="button" className="evo-sidebar-account" onClick={onProfile}>{avatarImage ? <img src={avatarImage} alt="" /> : <span className="evo-profile-initials">{usernameInitials}</span>}<span className="evo-sidebar-account-name">{userName}</span><ChevronRight size={17} /></button></div>
         </div>
