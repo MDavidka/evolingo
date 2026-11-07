@@ -1,7 +1,7 @@
 "use client"
 import { useEffect, useRef, useState, type ReactNode } from "react"
 import dynamic from "next/dynamic"
-import UnifiedSheet from "./unified-sheet"
+import { BottomSheet } from "./evo-ui-kit"
 import BottomSheetShowcase from "./evo-ui-kit/bottom-sheet-demo"
 import { UIButton } from "./evo-ui-kit/button"
 import CardsShowcase from "./evolingo-cards-demo"
@@ -208,8 +208,33 @@ function Profile({ name, avatarImage, avatarFallback, onEdit, onEditAvatar, onLo
     <div className="ref-settings-group"><SettingRow icon={LogOut} title="Kijelentkezés" subtitle="Vendégfiók" onClick={onLogout} /></div>
     <div className="ref-settings-group"><h2>Fejlesztői eszközök</h2><SettingRow icon={Component} title="Buttons" subtitle="iOS és ChatGPT stílusú gombok, UI előnézet" onClick={() => setDemoOpen(true)} /></div>
     {process.env.NODE_ENV === "development" && <div className="ref-settings-group"><h2>Fejlesztői eszközök</h2><button type="button" className="ref-setting-row" disabled={restartState === "busy"} onClick={async () => { if (!window.confirm("A fejlesztői szerver frissül a legújabb main commitra, majd újraindul. Folytatod?")) return; setRestartState("busy"); setRestartMessage("Frissítés és újraindítás…"); try { const response = await fetch("/api/dev/restart", { method: "POST" }); const data = await response.json() as { commit?: string; error?: string }; if (!response.ok) throw new Error(data.error || "Az újraindítás nem sikerült."); setRestartMessage(`Újraindítás a ${data.commit} commiton…`) } catch (error) { setRestartState("error"); setRestartMessage(error instanceof Error ? error.message : "Az újraindítás nem sikerült.") } }}><RefreshCw size={19} /><span><strong>{restartState === "busy" ? "Újraindítás…" : "Szerver újraindítása a legújabb commiton"}</strong><small>A main ág legújabb változatának betöltése</small></span><ChevronRight size={18} /></button>{restartMessage && <p role="status" className="profile-restart-status">{restartMessage}</p>}</div>}
-    {profileSheet && <UnifiedSheet backdropClassName="ref-modal-backdrop" sheetClassName="ref-edit-modal ref-profile-info-modal" labelledBy="ref-profile-info-title" onClose={() => setProfileSheet(null)}><div className="ref-profile-info-heading"><h2 id="ref-profile-info-title">{{ security: "Biztonság", subscription: "Előfizetés", help: "Súgó és támogatás", about: "Az alkalmazásról" }[profileSheet]}</h2><button type="button" aria-label="Bezárás" onClick={() => setProfileSheet(null)}><X size={20} /></button></div>{profileSheet === "help" ? <p>Az AI-csevegésben kérdéseket tehetsz fel, a fájljaidat a Könyvtárban, a feladataidat az Ütemezésben kezelheted.</p> : profileSheet === "about" ? <p>Az Evölingo AI-asszisztens beszélgetéshez, fájlkezeléshez és feladatok szervezéséhez.</p> : <><p>{profileSheet === "security" ? "A biztonsági beállítások megnyitásához előbb jelentkezz be." : "Az előfizetési csomagok megtekintéséhez előbb jelentkezz be."}</p><button className="ref-dark-pill evo-wide-action" type="button" onClick={onLogin}>Bejelentkezés</button></>}</UnifiedSheet>}
-    {editing && <UnifiedSheet backdropClassName="ref-modal-backdrop" sheetClassName="ref-edit-modal" labelledBy="ref-edit-title" onClose={() => setEditing(false)}><form onSubmit={event => { event.preventDefault(); if (draft.trim()) onEdit(draft.trim()); setEditing(false) }}><div><h2 id="ref-edit-title">Profil szerkesztése</h2><button type="button" aria-label="Bezárás" onClick={() => setEditing(false)}><X size={20} /></button></div><label htmlFor="ref-name">Megjelenített név</label><input id="ref-name" value={draft} maxLength={32} onChange={event => setDraft(event.target.value)} /><input ref={avatarPicker} type="file" accept="image/*" hidden onChange={event => { const file = event.target.files?.[0]; if (file) onEditAvatar(file); event.target.value = "" }} /><button className="ref-avatar-edit" type="button" onClick={() => avatarPicker.current?.click()}>Profilkép módosítása</button><button className="ref-dark-pill evo-wide-action" type="submit">Mentés</button></form></UnifiedSheet>}
+    {profileSheet && <BottomSheet
+      title={{ security: "Biztonság", subscription: "Előfizetés", help: "Súgó és támogatás", about: "Az alkalmazásról" }[profileSheet]}
+      size="compact"
+      onClose={() => setProfileSheet(null)}
+    >
+      <div className="ref-profile-kit-sheet">
+        {profileSheet === "help" ?
+          <p>Az AI-csevegésben kérdéseket tehetsz fel, a fájljaidat a Könyvtárban, a feladataidat az Ütemezésben kezelheted.</p> :
+        profileSheet === "about" ?
+          <p>Az Evölingo AI-asszisztens beszélgetéshez, fájlkezeléshez és feladatok szervezéséhez.</p> :
+          <>
+            <p>{profileSheet === "security" ? "A biztonsági beállítások megnyitásához előbb jelentkezz be." : "Az előfizetési csomagok megtekintéséhez előbb jelentkezz be."}</p>
+            <UIButton fullWidth onClick={onLogin}>Bejelentkezés</UIButton>
+          </>
+        }
+      </div>
+    </BottomSheet>}
+    {editing && <BottomSheet title="Profil szerkesztése" size="medium" dismissible={false} onClose={() => setEditing(false)}
+      footer={<UIButton fullWidth type="submit" form="ref-profile-edit-form">Mentés</UIButton>}
+    >
+      <form id="ref-profile-edit-form" className="ref-profile-kit-form" onSubmit={event => { event.preventDefault(); if (draft.trim()) onEdit(draft.trim()); setEditing(false) }}>
+        <label htmlFor="ref-name">Megjelenített név</label>
+        <input id="ref-name" value={draft} maxLength={32} onChange={event => setDraft(event.target.value)} />
+        <input ref={avatarPicker} type="file" accept="image/*" hidden onChange={event => { const file = event.target.files?.[0]; if (file) onEditAvatar(file); event.target.value = "" }} />
+        <UIButton variant="secondary" fullWidth onClick={() => avatarPicker.current?.click()}>Profilkép módosítása</UIButton>
+      </form>
+    </BottomSheet>}
   </div>
 }
 
