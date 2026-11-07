@@ -3,6 +3,7 @@ import { notFound } from "next/navigation"
 
 const titles: Record<string, string> = {
   chat: "AI beszélgetés",
+  cowork: "Cowork",
   eszkozok: "Eszközök",
   konyvtar: "Könyvtár",
   utemezes: "Ütemezés",
