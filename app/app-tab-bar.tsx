@@ -10,6 +10,24 @@ import {
 import { deleteChatSession, notifyChatSessionAction, readChatSessionSummaries, renameChatSession, type ChatSessionSummary } from "./chat-sessions"
 
 export type AppTab = "cowork" | "ai" | "schedule" | "files" | "tools" | "profile" | "brainstorm"
+// Warm the destination on intent (hover/focus/touch), not on every app startup.
+// Shares Webpack chunks with next/dynamic screens and preserves mobile bandwidth.
+const screenImports: Record<AppTab, () => Promise<unknown>> = {
+  ai: () => import("./chat-interface"),
+  cowork: () => import("./cowork"),
+  schedule: () => import("./schedule"),
+  files: () => import("./library-space"),
+  tools: () => import("./tools-hub"),
+  profile: () => import("./profile-screen"),
+  brainstorm: () => import("./brainstorm"),
+}
+const warmed = new Set<AppTab>()
+function warmScreen(tab: AppTab) {
+  if (warmed.has(tab)) return
+  warmed.add(tab)
+  void screenImports[tab]().catch(() => warmed.delete(tab))
+}
+
 type Props = { activeTab: AppTab; onSelect: (tab: AppTab) => void; avatarImage: string; avatar: string; userName: string; stars?: number; streak?: number; onOpenLeaderboard?: () => void }
 
 const quickLinks = [
@@ -247,9 +265,9 @@ export default function AppTabBar({ activeTab, onSelect, avatarImage, userName }
             <button className="evo-sidebar-brand evo-sidebar-brand-action" type="button" onClick={() => close()} aria-label="Menü bezárása">Evölingo</button>
             <div className="evo-sidebar-tools"><button type="button" className="evo-sidebar-tool" aria-label="Beszélgetések keresése" aria-expanded={searchOpen} onClick={() => { setSearchOpen(value => !value); setQuery("") }}><MagnifyingGlassIcon size={21} /></button></div>
           </div>
-          <div className="evo-sidebar-new-chat"><button type="button" className="evo-sidebar-chat-action" onClick={startNew}><NotePencilIcon size={20} /> Új beszélgetés</button></div>
+          <div className="evo-sidebar-new-chat"><button type="button" className="evo-sidebar-chat-action" onPointerEnter={() => warmScreen("ai")} onTouchStart={() => warmScreen("ai")} onClick={startNew}><NotePencilIcon size={20} /> Új beszélgetés</button></div>
           <nav className="evo-sidebar-nav" aria-label="Fő navigáció">
-            {quickLinks.map(({ label, Icon, target }) => <button key={label} type="button" aria-current={activeTab === target ? "page" : undefined} onClick={() => select(target)}><Icon size={22} /><span>{label}</span></button>)}
+            {quickLinks.map(({ label, Icon, target }) => <button key={label} type="button" aria-current={activeTab === target ? "page" : undefined} onPointerEnter={() => warmScreen(target)} onTouchStart={() => warmScreen(target)} onFocus={() => warmScreen(target)} onClick={() => select(target)}><Icon size={22} /><span>{label}</span></button>)}
           </nav>
           {searchOpen && <label className="evo-sidebar-search"><MagnifyingGlassIcon size={16} /><input autoFocus value={query} onChange={event => setQuery(event.target.value)} placeholder="Keresés a beszélgetésekben" /></label>}
           <div className="evo-sidebar-history">
@@ -265,7 +283,7 @@ export default function AppTabBar({ activeTab, onSelect, avatarImage, userName }
               {menuFor === chat.id && <div className="evo-sidebar-chat-actions"><button type="button" onClick={() => togglePin(chat.id)}><PinIcon size={15}/> Rögzítés</button><button type="button" onClick={() => { const title = window.prompt("Beszélgetés átnevezése", chat.title); if (title !== null) renameChatSession(chat.id, title); setMenuFor(null) }}><PencilSimpleIcon size={15} /> Átnevezés</button><button type="button" onClick={() => { deleteChatSession(chat.id); setMenuFor(null) }}><TrashIcon size={15} /> Törlés</button></div>}
             </div>)}</section>) : !hasVisibleChats && <p className="evo-sidebar-empty">{query ? "Nincs ilyen beszélgetés." : "A beszélgetéseid itt jelennek meg."}</p>}
           </div>
-          <div className="evo-sidebar-footer"><button type="button" className="evo-sidebar-account" onClick={onProfile}>{avatarImage ? <img src={avatarImage} alt="" /> : <span className="evo-profile-initials">{usernameInitials}</span>}<span className="evo-sidebar-account-name">{userName}</span><ChevronRight size={17} /></button></div>
+          <div className="evo-sidebar-footer"><button type="button" className="evo-sidebar-account" onPointerEnter={() => warmScreen("profile")} onTouchStart={() => warmScreen("profile")} onClick={onProfile}>{avatarImage ? <img src={avatarImage} alt="" /> : <span className="evo-profile-initials">{usernameInitials}</span>}<span className="evo-sidebar-account-name">{userName}</span><ChevronRight size={17} /></button></div>
         </div>
       </aside>
     </>}
