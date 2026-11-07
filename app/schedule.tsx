@@ -78,6 +78,7 @@ export default function Schedule() {
     setMenu(null)
   }
   const start = (kind: Kind) => {
+    setMenu(null); setMenuDeleteConfirm(false);
     setFormKind(kind); setTitle(""); setNote(""); setDue(kind === "scheduled" ? selectedDay : ""); setTime("09:00"); setTotal(5); setRepeat("once"); setError("")
   }
   const create = (event: FormEvent<HTMLFormElement>) => {
