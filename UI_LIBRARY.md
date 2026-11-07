@@ -1,6 +1,6 @@
 # Evolingo UI Library — canonical specification (v1)
 
-**Status:** Integrated UI Library + React primitives. For new app work, use these reusable components and the machine-readable [manifest](app/evo-ui-kit/manifest.json), not screenshots or one-off copies.
+**Status:** UI Library + reusable React primitives + site-wide neutral theme and primary-screen migration (v1.1). For new app work, use these reusable components and the machine-readable [manifest](app/evo-ui-kit/manifest.json), not screenshots or one-off copies.
 
 **Location in app:** Profile → Fejlesztői eszközök → UI Library.
 
@@ -126,7 +126,9 @@ Every preview is non-persistent; permission examples **never** request real devi
 
 `app/evo-ui-kit/library-normalize.css` applies uniform mobile-only gallery sizing and focus/touch improvements. The other gallery styles now consume the canonical palette variables where they were formerly hard-coded. Alternative palettes *shown as specimens* in Design System remain intentionally different colors.
 
-**Scope:** This is the canonical kit for future production components. Existing app screens are **not yet automatically migrated**; importing `UIButton` / `BottomSheet` and their CSS is an explicit opt-in. The gallery does not automatically change how previously implemented live dialogs work.
+**Site-wide adoption:** `app/layout.tsx` now loads `app/evo-ui-kit/tokens.css` and `app/evo-ui-kit/site-theme.css` last, bringing the same color and responsive shape tokens to all main views. The shared `BottomSheet` is used for Chat attachments, Schedule creation/task actions, Library file operations, Utilities integrations and machine forms, Profile info/editing and Brainstorm creation. Shared `UIButton` powers live Send, Schedule creation, several Library form actions and bottom-sheet submits. Existing data handlers and persistence remain unchanged.
+
+**Compatibility:** Some specialized interaction controls (calendar day cells, task progress, floating sidebar navigation, large editor/composer surfaces) retain their feature-specific DOM and layout rules. They inherit neutral tokens but have not been reimplemented from scratch. This is intentional to avoid breaking gestures, keyboard positioning and backend workflows. Verify all screens on an actual iPhone before claiming a pixel-perfect migration; build checks alone do not establish interactive browser correctness.
 
 ## AI implementation contract
 
