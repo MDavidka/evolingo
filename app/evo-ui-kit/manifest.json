@@ -1,6 +1,6 @@
 {
   "name": "Evolingo UI Kit",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "status": "integrated",
   "purpose": "Canonical Apple Neutral and ChatGPT iOS-like mobile UI. AI-readable source of truth for new UI components.",
   "entrypoints": {
@@ -8,12 +8,14 @@
     "tokens": "app/evo-ui-kit/tokens.css",
     "components": [
       "app/evo-ui-kit/button.tsx",
-      "app/evo-ui-kit/bottom-sheet.tsx"
+      "app/evo-ui-kit/bottom-sheet.tsx",
+      "app/evo-ui-kit/settings.tsx"
     ],
     "demos": [
       "app/evo-ui-kit/bottom-sheet-demo.tsx",
       "app/reference-screens.tsx",
-      "app/evolingo-buttons-v2.tsx"
+      "app/evolingo-buttons-v2.tsx",
+      "app/evolingo-menus-demo.tsx"
     ],
     "documentation": "UI_LIBRARY.md",
     "agentInstructions": "AGENTS.md",
@@ -199,7 +201,7 @@
     "scope": "Gallery styling must not globally change production app screens until a component is opted in.",
     "build": "npm run build",
     "typecheck": "npm run typecheck",
-    "reviewedBuilds": "Vercel npm run build includes TypeScript compilation; interactive iPhone QA remains required"
+    "reviewedBuilds": "Vercel Next.js build includes TypeScript; visual QA on physical iOS devices still recommended"
   },
   "useGuidance": "Read AGENTS.md and UI_LIBRARY.md then manifest.json. New UI must consume UIButton, BottomSheet and siteTheme tokens. Respect existing business logic.",
   "adoption": {
@@ -249,9 +251,13 @@
         "view": "profile",
         "file": "app/reference-screens.tsx",
         "changes": [
-          "BottomSheet edit and account information",
-          "in-sheet dev restart confirmation",
-          "neutral profile setting rows"
+          "Profile 3.0 compact avatar and identity action",
+          "Three borderless sections (account, preferences, app) and standalone sign out",
+          "Uses production UISettingsGroup/UISettingsRow/UISettingsSwitchRow from kit",
+          "Preserves existing authentication, profile edit and notifications",
+          "Removes duplicate Chat, Library and Schedule navigation from Profile (still available in app navigation)",
+          "Uses existing BottomSheet for editing, accessibility settings and account information",
+          "Functional per-device reduce motion accessibility setting"
         ]
       },
       {
@@ -295,7 +301,8 @@
           "No browser-native confirm dialog"
         ]
       }
-    ]
+    ],
+    "profileStyle": "app/profile-v3.css"
   },
   "buttonGallery": {
     "version": "2.0",
@@ -350,6 +357,59 @@
       "Segments use dark readable unselected labels and white or graphite selected capsule",
       "Specimens are local UI Library examples; do not invoke production actions",
       "Use existing UIButton primitive for production actions"
+    ]
+  },
+  "settings": {
+    "module": "app/evo-ui-kit/settings.tsx",
+    "stylesheet": "app/evo-ui-kit/settings.css",
+    "exports": [
+      "UISettingsGroup",
+      "UISettingsRow",
+      "UISettingsSwitchRow",
+      "UISwitch"
+    ],
+    "design": "Borderless white-on-white ChatGPT x iOS Settings layout. Icons and text are graphite, muted descriptions and values, no filled group backgrounds.",
+    "group": {
+      "props": {
+        "title": "string",
+        "children": "ReactNode",
+        "className": "string?"
+      }
+    },
+    "row": {
+      "props": {
+        "icon": "LucideIcon",
+        "title": "string",
+        "description": "string?",
+        "value": "string?",
+        "trailing": "ReactNode?",
+        "onClick": "()=>void?",
+        "disabled": "boolean?",
+        "destructive": "boolean?",
+        "showChevron": "boolean?"
+      },
+      "behavior": "Navigation rows render buttons with chevrons. Non-action values render non-clickable divs without chevrons."
+    },
+    "toggle": {
+      "exports": [
+        "UISwitch",
+        "UISettingsSwitchRow"
+      ],
+      "behavior": "Semantic role=switch, aria-checked, >=44px touch target, grayscale tracks; onChange delegates to caller."
+    },
+    "dimensions": {
+      "rowMinHeightPx": 54,
+      "iconSizePx": 20,
+      "strokeWidth": 1.75,
+      "switchTargetPx": 44,
+      "sectionGapPx": 24
+    },
+    "examples": "Profile v3 and Menus & Settings gallery",
+    "a11y": [
+      "Never use nested interactive controls",
+      "Role switch must announce checked state",
+      "Disabled settings should not pretend to navigate",
+      "Keep focus visible and touch targets at least 44px"
     ]
   }
 }
