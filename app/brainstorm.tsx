@@ -3,6 +3,7 @@
 import { useEffect, useState, type FormEvent } from "react"
 import { AlignLeft, BadgeCheck, Blocks, BookOpen, Bug, Check, Circle, FileText, Lightbulb, LoaderCircle, Palette, Plus, Puzzle, Repeat2, Target, Type, Wrench, X } from "lucide-react"
 import { EmptyState, SkeletonList } from "@/components/arc/loading-states"
+import { BottomSheet, UIButton } from "./evo-ui-kit"
 
 export type BrainstormCategory = "style" | "optimize" | "redesign" | "features"
 const MAX_TASKS = 200
@@ -232,14 +233,14 @@ export default function Brainstorm() {
     <section className="evo-brainstorm-section">
       <div className="evo-brainstorm-section-title"><div><h2>Témák</h2><p>{tasks.length} / {MAX_TASKS} feladat · {waiting ? `${waiting} vár jóváhagyásra` : "nincs függő jóváhagyás"}</p></div><div className="evo-brainstorm-section-tools"><span className="evo-brainstorm-count">{tasks.length}</span><button className="evo-brainstorm-add-button" type="button" aria-label="Feladat hozzáadása" title="Feladat hozzáadása" disabled={tasks.length >= MAX_TASKS} onClick={() => setFormOpen(open => !open)}><Plus size={19} /></button></div></div>
       {notice && <p className="evo-brainstorm-notice" role="status">{notice}</p>}
-      {formOpen && <form className="evo-brainstorm-form" onSubmit={submitTask}>
+      {formOpen && <BottomSheet title="Új ötlet" description="Feladat hozzáadása az ötletbörzéhez" size="expanded" dismissible={false} onClose={() => setFormOpen(false)} footer={<UIButton type="submit" form="evo-brainstorm-create" fullWidth disabled={saving || tasks.length >= MAX_TASKS || !name.trim() || !description.trim()}>{saving && <LoaderCircle size={15} className="arc-save-spinner" aria-hidden="true" />}{saving ? "Mentés…" : "Mentés feladatként"}</UIButton>}><form id="evo-brainstorm-create" className="evo-brainstorm-form" onSubmit={submitTask}>
         <label><span>Téma</span><select value={category} onChange={event => setCategory(event.target.value as BrainstormCategory)}>{categories.map(item => <option key={item.id} value={item.id}>{item.label}</option>)}</select></label>
         <label className="evo-brainstorm-icon-field"><span>Ikon</span><input value={icon} onChange={event => setIcon(event.target.value)} maxLength={8} placeholder="✨" aria-label="Feladat ikonja" /></label>
         <label><span>Rövid cím</span><input required value={name} onChange={event => setName(event.target.value)} maxLength={80} placeholder="Például: Mobilnézet javítása" /></label>
         <label><span>Rövid leírás</span><input required value={description} onChange={event => setDescription(event.target.value)} maxLength={500} placeholder="Mit kell elkészíteni?" /></label>
         <label><span>Hosszú terv</span><textarea value={plan} onChange={event => setPlan(event.target.value)} maxLength={10000} rows={5} placeholder="Lépések, elfogadási feltételek, érintett fájlok…" /></label>
-        <div className="evo-brainstorm-form-footer"><span>Minden felhasználó számára látható lesz. Maximum {MAX_TASKS} feladat.</span><button type="submit" disabled={saving || tasks.length >= MAX_TASKS || !name.trim() || !description.trim()}>{saving && <LoaderCircle size={15} className="arc-save-spinner" aria-hidden="true" />}{saving ? "Mentés…" : "Mentés feladatként"}</button></div>
-      </form>}
+        <p className="evo-brainstorm-kit-note">Minden felhasználó számára látható lesz. Maximum {MAX_TASKS} feladat.</p>
+      </form></BottomSheet>}
       {loading ? <SkeletonList count={4} variant="card" /> : loadError ? <EmptyState title="Nem sikerült betölteni" description="A közös feladatlista most nem érhető el." action={<button className="evo-brainstorm-retry" type="button" onClick={() => void retryLoad()}>Újra</button>} /> : <div className="evo-brainstorm-topics">{categories.map(topic => {
         const topicTasks = tasks.filter(task => (task.category || inferCategory(task.name, task.description)) === topic.id)
         return <section className={`evo-brainstorm-topic topic-${topic.id}`} key={topic.id}>
