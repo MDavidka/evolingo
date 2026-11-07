@@ -1,5 +1,6 @@
 "use client"
 import { useEffect, useRef, useState } from "react"
+import "./profile-v3.css"
 import { BottomSheet } from "./evo-ui-kit"
 import { UIButton } from "./evo-ui-kit/button"
 import { UISettingsGroup, UISettingsRow, UISettingsSwitchRow } from "./evo-ui-kit/settings"
