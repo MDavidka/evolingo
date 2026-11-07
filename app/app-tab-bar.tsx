@@ -7,7 +7,7 @@ import {
   CalendarDays as ScheduleIcon, FolderOpen as FoldersIcon, LayoutGrid as PuzzlePieceIcon,
   UsersRound as CoworkIcon, Lightbulb as LightbulbIcon, SquarePen as NotePencilIcon, ChevronRight, Pin as PinIcon, PinOff as PinOffIcon,
 } from "lucide-react"
-import { deleteChatSession, notifyChatSessionAction, readChatSessions, renameChatSession, type ChatSession } from "./chat-sessions"
+import { deleteChatSession, notifyChatSessionAction, readChatSessionSummaries, renameChatSession, type ChatSessionSummary } from "./chat-sessions"
 
 export type AppTab = "cowork" | "ai" | "schedule" | "files" | "tools" | "profile" | "brainstorm"
 type Props = { activeTab: AppTab; onSelect: (tab: AppTab) => void; avatarImage: string; avatar: string; userName: string; stars?: number; streak?: number; onOpenLeaderboard?: () => void }
@@ -32,7 +32,7 @@ export default function AppTabBar({ activeTab, onSelect, avatarImage, userName }
   const [open, setOpen] = useState(false)
   const [desktop, setDesktop] = useState(false)
   const [renderSidebar, setRenderSidebar] = useState(false)
-  const [chats, setChats] = useState<ChatSession[]>([])
+  const [chats, setChats] = useState<ChatSessionSummary[]>([])
   const [pinnedIds, setPinnedIds] = useState<string[]>([])
   const [menuFor, setMenuFor] = useState<string | null>(null)
   const [searchOpen, setSearchOpen] = useState(false)
@@ -44,7 +44,7 @@ export default function AppTabBar({ activeTab, onSelect, avatarImage, userName }
   const openRef = useRef(open)
   openRef.current = open
 
-  const refresh = useCallback(() => setChats(readChatSessions()), [])
+  const refresh = useCallback(() => setChats(readChatSessionSummaries()), [])
   useEffect(() => { try { const saved: unknown = JSON.parse(localStorage.getItem("evolingo.sidebar.pinned.v1") || "[]"); if (Array.isArray(saved)) setPinnedIds(saved.filter((id): id is string => typeof id === "string")) } catch {} }, [])
   const togglePin = (id: string) => { setPinnedIds(previous => { const next = previous.includes(id) ? previous.filter(value => value !== id) : [...previous, id]; try { localStorage.setItem("evolingo.sidebar.pinned.v1", JSON.stringify(next)) } catch {} return next }); setMenuFor(null) }
   const close = useCallback((restoreFocus = true) => {
