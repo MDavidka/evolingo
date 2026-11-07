@@ -84,6 +84,7 @@ export default function LibrarySpace() {
   const [sort, setSort] = useState<SortKey>("date")
   const [sheet, setSheet] = useState<Sheet>(null)
   const [active, setActive] = useState<SpaceEntry | null>(null)
+  const [permanentDeleteTarget, setPermanentDeleteTarget] = useState<SpaceEntry | null>(null)
   const [draftName, setDraftName] = useState("")
   const [selectionMode, setSelectionMode] = useState(false)
   const [selected, setSelected] = useState<Set<string>>(new Set())
@@ -322,7 +323,6 @@ export default function LibrarySpace() {
     } catch { setNotice("Nem sikerült visszaállítani.") }
   }
   const permanentlyDelete = (entry: SpaceEntry) => {
-    if (!window.confirm("Véglegesen törlöd ezt az elemet? Ez nem vonható vissza.")) return
     const ids = new Set([entry.id])
     let changed = true
     while (changed) { changed = false; deletedEntries.forEach(item => { if (item.parent && ids.has(item.parent) && !ids.has(item.id)) { ids.add(item.id); changed = true } }) }
@@ -451,7 +451,7 @@ export default function LibrarySpace() {
           {location === "trash" && <span className="library-restore-label">Visszaállítás</span>}
           {selectionMode && location !== "trash" && <span className="library-check" aria-hidden="true">{selected.has(entry.id) && <Check size={15} />}</span>}
         </button>
-        {location === "trash" ? <button className="library-file-more" type="button" aria-label={entry.name + " végleges törlése"} onClick={() => permanentlyDelete(entry)}><Trash2 size={19} /></button> : !selectionMode && <button className="library-file-more" type="button" aria-label={`${entry.name} műveletei`} onClick={() => openActions(entry)}><MoreHorizontal size={21} /></button>}
+        {location === "trash" ? <button className="library-file-more" type="button" aria-label={entry.name + " végleges törlése"} onClick={() => setPermanentDeleteTarget(entry)}><Trash2 size={19} /></button> : !selectionMode && <button className="library-file-more" type="button" aria-label={`${entry.name} műveletei`} onClick={() => openActions(entry)}><MoreHorizontal size={21} /></button>}
       </article>)}
     </div> : location === "files" && !folder && !query ? <div className="library-empty library-empty--quiet" role="status">
       <span className="library-visually-hidden">A Könyvtár üres. Az Új gombbal létrehozhatsz mappát vagy feltölthetsz fájlt.</span>
@@ -464,6 +464,23 @@ export default function LibrarySpace() {
 
     {notice && <div className="library-toast" role="status">{notice}<button type="button" aria-label="Bezárás" onClick={() => setNotice("")}><X size={16} /></button></div>}
 
+    {permanentDeleteTarget && <BottomSheet
+      title="Végleges törlés"
+      description="A művelet nem vonható vissza."
+      role="alertdialog"
+      size="compact"
+      dismissible={false}
+      onClose={() => setPermanentDeleteTarget(null)}
+      footer={<div className="evo-kit-confirm-actions">
+        <UIButton variant="secondary" fullWidth onClick={() => setPermanentDeleteTarget(null)}>Mégse</UIButton>
+        <UIButton variant="danger" fullWidth onClick={() => {
+          permanentlyDelete(permanentDeleteTarget)
+          setPermanentDeleteTarget(null)
+        }}>Végleges törlés</UIButton>
+      </div>}
+    >
+      <p className="evo-kit-confirm-description">Biztosan véglegesen törlöd a(z) „{permanentDeleteTarget.name}” elemet és a benne lévő fájlokat?</p>
+    </BottomSheet>}
     {sheet && <BottomSheet title={sheet === "new" ? "Új elem" : sheet === "view" ? "Nézet és rendezés" : sheet === "sort" ? "Rendezés" : sheet === "storage" ? "Tárhely" : sheet === "qr" ? "QR-kód beolvasása" : sheet === "rename" ? "Átnevezés" : sheet === "move" ? "Áthelyezés" : sheet === "delete" ? "Törlés" : sheet === "preview" ? "Fájl előnézete" : active?.name || "Fájlműveletek"} size={sheet === "preview" ? "expanded" : ["new","rename","qr","move"].includes(sheet) ? "medium" : "compact"} dismissible={!["new","rename","qr","delete"].includes(sheet)} role={sheet === "delete" ? "alertdialog" : "dialog"} onClose={() => setSheet(null)}>
       <div className="library-kit-content">
         {sheet === "storage" && <div className="library-storage-overview">
