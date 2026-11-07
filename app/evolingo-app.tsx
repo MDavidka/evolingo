@@ -20,6 +20,7 @@ const DEFAULT_PROFILE: PublicProfile = {
 }
 const TAB_PATH: Record<AppTab, string> = {
   ai: "/chat",
+  cowork: "/cowork",
   schedule: "/utemezes",
   files: "/konyvtar",
   tools: "/eszkozok",
@@ -28,6 +29,7 @@ const TAB_PATH: Record<AppTab, string> = {
 }
 const ROUTE_VIEW: Record<string, ReferenceView> = {
   "/chat": "chat",
+  "/cowork": "cowork",
   "/eszkozok": "utility",
   "/konyvtar": "space",
   "/utemezes": "schedule",
@@ -126,7 +128,7 @@ export default function App() {
 
   const navigate = useCallback((next: ReferenceView) => {
     const paths: Record<ReferenceView, string> = {
-      chat: "/chat", schedule: "/utemezes", space: "/konyvtar", utility: "/eszkozok",
+      cowork: "/cowork", chat: "/chat", schedule: "/utemezes", space: "/konyvtar", utility: "/eszkozok",
       brainstorm: "/otletborze", profile: "/profil", auth: "/belepes",
     }
     router.push(paths[next])
@@ -136,7 +138,8 @@ export default function App() {
     router.push("/konyvtar?upload=1")
   }, [router])
 
-  const activeTab: AppTab = pathname === "/utemezes" ? "schedule"
+  const activeTab: AppTab = pathname === "/cowork" ? "cowork"
+    : pathname === "/utemezes" ? "schedule"
     : pathname === "/konyvtar" ? "files"
     : pathname === "/eszkozok" ? "tools"
     : pathname === "/profil" ? "profile"
