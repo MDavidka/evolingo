@@ -86,6 +86,19 @@ export default function Cowork() {
     setError("")
     const abort = new AbortController()
     controller.current = abort
+    // Coalesce streaming tokens to ~20 UI updates/second instead of rerendering
+    // the entire conversation for every network chunk on mobile Safari.
+    let flushTimer: ReturnType<typeof setTimeout> | null = null
+    let pendingAnswer = ""
+    const flush = () => {
+      flushTimer = null
+      if (!abort.signal.aborted && pendingAnswer) {
+        setMessages([...next, { role: "assistant", content: pendingAnswer }])
+      }
+    }
+    const scheduleFlush = () => {
+      if (flushTimer === null) flushTimer = setTimeout(flush, 50)
+    }
     try {
       const response = await fetch("/api/chat", {
         method: "POST", headers: { "Content-Type": "application/json" },
@@ -107,7 +120,7 @@ export default function Cowork() {
           if (data.type === "error") throw new Error(data.error || "Az AI nem válaszolt.")
           if (data.type === "delta" && data.delta) answer += data.delta
           if (data.type === "text" && data.reply) answer = data.reply
-          if (answer) setMessages([...next, { role: "assistant", content: answer }])
+          if (answer) { pendingAnswer = answer; scheduleFlush() }
         } catch (e) { if (e instanceof Error && frame.includes('"type":"error"')) throw e }
       }
       while (true) {
@@ -120,9 +133,13 @@ export default function Cowork() {
       }
       if (buffer.trim()) applyFrame(buffer)
       if (!answer.trim()) throw new Error("Az AI nem adott választ.")
+      if (flushTimer !== null) { clearTimeout(flushTimer); flushTimer = null }
+      pendingAnswer = answer
+      flush()
     } catch (e) {
       if (!abort.signal.aborted) setError(e instanceof Error ? e.message : "Hiba történt.")
     } finally {
+      if (flushTimer !== null) clearTimeout(flushTimer)
       controller.current = null
       setBusy(false)
     }
