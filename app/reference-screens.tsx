@@ -183,6 +183,7 @@ function Profile({ name, avatarImage, avatarFallback, onEdit, onEditAvatar, onLo
   const [profileSheet, setProfileSheet] = useState<"security" | "subscription" | "help" | "about" | null>(null)
   const [restartState, setRestartState] = useState<"idle" | "busy" | "error">("idle")
   const [restartMessage, setRestartMessage] = useState("")
+  const [restartConfirm, setRestartConfirm] = useState(false)
   const avatarPicker = useRef<HTMLInputElement>(null)
   const handle = name.normalize("NFKD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "").slice(0, 20) || "tanulo"
   if (demoOpen) return <DemoLibrary onBack={() => setDemoOpen(false)} />
@@ -207,7 +208,26 @@ function Profile({ name, avatarImage, avatarFallback, onEdit, onEditAvatar, onLo
     <div className="ref-settings-group ref-support-group"><h2>Támogatás</h2><SettingRow icon={CircleHelp} title="Súgó és támogatás" subtitle="Segítség az AI-eszközök használatához" onClick={() => setProfileSheet("help")} /><SettingRow icon={Info} title="Az alkalmazásról" subtitle="Evölingo · AI-asszisztens" onClick={() => setProfileSheet("about")} /></div>
     <div className="ref-settings-group"><SettingRow icon={LogOut} title="Kijelentkezés" subtitle="Vendégfiók" onClick={onLogout} /></div>
     <div className="ref-settings-group"><h2>Fejlesztői eszközök</h2><SettingRow icon={Component} title="Buttons" subtitle="iOS és ChatGPT stílusú gombok, UI előnézet" onClick={() => setDemoOpen(true)} /></div>
-    {process.env.NODE_ENV === "development" && <div className="ref-settings-group"><h2>Fejlesztői eszközök</h2><button type="button" className="ref-setting-row" disabled={restartState === "busy"} onClick={async () => { if (!window.confirm("A fejlesztői szerver frissül a legújabb main commitra, majd újraindul. Folytatod?")) return; setRestartState("busy"); setRestartMessage("Frissítés és újraindítás…"); try { const response = await fetch("/api/dev/restart", { method: "POST" }); const data = await response.json() as { commit?: string; error?: string }; if (!response.ok) throw new Error(data.error || "Az újraindítás nem sikerült."); setRestartMessage(`Újraindítás a ${data.commit} commiton…`) } catch (error) { setRestartState("error"); setRestartMessage(error instanceof Error ? error.message : "Az újraindítás nem sikerült.") } }}><RefreshCw size={19} /><span><strong>{restartState === "busy" ? "Újraindítás…" : "Szerver újraindítása a legújabb commiton"}</strong><small>A main ág legújabb változatának betöltése</small></span><ChevronRight size={18} /></button>{restartMessage && <p role="status" className="profile-restart-status">{restartMessage}</p>}</div>}
+    {process.env.NODE_ENV === "development" && <div className="ref-settings-group"><h2>Fejlesztői eszközök</h2><button type="button" className="ref-setting-row" disabled={restartState === "busy"} onClick={() => setRestartConfirm(true)}><RefreshCw size={19} /><span><strong>{restartState === "busy" ? "Újraindítás…" : "Szerver újraindítása a legújabb commiton"}</strong><small>A main ág legújabb változatának betöltése</small></span><ChevronRight size={18} /></button>{restartMessage && <p role="status" className="profile-restart-status">{restartMessage}</p>}</div>}
+    {restartConfirm && <BottomSheet title="Fejlesztői szerver újraindítása?" description="A legújabb main commit betöltése megszakíthatja az aktuális munkamenetet." size="compact" dismissible={false} role="alertdialog" onClose={() => setRestartConfirm(false)} footer={<div className="evo-kit-confirm-actions">
+      <UIButton variant="secondary" fullWidth onClick={() => setRestartConfirm(false)}>Mégse</UIButton>
+      <UIButton fullWidth onClick={async () => {
+        setRestartConfirm(false)
+        setRestartState("busy")
+        setRestartMessage("Frissítés és újraindítás…")
+        try {
+          const response = await fetch("/api/dev/restart", { method: "POST" })
+          const data = await response.json() as { commit?: string; error?: string }
+          if (!response.ok) throw new Error(data.error || "Az újraindítás nem sikerült.")
+          setRestartMessage("Újraindítás a " + data.commit + " commiton…")
+        } catch (error) {
+          setRestartState("error")
+          setRestartMessage(error instanceof Error ? error.message : "Az újraindítás nem sikerült.")
+        }
+      }}>Újraindítás</UIButton>
+    </div>}>
+      <p className="evo-kit-confirm-description">Folytatod a fejlesztői szerver frissítését és újraindítását?</p>
+    </BottomSheet>}
     {profileSheet && <BottomSheet
       title={{ security: "Biztonság", subscription: "Előfizetés", help: "Súgó és támogatás", about: "Az alkalmazásról" }[profileSheet]}
       size="compact"
