@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState, type ChangeEvent, type PointerEvent as ReactPointerEvent } from "react"
 import { BottomSheet, UIButton } from "./evo-ui-kit"
+import { readSpaceStatus, invalidateSpaceStatus } from "./space-status-cache"
 import {
   ArrowDownToLine, ArrowUpRight, Check, SquareCheckBig as CheckSquare2,
   ChevronLeft, ChevronDown, ChevronRight, QrCode, Copy, File, FileText,
@@ -134,11 +135,9 @@ export default function LibrarySpace() {
     } catch { setNotice("A mentett fájlok nem tölthetők be ezen az eszközön.") }
     setLoading(false)
     let cancelled = false
-    fetch("/api/space", { cache: "no-store" }).then(async response => {
-      if (!response.ok) return
-      const data = await response.json() as { entries?: SpaceEntry[]; storageUsed?: number; storageTotal?: number; available?: boolean }
-      if (cancelled || data.available !== true) return
-      if (Array.isArray(data.entries)) setEntries(data.entries)
+    readSpaceStatus().then(data => {
+      if (cancelled || data?.available !== true) return
+      if (Array.isArray(data.entries)) setEntries(data.entries as SpaceEntry[])
       if (Number.isFinite(data.storageUsed)) setStorageUsed(Math.max(0, Number(data.storageUsed)))
       if (Number.isFinite(data.storageTotal)) setStorageTotal(Math.max(0, Number(data.storageTotal)))
     }).catch(() => {})
@@ -146,6 +145,7 @@ export default function LibrarySpace() {
   }, [])
 
   const persist = (next: SpaceEntry[]) => {
+    invalidateSpaceStatus()
     setEntries(next)
     try { localStorage.setItem(ENTRIES_KEY, JSON.stringify(next)) }
     catch { setNotice("A módosítást nem sikerült elmenteni.") }
