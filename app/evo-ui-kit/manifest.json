@@ -1,7 +1,7 @@
 {
   "name": "Evolingo UI Kit",
-  "version": "1.0.0",
-  "status": "ready",
+  "version": "1.1.0",
+  "status": "integrated",
   "purpose": "Canonical Apple Neutral and ChatGPT iOS-like mobile UI. AI-readable source of truth for new UI components.",
   "entrypoints": {
     "react": "app/evo-ui-kit/index.ts",
@@ -15,7 +15,8 @@
       "app/reference-screens.tsx"
     ],
     "documentation": "UI_LIBRARY.md",
-    "agentInstructions": "AGENTS.md"
+    "agentInstructions": "AGENTS.md",
+    "siteTheme": "app/evo-ui-kit/site-theme.css"
   },
   "tokens": {
     "colors": {
@@ -198,5 +199,80 @@
     "build": "npm run build",
     "typecheck": "npm run typecheck"
   },
-  "useGuidance": "Read AGENTS.md then UI_LIBRARY.md and manifest.json. Reuse source components and tokens rather than generating similar-looking substitutes."
+  "useGuidance": "Read AGENTS.md and UI_LIBRARY.md then manifest.json. New UI must consume UIButton, BottomSheet and siteTheme tokens. Respect existing business logic.",
+  "adoption": {
+    "scope": "All primary Evolingo pages; legacy complex controls remain until manually migrated with real-device visual QA.",
+    "siteTheme": "app/evo-ui-kit/site-theme.css",
+    "mountedIn": "app/layout.tsx",
+    "pages": [
+      {
+        "view": "chat",
+        "file": "app/chat-interface.tsx",
+        "changes": [
+          "bottom-attached attachment menu",
+          "UIButton Send control",
+          "neutral composer styles"
+        ]
+      },
+      {
+        "view": "schedule",
+        "file": "app/schedule.tsx",
+        "changes": [
+          "BottomSheet task creation",
+          "BottomSheet task action list and delete confirmation",
+          "UIButton creation controls"
+        ]
+      },
+      {
+        "view": "space",
+        "file": "app/library-space.tsx",
+        "changes": [
+          "BottomSheet all library popups",
+          "UIButton create/rename actions",
+          "unified file cards and search fields"
+        ]
+      },
+      {
+        "view": "utility",
+        "file": "app/tools-hub.tsx",
+        "changes": [
+          "BottomSheet integration info",
+          "BottomSheet machine form",
+          "in-sheet machine delete confirmation",
+          "unified app cards"
+        ]
+      },
+      {
+        "view": "profile",
+        "file": "app/reference-screens.tsx",
+        "changes": [
+          "BottomSheet edit and account information",
+          "in-sheet dev restart confirmation",
+          "neutral profile setting rows"
+        ]
+      },
+      {
+        "view": "auth",
+        "file": "app/reference-screens.tsx",
+        "changes": [
+          "unified primary action and fields via site tokens"
+        ]
+      },
+      {
+        "view": "brainstorm",
+        "file": "app/brainstorm.tsx",
+        "changes": [
+          "BottomSheet creation form with UIButton submit",
+          "unified task cards and controls"
+        ]
+      }
+    ],
+    "exclusions": [
+      "Backend/API logic",
+      "Existing session/data storage",
+      "Existing sidebar gestures",
+      "Native browser/system prompts not controlled by the app"
+    ],
+    "validationStatus": "Build/type-check via Vercel; device-specific visual regression tests remain recommended"
+  }
 }
