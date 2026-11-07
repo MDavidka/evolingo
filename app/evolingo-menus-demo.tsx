@@ -14,6 +14,7 @@ import {
   type LucideIcon,
 } from "lucide-react"
 import "./evolingo-menus-demo.css"
+import { UISettingsGroup, UISettingsRow, UISettingsSwitchRow } from "./evo-ui-kit"
 
 const categories = [
   "All", "Settings Rows", "Switches", "Selection", "Sliders",
@@ -262,6 +263,19 @@ export default function MenusShowcase() {
 
       {show("Settings Rows") && <section className="evo-menus__section">
         <SectionHeader index="01" title="Settings rows" summary="15 row anatomies using the same alignment, dividers, icons and trailing slots." count="15 variants" />
+        <Subheading label="Production component · Borderless profile rows" hint="UI Kit reusable primitives"/>
+        <div className="evo-ui-scope evo-menus__kit-example">
+          <UISettingsGroup title="Fiók">
+            <UISettingsRow icon={UserRound} title="Személyes adatok" onClick={() => {}}/>
+            <UISettingsRow icon={ShieldCheck} title="Biztonság" onClick={() => {}}/>
+          </UISettingsGroup>
+          <UISettingsGroup title="Beállítások">
+            <UISettingsSwitchRow icon={Bell} title="Értesítések" checked={enabled("kit-notifications",false)} onChange={value => toggle("kit-notifications",value)} />
+            <UISettingsRow icon={Palette} title="Megjelenés" value="Világos" showChevron={false}/>
+          </UISettingsGroup>
+          <p className="evo-menus__helper">Shared UISettingsGroup, UISettingsRow and UISwitch components. The preview doesn't change profile settings.</p>
+        </div>
+        <Subheading label="Settings row anatomy" hint="15 variants"/>
         <div className="evo-menus__group">{rowVariants.map(row => <SettingRow key={row.title} {...row} />)}</div>
         <Subheading label="Group presentations" hint="3 layouts" />
         <div className="evo-menus__presentations">
