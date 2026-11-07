@@ -197,7 +197,8 @@
     "demoSideEffects": "No real permissions, account changes, storage operations, or AI actions performed from gallery specimens.",
     "scope": "Gallery styling must not globally change production app screens until a component is opted in.",
     "build": "npm run build",
-    "typecheck": "npm run typecheck"
+    "typecheck": "npm run typecheck",
+    "reviewedBuilds": "Vercel npm run build includes TypeScript compilation; interactive iPhone QA remains required"
   },
   "useGuidance": "Read AGENTS.md and UI_LIBRARY.md then manifest.json. New UI must consume UIButton, BottomSheet and siteTheme tokens. Respect existing business logic.",
   "adoption": {
@@ -229,7 +230,8 @@
         "changes": [
           "BottomSheet all library popups",
           "UIButton create/rename actions",
-          "unified file cards and search fields"
+          "unified file cards and search fields",
+          "bottom-sheet permanent delete confirmation"
         ]
       },
       {
@@ -273,6 +275,25 @@
       "Existing sidebar gestures",
       "Native browser/system prompts not controlled by the app"
     ],
-    "validationStatus": "Build/type-check via Vercel; device-specific visual regression tests remain recommended"
+    "validationStatus": "Build/type-check via Vercel; device-specific visual regression tests remain recommended",
+    "systemOverlays": [
+      {
+        "name": "Development notice",
+        "source": "app/development-notice.tsx",
+        "changes": [
+          "Uses BottomSheet with standard UIButton",
+          "No legacy green action button",
+          "Preserves startup and dismissal behavior"
+        ]
+      },
+      {
+        "name": "Library permanent delete",
+        "source": "app/library-space.tsx",
+        "changes": [
+          "Uses BottomSheet with destructive confirmation",
+          "No browser-native confirm dialog"
+        ]
+      }
+    ]
   }
 }
