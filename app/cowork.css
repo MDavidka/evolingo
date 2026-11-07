@@ -37,3 +37,24 @@
 .evo-cowork button:focus-visible { outline:2px solid #202127;outline-offset:3px; }
 @media (min-width:768px) { .evo-cowork__dock { padding-bottom:34px; } .evo-cowork__empty h1 { font-size:27px; } }
 @media (prefers-reduced-motion:reduce) { .evo-cowork__spin { animation:none; } }
+
+/* Cowork composer 2-state geometry: compact at rest, no oversized focused panel. */
+.evo-cowork__composer { padding: 7px 9px; border-radius: 32px; transition: border-radius .16s ease, padding .16s ease; }
+.evo-cowork__composer.is-idle { min-height: 56px; }
+.evo-cowork__composer.is-open { padding: 11px 12px 9px; border-radius: 24px; }
+.evo-cowork__input-line { display:flex; align-items:center; min-width:0; gap:4px; }
+.evo-cowork__input-line textarea {
+  flex:1; min-width:0; min-height:26px; height:auto; max-height:112px;
+  field-sizing:content; padding:2px 5px; margin:0; font-size:16px; line-height:24px;
+}
+.evo-cowork__composer.is-idle .evo-cowork__input-line textarea {
+  max-height:26px; white-space:nowrap; overflow:hidden;
+}
+.evo-cowork__composer.is-open .evo-cowork__input-line textarea {
+  min-height:26px; max-height:112px; overflow-y:auto;
+}
+.evo-cowork__idle-actions { display:flex; align-items:center; gap:2px; flex:none; }
+.evo-cowork__idle-plus { flex:none; }
+.evo-cowork__composer.is-open .evo-cowork__actions { margin-top:5px; }
+.evo-cowork__composer .evo-cowork__send { width:40px;height:40px;flex-basis:40px; }
+@media (prefers-reduced-motion:reduce) { .evo-cowork__composer { transition:none; } }
