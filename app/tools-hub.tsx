@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react"
 import { ChevronRight, ExternalLink, FolderOpen, Plus, Search, Server, Trash2, X } from "lucide-react"
 import { BottomSheet, UIButton } from "./evo-ui-kit"
+import { readSpaceStatus } from "./space-status-cache"
 
 type ToolHubProps = {
   onUpload: () => void
@@ -105,15 +106,7 @@ export default function ToolsHub({ onUpload, onOpenLibrary }: ToolHubProps) {
     } catch {}
 
     let cancelled = false
-    fetch("/api/space", { cache: "no-store" }).then(async response => {
-      if (!response.ok) return null
-      return response.json() as Promise<{
-        available?: boolean
-        entries?: { kind?: string }[]
-        storageUsed?: number
-        storageTotal?: number
-      }>
-    }).then(data => {
+    readSpaceStatus().then(data => {
       if (cancelled || !data || data.available !== true) return
       if (Array.isArray(data.entries)) setFileCount(data.entries.filter(entry => entry.kind !== "folder").length)
       if (typeof data.storageUsed === "number" && Number.isFinite(data.storageUsed) &&
