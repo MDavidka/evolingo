@@ -1,0 +1,129 @@
+/* Evolingo UI Kit: borderless ChatGPT × iOS Settings primitives.
+   This belongs to the kit; use in other screens instead of copy/paste. */
+.evo-ui-settings-group {
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+}
+.evo-ui-settings-group__heading {
+  margin: 0 0 var(--evo-ui-space-2,8px) !important;
+  padding: 0 var(--evo-ui-space-1,4px);
+  color: var(--evo-ui-muted,#8e8e93);
+  font: 600 12px/18px var(--evo-ui-font,-apple-system,system-ui,sans-serif);
+  letter-spacing: .025em;
+  text-transform: uppercase;
+}
+.evo-ui-settings-group__rows { display: flex; flex-direction: column; min-width: 0; }
+.evo-ui-settings-row {
+  appearance: none;
+  -webkit-appearance: none;
+  display: flex;
+  width: 100%;
+  min-width: 0;
+  min-height: 54px;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 4px;
+  margin: 0;
+  border: 0;
+  border-radius: var(--evo-ui-radius-sm,10px);
+  background: transparent;
+  color: var(--evo-ui-text,#202127);
+  font-family: var(--evo-ui-font,-apple-system,system-ui,sans-serif);
+  text-align: left;
+  text-decoration: none;
+  cursor: default;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+button.evo-ui-settings-row { cursor: pointer; }
+.evo-ui-settings-row__icon {
+  flex: 0 0 20px;
+  width: 20px; height: 20px;
+  color: var(--evo-ui-text,#202127);
+  stroke: currentColor;
+}
+.evo-ui-settings-row__copy {
+  display: flex; flex-direction: column; flex: 1 1 auto; min-width: 0; gap: 2px;
+}
+.evo-ui-settings-row__copy strong {
+  display: block;
+  min-width: 0;
+  font-size: 15px;
+  line-height: 21px;
+  font-weight: 520;
+  letter-spacing: -.012em;
+  color: var(--evo-ui-text,#202127);
+  overflow-wrap: anywhere;
+}
+.evo-ui-settings-row__copy small {
+  color: var(--evo-ui-muted,#8e8e93);
+  font-size: 12px;
+  line-height: 17px;
+  font-weight: 400;
+  overflow-wrap: anywhere;
+}
+.evo-ui-settings-row__value {
+  flex: 0 1 auto;
+  color: var(--evo-ui-muted,#8e8e93);
+  font-size: 13px;
+  line-height: 20px;
+  text-align: right;
+  white-space: nowrap;
+}
+.evo-ui-settings-row__chevron {
+  width: 17px; height: 17px; flex: 0 0 17px;
+  color: var(--evo-ui-muted,#8e8e93);
+}
+.evo-ui-settings-row--disabled .evo-ui-settings-row__copy strong { color: var(--evo-ui-muted,#8e8e93); }
+.evo-ui-settings-row--destructive .evo-ui-settings-row__copy strong,
+.evo-ui-settings-row--destructive .evo-ui-settings-row__icon { color: var(--evo-ui-danger,#ff3b30); }
+.evo-ui-switch {
+  position: relative;
+  flex: 0 0 50px;
+  display: grid;
+  place-items: center;
+  width: 50px;
+  min-width: 50px;
+  height: 44px;
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.evo-ui-switch__track {
+  width: 44px; height: 27px;
+  display: block;
+  position: relative;
+  background: var(--evo-ui-border-strong,#d1d1d6);
+  border-radius: 999px;
+  transition: background-color 150ms ease;
+}
+.evo-ui-switch[aria-checked="true"] .evo-ui-switch__track { background: var(--evo-ui-primary,#202127); }
+.evo-ui-switch__thumb {
+  display: block;
+  position: absolute;
+  top: 2px; left: 2px;
+  width: 23px; height: 23px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(0,0,0,.13);
+  transition: transform 150ms ease;
+}
+.evo-ui-switch[aria-checked="true"] .evo-ui-switch__thumb { transform: translateX(17px); }
+.evo-ui-switch:disabled { opacity: .5; cursor: not-allowed; }
+.evo-ui-settings-row:focus-visible,
+.evo-ui-switch:focus-visible {
+  outline: 2px solid var(--evo-ui-focus,#007aff);
+  outline-offset: 2px;
+}
+@media (hover:hover) and (pointer:fine) {
+  button.evo-ui-settings-row:hover { background: var(--evo-ui-surface,#f5f5f7); }
+}
+button.evo-ui-settings-row:active { background: var(--evo-ui-surface,#f5f5f7); }
+@media (prefers-reduced-motion:reduce) {
+  .evo-ui-switch__track,.evo-ui-switch__thumb { transition: none; }
+}
