@@ -1,5 +1,5 @@
-/* Evolingo UI Kit: borderless ChatGPT × iOS Settings primitives.
-   This belongs to the kit; use in other screens instead of copy/paste. */
+/* Evolingo UI Kit: grouped ChatGPT × iOS Settings primitives.
+   Shared across Profile and the UI Library. */
 .evo-ui-settings-group {
   width: 100%;
   min-width: 0;
@@ -7,13 +7,25 @@
 }
 .evo-ui-settings-group__heading {
   margin: 0 0 var(--evo-ui-space-2,8px) !important;
-  padding: 0 var(--evo-ui-space-1,4px);
+  padding: 0 5px;
   color: var(--evo-ui-muted,#8e8e93);
-  font: 600 12px/18px var(--evo-ui-font,-apple-system,system-ui,sans-serif);
-  letter-spacing: .025em;
-  text-transform: uppercase;
+  font: 600 13px/20px var(--evo-ui-font,-apple-system,system-ui,sans-serif);
+  letter-spacing: -.01em;
 }
-.evo-ui-settings-group__rows { display: flex; flex-direction: column; min-width: 0; }
+.evo-ui-settings-group__rows {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: 4px 16px;
+  background: var(--evo-ui-settings-surface, #f7f7f8);
+  border-radius: var(--evo-ui-settings-radius, 22px);
+  overflow: hidden;
+}
+.evo-ui-settings-group__rows > .evo-ui-settings-row:not(:last-child) {
+  border-bottom: 1px solid var(--evo-ui-settings-divider, #e5e5ea);
+  border-radius: 0;
+}
+.evo-ui-settings-group__rows > .evo-ui-settings-row + .evo-ui-settings-row { margin-top: 0; }
 .evo-ui-settings-row {
   appearance: none;
   -webkit-appearance: none;
@@ -23,10 +35,10 @@
   min-height: 54px;
   align-items: center;
   gap: 14px;
-  padding: 10px 4px;
+  padding: 12px 4px;
   margin: 0;
   border: 0;
-  border-radius: var(--evo-ui-radius-sm,10px);
+  border-radius: 0;
   background: transparent;
   color: var(--evo-ui-text,#202127);
   font-family: var(--evo-ui-font,-apple-system,system-ui,sans-serif);
@@ -49,9 +61,9 @@ button.evo-ui-settings-row { cursor: pointer; }
 .evo-ui-settings-row__copy strong {
   display: block;
   min-width: 0;
-  font-size: 15px;
+  font-size: 16px;
   line-height: 21px;
-  font-weight: 520;
+  font-weight: 500;
   letter-spacing: -.012em;
   color: var(--evo-ui-text,#202127);
   overflow-wrap: anywhere;
@@ -121,9 +133,9 @@ button.evo-ui-settings-row { cursor: pointer; }
   outline-offset: 2px;
 }
 @media (hover:hover) and (pointer:fine) {
-  button.evo-ui-settings-row:hover { background: var(--evo-ui-surface,#f5f5f7); }
+  button.evo-ui-settings-row:hover { background: rgba(0,0,0,.035); }
 }
-button.evo-ui-settings-row:active { background: var(--evo-ui-surface,#f5f5f7); }
+button.evo-ui-settings-row:active { background: rgba(0,0,0,.06); }
 @media (prefers-reduced-motion:reduce) {
   .evo-ui-switch__track,.evo-ui-switch__thumb { transition: none; }
 }
