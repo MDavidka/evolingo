@@ -1,6 +1,7 @@
 "use client"
 
 import { useMemo, type ReactNode } from "react"
+import "./chat-rich-text.css"
 
 /**
  * Small, non-executable Markdown renderer for the Evölingo chat.
