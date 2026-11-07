@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useId, useRef, useState, type TouchEvent } from "react"
+import "./renderer.css"
 import { ArrowLeft, ArrowRight, Check, RotateCcw, Volume2, Lightbulb, BookOpen, Languages, CheckCircle2 } from "lucide-react"
 import type { IntelligentBlock, IntelligentUI, GrammarRuleBlock, QuizChoiceBlock, PublicQuizChoiceBlock, VocabularyFlashcardBlock, ComparisonTableBlock, TenseTimelineBlock, StudyPlanBlock, ConceptCardBlock, ProgressBarsBlock } from "./schema"
 import { validateIntelligentUI } from "./schema"
