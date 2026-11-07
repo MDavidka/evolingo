@@ -1,9 +1,8 @@
 "use client"
 
 import { useEffect, useRef, useState, type FormEvent, type KeyboardEvent, type ClipboardEvent, type FormEventHandler } from "react"
-import { ArrowUp, Check, Copy, Plus, Camera, Image as ImageIcon, FileText, Mic, X } from "lucide-react"
-import { Button as AppsButton } from "@openai/apps-sdk-ui/components/Button"
-import { BottomSheet } from "./evo-ui-kit"
+import { ArrowUp, Check, Copy, Plus, Camera, Image as ImageIcon, FileText, Mic, X, LoaderCircle } from "lucide-react"
+import { BottomSheet, UIButton } from "./evo-ui-kit"
 import ChatRichText from "./chat-rich-text"
 import AgentPlanView from "./chat-agent-plan-view"
 import { isAgentPlan, type AgentPlan } from "./chat-agent-plan"
@@ -519,7 +518,7 @@ export default function ChatInterface() {
           <button type="button" className="evo-chat-attach" aria-label="Melléklet hozzáadása" aria-expanded={attachMenuOpen} onClick={() => setAttachMenuOpen(value => !value)} disabled={busy}><Plus size={21} /></button>
 
           <button type="button" className="evo-chat-mic" aria-label="Hangbevitel hamarosan" title="Hangbevitel hamarosan" disabled><Mic size={18} strokeWidth={1.8} /></button>
-          <AppsButton type="submit" color="primary" variant="solid" size="2xl" uniform pill className="evo-chat-send evo-arc-primary" loading={busy} disabled={!draft.trim() && !attachment} aria-label="Üzenet küldése"><ArrowUp size={20} strokeWidth={1.75} /></AppsButton>
+          <UIButton type="submit" variant="primary" size="icon" className="evo-chat-send evo-arc-primary" aria-busy={busy} disabled={busy || (!draft.trim() && !attachment)} aria-label="Üzenet küldése">{busy ? <LoaderCircle size={20} className="evo-chat-send-spinner" aria-hidden="true" /> : <ArrowUp size={20} strokeWidth={1.75} />}</UIButton>
         </div>
       </form>
       </div>
