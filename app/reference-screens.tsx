@@ -5,6 +5,7 @@ import { BottomSheet } from "./evo-ui-kit"
 import BottomSheetShowcase from "./evo-ui-kit/bottom-sheet-demo"
 import { UIButton } from "./evo-ui-kit/button"
 import CardsShowcase from "./evolingo-cards-demo"
+import ButtonsV2Showcase from "./evolingo-buttons-v2"
 import DesignSystemShowcase from "./evolingo-design-system-demo"
 import IconsShowcase from "./evolingo-icons-demo"
 import AIComponentsShowcase from "./evolingo-ai-components-demo"
@@ -64,57 +65,6 @@ function AuthScreen({ onBack, initialRegister, onModeChange }: { onBack: () => v
   </div>
 }
 
-function ButtonsShowcase() {
-  const [segment, setSegment] = useState("All")
-  const [selectedChip, setSelectedChip] = useState(true)
-  return <div className="evo-buttons-demo evo-ui-scope" aria-label="Reusable Apple Neutral buttons">
-    <div className="evo-buttons-demo__group">
-      <div className="evo-buttons-demo__heading">01 — Core actions <span>50px · Full width</span></div>
-      <div className="evo-buttons-demo__stack">
-        <UIButton variant="primary" fullWidth>Continue <ArrowUpRight aria-hidden="true" /></UIButton>
-        <UIButton variant="secondary" fullWidth>Secondary action</UIButton>
-        <UIButton variant="tertiary" fullWidth>Tertiary action</UIButton>
-        <UIButton variant="danger" fullWidth>Destructive action</UIButton>
-      </div>
-    </div>
-    <div className="evo-buttons-demo__group">
-      <div className="evo-buttons-demo__heading">02 — Floating & icon <span>44px touch targets</span></div>
-      <div className="evo-buttons-demo__row">
-        <UIButton variant="glass" size="compact"><SlidersHorizontal aria-hidden="true" /> Customize</UIButton>
-        <UIButton variant="glass" size="icon" aria-label="More options"><Ellipsis aria-hidden="true" /></UIButton>
-        <UIButton variant="primary" size="icon" aria-label="New item"><Plus aria-hidden="true" /></UIButton>
-      </div>
-      <p className="evo-buttons-demo__caption">Floating toolbar · Compact height 44px · Icon 44 × 44px</p>
-    </div>
-    <div className="evo-buttons-demo__group">
-      <div className="evo-buttons-demo__heading">03 — Chat controls <span>Compact 44px</span></div>
-      <div className="evo-buttons-demo__row">
-        <UIButton variant="tertiary" size="compact"><Plus aria-hidden="true" /> Add files</UIButton>
-        <UIButton variant="tertiary" size="compact"><SlidersHorizontal aria-hidden="true" /> Tools</UIButton>
-        <UIButton variant="primary" size="icon" aria-label="Send"><ArrowUp aria-hidden="true" /></UIButton>
-      </div>
-    </div>
-    <div className="evo-buttons-demo__group">
-      <div className="evo-buttons-demo__heading">04 — Segments & selections <span>44px minimum</span></div>
-      <div className="evo-buttons-demo__segment" role="group" aria-label="Filter">
-        {["All", "Active", "Done"].map(item => <button key={item} type="button" aria-pressed={segment === item} onClick={() => setSegment(item)}>{item}</button>)}
-      </div>
-      <div className="evo-buttons-demo__row evo-buttons-demo__chips">
-        <button type="button" aria-pressed={selectedChip} onClick={() => setSelectedChip(true)} className={"evo-buttons-demo__chip " + (selectedChip ? "evo-buttons-demo__chip--selected" : "evo-buttons-demo__chip--unselected")}>{selectedChip && <Check aria-hidden="true"/>} Selected</button>
-        <button type="button" aria-pressed={!selectedChip} onClick={() => setSelectedChip(false)} className={"evo-buttons-demo__chip " + (!selectedChip ? "evo-buttons-demo__chip--selected" : "evo-buttons-demo__chip--unselected")}>Unselected</button>
-        <button type="button" disabled className="evo-buttons-demo__chip evo-buttons-demo__chip--disabled">Disabled</button>
-      </div>
-    </div>
-    <div className="evo-buttons-demo__group">
-      <div className="evo-buttons-demo__heading">05 — States <span>Same component API</span></div>
-      <div className="evo-buttons-demo__stack">
-        <UIButton variant="primary" fullWidth disabled>Disabled primary</UIButton>
-        <UIButton variant="secondary" fullWidth><RefreshCw aria-hidden="true" /> Retry</UIButton>
-      </div>
-      <p className="evo-buttons-demo__caption">Import UIButton from app/evo-ui-kit/button — variant, size, fullWidth, disabled.</p>
-    </div>
-  </div>
-}
 
 function InputsShowcase() {
   const [displayName, setDisplayName] = useState("Mdavid")
@@ -142,7 +92,7 @@ function InputsShowcase() {
 function DemoLibrary({ onBack }: { onBack: () => void }) {
   const [activeCategory, setActiveCategory] = useState("buttons")
   const categories = [
-    { id: "buttons", title: "Buttons", content: <ButtonsShowcase /> },
+    { id: "buttons", title: "Buttons", content: <ButtonsV2Showcase /> },
     { id: "inputs", title: "Inputs", content: <InputsShowcase /> },
     { id: "cards", title: "Cards", content: <CardsShowcase /> },
     { id: "design-system", title: "Design System", content: <DesignSystemShowcase /> },
