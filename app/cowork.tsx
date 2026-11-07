@@ -20,7 +20,8 @@ export default function Cowork() {
   const [hydrated, setHydrated] = useState(false)
   const [agentMode, setAgentMode] = useState<"auto" | "plan" | "fast">("auto")
   const controller = useRef<AbortController | null>(null)
-  const bottom = useRef<HTMLDivElement>(null)
+  const workspace = useRef<HTMLElement>(null)
+  const scrollArea = useRef<HTMLDivElement>(null)
   const textarea = useRef<HTMLTextAreaElement>(null)
 
   useEffect(() => {
@@ -32,7 +33,45 @@ export default function Cowork() {
     return () => controller.current?.abort()
   }, [])
   useEffect(() => { if (hydrated) try { localStorage.setItem(KEY, JSON.stringify(messages.slice(-MAX_HISTORY))) } catch {} }, [messages, hydrated])
-  useEffect(() => { bottom.current?.scrollIntoView({ block: "end", behavior: "smooth" }) }, [messages])
+  // Scroll only the conversation pane. scrollIntoView() also scrolls the page
+  // on mobile Safari, exposing white layout space above the keyboard.
+  useEffect(() => {
+    const area = scrollArea.current
+    if (area) area.scrollTop = area.scrollHeight
+  }, [messages])
+
+  // iOS keyboard changes the visual viewport without reliably resizing 100svh.
+  // Keep the entire Cowork surface (gradient + composer) inside that viewport.
+  useEffect(() => {
+    const element = workspace.current
+    if (!element) return
+    const viewport = window.visualViewport
+    let restingHeight = viewport?.height ?? window.innerHeight
+    const update = () => {
+      const height = viewport?.height ?? window.innerHeight
+      const top = viewport?.offsetTop ?? 0
+      const focused = document.activeElement === textarea.current
+      if (!focused && height > restingHeight) restingHeight = height
+      const keyboardVisible = focused && restingHeight - height > 120
+      element.style.setProperty("--cowork-viewport-height", Math.round(height) + "px")
+      element.style.setProperty("--cowork-viewport-top", Math.round(top) + "px")
+      element.classList.toggle("is-keyboard-visible", keyboardVisible)
+    }
+    const onFocus = () => requestAnimationFrame(update)
+    update()
+    viewport?.addEventListener("resize", update)
+    viewport?.addEventListener("scroll", update)
+    window.addEventListener("resize", update)
+    document.addEventListener("focusin", onFocus)
+    document.addEventListener("focusout", onFocus)
+    return () => {
+      viewport?.removeEventListener("resize", update)
+      viewport?.removeEventListener("scroll", update)
+      window.removeEventListener("resize", update)
+      document.removeEventListener("focusin", onFocus)
+      document.removeEventListener("focusout", onFocus)
+    }
+  }, [])
 
   const send = async (event?: FormEvent) => {
     event?.preventDefault()
@@ -90,11 +129,10 @@ export default function Cowork() {
   }
   const stop = () => { controller.current?.abort(); setBusy(false) }
   const reset = () => { controller.current?.abort(); setMessages([]); setDraft(""); setError(""); setInputOpen(false); textarea.current?.blur() }
-  return <section className="evo-cowork evo-ui-scope" aria-label="Cowork munkaterület">
-    <div className="evo-cowork__scroll" role="log" aria-live="polite">
+  return <section ref={workspace} className="evo-cowork evo-ui-scope" aria-label="Cowork munkaterület">
+    <div ref={scrollArea} className="evo-cowork__scroll" role="log" aria-live="polite">
       {messages.length === 0 ? <div className="evo-cowork__empty" aria-hidden="true"><span className="evo-cowork__mark"><FolderOpen size={26} strokeWidth={1.5}/></span><h1>Mit építsünk?</h1><p>Tervezés, fejlesztés és közös munka egy helyen.</p></div> :
         <div className="evo-cowork__messages">{messages.map((m, i) => <article key={i} className={"evo-cowork__message evo-cowork__message--" + m.role}>{m.content}</article>)}{busy && <div className="evo-cowork__thinking"><LoaderCircle size={17} className="evo-cowork__spin"/> Dolgozom…</div>}</div>}
-      <div ref={bottom}/>
     </div>
     <div className="evo-cowork__dock">
       <div className="evo-cowork__choosers">
