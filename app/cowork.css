@@ -1,6 +1,6 @@
 /* Cowork: minimal mobile-first workspace, scoped to its own screen. */
 .ref-view-cowork { padding: 0 !important; }
-.evo-cowork { position: relative; display:flex; flex-direction:column; height:100dvh; height:100svh; min-height:0; overflow:hidden; background:linear-gradient(180deg,#fff 0%,#f6f7f8 55%,#d6dde2 100%); color:#202127; font-family:var(--evo-ui-font,-apple-system,BlinkMacSystemFont,system-ui,sans-serif); }
+.evo-cowork { position: relative; display:flex; flex-direction:column; height:var(--cowork-viewport-height,100dvh); min-height:0; overflow:hidden; background:linear-gradient(180deg,#fff 0%,#f6f7f8 55%,#d6dde2 100%); color:#202127; font-family:var(--evo-ui-font,-apple-system,BlinkMacSystemFont,system-ui,sans-serif); }
 .evo-cowork__scroll { flex:1; min-height:0; overflow-y:auto; overscroll-behavior:contain; padding:calc(env(safe-area-inset-top,0px) + 88px) 22px 16px; }
 .evo-cowork__empty { min-height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; padding-bottom:25px; }
 .evo-cowork__mark { display:grid;place-items:center;width:56px;height:56px;background:rgba(255,255,255,.8);border:1px solid #e5e5ea;border-radius:18px; }
@@ -58,3 +58,56 @@
 .evo-cowork__composer.is-open .evo-cowork__actions { margin-top:5px; }
 .evo-cowork__composer .evo-cowork__send { width:40px;height:40px;flex-basis:40px; }
 @media (prefers-reduced-motion:reduce) { .evo-cowork__composer { transition:none; } }
+
+/* Visual viewport + uninterrupted gradient.
+   The shared page shell paints white and applies bottom padding to all non-chat
+   views. Cowork is a fullscreen surface, so those defaults must be neutralized.
+   This also prevents the blank strip exposed when iOS opens its keyboard. */
+html:not(.evo-sidebar-layer-open):has(.ref-view-cowork),
+html:not(.evo-sidebar-layer-open) body:has(.ref-view-cowork) {
+  background: linear-gradient(180deg, #fff 0%, #f6f7f8 42%, #e8ecef 66%, #d6dde2 100%) !important;
+  overflow: hidden !important;
+}
+html:not(.evo-sidebar-layer-open) body:has(.ref-view-cowork) .app-shell.reference-shell,
+html:not(.evo-sidebar-layer-open) body:has(.ref-view-cowork) .app-shell.reference-shell > .screen-content,
+html:not(.evo-sidebar-layer-open) body:has(.ref-view-cowork) .app-shell.reference-shell .ref-app.ref-view-cowork {
+  background: transparent !important;
+}
+.app-shell.reference-shell .ref-app.ref-view-cowork {
+  width: 100% !important;
+  max-width: none !important;
+  min-height: 0 !important;
+  height: var(--cowork-viewport-height, 100dvh) !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+}
+.evo-cowork {
+  position: fixed;
+  z-index: 1;
+  top: var(--cowork-viewport-top, 0px);
+  left: 0;
+  right: 0;
+  width: 100%;
+  height: var(--cowork-viewport-height, 100dvh);
+  min-height: 0;
+  background: transparent;
+  isolation: isolate;
+}
+.evo-cowork::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    180deg, #fff 0%, #f6f7f8 42%, #e8ecef 66%, #d6dde2 100%
+  );
+}
+.evo-cowork__scroll,
+.evo-cowork__dock { position: relative; z-index: 1; }
+.evo-cowork.is-keyboard-visible .evo-cowork__dock {
+  padding-bottom: 8px;
+}
+@media (min-width: 1024px) {
+  .evo-cowork { position: relative; top: 0; height: 100dvh; }
+}
