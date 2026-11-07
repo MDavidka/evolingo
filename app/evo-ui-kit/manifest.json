@@ -1,6 +1,6 @@
 {
   "name": "Evolingo UI Kit",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "status": "integrated",
   "purpose": "Canonical Apple Neutral and ChatGPT iOS-like mobile UI. AI-readable source of truth for new UI components.",
   "entrypoints": {
@@ -251,13 +251,11 @@
         "view": "profile",
         "file": "app/reference-screens.tsx",
         "changes": [
-          "Profile 3.0 compact avatar and identity action",
-          "Three borderless sections (account, preferences, app) and standalone sign out",
-          "Uses production UISettingsGroup/UISettingsRow/UISettingsSwitchRow from kit",
-          "Preserves existing authentication, profile edit and notifications",
-          "Removes duplicate Chat, Library and Schedule navigation from Profile (still available in app navigation)",
-          "Uses existing BottomSheet for editing, accessibility settings and account information",
-          "Functional per-device reduce motion accessibility setting"
+          "Profile 4.0 grouped white settings inspired by ChatGPT iOS",
+          "Reusable UISettingsGroup and UISettingsRow use #F7F7F8 surfaces, 22px radius and internal dividers",
+          "Sections: personalization, account, app, support",
+          "Retains working profile editing, login, notifications, accessibility, integrations, library and sign out",
+          "No fake settings navigation for appearance or language"
         ]
       },
       {
@@ -368,7 +366,7 @@
       "UISettingsSwitchRow",
       "UISwitch"
     ],
-    "design": "Borderless white-on-white ChatGPT x iOS Settings layout. Icons and text are graphite, muted descriptions and values, no filled group backgrounds.",
+    "design": "Soft grouped iOS × ChatGPT Settings: white canvas, #F7F7F8 section surfaces, 22px corner radius, 16px text, monochrome 20px icons, inset row dividers and 54px minimum targets.",
     "group": {
       "props": {
         "title": "string",
@@ -402,9 +400,11 @@
       "iconSizePx": 20,
       "strokeWidth": 1.75,
       "switchTargetPx": 44,
-      "sectionGapPx": 24
+      "sectionGapPx": 28,
+      "groupRadiusPx": 22,
+      "groupPaddingPx": 16
     },
-    "examples": "Profile v3 and Menus & Settings gallery",
+    "examples": "Profile 4.0, Menus & Settings gallery",
     "a11y": [
       "Never use nested interactive controls",
       "Role switch must announce checked state",
