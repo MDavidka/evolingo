@@ -12,7 +12,8 @@
     ],
     "demos": [
       "app/evo-ui-kit/bottom-sheet-demo.tsx",
-      "app/reference-screens.tsx"
+      "app/reference-screens.tsx",
+      "app/evolingo-buttons-v2.tsx"
     ],
     "documentation": "UI_LIBRARY.md",
     "agentInstructions": "AGENTS.md",
@@ -294,6 +295,61 @@
           "No browser-native confirm dialog"
         ]
       }
+    ]
+  },
+  "buttonGallery": {
+    "version": "2.0",
+    "style": "Soft Monochrome",
+    "source": "app/evolingo-buttons-v2.tsx",
+    "stylesheet": "app/evolingo-buttons-v2.css",
+    "families": [
+      "core actions",
+      "filled and outlined",
+      "icon only",
+      "icon and label",
+      "floating actions",
+      "chat controls",
+      "segments",
+      "selection chips",
+      "filters and toggles",
+      "split buttons",
+      "navigation",
+      "grouped actions",
+      "async feedback",
+      "voice and media",
+      "file actions",
+      "AI actions",
+      "destructive",
+      "accessibility"
+    ],
+    "palette": {
+      "primary": "#202127",
+      "onPrimary": "#FFFFFF",
+      "secondary": "#FFFFFF",
+      "tertiary": "#F2F2F4",
+      "surface": "#F5F5F7",
+      "segment": "#E9E9ED",
+      "border": "#E5E5EA",
+      "disabled": "#EAEAEE",
+      "muted": "#8E8E93",
+      "danger": "#FF3B30",
+      "onDanger": "#FFFFFF"
+    },
+    "sizes": {
+      "footer": 52,
+      "standard": 48,
+      "compact": 44,
+      "icon": 44,
+      "floating": 48,
+      "chipVisual": 36,
+      "minTouch": 44
+    },
+    "rules": [
+      "Explicitly set foreground for filled dark and red buttons, including SVG stroke",
+      "Use 44px minimum touch target",
+      "Segments use dark readable unselected labels and white or graphite selected capsule",
+      "Specimens are local UI Library examples; do not invoke production actions",
+      "Use existing UIButton primitive for production actions"
     ]
   }
 }
