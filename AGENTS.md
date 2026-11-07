@@ -9,7 +9,7 @@ This repository has a canonical mobile-first UI kit. For any task involving scre
 4. Design baseline for 390px-wide iPhones. Also validate 360px and 430px. Prevent horizontal overflow, truncated control labels and unusably small buttons. Keep tap targets >= 44 x 44px.
 5. Prefer 20px Lucide icons with 1.75 stroke, SF Pro/Inter system font, neutral surfaces, and gentle motion. Respect reduced motion, focus visibility and screen-reader semantics.
 6. UI Library specimens must be preview-only; don't trigger real permission requests, account changes, destructive operations, agent tasks, or data persistence.
-7. Keep existing production views unaffected when updating the library; only migrate live screens intentionally, testing interactions and keyboard/safe areas.
+7. The live app is now opted in to `app/evo-ui-kit/site-theme.css` from `app/layout.tsx`. Migrate new live-screen controls deliberately using the shared exports while preserving existing data, gestures, and keyboard/safe areas. Do not reintroduce the old green/sage mobile palette.
 8. If you add a new reusable component or revise tokens, update `UI_LIBRARY.md` and `app/evo-ui-kit/manifest.json`, and add/update an in-app specimen. Run `npm run build` and `npm run typecheck` where available.
 
 ## Preferred import
