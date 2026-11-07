@@ -1,0 +1,39 @@
+/* Cowork: minimal mobile-first workspace, scoped to its own screen. */
+.ref-view-cowork { padding: 0 !important; }
+.evo-cowork { position: relative; display:flex; flex-direction:column; height:100dvh; height:100svh; min-height:0; overflow:hidden; background:linear-gradient(180deg,#fff 0%,#f6f7f8 55%,#d6dde2 100%); color:#202127; font-family:var(--evo-ui-font,-apple-system,BlinkMacSystemFont,system-ui,sans-serif); }
+.evo-cowork__scroll { flex:1; min-height:0; overflow-y:auto; overscroll-behavior:contain; padding:calc(env(safe-area-inset-top,0px) + 88px) 22px 16px; }
+.evo-cowork__empty { min-height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; padding-bottom:25px; }
+.evo-cowork__mark { display:grid;place-items:center;width:56px;height:56px;background:rgba(255,255,255,.8);border:1px solid #e5e5ea;border-radius:18px; }
+.evo-cowork__empty h1 { font-size:23px;letter-spacing:-.035em;font-weight:650;margin:17px 0 5px; }
+.evo-cowork__empty p { font-size:13px;color:#8e8e93;max-width:280px;line-height:1.5;margin:0; }
+.evo-cowork__messages { width:min(100%,680px);margin:0 auto;display:flex;flex-direction:column;gap:20px; }
+.evo-cowork__message { font-size:15px;line-height:1.65;white-space:pre-wrap;overflow-wrap:anywhere; }
+.evo-cowork__message--user { align-self:flex-end;max-width:85%;padding:12px 16px;border-radius:20px;background:#fff;box-shadow:0 1px 5px rgba(0,0,0,.04); }
+.evo-cowork__message--assistant { align-self:stretch;padding:2px 4px; }
+.evo-cowork__thinking { display:flex;align-items:center;gap:8px;color:#8e8e93;font-size:13px; }
+.evo-cowork__spin { animation:evo-cowork-spin 1s linear infinite; }
+@keyframes evo-cowork-spin { to { transform:rotate(360deg); } }
+.evo-cowork__dock { flex:none; width:min(100%,760px); margin:0 auto; padding:0 max(14px,env(safe-area-inset-right,0px)) max(20px,env(safe-area-inset-bottom,0px)); }
+.evo-cowork__choosers { display:flex;align-items:center;gap:8px;padding:0 10px 13px; }
+.evo-cowork__capsule { display:inline-flex;align-items:center;justify-content:center;gap:9px;min-height:44px;border:0;border-radius:999px;padding:0 16px;background:rgba(255,255,255,.78);color:#202127;font:500 14px inherit;box-shadow:0 1px 4px rgba(0,0,0,.025);cursor:pointer; }
+.evo-cowork__capsule--quiet { color:#56575c; }
+.evo-cowork__composer { border:1px solid rgba(229,229,234,.95);border-radius:30px;background:#fff;padding:17px 15px 12px;box-shadow:0 2px 18px rgba(33,40,50,.06); }
+.evo-cowork__composer textarea { display:block;resize:none;box-sizing:border-box;width:100%;min-height:66px;max-height:180px;overflow-y:auto;padding:3px 8px;border:0;background:transparent;color:#202127;font:400 17px/1.5 inherit;outline:0; }
+.evo-cowork__composer textarea::placeholder { color:#9a9aa0; }
+.evo-cowork__actions { display:flex;align-items:center;gap:4px; }
+.evo-cowork__icon { display:grid;place-items:center;flex:0 0 44px;width:44px;height:44px;border:0;border-radius:999px;background:transparent;color:#202127;cursor:pointer; }
+.evo-cowork__action-spacer { flex:1; }
+.evo-cowork__send { display:grid;place-items:center;flex:0 0 48px;width:48px;height:48px;border:0;border-radius:50%;background:#202127;color:#fff;cursor:pointer; }
+.evo-cowork__send:disabled { opacity:.42;cursor:default; }
+.evo-cowork__error { display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:12px;color:#9f3434;margin:8px 12px 0; }
+.evo-cowork__error button { display:grid;place-items:center;min-width:32px;min-height:32px;border:0;background:transparent;color:inherit; }
+.evo-cowork__mode-list { display:flex;flex-direction:column;background:#f7f7f8;border-radius:22px;padding:4px 16px; }
+.evo-cowork__mode { display:flex;align-items:center;justify-content:space-between;gap:12px;text-align:left;min-height:62px;border:0;border-bottom:1px solid #e5e5ea;background:transparent;color:#202127;padding:12px 4px;cursor:pointer; }
+.evo-cowork__mode:last-child { border-bottom:0; }
+.evo-cowork__mode span { display:flex;flex-direction:column;gap:3px; }
+.evo-cowork__mode strong { font-size:15px;font-weight:550; }
+.evo-cowork__mode small { font-size:12px;color:#8e8e93; }
+.evo-cowork__sheet-note { font-size:12px;color:#8e8e93;line-height:1.5;margin:12px 4px; }
+.evo-cowork button:focus-visible { outline:2px solid #202127;outline-offset:3px; }
+@media (min-width:768px) { .evo-cowork__dock { padding-bottom:34px; } .evo-cowork__empty h1 { font-size:27px; } }
+@media (prefers-reduced-motion:reduce) { .evo-cowork__spin { animation:none; } }
