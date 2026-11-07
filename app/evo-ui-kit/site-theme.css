@@ -1,3 +1,19 @@
+/* Canonical UI Kit primitives are inherited everywhere, including portal sheets. */
+:root {
+  --evo-ui-canvas:#ffffff; --evo-ui-surface:#f5f5f7; --evo-ui-surface-raised:#ffffff;
+  --evo-ui-text:#202127; --evo-ui-muted:#8e8e93;
+  --evo-ui-border:#e5e5ea; --evo-ui-border-strong:#d1d1d6;
+  --evo-ui-primary:#202127; --evo-ui-on-primary:#ffffff;
+  --evo-ui-link:#007aff; --evo-ui-focus:#007aff;
+  --evo-ui-success:#34c759; --evo-ui-danger:#ff3b30;
+  --evo-ui-radius-sm:10px; --evo-ui-radius-md:14px; --evo-ui-radius-card:16px;
+  --evo-ui-radius-sheet:26px; --evo-ui-radius-pill:999px;
+  --evo-ui-control-height:50px; --evo-ui-control-compact:44px;
+  --evo-ui-control-icon:44px; --evo-ui-touch-target:44px;
+  --evo-ui-content-max:720px;
+  --evo-ui-font:-apple-system,BlinkMacSystemFont,"SF Pro Text","Inter",system-ui,sans-serif;
+  --evo-wide-action-height:50px;
+}
 /* Evolingo UI Kit v1 — app-wide adoption layer.
  * Intentionally loaded LAST in app/layout.tsx.
  * Use canonical semantic tokens; keep existing route state/logic and advanced iOS
@@ -255,4 +271,41 @@ html:has(.ref-view-chat)::before { background:#ffffff !important; }
 }
 @media (prefers-reduced-motion: reduce) {
   .evo-ai-app-shell :is(.evo-schedule-card,.library-file,.evo-tools-storage-card,.evo-brainstorm-task) { transition:none!important; }
+}
+
+
+/* Shared sheet action and native-confirm replacements. */
+.evo-ui-sheet__content .evo-kit-action-list { display:flex; flex-direction:column; gap:0; }
+.evo-ui-sheet__content .evo-kit-action-list > button {
+  appearance:none; -webkit-appearance:none;
+  display:flex; width:100%; min-height:54px; gap:12px; align-items:center;
+  background:#fff; border:0; border-bottom:1px solid #e5e5ea;
+  padding:10px 2px; color:#202127; text-align:left;
+  font:500 15px/1.4 var(--evo-ui-font); cursor:pointer;
+}
+.evo-ui-sheet__content .evo-kit-action-list > button:last-child { border:0; }
+.evo-ui-sheet__content .evo-kit-action-list .is-destructive { color:#ff3b30; }
+.evo-kit-confirm-actions { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; width:100%; }
+.evo-ui-sheet__content .evo-kit-confirm-description { padding:6px 0 10px; margin:0; color:#66666b; font-size:14px; line-height:1.6; }
+.evo-ui-sheet__content .evo-brainstorm-form input,
+.evo-ui-sheet__content .evo-brainstorm-form select,
+.evo-ui-sheet__content .evo-brainstorm-form textarea { width:100%; }
+/* Sidebar / bottom navigation inherit the same neutral palette, not the old sage colors. */
+.evo-sidebar-host .evo-sidebar, .evo-sidebar-host .evo-sidebar-safe { background:#f5f5f7 !important; color:#202127; }
+.evo-sidebar-host .evo-sidebar-nav button[aria-current="page"] { background:#eaeaee !important; color:#202127 !important; }
+.evo-tabbar { background:rgba(245,245,247,.94) !important; border-color:rgba(229,229,234,.8) !important; }
+.evo-tabbar .evo-tab.is-active { color:#202127 !important; }
+.evo-tabbar .evo-tab { -webkit-tap-highlight-color:transparent; }
+/* Keep action buttons and form controls correctly sized at narrow widths. */
+.evo-ai-app-shell .evo-wide-action { min-height:50px !important; }
+.evo-ai-app-shell .ref-view-auth .ref-auth-submit,
+.evo-ai-app-shell .ref-view-profile .ref-dark-pill {
+  --evo-wide-action-background:#202127;
+  --evo-wide-action-border:#202127;
+  --evo-wide-action-foreground:#ffffff;
+  background:#202127 !important; border-color:#202127 !important; color:#ffffff !important;
+}
+@media(max-width:360px) {
+  .evo-kit-confirm-actions { gap:7px; }
+  .evo-kit-confirm-actions .evo-ui-button { padding-inline:9px; font-size:13px; }
 }
