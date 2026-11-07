@@ -3,3 +3,6 @@ export { UIButton } from "./button"
 export type { UIButtonProps, UIButtonSize, UIButtonVariant } from "./button"
 export { BottomSheet } from "./bottom-sheet"
 export type { BottomSheetProps, BottomSheetSize } from "./bottom-sheet"
+
+export { UISettingsGroup, UISettingsRow, UISwitch, UISettingsSwitchRow } from "./settings"
+export type { UISettingsRowProps } from "./settings"
