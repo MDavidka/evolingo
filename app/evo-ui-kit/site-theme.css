@@ -309,3 +309,15 @@ html:has(.ref-view-chat)::before { background:#ffffff !important; }
   .evo-kit-confirm-actions { gap:7px; }
   .evo-kit-confirm-actions .evo-ui-button { padding-inline:9px; font-size:13px; }
 }
+
+
+/* Portalled integration sheets no longer inherit Utilities' ancestor selectors. */
+.evo-ui-sheet__content .evo-tools-kit-sheet .evo-tools-provider-logo {
+  display:grid; place-items:center; width:50px; height:50px; flex:0 0 50px;
+  background:#f5f5f7; border-radius:14px; overflow:hidden;
+}
+.evo-ui-sheet__content .evo-tools-kit-sheet .evo-tools-provider-logo img {
+  width:30px; height:30px; max-width:100%; max-height:100%; object-fit:contain;
+}
+.evo-ui-sheet__content .evo-tools-dialog-footnote { font-size:12px!important; color:#8e8e93!important; }
+.evo-ui-sheet__content .evo-tools-machine-error { color:#ff3b30!important; font-size:13px; }
