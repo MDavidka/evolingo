@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useMemo, useRef, useState, type ChangeEvent, type PointerEvent as ReactPointerEvent } from "react"
+import { BottomSheet, UIButton } from "./evo-ui-kit"
 import {
   ArrowDownToLine, ArrowUpRight, Check, SquareCheckBig as CheckSquare2,
   ChevronLeft, ChevronDown, ChevronRight, QrCode, Copy, File, FileText,
@@ -70,11 +71,9 @@ export default function LibrarySpace() {
   const filePicker = useRef<HTMLInputElement>(null)
   const qrPicker = useRef<HTMLInputElement>(null)
   const searchInput = useRef<HTMLInputElement>(null)
-  const sheetRef = useRef<HTMLDivElement>(null)
   const longPress = useRef<ReturnType<typeof setTimeout> | null>(null)
   const pointerOrigin = useRef<{ x: number; y: number } | null>(null)
   const suppressClick = useRef(false)
-  const sheetTouchY = useRef<number | null>(null)
   const [entries, setEntries] = useState<SpaceEntry[]>([])
   const [view, setView] = useState<"list" | "grid">("list")
   const [folder, setFolder] = useState<string | null>(null)
@@ -144,30 +143,6 @@ export default function LibrarySpace() {
     }).catch(() => {})
     return () => { cancelled = true }
   }, [])
-
-  useEffect(() => {
-    if (!sheet) return
-    const previous = document.activeElement as HTMLElement | null
-    const previousOverflow = document.body.style.overflow
-    document.body.style.overflow = "hidden"
-    const frame = requestAnimationFrame(() => sheetRef.current?.querySelector<HTMLElement>("button, input")?.focus())
-    const onKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setSheet(null)
-      if (event.key !== "Tab" || !sheetRef.current) return
-      const items = [...sheetRef.current.querySelectorAll<HTMLElement>('button:not(:disabled), input:not(:disabled), [tabindex]:not([tabindex="-1"])')]
-      if (!items.length) return
-      const first = items[0], last = items[items.length - 1]
-      if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus() }
-      else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus() }
-    }
-    document.addEventListener("keydown", onKey)
-    return () => {
-      cancelAnimationFrame(frame)
-      document.removeEventListener("keydown", onKey)
-      document.body.style.overflow = previousOverflow
-      previous?.focus()
-    }
-  }, [sheet])
 
   const persist = (next: SpaceEntry[]) => {
     setEntries(next)
@@ -489,11 +464,8 @@ export default function LibrarySpace() {
 
     {notice && <div className="library-toast" role="status">{notice}<button type="button" aria-label="Bezárás" onClick={() => setNotice("")}><X size={16} /></button></div>}
 
-    {sheet && <div className="library-sheet-backdrop" onPointerDown={event => { if (event.target === event.currentTarget) setSheet(null) }}>
-      <div ref={sheetRef} className={`library-sheet library-sheet--${sheet}`} role="dialog" aria-modal="true" aria-label={sheet === "new" ? "Új elem" : sheet === "view" ? "Nézet és rendezés" : sheet === "sort" ? "Rendezés" : sheet === "storage" ? "Tárhely" : sheet === "qr" ? "QR-kód beolvasása" : sheet === "preview" ? "Fájl előnézete" : "Fájlműveletek"}>
-        <div className="library-sheet-handle" aria-hidden="true" onTouchStart={event => { sheetTouchY.current = event.touches[0]?.clientY ?? null }} onTouchEnd={event => { const start = sheetTouchY.current; sheetTouchY.current = null; if (start != null && (event.changedTouches[0]?.clientY ?? start) - start > 80) setSheet(null) }} />
-        <div className="library-sheet-heading"><h2>{sheet === "new" ? "Új elem" : sheet === "view" ? "Nézet és rendezés" : sheet === "sort" ? "Rendezés" : sheet === "storage" ? "Tárhely" : sheet === "qr" ? "QR-kód beolvasása" : sheet === "rename" ? "Átnevezés" : sheet === "move" ? "Áthelyezés" : sheet === "delete" ? "Törlés" : sheet === "preview" ? active?.name : active?.name}</h2><button type="button" aria-label="Bezárás" onClick={() => setSheet(null)}><X size={20} /></button></div>
-
+    {sheet && <BottomSheet title={sheet === "new" ? "Új elem" : sheet === "view" ? "Nézet és rendezés" : sheet === "sort" ? "Rendezés" : sheet === "storage" ? "Tárhely" : sheet === "qr" ? "QR-kód beolvasása" : sheet === "rename" ? "Átnevezés" : sheet === "move" ? "Áthelyezés" : sheet === "delete" ? "Törlés" : sheet === "preview" ? "Fájl előnézete" : active?.name || "Fájlműveletek"} size={sheet === "preview" ? "expanded" : ["new","rename","qr","move"].includes(sheet) ? "medium" : "compact"} dismissible={!["new","rename","qr","delete"].includes(sheet)} role={sheet === "delete" ? "alertdialog" : "dialog"} onClose={() => setSheet(null)}>
+      <div className="library-kit-content">
         {sheet === "storage" && <div className="library-storage-overview">
           <span className="library-storage-overview-icon"><Cloud size={24} strokeWidth={1.6} aria-hidden="true" /></span>
           <strong>{hasRealStorage ? formatSize(storageUsed!) + " / " + formatSize(storageTotal!) : formatSize(localBytes)}</strong>
@@ -514,7 +486,7 @@ export default function LibrarySpace() {
 
         {sheet === "new" && <div className="library-sheet-actions">
           <button type="button" onClick={() => { setSheet(null); filePicker.current?.click() }}><Upload size={21} /><span><strong>Fájl feltöltése</strong><small>Legfeljebb 2 MB · az eszközödről</small></span></button>
-          <div className="library-new-folder"><label htmlFor="library-folder-name"><Folder size={21} /><span>Új mappa</span></label><div><input id="library-folder-name" value={draftName} onChange={event => setDraftName(event.target.value)} placeholder="Mappa neve" maxLength={80} /><button type="button" disabled={!draftName.trim()} onClick={createFolder}>Létrehozás</button></div></div>
+          <div className="library-new-folder"><label htmlFor="library-folder-name"><Folder size={21} /><span>Új mappa</span></label><div><input id="library-folder-name" value={draftName} onChange={event => setDraftName(event.target.value)} placeholder="Mappa neve" maxLength={80} /><UIButton size="compact" disabled={!draftName.trim()} onClick={createFolder}>Létrehozás</UIButton></div></div>
         </div>}
 
         {sheet === "view" && <div className="library-sheet-actions">
@@ -537,7 +509,7 @@ export default function LibrarySpace() {
           <button className="is-destructive" type="button" onClick={() => setSheet("delete")}><Trash2 size={20} /><span><strong>Törlés</strong></span></button>
         </div>}
 
-        {sheet === "rename" && <form className="library-form" onSubmit={event => { event.preventDefault(); rename() }}><label htmlFor="library-rename">Új név</label><input id="library-rename" value={draftName} onChange={event => setDraftName(event.target.value)} maxLength={120} /><button className="evo-wide-action" type="submit" disabled={!draftName.trim()}>Mentés <ArrowUpRight size={20} aria-hidden="true" /></button></form>}
+        {sheet === "rename" && <form className="library-form" onSubmit={event => { event.preventDefault(); rename() }}><label htmlFor="library-rename">Új név</label><input id="library-rename" value={draftName} onChange={event => setDraftName(event.target.value)} maxLength={120} /><UIButton type="submit" fullWidth disabled={!draftName.trim()}>Mentés <ArrowUpRight size={20} aria-hidden="true" /></UIButton></form>}
 
         {sheet === "move" && <div className="library-sheet-actions"><button type="button" onClick={() => moveTo()}><FolderOpen size={20} /><span><strong>Saját fájlok</strong><small>Gyökérmappa</small></span></button>{folders.map(item => <button type="button" key={item.id} onClick={() => moveTo(item.id)}><Folder size={20} /><span><strong>{item.name}</strong></span></button>)}</div>}
 
@@ -545,6 +517,6 @@ export default function LibrarySpace() {
 
         {sheet === "preview" && active && <div className="library-preview"><iframe src={readBlobs()[active.id]} title={`${active.name} előnézete`} sandbox="" /><div><button type="button" onClick={() => download(active)}><ArrowDownToLine size={19} /> Letöltés</button><button type="button" onClick={() => void share(active)}><Share2 size={19} /> Megosztás</button></div></div>}
       </div>
-    </div>}
+    </BottomSheet>}
   </div>
 }
