@@ -3,7 +3,7 @@
 This repository has a canonical mobile-first UI kit. For any task involving screen layouts, pop-ups, controls, or new components, read **UI_LIBRARY.md** and **app/evo-ui-kit/manifest.json** before editing visuals.
 
 ## Required behaviors
-1. Reuse exported React components in `app/evo-ui-kit/index.ts` (`UIButton`, `BottomSheet`) and token variables in `app/evo-ui-kit/tokens.css`. Do not make visually similar one-off substitutes without a functional reason.
+1. Reuse exported React components in `app/evo-ui-kit/index.ts` (`UIButton`, `BottomSheet`, `UISettingsGroup`, `UISettingsRow`, `UISettingsSwitchRow`, `UISwitch`) and token variables in `app/evo-ui-kit/tokens.css`. Do not make visually similar one-off substitutes without a functional reason.
 2. Apple Neutral / ChatGPT iOS-inspired: background white, surface `#F5F5F7`, text `#202127`, secondary `#8E8E93`, divider `#E5E5EA`. Keep border radii and size values consistent with the manifest; default buttons 50px, compact/icon controls 44px.
 3. All new app pop-ups should use the **bottom-attached** `BottomSheet`: viewport full width, square bottom corners, top radius 26px, zero space under sheet, appropriate iOS safe-area padding and virtual keyboard behavior. Never substitute a centered dialog for an in-app pop-up without a documented platform requirement.
 4. Design baseline for 390px-wide iPhones. Also validate 360px and 430px. Prevent horizontal overflow, truncated control labels and unusably small buttons. Keep tap targets >= 44 x 44px.
@@ -19,5 +19,7 @@ import { UIButton, BottomSheet } from "@/app/evo-ui-kit"
 ```
 
 Use `UIButton variant="primary" fullWidth` for form submit, `UIButton variant="secondary"` for cancel, and `UIButton size="icon" aria-label="..."` for icon-only actions.
+
+Profile 3.0 is the current reference for borderless monochrome settings: `app/reference-screens.tsx`, `app/profile-v3.css`. Reuse the settings primitives instead of creating new row components. Never render non-action rows as clickable buttons or show chevrons for controls that do nothing.
 
 See `UI_LIBRARY.md` for code examples and implementation guidance.
