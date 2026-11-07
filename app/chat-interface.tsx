@@ -3,8 +3,11 @@
 import { useEffect, useRef, useState, type FormEvent, type KeyboardEvent, type ClipboardEvent, type FormEventHandler } from "react"
 import { ArrowUp, Check, Copy, Plus, Camera, Image as ImageIcon, FileText, Mic, X, LoaderCircle } from "lucide-react"
 import { BottomSheet, UIButton } from "./evo-ui-kit"
-import ChatRichText from "./chat-rich-text"
-import AgentPlanView from "./chat-agent-plan-view"
+import dynamic from "next/dynamic"
+
+// Markdown/table rendering and agent traces are unnecessary for an empty chat.
+const ChatRichText = dynamic(() => import("./chat-rich-text"), { ssr: false })
+const AgentPlanView = dynamic(() => import("./chat-agent-plan-view"), { ssr: false })
 import { isAgentPlan, type AgentPlan } from "./chat-agent-plan"
 import { MAX_IMAGE_BYTES, MAX_TEXT_BYTES, IMAGE_TYPES, TEXT_EXTENSIONS, type ChatAttachment } from "./chat-attachments"
 import { activeChatSessionId, readChatSessions, saveChatSession, setActiveChatSessionId } from "./chat-sessions"
