@@ -51,6 +51,7 @@ export default function Schedule() {
   const [selectedDay, setSelectedDay] = useState(() => dateKey(new Date()))
   const [total, setTotal] = useState(5)
   const [menu, setMenu] = useState<string | null>(null)
+  const [menuDeleteConfirm, setMenuDeleteConfirm] = useState(false)
   const [error, setError] = useState("")
 
   useEffect(() => { setTasks(readTasks()); setReady(true) }, [])
@@ -71,6 +72,7 @@ export default function Schedule() {
     .filter(item => item.status === tab && (item.title + " " + item.note).toLocaleLowerCase("hu").includes(query.trim().toLocaleLowerCase("hu")))
     .sort((a, b) => b.createdAt - a.createdAt), [tasks, tab, query])
 
+  const menuTask = tasks.find(item => item.id === menu)
   const update = (id: string, patch: Partial<ScheduledTask>) => {
     setTasks(current => current.map(item => item.id === id ? { ...item, ...patch } : item))
     setMenu(null)
@@ -122,17 +124,11 @@ export default function Schedule() {
         <div className="evo-schedule-card-head">
           <span className="evo-schedule-icon">{item.kind === "long" ? <Search size={23} strokeWidth={1.75} /> : <CalendarClock size={23} strokeWidth={1.75} />}</span>
           <span className="evo-schedule-card-copy"><strong>{item.title}</strong><small>{item.kind === "long" ? "Hosszú feladat" : repeatLabel[item.repeat]} · {item.status === "active" ? "Aktív" : item.status === "paused" ? "Szüneteltetve" : "Befejezve"}</small></span>
-          <button className="evo-schedule-more" type="button" aria-label={item.title + " műveletei"} aria-expanded={menu === item.id} onClick={() => setMenu(menu === item.id ? null : item.id)}><MoreHorizontal size={22} /></button>
+          <button className="evo-schedule-more" type="button" aria-label={item.title + " műveletei"} aria-expanded={menu === item.id} onClick={() => { setMenuDeleteConfirm(false); setMenu(menu === item.id ? null : item.id) }}><MoreHorizontal size={22} /></button>
         </div>
         {item.kind === "long" && <div className="evo-schedule-progress"><div role="progressbar" aria-label="Feladat haladása" aria-valuenow={item.step} aria-valuemin={0} aria-valuemax={item.totalSteps}><span style={{ width: 100 * item.step / item.totalSteps + "%" }} /></div><small>{item.step}. lépés / {item.totalSteps}</small></div>}
         {item.note && <p className="evo-schedule-note">{item.note}</p>}
         {item.due && <p className="evo-schedule-date"><Clock3 size={14} /> {item.time ? <strong>{item.time}</strong> : null} {new Date(item.due + "T12:00:00").toLocaleDateString("hu-HU", { year: "numeric", month: "short", day: "numeric" })}</p>}
-        {menu === item.id && <div className="evo-schedule-actions">
-          {item.status === "active" && <button type="button" onClick={() => update(item.id, { status: "paused" })}><CirclePause size={16} /> Szüneteltetés</button>}
-          {item.status !== "active" && <button type="button" onClick={() => update(item.id, { status: "active", ...(item.step === item.totalSteps ? { step: 0 } : {}) })}><Check size={16} /> Újraindítás</button>}
-          {item.status !== "completed" && <button type="button" onClick={() => update(item.id, { status: "completed", step: item.totalSteps })}><Check size={16} /> Befejezés</button>}
-          <button className="is-destructive" type="button" onClick={() => { setTasks(current => current.filter(task => task.id !== item.id)); setMenu(null) }}><Trash2 size={16} /> Törlés</button>
-        </div>}
         {item.kind === "long" && item.status === "active" && <button type="button" className="evo-schedule-next" onClick={() => advance(item)}><Check size={16} /> Következő lépés kész</button>}
         {item.kind === "scheduled" && item.status === "active" && <button type="button" className="evo-schedule-next" onClick={() => completeScheduled(item)}><Check size={16} /> {item.repeat === "once" ? "Késznek jelölés" : "Alkalom kész"}</button>}
       </article>) : <div className="evo-schedule-empty"><CalendarClock size={26} strokeWidth={1.5} /><strong>{query ? "Nincs találat" : tab === "active" ? "Nincs aktív feladat" : tab === "paused" ? "Nincs szüneteltetett feladat" : "Még nincs befejezett feladat"}</strong><p>{query ? "Próbálj másik keresést." : "A saját feladataid itt jelennek meg. Újat alul hozhatsz létre."}</p></div>}
@@ -145,6 +141,34 @@ export default function Schedule() {
       <label className="evo-schedule-search"><Search size={22} strokeWidth={1.7} /><input type="search" placeholder="Feladatok keresése" aria-label="Feladatok keresése" value={query} onChange={event => setQuery(event.target.value)} /></label>
     </div>
     {error && <p className="evo-schedule-error" role="alert">{error}</p>}
+    {menuTask && <BottomSheet
+      title={menuDeleteConfirm ? "Feladat törlése?" : menuTask.title}
+      description={menuDeleteConfirm ? "A feladat végleg eltűnik az eszközről." : "Feladat műveletei"}
+      size="compact"
+      role={menuDeleteConfirm ? "alertdialog" : "dialog"}
+      dismissible={!menuDeleteConfirm}
+      onClose={() => { setMenu(null); setMenuDeleteConfirm(false) }}
+      footer={menuDeleteConfirm ? <div className="evo-kit-confirm-actions">
+        <UIButton variant="secondary" fullWidth onClick={() => setMenuDeleteConfirm(false)}>Mégse</UIButton>
+        <UIButton variant="danger" fullWidth onClick={() => {
+          setTasks(current => current.filter(task => task.id !== menuTask.id))
+          setMenu(null)
+          setMenuDeleteConfirm(false)
+        }}>Törlés</UIButton>
+      </div> : undefined}
+    >
+      {menuDeleteConfirm ?
+        <p className="evo-kit-confirm-description">Biztosan törlöd a(z) „{menuTask.title}” feladatot?</p> :
+        <div className="evo-kit-action-list">
+          {menuTask.status === "active" &&
+            <button type="button" onClick={() => update(menuTask.id, { status: "paused" })}><CirclePause size={19}/> Szüneteltetés</button>}
+          {menuTask.status !== "active" &&
+            <button type="button" onClick={() => update(menuTask.id, { status: "active", ...(menuTask.step === menuTask.totalSteps ? { step:0 } : {}) })}><Check size={19}/> Újraindítás</button>}
+          {menuTask.status !== "completed" &&
+            <button type="button" onClick={() => update(menuTask.id, { status: "completed", step:menuTask.totalSteps })}><Check size={19}/> Befejezés</button>}
+          <button type="button" className="is-destructive" onClick={() => setMenuDeleteConfirm(true)}><Trash2 size={19}/> Törlés</button>
+        </div>}
+    </BottomSheet>}
     {formKind && <BottomSheet title={formKind === "long" ? "Hosszú feladat" : "Új feladat"} size="expanded" dismissible={false} onClose={() => setFormKind(null)} footer={<UIButton type="submit" form="evo-schedule-create-form" fullWidth><Plus size={19} /> Létrehozás</UIButton>}>
       <form id="evo-schedule-create-form" className="evo-schedule-dialog" onSubmit={create} aria-label="Feladat létrehozása">
         <label>Feladat neve<input required maxLength={100} value={title} autoFocus onChange={event => setTitle(event.target.value)} placeholder="Mit szeretnél elvégezni?" /></label>
