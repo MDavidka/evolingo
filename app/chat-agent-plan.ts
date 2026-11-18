@@ -1,8 +1,9 @@
 /** Shared, validation-only contract for shadcn Trace-style agent plans. */
 export type AgentStepStatus = "pending" | "running" | "completed" | "error"
-export type AgentStep = { id: string; title: string; status: AgentStepStatus }
+export type AgentSubcommand = { id: string; label: string; status: AgentStepStatus; detail?: string }
+export type AgentStep = { id: string; title: string; status: AgentStepStatus; detail?: string; subcommands?: AgentSubcommand[] }
 export type AgentPlan = { id: "plan"; title: string; steps: AgentStep[] }
-export type PlannedSubtask = { title: string; task: string }
+export type PlannedSubtask = { title: string; task: string; commands?: string[] }
 export type PlanDraft = { title: string; subtasks: PlannedSubtask[] }
 
 const stepStatuses = new Set<AgentStepStatus>(["pending", "running", "completed", "error"])
@@ -40,7 +41,9 @@ export function parseAgentPlanDraft(raw: string): PlanDraft | null {
       const task = clean(value.task, 440)
       if (!name || !task || seen.has(name.toLocaleLowerCase())) return null
       seen.add(name.toLocaleLowerCase())
-      subtasks.push({ title: name, task })
+      const rawCommands = Array.isArray(value.commands) ? value.commands : []
+      const commands = rawCommands.map(cmd => clean(cmd, 88)).filter(Boolean).slice(0, 3)
+      subtasks.push({ title: name, task, ...(commands.length ? { commands } : {}) })
     }
     return { title, subtasks }
   } catch { return null }
@@ -48,13 +51,41 @@ export function parseAgentPlanDraft(raw: string): PlanDraft | null {
 
 export function toAgentPlan(draft: PlanDraft): AgentPlan {
   return { id: "plan", title: draft.title, steps: [
-    ...draft.subtasks.map((step, index) => ({ id: "step-" + (index + 1), title: step.title, status: "pending" as const })),
-    { id: "final", title: "Válasz összeállítása", status: "pending" },
+    ...draft.subtasks.map((step, index) => ({
+      id: "step-" + (index + 1),
+      title: step.title,
+      status: "pending" as const,
+      detail: step.task,
+      ...(step.commands?.length ? {
+        subcommands: step.commands.map((label, cmdIdx) => ({
+          id: `step-${index + 1}-cmd-${cmdIdx + 1}`,
+          label,
+          status: "pending" as const,
+          detail: step.task,
+        })),
+      } : {}),
+    })),
+    { id: "final", title: "Synthesizing response", status: "pending", detail: "Combining completed subtasks and verifying final output" },
   ] }
 }
 
-export function withStepStatus(plan: AgentPlan, id: string, status: AgentStepStatus): AgentPlan {
-  return { ...plan, steps: plan.steps.map(step => step.id === id ? { ...step, status } : step) }
+export function withStepStatus(plan: AgentPlan, id: string, status: AgentStepStatus, detail?: string): AgentPlan {
+  return {
+    ...plan,
+    steps: plan.steps.map(step => {
+      if (step.id !== id) return step
+      const nextSubcommands = step.subcommands?.map((cmd, idx) => ({
+        ...cmd,
+        status: status === "completed" ? ("completed" as const) : status === "running" && idx === 0 ? ("running" as const) : cmd.status,
+      }))
+      return {
+        ...step,
+        status,
+        ...(detail ? { detail } : {}),
+        ...(nextSubcommands ? { subcommands: nextSubcommands } : {}),
+      }
+    }),
+  }
 }
 
 export function isAgentPlan(value: unknown): value is AgentPlan {

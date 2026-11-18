@@ -1,6 +1,6 @@
 "use client"
 import { useState } from "react"
-import { ArrowLeft, ArrowRight, ArrowUp, Check, ChevronDown, ChevronLeft, ChevronRight, CircleAlert, Copy, Download, Ellipsis, FilePlus2, FolderPlus, Heart, LayoutGrid, List, ListFilter, LoaderCircle, Mic, MoreHorizontal, Pause, Play, Plus, RefreshCw, Search, Share2, ShieldCheck, SlidersHorizontal, Sparkles, SquarePen, Trash2, Upload, Volume2, X } from "lucide-react"
+import { IconArrowLeft as ArrowLeft, IconArrowRight as ArrowRight, IconArrowUp as ArrowUp, IconCheck as Check, IconChevronDown as ChevronDown, IconChevronLeft as ChevronLeft, IconChevronRight as ChevronRight, IconAlertCircle as CircleAlert, IconCopy as Copy, IconDownload as Download, IconDots as Ellipsis, IconFilePlus as FilePlus2, IconFolderPlus as FolderPlus, IconHeart as Heart, IconLayoutGrid as LayoutGrid, IconList as List, IconFilter2 as ListFilter, IconLoader2 as LoaderCircle, IconMicrophone as Mic, IconDots as MoreHorizontal, IconPlayerPause as Pause, IconPlayerPlay as Play, IconPlus as Plus, IconRefresh as RefreshCw, IconSearch as Search, IconShare as Share2, IconShieldCheck as ShieldCheck, IconAdjustmentsHorizontal as SlidersHorizontal, IconSparkles as Sparkles, IconEdit as SquarePen, IconTrash as Trash2, IconUpload as Upload, IconVolume as Volume2, IconX as X } from "@tabler/icons-react"
 import { UIButton } from "./evo-ui-kit/button"
 import "./evolingo-buttons-v2.css"
 

@@ -1,15 +1,6 @@
 "use client"
 
-import {
-  Bell,
-  ChevronRight,
-  Ellipsis,
-  Folder,
-  Layers,
-  Palette,
-  Plus,
-  UserRound,
-} from "lucide-react"
+import { IconBell as Bell, IconChevronRight as ChevronRight, IconDots as Ellipsis, IconFolder as Folder, IconLayersIntersect as Layers, IconPalette as Palette, IconPlus as Plus, IconUser as UserRound } from "@tabler/icons-react"
 import "./evolingo-design-system-demo.css"
 
 const palettes = [

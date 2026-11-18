@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useMemo, useState, type FormEvent } from "react"
-import { CalendarClock, Check, CirclePause, Clock3, MoreHorizontal, Plus, Search, Trash2, Workflow } from "lucide-react"
+import { IconCalendarTime as CalendarClock, IconCheck as Check, IconPlayerPause as CirclePause, IconClock as Clock3, IconDots as MoreHorizontal, IconPlus as Plus, IconSearch as Search, IconTrash as Trash2, IconSitemap as Workflow } from "@tabler/icons-react"
 import { BottomSheet, UIButton } from "./evo-ui-kit"
 
 type Status = "active" | "paused" | "completed"

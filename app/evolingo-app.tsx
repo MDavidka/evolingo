@@ -1,5 +1,7 @@
 "use client"
 
+import dynamic from "next/dynamic"
+const Myspace = dynamic(() => import("./myspace/client"), { ssr: false })
 import { useCallback, useEffect, useRef, useState } from "react"
 import { usePathname, useRouter } from "next/navigation"
 import AppTabBar, { type AppTab } from "./app-tab-bar"
@@ -147,12 +149,12 @@ export default function App() {
     : "ai"
 
   // The catch-all page owns the real 404. Do not mount a chat composer behind it.
-  if (!view) return null
+  if (!view && pathname !== "/myspace") return null
 
   return <>
     <main className="app-shell reference-shell evo-ai-app-shell">
       <section className="screen-content evo-ai-screen-content">
-        <ReferenceScreens
+        {pathname === "/myspace" ? <Myspace /> : <ReferenceScreens
           view={view}
           userName={profile.userName}
           avatarImage={profile.avatarImage}
@@ -167,7 +169,7 @@ export default function App() {
           notifications={profile.notifications}
           onChangeNotifications={enabled => updateProfile({ notifications: enabled })}
           onLogout={() => setMessage("Vendégfiókból nem szükséges kijelentkezni.")}
-        />
+        />}
       </section>
     </main>
     {view !== "auth" && <AppTabBar

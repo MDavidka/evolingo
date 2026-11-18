@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState, type FormEvent } from "react"
-import { AlignLeft, BadgeCheck, Blocks, BookOpen, Bug, Check, Circle, FileText, Lightbulb, LoaderCircle, Palette, Plus, Puzzle, Repeat2, Target, Type, Wrench, X } from "lucide-react"
+import { IconAlignLeft as AlignLeft, IconRosetteDiscountCheck as BadgeCheck, IconPackages as Blocks, IconBook as BookOpen, IconBug as Bug, IconCheck as Check, IconCircle as Circle, IconFileText as FileText, IconBulb as Lightbulb, IconLoader2 as LoaderCircle, IconPalette as Palette, IconPlus as Plus, IconPuzzle as Puzzle, IconRepeat as Repeat2, IconTarget as Target, IconTypography as Type, IconTool as Wrench, IconX as X } from "@tabler/icons-react"
 import { EmptyState, SkeletonList } from "@/components/arc/loading-states"
 import { BottomSheet, UIButton } from "./evo-ui-kit"
 

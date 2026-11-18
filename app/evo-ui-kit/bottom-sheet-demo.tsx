@@ -1,13 +1,7 @@
 "use client"
 
 import { useMemo, useState, type FormEvent } from "react"
-import {
-  AlertTriangle, Bell, CalendarDays, Check, ChevronRight, Clock3, Copy,
-  Download, FileText, Filter, Folder, Image, Info, Link2, ListChecks,
-  LockKeyhole, MessageCircle, Mic, MoreHorizontal, Pencil, Plus,
-  Search, Settings2, Share2, SlidersHorizontal, Sparkles, Trash2,
-  Upload, WandSparkles, X, type LucideIcon,
-} from "lucide-react"
+import { IconAlertTriangle as AlertTriangle, IconBell as Bell, IconCalendar as CalendarDays, IconCheck as Check, IconChevronRight as ChevronRight, IconClock as Clock3, IconCopy as Copy, IconDownload as Download, IconFileText as FileText, IconFilter as Filter, IconFolder as Folder, IconPhoto as Image, IconInfoCircle as Info, IconLink as Link2, IconListCheck as ListChecks, IconLock as LockKeyhole, IconMessageCircle as MessageCircle, IconMicrophone as Mic, IconDots as MoreHorizontal, IconPencil as Pencil, IconPlus as Plus, IconSearch as Search, IconAdjustments as Settings2, IconShare as Share2, IconAdjustmentsHorizontal as SlidersHorizontal, IconSparkles as Sparkles, IconTrash as Trash2, IconUpload as Upload, IconWand as WandSparkles, IconX as X, type Icon as TablerIcon } from "@tabler/icons-react"
 import { UIButton } from "./button"
 import { BottomSheet, type BottomSheetSize } from "./bottom-sheet"
 import "./bottom-sheet-demo.css"
@@ -16,7 +10,7 @@ type SheetId =
   | "actions" | "context" | "confirm" | "create" | "edit" | "single"
   | "multiple" | "search" | "filters" | "date" | "permission"
   | "files" | "wizard" | "progress" | "agent"
-type SheetExample = { id: SheetId; title: string; detail: string; Icon: LucideIcon; size: BottomSheetSize }
+type SheetExample = { id: SheetId; title: string; detail: string; Icon: TablerIcon; size: BottomSheetSize }
 const examples: SheetExample[] = [
   { id: "actions", title: "Action menu", detail: "Share, rename, duplicate, delete", Icon: MoreHorizontal, size: "compact" },
   { id: "context", title: "Context actions", detail: "Actions for a selected file", Icon: FileText, size: "compact" },
@@ -39,7 +33,7 @@ const languages = ["English", "Magyar", "Română", "Deutsch", "Français", "Ita
 const optionItems = ["Grammar", "Speaking", "Listening", "Writing"]
 
 function ActionRow({ Icon, title, onClick, danger = false, trailing }: {
-  Icon: LucideIcon
+  Icon: TablerIcon
   title: string
   onClick: () => void
   danger?: boolean

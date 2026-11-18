@@ -1,81 +1,72 @@
 "use client"
 
 import { useMemo, useState } from "react"
-import {
-  Archive, ArrowLeft, ArrowUp, AudioLines, Bell, BookOpen, Bookmark,
-  BrainCircuit, CalendarDays, ChartNoAxesColumn, Check, ChevronLeft,
-  CircleHelp, Copy, Download, FileImage, FileSpreadsheet, FileText,
-  Flame, Folder, FolderOpen, Globe, GraduationCap, House, Image,
-  Languages, Lock, LogOut, Menu, Mic, MoreHorizontal, Palette,
-  Paperclip, Pencil, Plus, RefreshCw, Search, Settings, Share2,
-  ShieldCheck, Sparkles, SquarePen, Star, Target, Trash2, Trophy,
-  UserRound, PanelLeft, type LucideIcon,
-} from "lucide-react"
+import { IconArchive as Archive, IconArrowLeft as ArrowLeft, IconArrowUp as ArrowUp, IconWaveSine as AudioLines, IconBell as Bell, IconBook as BookOpen, IconBookmark as Bookmark, IconBrain as BrainCircuit, IconCalendar as CalendarDays, IconChartBar as ChartNoAxesColumn, IconCheck as Check, IconChevronLeft as ChevronLeft, IconHelpCircle as CircleHelp, IconCopy as Copy, IconDownload as Download, IconFileTypeJpg as FileImage, IconFileSpreadsheet as FileSpreadsheet, IconFileText as FileText, IconFlame as Flame, IconFolder as Folder, IconFolderOpen as FolderOpen, IconWorld as Globe, IconSchool as GraduationCap, IconHome as House, IconPhoto as Image, IconLanguage as Languages, IconLock as Lock, IconLogout as LogOut, IconMenu2 as Menu, IconMicrophone as Mic, IconDots as MoreHorizontal, IconPalette as Palette, IconPaperclip as Paperclip, IconPencil as Pencil, IconPlus as Plus, IconRefresh as RefreshCw, IconSearch as Search, IconSettings as Settings, IconShare as Share2, IconShieldCheck as ShieldCheck, IconSparkles as Sparkles, IconEdit as SquarePen, IconStar as Star, IconTarget as Target, IconTrash as Trash2, IconTrophy as Trophy, IconUser as UserRound, IconLayoutSidebar as PanelLeft, type Icon as TablerIcon } from "@tabler/icons-react"
 import "./evolingo-icons-demo.css"
 
-type IconItem = { name: string; label: string; Icon: LucideIcon }
+type IconItem = { name: string; label: string; Icon: TablerIcon }
 type IconGroup = { category: string; icons: IconItem[] }
 
 const groups: IconGroup[] = [
   { category: "Navigation", icons: [
-    { name: "panel-left", label: "Sidebar", Icon: PanelLeft },
-    { name: "square-pen", label: "New chat", Icon: SquarePen },
-    { name: "house", label: "Home", Icon: House },
-    { name: "search", label: "Search", Icon: Search },
-    { name: "chevron-left", label: "Back", Icon: ChevronLeft },
-    { name: "ellipsis", label: "More", Icon: MoreHorizontal },
-    { name: "arrow-left", label: "Previous", Icon: ArrowLeft },
-    { name: "menu", label: "Menu", Icon: Menu },
+    { name: "IconLayoutSidebar", label: "Sidebar", Icon: PanelLeft },
+    { name: "IconEdit", label: "New chat", Icon: SquarePen },
+    { name: "IconHome", label: "Home", Icon: House },
+    { name: "IconSearch", label: "Search", Icon: Search },
+    { name: "IconChevronLeft", label: "Back", Icon: ChevronLeft },
+    { name: "IconDots", label: "More", Icon: MoreHorizontal },
+    { name: "IconArrowLeft", label: "Previous", Icon: ArrowLeft },
+    { name: "IconMenu2", label: "Menu", Icon: Menu },
   ] },
   { category: "AI & Chat", icons: [
-    { name: "plus", label: "Add", Icon: Plus },
-    { name: "mic", label: "Microphone", Icon: Mic },
-    { name: "audio-lines", label: "Voice", Icon: AudioLines },
-    { name: "arrow-up", label: "Send", Icon: ArrowUp },
-    { name: "globe", label: "Web", Icon: Globe },
-    { name: "brain-circuit", label: "Reasoning", Icon: BrainCircuit },
-    { name: "sparkles", label: "AI", Icon: Sparkles },
-    { name: "paperclip", label: "Attach", Icon: Paperclip },
+    { name: "IconPlus", label: "Add", Icon: Plus },
+    { name: "IconMicrophone", label: "Microphone", Icon: Mic },
+    { name: "IconWaveSine", label: "Voice", Icon: AudioLines },
+    { name: "IconArrowUp", label: "Send", Icon: ArrowUp },
+    { name: "IconWorld", label: "Web", Icon: Globe },
+    { name: "IconBrain", label: "Reasoning", Icon: BrainCircuit },
+    { name: "IconSparkles", label: "AI", Icon: Sparkles },
+    { name: "IconPaperclip", label: "Attach", Icon: Paperclip },
   ] },
   { category: "Files & Content", icons: [
-    { name: "folder", label: "Folder", Icon: Folder },
-    { name: "folder-open", label: "Open folder", Icon: FolderOpen },
-    { name: "file-text", label: "Document", Icon: FileText },
-    { name: "file-image", label: "Image file", Icon: FileImage },
-    { name: "file-spreadsheet", label: "Spreadsheet", Icon: FileSpreadsheet },
-    { name: "book-open", label: "Book", Icon: BookOpen },
-    { name: "image", label: "Media", Icon: Image },
-    { name: "download", label: "Download", Icon: Download },
+    { name: "IconFolder", label: "Folder", Icon: Folder },
+    { name: "IconFolderOpen", label: "Open folder", Icon: FolderOpen },
+    { name: "IconFileText", label: "Document", Icon: FileText },
+    { name: "IconFileTypeJpg", label: "Image file", Icon: FileImage },
+    { name: "IconFileSpreadsheet", label: "Spreadsheet", Icon: FileSpreadsheet },
+    { name: "IconBook", label: "Book", Icon: BookOpen },
+    { name: "IconPhoto", label: "Media", Icon: Image },
+    { name: "IconDownload", label: "Download", Icon: Download },
   ] },
   { category: "Actions", icons: [
-    { name: "copy", label: "Copy", Icon: Copy },
-    { name: "pencil", label: "Edit", Icon: Pencil },
-    { name: "share-2", label: "Share", Icon: Share2 },
-    { name: "trash-2", label: "Delete", Icon: Trash2 },
-    { name: "archive", label: "Archive", Icon: Archive },
-    { name: "bookmark", label: "Save", Icon: Bookmark },
-    { name: "refresh-cw", label: "Retry", Icon: RefreshCw },
-    { name: "check", label: "Done", Icon: Check },
+    { name: "IconCopy", label: "Copy", Icon: Copy },
+    { name: "IconPencil", label: "Edit", Icon: Pencil },
+    { name: "IconShare", label: "Share", Icon: Share2 },
+    { name: "IconTrash", label: "Delete", Icon: Trash2 },
+    { name: "IconArchive", label: "Archive", Icon: Archive },
+    { name: "IconBookmark", label: "Save", Icon: Bookmark },
+    { name: "IconRefresh", label: "Retry", Icon: RefreshCw },
+    { name: "IconCheck", label: "Done", Icon: Check },
   ] },
   { category: "System", icons: [
-    { name: "settings", label: "Settings", Icon: Settings },
-    { name: "bell", label: "Alerts", Icon: Bell },
-    { name: "user-round", label: "Profile", Icon: UserRound },
-    { name: "palette", label: "Appearance", Icon: Palette },
-    { name: "shield-check", label: "Privacy", Icon: ShieldCheck },
-    { name: "lock", label: "Lock", Icon: Lock },
-    { name: "circle-help", label: "Help", Icon: CircleHelp },
-    { name: "log-out", label: "Log out", Icon: LogOut },
+    { name: "IconSettings", label: "Settings", Icon: Settings },
+    { name: "IconBell", label: "Alerts", Icon: Bell },
+    { name: "IconUser", label: "Profile", Icon: UserRound },
+    { name: "IconPalette", label: "Appearance", Icon: Palette },
+    { name: "IconShieldCheck", label: "Privacy", Icon: ShieldCheck },
+    { name: "IconLock", label: "Lock", Icon: Lock },
+    { name: "IconHelpCircle", label: "Help", Icon: CircleHelp },
+    { name: "IconLogout", label: "Log out", Icon: LogOut },
   ] },
   { category: "Learning", icons: [
-    { name: "graduation-cap", label: "Study", Icon: GraduationCap },
-    { name: "calendar-days", label: "Schedule", Icon: CalendarDays },
-    { name: "languages", label: "Language", Icon: Languages },
-    { name: "trophy", label: "Leaderboard", Icon: Trophy },
-    { name: "flame", label: "Streak", Icon: Flame },
-    { name: "star", label: "Stars", Icon: Star },
-    { name: "target", label: "Goals", Icon: Target },
-    { name: "chart-no-axes-column", label: "Progress", Icon: ChartNoAxesColumn },
+    { name: "IconSchool", label: "Study", Icon: GraduationCap },
+    { name: "IconCalendar", label: "Schedule", Icon: CalendarDays },
+    { name: "IconLanguage", label: "Language", Icon: Languages },
+    { name: "IconTrophy", label: "Leaderboard", Icon: Trophy },
+    { name: "IconFlame", label: "Streak", Icon: Flame },
+    { name: "IconStar", label: "Stars", Icon: Star },
+    { name: "IconTarget", label: "Goals", Icon: Target },
+    { name: "IconChartBar", label: "Progress", Icon: ChartNoAxesColumn },
   ] },
 ]
 
@@ -123,7 +114,7 @@ export default function IconsShowcase() {
       <div className="evo-icons-showcase__intro">
         <span className="evo-icons-showcase__eyebrow">ICON LIBRARY · LUCIDE</span>
         <h3>Apple Neutral icons</h3>
-        <p>Monochrome, optically balanced icons for iOS-style navigation and ChatGPT-inspired interfaces. Tap an icon to copy its Lucide name.</p>
+        <p>Monochrome, optically balanced icons for iOS-style navigation and ChatGPT-inspired interfaces. Tap an icon to copy its Tabler export name.</p>
       </div>
 
       <label className="evo-icons-showcase__search">

@@ -55,7 +55,7 @@
   stroke-width: 2.3px;
 }
 /* Existing ArrowRight components become the reference's diagonal arrow. */
-.app-shell .evo-wide-action svg.lucide-arrow-right {
+.app-shell .evo-wide-action svg.tabler-icon-arrow-right {
   transform: rotate(-45deg);
 }
 .app-shell .evo-wide-action::before,

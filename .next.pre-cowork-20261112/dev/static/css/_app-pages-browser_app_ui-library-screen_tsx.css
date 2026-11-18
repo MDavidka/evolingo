@@ -1,0 +1,356 @@
+/*!**************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[15].oneOf[10].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[15].oneOf[10].use[3]!./app/evolingo-button-demo.css ***!
+  \**************************************************************************************************************************************************************************************************************************************************************************/
+/* Button specimens used only in Profile > Demo > Buttons. */
+.evo-buttons-demo {
+  --evo-btn-ink: var(--evo-ui-text, #202127);
+  --evo-btn-soft: #e9e9ec;
+  --evo-btn-muted: #777980;
+  padding: 14px;
+  background: var(--evo-ui-surface, #f5f5f7);
+  border-radius: 22px;
+  color: var(--evo-btn-ink);
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", system-ui, sans-serif;
+}
+.evo-buttons-demo * { box-sizing: border-box; }
+.evo-buttons-demo__group + .evo-buttons-demo__group {
+  border-top: 1px solid #e0e0e4;
+  margin-top: 20px;
+  padding-top: 18px;
+}
+.evo-buttons-demo__heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  color: var(--evo-btn-muted);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: .075em;
+  text-transform: uppercase;
+}
+.evo-buttons-demo__heading span { color: #a0a0a5; font-weight: 400; letter-spacing: 0; text-transform: none; }
+.evo-buttons-demo__stack { display: grid; gap: 10px; }
+.evo-buttons-demo__control {
+  appearance: none;
+  -webkit-appearance: none;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--evo-btn-ink);
+  border-radius: 999px;
+  min-height: 52px;
+  min-width: 0;
+  padding: 0 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  white-space: nowrap;
+  font: 600 15px/1.2 -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", system-ui, sans-serif;
+  letter-spacing: -.01em;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  transition: transform 140ms ease-out, background-color 140ms ease-out, box-shadow 140ms ease-out;
+}
+.evo-buttons-demo__control:active:not(:disabled) { transform: scale(.97); }
+.evo-buttons-demo__control:focus-visible { outline: 2px solid #4887eb; outline-offset: 3px; }
+.evo-buttons-demo__control:disabled { opacity: .5; cursor: not-allowed; }
+.evo-buttons-demo__control svg { width: 18px; height: 18px; stroke-width: 1.8; flex-shrink: 0; }
+.evo-buttons-demo__control--primary { background: var(--evo-ui-text, #202127); color: #fff; }
+.evo-buttons-demo__control--secondary { background: #fff; border-color: #e6e6e8; }
+.evo-buttons-demo__control--soft { background: #e9e9ec; }
+.evo-buttons-demo__control--glass {
+  background: rgba(255,255,255,.72);
+  border-color: rgba(255,255,255,.85);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  backdrop-filter: blur(24px) saturate(180%);
+  box-shadow: 0 3px 14px rgba(22,25,35,.055), inset 0 1px rgba(255,255,255,.88);
+}
+.evo-buttons-demo__floating {
+  background: #e5e6ea;
+  border-radius: 20px;
+  padding: 14px 8px;
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  align-items: center;
+}
+.evo-buttons-demo__control--compact { min-height: 42px; padding-inline: 15px; font-size: 14px; }
+.evo-buttons-demo__control--floating { min-height: 46px; padding-inline: 16px; }
+.evo-buttons-demo__control--round { width: 46px; height: 46px; min-height: 46px; padding: 0; flex: 0 0 46px; }
+.evo-buttons-demo__control--round-compact { width: 42px; height: 42px; min-height: 42px; padding: 0; flex: 0 0 42px; }
+.evo-buttons-demo__row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.evo-buttons-demo__row--center { justify-content: center; }
+.evo-buttons-demo__caption { color: #777980; font-size: 11px; text-align: center; margin: 9px 0 0; }
+.evo-buttons-demo__segment {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 4px;
+  border-radius: 999px;
+  padding: 4px;
+  background: #e6e6e9;
+}
+.evo-buttons-demo__segment button {
+  appearance: none;
+  -webkit-appearance: none;
+  border: 0;
+  min-height: 36px;
+  border-radius: 999px;
+  color: #777980;
+  background: transparent;
+  font: 500 14px -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", system-ui, sans-serif;
+  cursor: pointer;
+  transition: background 140ms ease-out, transform 140ms ease-out;
+}
+.evo-buttons-demo__segment button[aria-pressed="true"] {
+  color: var(--evo-ui-text, #202127);
+  background: white;
+  font-weight: 600;
+  box-shadow: 0 1px 3px rgba(0,0,0,.055);
+}
+.evo-buttons-demo__segment button:active { transform: scale(.97); }
+.evo-buttons-demo__segment button:focus-visible { outline: 2px solid #4887eb; outline-offset: 2px; }
+.evo-buttons-demo__chips { margin-top: 12px; }
+.evo-buttons-demo__chip { min-height: 34px; padding-inline: 15px; font-size: 13px; }
+.evo-buttons-demo__chip--selected { background: var(--evo-ui-text, #202127); color: white; }
+.evo-buttons-demo__chip--unselected { background: white; border-color: #e6e6e8; }
+.evo-buttons-demo__chip--disabled { background: #e3e3e6; color: #88888e; opacity: 1 !important; }
+@media (max-width: 375px) {
+  .evo-buttons-demo { padding: 12px; }
+  .evo-buttons-demo__floating { gap: 6px; }
+  .evo-buttons-demo__control--floating { padding-inline: 12px; font-size: 13px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .evo-buttons-demo__control, .evo-buttons-demo__segment button { transition: none; }
+}
+
+/* Unboxed UI specimens and segmented, breadcrumb-style library navigation. */
+.evo-demo-library--segmented .evo-demo-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin: 16px 0 12px;
+  color: var(--evo-ui-muted, #8e8e93);
+  font-size: 13px;
+  line-height: 20px;
+}
+.evo-demo-library--segmented .evo-demo-breadcrumb__current { color: var(--evo-ui-text, #202127); font-weight: 600; }
+.evo-demo-library--segmented .evo-demo-category-tabs {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  border-radius: 999px;
+  background: var(--evo-ui-surface, #f5f5f7);
+  -webkit-overflow-scrolling: touch;
+}
+.evo-demo-library--segmented .evo-demo-category-tabs::-webkit-scrollbar { display: none; }
+.evo-demo-library--segmented .evo-demo-category-tabs button {
+  flex: 1 0 auto;
+  border: 0;
+  border-radius: 999px;
+  min-height: 38px;
+  padding: 0 13px;
+  color: #74757b;
+  background: transparent;
+  font: 500 13px/1.2 -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", system-ui, sans-serif;
+  cursor: pointer;
+  transition: background 140ms ease-out, color 140ms ease-out;
+}
+.evo-demo-library--segmented .evo-demo-category-tabs button[aria-pressed="true"] {
+  background: #fff;
+  color: var(--evo-ui-text, #202127);
+  font-weight: 600;
+  box-shadow: 0 1px 4px rgba(0,0,0,.06);
+}
+.evo-demo-library--segmented .evo-demo-category-tabs button:focus-visible {
+  outline: 2px solid #4887eb;
+  outline-offset: -2px;
+}
+.evo-demo-library--segmented .evo-demo-active-content { margin-top: 24px; }
+.evo-demo-library--segmented .evo-demo-active-content > h2 { margin-bottom: 14px; }
+.evo-demo-library--segmented .evo-buttons-demo {
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+.evo-demo-library--segmented .evo-buttons-demo__group + .evo-buttons-demo__group { border-top: 0; }
+.evo-demo-library--segmented .evo-buttons-demo__floating {
+  background: transparent;
+  border-radius: 0;
+  padding: 10px 0;
+}
+.evo-demo-library--segmented .evo-buttons-demo__control--glass {
+  background: rgba(245,245,247,.72);
+  border-color: rgba(225,225,230,.7);
+}
+@media (prefers-reduced-motion: reduce) {
+  .evo-demo-library--segmented .evo-demo-category-tabs button { transition: none; }
+}
+
+/* iOS / ChatGPT input specimens — scoped to the UI Library. */
+.evo-inputs-demo { display: grid; gap: 0; color: var(--evo-ui-text, #202127); font-family: -apple-system,BlinkMacSystemFont,"SF Pro Text",Inter,system-ui,sans-serif; }
+.evo-inputs-demo__item { display: grid; gap: 11px; padding: 18px 0 22px; }
+.evo-inputs-demo__item + .evo-inputs-demo__item { border-top: 1px solid #ededf0; }
+.evo-inputs-demo__eyebrow { color: var(--evo-ui-muted, #8e8e93); font-size: 10px; font-weight: 600; letter-spacing: .075em; text-transform: uppercase; }
+.evo-inputs-demo__item small { font-size: 11px; color: var(--evo-ui-muted, #8e8e93); }
+.evo-inputs-demo input,.evo-inputs-demo textarea { min-width: 0; font-family: inherit; font-size: 16px; color: var(--evo-ui-text, #202127); outline: none; }
+.evo-inputs-demo input::placeholder,.evo-inputs-demo textarea::placeholder { color: var(--evo-ui-muted, #8e8e93); opacity: 1; }
+.evo-inputs-demo__field { width: 100%; height: 54px; padding: 0 16px; border: 1.5px solid transparent; border-radius: 18px; background: var(--evo-ui-surface, #f5f5f7); transition: border-color 150ms ease-out; }
+.evo-inputs-demo__field--outline { background: #fff; border-color: #e8e8eb; }
+.evo-inputs-demo__field:focus-visible { border-color: #a0a0a6; }
+.evo-inputs-demo__field--focus { background: #fff; border-color: #a0a0a6; }
+.evo-inputs-demo__search { width: 100%; height: 48px; padding: 0 16px; display: flex; align-items: center; gap: 11px; border-radius: 999px; background: var(--evo-ui-surface, #f5f5f7); color: var(--evo-ui-muted, #8e8e93); border: 1.5px solid transparent; }
+.evo-inputs-demo__search:focus-within { border-color: #a0a0a6; }
+.evo-inputs-demo__search input { width: 100%; height: 100%; background: transparent; border: 0; }
+.evo-inputs-demo__inline { min-height: 51px; display: flex; align-items: center; gap: 9px; border-bottom: 1px solid var(--evo-ui-border, #e5e5ea); font-size: 15px; font-weight: 600; }
+.evo-inputs-demo__inline input { flex: 1; width: 30%; text-align: right; font-size: 15px; font-weight: 400; color: var(--evo-ui-muted, #8e8e93); border: 0; background: transparent; }
+.evo-inputs-demo__inline svg { color: #c7c7cc; }
+.evo-inputs-demo__floating { height: 64px; padding: 9px 16px; display: flex; flex-direction: column; justify-content: center; border: 1.5px solid transparent; border-radius: 18px; background: var(--evo-ui-surface, #f5f5f7); }
+.evo-inputs-demo__floating:focus-within { border-color: #a0a0a6; }
+.evo-inputs-demo__floating span { color: var(--evo-ui-muted, #8e8e93); font-size: 12px; }
+.evo-inputs-demo__floating input { width: 100%; background: transparent; border: 0; }
+.evo-inputs-demo__compact { display: flex; align-items: center; gap: 8px; }
+.evo-inputs-demo__compact .evo-inputs-demo__search { flex: 1; height: 42px; }
+.evo-inputs-demo__compact > button { display: grid; place-items: center; flex: 0 0 42px; width: 42px; height: 42px; border: 0; border-radius: 999px; background: var(--evo-ui-surface, #f5f5f7); color: var(--evo-ui-text, #202127); cursor: pointer; }
+.evo-inputs-demo__composer { display: grid; gap: 12px; padding: 14px 13px 11px; border: 1.5px solid transparent; border-radius: 26px; background: var(--evo-ui-surface, #f5f5f7); }
+.evo-inputs-demo__composer:focus-within { border-color: #a0a0a6; }
+.evo-inputs-demo__composer textarea { width: 100%; min-height: 44px; resize: vertical; border: 0; background: transparent; }
+.evo-inputs-demo__composer-actions,.evo-inputs-demo__composer-actions > div { display: flex; align-items: center; gap: 12px; }
+.evo-inputs-demo__composer-actions { justify-content: space-between; }
+.evo-inputs-demo__composer-actions button { display: inline-flex; align-items: center; justify-content: center; gap: 5px; padding: 0; border: 0; background: transparent; color: var(--evo-ui-text, #202127); font-size: 14px; cursor: pointer; }
+.evo-inputs-demo__composer-actions .evo-inputs-demo__send { width: 38px; height: 38px; border-radius: 999px; background: var(--evo-ui-text, #202127); color: white; }
+.evo-inputs-demo__multiline { width: 100%; min-height: 116px; padding: 16px; resize: vertical; border: 1.5px solid transparent; border-radius: 18px; background: var(--evo-ui-surface, #f5f5f7); }
+.evo-inputs-demo__multiline:focus-visible { border-color: #a0a0a6; }
+.evo-inputs-demo__otp { position: relative; }
+.evo-inputs-demo__otp input { position: absolute; inset: 0; z-index: 1; width: 100%; height: 100%; opacity: .01; cursor: text; }
+.evo-inputs-demo__otp > div { display: grid; grid-template-columns: repeat(6,minmax(0,1fr)); gap: 8px; pointer-events: none; }
+.evo-inputs-demo__otp span { display: grid; place-items: center; height: 52px; border-radius: 12px; background: var(--evo-ui-surface, #f5f5f7); font-size: 20px; font-weight: 600; }
+.evo-inputs-demo__otp:focus-within span { outline: 1px solid #a0a0a6; }
+.evo-inputs-demo__password { display: flex; align-items: center; gap: 8px; height: 54px; padding: 0 14px 0 16px; border-radius: 18px; background: var(--evo-ui-surface, #f5f5f7); border: 1.5px solid transparent; }
+.evo-inputs-demo__password:focus-within { border-color: #a0a0a6; }
+.evo-inputs-demo__password input { flex: 1; width: 100%; background: transparent; border: 0; }
+.evo-inputs-demo__password button { display: grid; place-items: center; color: var(--evo-ui-muted, #8e8e93); background: transparent; border: 0; cursor: pointer; }
+.evo-inputs-demo button:focus-visible { outline: 2px solid #a0a0a6; outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) { .evo-inputs-demo__field { transition: none; } }
+
+/*!**********************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[15].oneOf[10].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[15].oneOf[10].use[3]!./app/evo-ui-kit/library-normalize.css ***!
+  \**********************************************************************************************************************************************************************************************************************************************************************************/
+/* Universal UI Library audit layer.
+ * Only the demo library opts in; real screens are intentionally unaffected.
+ * Mobile-first compact control sizes are consistent across galleries.
+ */
+.evo-demo-library {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: clip;
+  background: var(--evo-ui-canvas, #fff);
+  color: var(--evo-ui-text, #202127);
+  font-family: var(--evo-ui-font, -apple-system, "Inter", sans-serif);
+}
+.evo-demo-library *, .evo-demo-library *::before, .evo-demo-library *::after { box-sizing: border-box; }
+.evo-demo-library :is(.evo-buttons-demo, .evo-inputs-demo, .evo-cards-demo, .evo-design-demo, .evo-icons-demo, .evo-ai-showcase, .evo-menus, .evo-sheet-demo) {
+  max-width: min(100%, var(--evo-ui-content-max, 720px));
+  width: 100%;
+  min-width: 0;
+  margin-inline: auto;
+  color: var(--evo-ui-text, #202127);
+  font-family: var(--evo-ui-font, -apple-system, "Inter", sans-serif);
+}
+.evo-demo-library--segmented .evo-demo-category-tabs { max-width: 100%; overflow-x: auto; padding-block: 8px; }
+.evo-demo-library--segmented .evo-demo-category-tabs button { min-height: var(--evo-ui-control-compact, 44px); }
+.evo-demo-library .evo-demo-active-content { width: 100%; max-width: 100%; min-width: 0; }
+.evo-demo-library .evo-demo-active-content > h2 { font-size: clamp(16px, 4.3vw, 20px); }
+.evo-demo-library button { max-width: 100%; }
+.evo-demo-library button:focus-visible, .evo-demo-library a:focus-visible {
+  outline: 2px solid var(--evo-ui-focus, #007aff);
+  outline-offset: 2px;
+}
+.evo-demo-library .evo-buttons-demo {
+  background: transparent;
+  border-radius: 0;
+  padding: 0;
+}
+.evo-demo-library .evo-buttons-demo__stack { width: 100%; }
+.evo-demo-library .evo-buttons-demo__stack .evo-ui-button { width: 100%; }
+.evo-demo-library .evo-buttons-demo__group + .evo-buttons-demo__group { border-top: 1px solid var(--evo-ui-border,#e5e5ea); }
+.evo-demo-library .evo-buttons-demo__heading { color: var(--evo-ui-muted,#8e8e93); }
+.evo-demo-library .evo-buttons-demo__row { display:flex; align-items:center; min-width:0; flex-wrap:wrap; gap:8px; }
+.evo-demo-library .evo-buttons-demo__row > .evo-ui-button:not(.evo-ui-button--icon) { flex: 1 1 auto; }
+.evo-demo-library .evo-buttons-demo__segment { width:100%; }
+.evo-demo-library .evo-buttons-demo__segment button { min-height:44px; }
+.evo-demo-library .evo-buttons-demo__chip { min-height:44px; padding:8px 14px; display:inline-flex; align-items:center; justify-content:center; gap:6px; border-radius:999px; font-size:13px; flex:1 1 auto; }
+.evo-demo-library .evo-buttons-demo__chip svg { width:16px; height:16px; }
+.evo-demo-library .evo-inputs-demo { background:transparent; padding:0; }
+.evo-demo-library .evo-inputs-demo :is(input,textarea,select) { font-size:16px; max-width:100%; }
+.evo-demo-library .evo-inputs-demo__field, .evo-demo-library .evo-inputs-demo__password { min-height:50px; height:auto; border-radius:var(--evo-ui-radius-md,14px); }
+.evo-demo-library .evo-inputs-demo__search { min-height:50px; border-radius:var(--evo-ui-radius-md,14px); }
+.evo-demo-library .evo-inputs-demo__compact > button,
+.evo-demo-library .evo-inputs-demo__composer-actions .evo-inputs-demo__send { flex:0 0 44px; min-width:44px; width:44px; height:44px; min-height:44px; }
+.evo-demo-library .evo-inputs-demo__password button { min-width:44px; min-height:44px; }
+.evo-demo-library .evo-inputs-demo__composer-actions button:not(.evo-inputs-demo__send) { min-height:44px; }
+.evo-demo-library .evo-cards-demo__grid > *, .evo-demo-library .evo-design-demo__palette-grid > *, .evo-demo-library .evo-design-demo__specimens > * {min-width:0;}
+.evo-demo-library :is(.evo-cards-demo__image-card,.evo-cards-demo__folder-card,.evo-cards-demo__icon-card,.evo-design-demo__palette,.evo-ai-showcase__rich-card) { border-radius:var(--evo-ui-radius-card,16px); }
+.evo-demo-library .evo-ai-showcase__filters button,
+.evo-demo-library .evo-ai-showcase__state-choices button,
+.evo-demo-library .evo-menus__filters button,
+.evo-demo-library .evo-menus__pill-choices button,
+.evo-demo-library .evo-icons-demo button[aria-pressed] { min-height:44px; }
+.evo-demo-library .evo-ai-showcase__composer-send { min-width:44px !important; width:44px !important; min-height:44px !important; height:44px !important; }
+.evo-demo-library .evo-ai-showcase__action-icon { min-width:44px; min-height:44px; width:44px; height:44px; }
+.evo-demo-library .evo-ai-showcase__approval-actions button,
+.evo-demo-library .evo-ai-showcase__approval-result button { min-height:44px; }
+.evo-demo-library .evo-menus__choice-button,
+.evo-demo-library .evo-menus__segmented button,
+.evo-demo-library .evo-menus__icon-choices button,
+.evo-demo-library .evo-menus__minor-button { min-height:44px; }
+.evo-demo-library .evo-menus__row { min-height:52px; }
+.evo-demo-library .evo-menus__switch { min-height:31px; }
+.evo-demo-library .evo-menus__switch::before { content:""; position:absolute; inset:-7px 0; }
+.evo-demo-library .evo-menus__states { grid-template-columns:repeat(2,minmax(0,1fr)); }
+.evo-demo-library :is(.evo-menus__group,.evo-menus__slider-group,.evo-ai-showcase__tool-summary) { border-radius:var(--evo-ui-radius-card,16px); }
+@media (max-width: 480px) {
+  .evo-demo-library { padding-inline: 0; }
+  .evo-demo-library :is(.evo-cards-demo__grid,.evo-design-demo__palette-grid,.evo-design-demo__specimens,.evo-ai-showcase__rich-grid) { grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; }
+  .evo-demo-library .evo-design-demo__palette-grid,.evo-demo-library .evo-design-demo__specimens { grid-template-columns:1fr; }
+  .evo-demo-library .evo-buttons-demo__row .evo-ui-button:not(.evo-ui-button--icon) { flex:1 1 auto; }
+  .evo-demo-library .evo-menus__presentations { grid-template-columns:1fr; }
+}
+@media (max-width: 360px) {
+  .evo-demo-library :is(.evo-cards-demo__grid,.evo-ai-showcase__rich-grid) { gap:7px; }
+  .evo-demo-library .evo-buttons-demo__row .evo-ui-button:not(.evo-ui-button--icon) { flex:1 1 100%; }
+  .evo-demo-library .evo-buttons-demo__chips > button { flex:1 1 calc(50% - 4px); }
+  .evo-demo-library .evo-menus__states { grid-template-columns:1fr 1fr; gap:7px; }
+}
+
+/* Consistency audit: selection chips, steppers, incidental actions and cards. */
+.evo-demo-library .evo-buttons-demo__chip {
+  appearance:none;
+  -webkit-appearance:none;
+  border:1px solid var(--evo-ui-border,#e5e5ea);
+  background:var(--evo-ui-surface,#f5f5f7);
+  color:var(--evo-ui-text,#202127);
+  cursor:pointer;
+  font-weight:600;
+}
+.evo-demo-library .evo-buttons-demo__chip--selected { background:var(--evo-ui-primary,#202127); border-color:var(--evo-ui-primary,#202127); color:var(--evo-ui-on-primary,#fff); }
+.evo-demo-library .evo-buttons-demo__chip:disabled {opacity:.42;cursor:not-allowed;}
+.evo-demo-library .evo-menus__stepper button {width:44px;height:44px;min-width:44px;min-height:44px;}
+.evo-demo-library .evo-menus__choice-row input {width:22px;height:22px;}
+.evo-demo-library .evo-ai-showcase__tool-toggle {min-height:44px;}
+.evo-demo-library .evo-design-demo__primary-action {min-height:50px;}
+.evo-demo-library .evo-design-demo__menu-row {min-height:52px;}
+.evo-demo-library .evo-design-demo__radius {min-width:0;}
+.evo-demo-library :is(.evo-cards-demo,.evo-design-demo,.evo-ai-showcase,.evo-menus,.evo-icons-demo) svg {flex-shrink:0;}
+.evo-demo-library :is(.evo-cards-demo,.evo-design-demo,.evo-ai-showcase,.evo-menus,.evo-icons-demo) :is(button,input,textarea,select):focus-visible {outline:2px solid var(--evo-ui-focus,#007aff);outline-offset:2px;}
+
+@media (prefers-reduced-motion:reduce) {
+  .evo-demo-library button { transition:none!important; animation:none!important; }
+}
+

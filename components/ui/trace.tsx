@@ -1,7 +1,7 @@
 "use client"
 
 import { createContext, useContext, useState, type ComponentProps, type ReactNode } from "react"
-import { ChevronRight } from "lucide-react"
+import { IconChevronRight as ChevronRight } from "@tabler/icons-react"
 
 /** Lightweight, dependency-free Trace primitives with the shadcn Plan API shape.
  * Uses native button/ARIA disclosure instead of introducing another UI framework.

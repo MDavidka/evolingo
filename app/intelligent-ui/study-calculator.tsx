@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useId, useState } from "react"
-import { RotateCcw } from "lucide-react"
+import { IconRotate2 as RotateCcw } from "@tabler/icons-react"
 import type { StudyCalculatorBlock } from "./schema"
 import { calculateLearningMinutes } from "./calculations"
 

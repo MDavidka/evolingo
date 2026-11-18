@@ -3,12 +3,7 @@
 import { useEffect, useMemo, useRef, useState, type ChangeEvent, type PointerEvent as ReactPointerEvent } from "react"
 import { BottomSheet, UIButton } from "./evo-ui-kit"
 import { readSpaceStatus, invalidateSpaceStatus } from "./space-status-cache"
-import {
-  ArrowDownToLine, ArrowUpRight, Check, SquareCheckBig as CheckSquare2,
-  ChevronLeft, ChevronDown, ChevronRight, QrCode, Copy, File, FileText,
-  Folder, FolderOpen, Cloud, Grid2X2, List, Ellipsis as MoreHorizontal,
-  Move, Pencil, Plus, Search, SlidersHorizontal, Share2, Trash2, Upload, X,
-} from "lucide-react"
+import { IconDownload as ArrowDownToLine, IconArrowUpRight as ArrowUpRight, IconCheck as Check, IconCheckbox as CheckSquare2, IconChevronLeft as ChevronLeft, IconChevronDown as ChevronDown, IconChevronRight as ChevronRight, IconQrcode as QrCode, IconCopy as Copy, IconFile as File, IconFileText as FileText, IconFolder as Folder, IconFolderOpen as FolderOpen, IconCloud as Cloud, IconLayoutGrid as Grid2X2, IconList as List, IconDots as MoreHorizontal, IconArrowsMove as Move, IconPencil as Pencil, IconPlus as Plus, IconSearch as Search, IconAdjustmentsHorizontal as SlidersHorizontal, IconShare as Share2, IconTrash as Trash2, IconUpload as Upload, IconX as X } from "@tabler/icons-react"
 
 type FileKind = "folder" | "pdf" | "note"
 type SpaceEntry = { id: string; name: string; detail: string; kind: FileKind; parent?: string; size?: number; modifiedAt?: number }

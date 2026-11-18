@@ -1,7 +1,7 @@
 "use client"
 import { useState } from "react"
 import dynamic from "next/dynamic"
-import { ArrowUp, ChevronDown, ChevronLeft, ChevronRight, Eye, EyeOff, Plus, Search, SlidersHorizontal } from "lucide-react"
+import { IconArrowUp as ArrowUp, IconChevronDown as ChevronDown, IconChevronLeft as ChevronLeft, IconChevronRight as ChevronRight, IconEye as Eye, IconEyeOff as EyeOff, IconPlus as Plus, IconSearch as Search, IconAdjustmentsHorizontal as SlidersHorizontal } from "@tabler/icons-react"
 import "./evolingo-button-demo.css"
 import "./evo-ui-kit/library-normalize.css"
 

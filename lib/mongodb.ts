@@ -20,3 +20,22 @@ export async function getDatabase(): Promise<Db> {
   const dbName = process.env.MONGO_DB_NAME || undefined
   return dbName ? cache.client.db(dbName) : cache.client.db()
 }
+
+export async function closeDatabase(): Promise<void> {
+  const client = cache.client
+  cache.client = null
+  cache.promise = null
+  if (client) await client.close()
+}
+
+/** All writes in the callback commit together; no production code is executed here. */
+export async function withDatabaseTransaction<T>(work: (db: Db, session: import('mongodb').ClientSession) => Promise<T>): Promise<T> {
+  const db = await getDatabase()
+  const session = cache.client!.startSession()
+  try {
+    return await session.withTransaction(() => work(db, session), {
+      readConcern: { level: 'snapshot' }, writeConcern: { w: 'majority' },
+      maxCommitTimeMS: 5000, timeoutMS: 15000,
+    })
+  } finally { await session.endSession() }
+}

@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { AnimatePresence, animate, motion, useIsPresent, useMotionValue, useReducedMotion, useTransform, type HTMLMotionProps, type TargetAndTransition, type Transition } from "motion/react";
-import { Check } from "lucide-react";
+import { IconCheck as Check } from "@tabler/icons-react";
 import { motionTokens } from "../lib/motion-tokens";
 import styles from "./progress.module.css";
 

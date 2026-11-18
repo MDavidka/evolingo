@@ -1,0 +1,13 @@
+{
+  "/_not-found/page": "/_not-found",
+  "/_global-error/page": "/_global-error",
+  "/manifest.webmanifest/route": "/manifest.webmanifest",
+  "/api/chat/quiz/route": "/api/chat/quiz",
+  "/api/brainstorm/route": "/api/brainstorm",
+  "/api/dev/restart/route": "/api/dev/restart",
+  "/api/space/route": "/api/space",
+  "/api/state/route": "/api/state",
+  "/[...slug]/page": "/[...slug]",
+  "/page": "/",
+  "/api/chat/route": "/api/chat"
+}

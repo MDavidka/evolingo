@@ -1,0 +1,26 @@
+[Unit]
+Description=Evolingo Cowork run worker
+Wants=network-online.target
+After=network-online.target incus.service
+Requires=incus.service
+
+[Service]
+Type=simple
+WorkingDirectory=/root/evolingo
+EnvironmentFile=/root/.config/evolingo/zro.env
+ExecStart=/root/.nvm/versions/node/v26.13.0/bin/node --experimental-strip-types /root/evolingo/scripts/cowork-worker.mjs
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=360
+KillSignal=SIGTERM
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectSystem=full
+ProtectHome=read-only
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+
+[Install]
+WantedBy=multi-user.target

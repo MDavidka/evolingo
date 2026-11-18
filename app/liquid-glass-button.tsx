@@ -1,14 +1,14 @@
 "use client"
 
 import { forwardRef, type ButtonHTMLAttributes, type ReactNode } from "react"
-import { LoaderCircle, type LucideIcon } from "lucide-react"
+import { IconLoader2 as LoaderCircle, type Icon as TablerIcon } from "@tabler/icons-react"
 
 type Variant = "primary" | "secondary"
 type Size = "standard" | "compact" | "icon"
 export type LiquidGlassButtonProps = Omit<ButtonHTMLAttributes<HTMLButtonElement>, "children"> & {
   children?: ReactNode
-  icon?: LucideIcon
-  trailingIcon?: LucideIcon
+  icon?: TablerIcon
+  trailingIcon?: TablerIcon
   variant?: Variant
   size?: Size
   loading?: boolean

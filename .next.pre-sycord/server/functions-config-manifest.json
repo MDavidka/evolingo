@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "functions": {
+    "/api/brainstorm": {},
+    "/api/chat": {
+      "maxDuration": 45
+    },
+    "/api/chat/quiz": {},
+    "/api/dev/restart": {},
+    "/api/space": {},
+    "/api/state": {}
+  }
+}

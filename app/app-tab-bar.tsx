@@ -1,12 +1,8 @@
 "use client"
 
+import MyspaceLinks from "./myspace/sidebar"
 import { useCallback, useEffect, useRef, useState, type KeyboardEvent as ReactKeyboardEvent } from "react"
-import {
-  PanelLeft as SidebarSimpleIcon, Plus as PlusIcon, Ellipsis as DotsThreeIcon,
-  Pencil as PencilSimpleIcon, Trash2 as TrashIcon, Search as MagnifyingGlassIcon,
-  CalendarDays as ScheduleIcon, FolderOpen as FoldersIcon, LayoutGrid as PuzzlePieceIcon,
-  UsersRound as CoworkIcon, Lightbulb as LightbulbIcon, SquarePen as NotePencilIcon, ChevronRight, Pin as PinIcon, PinOff as PinOffIcon,
-} from "lucide-react"
+import { IconLayoutSidebar as SidebarSimpleIcon, IconPlus as PlusIcon, IconDots as DotsThreeIcon, IconPencil as PencilSimpleIcon, IconTrash as TrashIcon, IconSearch as MagnifyingGlassIcon, IconCalendar as ScheduleIcon, IconFolderOpen as FoldersIcon, IconLayoutGrid as PuzzlePieceIcon, IconUsers as CoworkIcon, IconBulb as LightbulbIcon, IconEdit as NotePencilIcon, IconChevronRight as ChevronRight, IconPinned as PinIcon, IconPinnedOff as PinOffIcon } from "@tabler/icons-react"
 import { deleteChatSession, notifyChatSessionAction, readChatSessionSummaries, renameChatSession, type ChatSessionSummary } from "./chat-sessions"
 
 export type AppTab = "cowork" | "ai" | "schedule" | "files" | "tools" | "profile" | "brainstorm"
@@ -262,12 +258,13 @@ export default function AppTabBar({ activeTab, onSelect, avatarImage, userName }
       <aside id="evo-global-sidebar" ref={dialog} className={`evo-sidebar ${open ? "" : "is-closing"}`} role={desktop ? "complementary" : "dialog"} aria-modal={desktop ? undefined : open} aria-hidden={!open} aria-label="Menü" onKeyDown={trapFocus} >
         <div className="evo-sidebar-safe">
           <div className="evo-sidebar-heading">
-            <button className="evo-sidebar-brand evo-sidebar-brand-action" type="button" onClick={() => close()} aria-label="Menü bezárása">Evölingo</button>
+            <button className="evo-sidebar-brand evo-sidebar-brand-action" type="button" onClick={() => close()} aria-label="Menü bezárása">Arlen</button>
             <div className="evo-sidebar-tools"><button type="button" className="evo-sidebar-tool" aria-label="Beszélgetések keresése" aria-expanded={searchOpen} onClick={() => { setSearchOpen(value => !value); setQuery("") }}><MagnifyingGlassIcon size={21} /></button></div>
           </div>
           <div className="evo-sidebar-new-chat"><button type="button" className="evo-sidebar-chat-action" onPointerEnter={() => warmScreen("ai")} onTouchStart={() => warmScreen("ai")} onClick={startNew}><NotePencilIcon size={20} /> Új beszélgetés</button></div>
           <nav className="evo-sidebar-nav" aria-label="Fő navigáció">
             {quickLinks.map(({ label, Icon, target }) => <button key={label} type="button" aria-current={activeTab === target ? "page" : undefined} onPointerEnter={() => warmScreen(target)} onTouchStart={() => warmScreen(target)} onFocus={() => warmScreen(target)} onClick={() => select(target)}><Icon size={22} /><span>{label}</span></button>)}
+            <MyspaceLinks onNavigate={() => close(false)} />
           </nav>
           {searchOpen && <label className="evo-sidebar-search"><MagnifyingGlassIcon size={16} /><input autoFocus value={query} onChange={event => setQuery(event.target.value)} placeholder="Keresés a beszélgetésekben" /></label>}
           <div className="evo-sidebar-history">

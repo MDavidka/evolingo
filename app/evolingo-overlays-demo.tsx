@@ -1,6 +1,6 @@
 "use client"
 import { useEffect, useRef, useState } from "react"
-import { Archive, Bell, Check, ChevronRight, Copy, Info, Pencil, Pin, Share2, Trash2, X } from "lucide-react"
+import { IconArchive as Archive, IconBell as Bell, IconCheck as Check, IconChevronRight as ChevronRight, IconCopy as Copy, IconInfoCircle as Info, IconPencil as Pencil, IconPinned as Pin, IconShare as Share2, IconTrash as Trash2, IconX as X } from "@tabler/icons-react"
 import "./evolingo-overlays-demo.css"
 
 type Overlay = "alert" | "dialog" | "sheet" | "popover" | "permission" | "full" | null

@@ -5,7 +5,7 @@ import { createContext, useCallback, useContext, useLayoutEffect, useRef, useSta
 import type { ComponentPropsWithoutRef, ReactNode } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import type { Transition } from "motion/react";
-import { X } from "lucide-react";
+import { IconX as X } from "@tabler/icons-react";
 import { motionTokens } from "../lib/motion-tokens";
 import styles from "./dialog.module.css";
 

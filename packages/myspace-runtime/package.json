@@ -1,0 +1,7 @@
+{
+  "name": "@myspace/runtime",
+  "version": "1.0.0",
+  "private": true,
+  "exports": "./src/protocol.ts",
+  "type": "module"
+}

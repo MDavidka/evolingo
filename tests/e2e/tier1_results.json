@@ -1,0 +1,958 @@
+{
+  "suiteName": "Tier 1: Feature Coverage (Features 1-21)",
+  "summary": {
+    "total": 105,
+    "passed": 105,
+    "failed": 0,
+    "skipped": 0,
+    "durationMs": 94,
+    "passRate": "100.0%"
+  },
+  "results": [
+    {
+      "id": "1.1",
+      "featureId": 1,
+      "featureTitle": "Remove MySpace Tab",
+      "name": "1.1: NativeTab enum in Evolingo.swift does not define case space or case myspace",
+      "status": "PASS",
+      "durationMs": 2,
+      "error": null
+    },
+    {
+      "id": "1.2",
+      "featureId": 1,
+      "featureTitle": "Remove MySpace Tab",
+      "name": "1.2: EvolingoRootView tab selection items list excludes MySpace",
+      "status": "PASS",
+      "durationMs": 2,
+      "error": null
+    },
+    {
+      "id": "1.3",
+      "featureId": 1,
+      "featureTitle": "Remove MySpace Tab",
+      "name": "1.3: Sidebar navigation items in ChatLayerSidebar.swift do not link to MySpace",
+      "status": "PASS",
+      "durationMs": 0,
+      "error": null
+    },
+    {
+      "id": "1.4",
+      "featureId": 1,
+      "featureTitle": "Remove MySpace Tab",
+      "name": "1.4: Dead-end routing views ModernSpaceView and MyspaceWebView are deleted or unrouted",
+      "status": "PASS",
+      "durationMs": 3,
+      "error": null
+    },
+    {
+      "id": "1.5",
+      "featureId": 1,
+      "featureTitle": "Remove MySpace Tab",
+      "name": "1.5: Deep-link URL scheme handler does not route to space or myspace destination",
+      "status": "PASS",
+      "durationMs": 1,
+      "error": null
+    },
+    {
+      "id": "2.1",
+      "featureId": 2,
+      "featureTitle": "Plugin Icon Asset Loader",
+      "name": "2.1: Asset bundle loading uses Bundle.module or valid bundle directory lookup",
+      "status": "PASS",
+      "durationMs": 2,
+      "error": null
+    },
+    {
+      "id": "2.2",
+      "featureId": 2,
+      "featureTitle": "Plugin Icon Asset Loader",
+      "name": "2.2: Plugin icon resolver supports key brand IDs: github, vercel, supabase, slack, linear",
+      "status": "PASS",
+      "durationMs": 1,
+      "error": null
+    },
+    {
+      "id": "2.3",
+      "featureId": 2,
+      "featureTitle": "Plugin Icon Asset Loader",
+      "name": "2.3: Plugin icon PNG assets exist on disk in bundle resource directories",
+      "status": "PASS",
+      "durationMs": 0,
+      "error": null
+    },
+    {
+      "id": "2.4",
+      "featureId": 2,
+      "featureTitle": "Plugin Icon Asset Loader",
+      "name": "2.4: Asynchronous / in-memory cache ArlenPluginIconLoader prevents duplicate file system reads",
+      "status": "PASS",
+      "durationMs": 2,
+      "error": null
+    },
+    {
+      "id": "2.5",
+      "featureId": 2,
+      "featureTitle": "Plugin Icon Asset Loader",
+      "name": "2.5: Unrecognized plugin ID renders deterministic monogram / badge without crashing",
+      "status": "PASS",
+      "durationMs": 1,
+      "error": null
+    },
+    {
+      "id": "3.1",
+      "featureId": 3,
+      "featureTitle": "Sidebar Persistence in Cowork",
+      "name": "3.1: Unified ChatLayerSidebar is integrated into Cowork navigation view hierarchy",
+      "status": "PASS",
+      "durationMs": 1,
+      "error": null
+    },
+    {
+      "id": "3.2",
+      "featureId": 3,
+      "featureTitle": "Sidebar Persistence in Cowork",
+      "name": "3.2: Tab selection binding persists state across mode transitions",
+      "status": "PASS",
+      "durationMs": 2,
+      "error": null
+    },
+    {
+      "id": "3.3",
+      "featureId": 3,
+      "featureTitle": "Sidebar Persistence in Cowork",
+      "name": "3.3: Sidebar frame width constraint (sidebarWidth) is uniform across chat and cowork",
+      "status": "PASS",
+      "durationMs": 1,
+      "error": null
+    },
+    {
+      "id": "3.4",
+      "featureId": 3,
+      "featureTitle": "Sidebar Persistence in Cowork",
+      "name": "3.4: Pinned sections and session history remain identical when switching between chat and cowork",
+      "status": "PASS",
+      "durationMs": 1,
+      "error": null
+    },
+    {
+      "id": "3.5",
+      "featureId": 3,
+      "featureTitle": "Sidebar Persistence in Cowork",
+      "name": "3.5: Presentation toggle state showSidebar is shared without jumping during navigation",
+      "status": "PASS",
+      "durationMs": 1,
+      "error": null
+    },
+    {
+      "id": "4.1",
+      "featureId": 4,
+      "featureTitle": "Interactive Swipe Physics",
+      "name": "4.1: DragGesture continuously binds translation offset to sidebarDragOffset without clamping",
+      "status": "PASS",
+      "durationMs": 1,
+      "error": null
+    },
+    {
+      "id": "4.2",
+      "featureId": 4,
+      "featureTitle": "Interactive Swipe Physics",
+      "name": "4.2: Gesture completion calculates predictedEndTranslation or velocity threshold",
+      "status": "PASS",
+      "durationMs": 1,
+      "error": null
+    },
+    {
+      "id": "4.3",
+      "featureId": 4,
+      "featureTitle": "Interactive Swipe Physics",
+      "name": "4.3: Low-velocity translation threshold requires at least 35-50% width to complete",
+      "status": "PASS",
+      "durationMs": 1,
+      "error": null
+    },
+    {
+      "id": "4.4",
+      "featureId": 4,
+      "featureTitle": "Interactive Swipe Physics",
+      "name": "4.4: High-velocity flick completes panel transition even with low initial displacement",
+      "status": "PASS",
+      "durationMs": 1,
+      "error": null
+    },
+    {
+      "id": "4.5",
+      "featureId": 4,
+      "featureTitle": "Interactive Swipe Physics",
+      "name": "4.5: Spring animation damping provides stable physical settle without rubber-banding glitch",
+      "status": "PASS",
+      "durationMs": 1,
+      "error": null
+    },
+    {
+      "id": "5.1",
+      "featureId": 5,
+      "featureTitle": "Initial-Launch-Only Keyboard Focus",
+      "name": "5.1: AppFocusCoordinator singleton is declared as @MainActor final class conforming to ObservableObject",
+      "status": "PASS",
+      "durationMs": 1,
+      "error": null
+    },
+    {
+      "id": "5.2",
+      "featureId": 5,
+      "featureTitle": "Initial-Launch-Only Keyboard Focus",
+      "name": "5.2: AppFocusCoordinator provides shared singleton and hasRequestedColdLaunchFocus property",
+      "status": "PASS",
+      "durationMs": 1,
+      "error": null
+    },
+    {
+      "id": "5.3",
+      "featureId": 5,
+      "featureTitle": "Initial-Launch-Only Keyboard Focus",
+      "name": "5.3: claimColdLaunchFocus() method returns Bool to grant auto-focus strictly once",
+      "status": "PASS",
+      "durationMs": 1,
+      "error": null
+    },
+    {
+      "id": "5.4",
+      "featureId": 5,
+      "featureTitle": "Initial-Launch-Only Keyboard Focus",
+      "name": "5.4: ChatView / input bar binds auto-focus to claimColdLaunchFocus() rather than raw onAppear",
+      "status": "PASS",
+      "durationMs": 1,
+      "error": null
+    },
+    {
+      "id": "5.5",
+      "featureId": 5,
+      "featureTitle": "Initial-Launch-Only Keyboard Focus",
+      "name": "5.5: Navigating into chat sessions does not unconditionally set isFocused to true",
+      "status": "PASS",
+      "durationMs": 0,
+      "error": null
+    },
+    {
+      "id": "6.1",
+      "featureId": 6,
+      "featureTitle": "Persistent & Uniform Send Button",
+      "name": "6.1: Send button remains persistently mounted across empty, typing, and streaming states",
+      "status": "PASS",
+      "durationMs": 1,
+      "error": null
+    },
+    {
+      "id": "6.2",
+      "featureId": 6,
+      "featureTitle": "Persistent & Uniform Send Button",
+      "name": "6.2: Send button visual frame is standardized to 36x36pt",
+      "status": "PASS",
+      "durationMs": 1,
+      "error": null
+    },
+    {
+      "id": "6.3",
+      "featureId": 6,
+      "featureTitle": "Persistent & Uniform Send Button",
+      "name": "6.3: Interactive touch target frame meets or exceeds 44x44pt",
+      "status": "PASS",
+      "durationMs": 1,
+      "error": null
+    },
+    {
+      "id": "6.4",
+      "featureId": 6,
+      "featureTitle": "Persistent & Uniform Send Button",
+      "name": "6.4: Icon switches to stop.fill during model loading / streaming state",
+      "status": "PASS",
+      "durationMs": 1,
+      "error": null
+    },
+    {
+      "id": "6.5",
+      "featureId": 6,
+      "featureTitle": "Persistent & Uniform Send Button",
+      "name": "6.5: Disabled / empty state uses semantic opacity or muted fill rather than view removal",
+      "status": "PASS",
+      "durationMs": 0,
+      "error": null
+    },
+    {
+      "id": "7.1",
+      "featureId": 7,
+      "featureTitle": "Input Padding Refinement",
+      "name": "7.1: Internal text container horizontal insets are standardized to 10pt (or 12pt)",
+      "status": "PASS",
+      "durationMs": 0,
+      "error": null
+    },
+    {
+      "id": "7.2",
+      "featureId": 7,
+      "featureTitle": "Input Padding Refinement",
+      "name": "7.2: Internal text container vertical insets are standardized to 8pt",
+      "status": "PASS",
+      "durationMs": 1,
+      "error": null
+    },
+    {
+      "id": "7.3",
+      "featureId": 7,
+      "featureTitle": "Input Padding Refinement",
+      "name": "7.3: External container bottom padding is set to 10pt",
+      "status": "PASS",
+      "durationMs": 1,
+      "error": null
+    },
+    {
+      "id": "7.4",
+      "featureId": 7,
+      "featureTitle": "Input Padding Refinement",
+      "name": "7.4: External horizontal padding from display edges is standardized (12pt to 16pt)",
+      "status": "PASS",
+      "durationMs": 1,
+      "error": null
+    },
+    {
+      "id": "7.5",
+      "featureId": 7,
+      "featureTitle": "Input Padding Refinement",
+      "name": "7.5: Input bar background shape uses rounded corner radius (20pt to 28pt) or Capsule",
+      "status": "PASS",
+      "durationMs": 1,
+      "error": null
+    },
+    {
+      "id": "8.1",
+      "featureId": 8,
+      "featureTitle": "Scroll-Under-Input Layering",
+      "name": "8.1: Chat scroll view configures bottom safe area inset so messages scroll underneath",
+      "status": "PASS",
+      "durationMs": 0,
+      "error": null
+    },
+    {
+      "id": "8.2",
+      "featureId": 8,
+      "featureTitle": "Scroll-Under-Input Layering",
+      "name": "8.2: Input bar background employs translucent blur or glass backdrop material",
+      "status": "PASS",
+      "durationMs": 1,
+      "error": null
+    },
+    {
+      "id": "8.3",
+      "featureId": 8,
+      "featureTitle": "Scroll-Under-Input Layering",
+      "name": "8.3: Floating input bar is assigned higher zIndex than message scroll content",
+      "status": "PASS",
+      "durationMs": 0,
+      "error": null
+    },
+    {
+      "id": "8.4",
+      "featureId": 8,
+      "featureTitle": "Scroll-Under-Input Layering",
+      "name": "8.4: Scroll view bottom spacer or inset provides clearance matching input bar height",
+      "status": "PASS",
+      "durationMs": 2,
+      "error": null
+    },
+    {
+      "id": "8.5",
+      "featureId": 8,
+      "featureTitle": "Scroll-Under-Input Layering",
+      "name": "8.5: Hairline border separates floating input container from under-scrolling messages",
+      "status": "PASS",
+      "durationMs": 1,
+      "error": null
+    },
+    {
+      "id": "9.1",
+      "featureId": 9,
+      "featureTitle": "Dynamic Keyboard Avoidance",
+      "name": "9.1: Observer listens to UIResponder.keyboardWillChangeFrameNotification or keyboardWillShowNotification",
+      "status": "PASS",
+      "durationMs": 0,
+      "error": null
+    },
+    {
+      "id": "9.2",
+      "featureId": 9,
+      "featureTitle": "Dynamic Keyboard Avoidance",
+      "name": "9.2: Keyboard height calculation binds dynamically to bottom offset / safe area",
+      "status": "PASS",
+      "durationMs": 1,
+      "error": null
+    },
+    {
+      "id": "9.3",
+      "featureId": 9,
+      "featureTitle": "Dynamic Keyboard Avoidance",
+      "name": "9.3: Scroll indicator insets update dynamically with content insets",
+      "status": "PASS",
+      "durationMs": 1,
+      "error": null
+    },
+    {
+      "id": "9.4",
+      "featureId": 9,
+      "featureTitle": "Dynamic Keyboard Avoidance",
+      "name": "9.4: Animation synchronizes with keyboard curve and duration",
+      "status": "PASS",
+      "durationMs": 1,
+      "error": null
+    },
+    {
+      "id": "9.5",
+      "featureId": 9,
+      "featureTitle": "Dynamic Keyboard Avoidance",
+      "name": "9.5: Dismissing keyboard smoothly restores original bottom inset without layout glitch",
+      "status": "PASS",
+      "durationMs": 1,
+      "error": null
+    },
+    {
+      "id": "10.1",
+      "featureId": 10,
+      "featureTitle": "Message Push & Streaming Readability",
+      "name": "10.1: ArlenMarkdownRenderer.swift enforces stable line heights / spacing on text elements",
+      "status": "PASS",
+      "durationMs": 0,
+      "error": null
+    },
+    {
+      "id": "10.2",
+      "featureId": 10,
+      "featureTitle": "Message Push & Streaming Readability",
+      "name": "10.2: Stable paragraph spacing is configured between consecutive blocks",
+      "status": "PASS",
+      "durationMs": 0,
+      "error": null
+    },
+    {
+      "id": "10.3",
+      "featureId": 10,
+      "featureTitle": "Message Push & Streaming Readability",
+      "name": "10.3: ScrollViewReader anchors scroll offset to bottom during token streaming",
+      "status": "PASS",
+      "durationMs": 1,
+      "error": null
+    },
+    {
+      "id": "10.4",
+      "featureId": 10,
+      "featureTitle": "Message Push & Streaming Readability",
+      "name": "10.4: Message items maintain stable Identifiable IDs to prevent view recreation jitter",
+      "status": "PASS",
+      "durationMs": 1,
+      "error": null
+    },
+    {
+      "id": "10.5",
+      "featureId": 10,
+      "featureTitle": "Message Push & Streaming Readability",
+      "name": "10.5: Heavy markdown parsing passes are decoupled from main thread or memoized",
+      "status": "PASS",
+      "durationMs": 0,
+      "error": null
+    },
+    {
+      "id": "11.1",
+      "featureId": 11,
+      "featureTitle": "120Hz ProMotion Optimization",
+      "name": "11.1: Extra.plist specifies CADisableMinimumFrameDurationOnPhone set to true",
+      "status": "PASS",
+      "durationMs": 1,
+      "error": null
+    },
+    {
+      "id": "11.2",
+      "featureId": 11,
+      "featureTitle": "120Hz ProMotion Optimization",
+      "name": "11.2: CAFrameRateRange or display link configuration specifies maximum and preferred 120Hz",
+      "status": "PASS",
+      "durationMs": 1,
+      "error": null
+    },
+    {
+      "id": "11.3",
+      "featureId": 11,
+      "featureTitle": "120Hz ProMotion Optimization",
+      "name": "11.3: Heavy text parsing / layout is performed off the main thread",
+      "status": "PASS",
+      "durationMs": 0,
+      "error": null
+    },
+    {
+      "id": "11.4",
+      "featureId": 11,
+      "featureTitle": "120Hz ProMotion Optimization",
+      "name": "11.4: View layer hierarchy flattens unnecessary compositing groups",
+      "status": "PASS",
+      "durationMs": 2,
+      "error": null
+    },
+    {
+      "id": "11.5",
+      "featureId": 11,
+      "featureTitle": "120Hz ProMotion Optimization",
+      "name": "11.5: Spring animations use high dampingFraction (>=0.80) to prevent 120Hz frame hitching",
+      "status": "PASS",
+      "durationMs": 1,
+      "error": null
+    },
+    {
+      "id": "12.1",
+      "featureId": 12,
+      "featureTitle": "Hit-Testing & Touch Targets",
+      "name": "12.1: Navigation bar buttons guarantee minimum 44x44pt touch area",
+      "status": "PASS",
+      "durationMs": 0,
+      "error": null
+    },
+    {
+      "id": "12.2",
+      "featureId": 12,
+      "featureTitle": "Hit-Testing & Touch Targets",
+      "name": "12.2: Chat input bar controls enforce minimum 44x44pt touch frame",
+      "status": "PASS",
+      "durationMs": 1,
+      "error": null
+    },
+    {
+      "id": "12.3",
+      "featureId": 12,
+      "featureTitle": "Hit-Testing & Touch Targets",
+      "name": "12.3: List rows and quick action cards in LibraryModernView provide minimum 44pt touch height",
+      "status": "PASS",
+      "durationMs": 0,
+      "error": null
+    },
+    {
+      "id": "12.4",
+      "featureId": 12,
+      "featureTitle": "Hit-Testing & Touch Targets",
+      "name": "12.4: Trailing action icons (more, sort, search) expand touch target to >= 44x44pt",
+      "status": "PASS",
+      "durationMs": 1,
+      "error": null
+    },
+    {
+      "id": "12.5",
+      "featureId": 12,
+      "featureTitle": "Hit-Testing & Touch Targets",
+      "name": "12.5: Interactive tappable shapes declare contentShape(Rectangle()) for full-surface hit test",
+      "status": "PASS",
+      "durationMs": 0,
+      "error": null
+    },
+    {
+      "id": "13.1",
+      "featureId": 13,
+      "featureTitle": "Arlen Chat Mode & Visual Intelligence",
+      "name": "13.1: modes.ts imports visual-intelligence.ts without syntax or path error",
+      "status": "PASS",
+      "durationMs": 1,
+      "error": null
+    },
+    {
+      "id": "13.2",
+      "featureId": 13,
+      "featureTitle": "Arlen Chat Mode & Visual Intelligence",
+      "name": "13.2: Arlen Chat mode configuration defines fast profile and visual-intelligence capability",
+      "status": "PASS",
+      "durationMs": 0,
+      "error": null
+    },
+    {
+      "id": "13.3",
+      "featureId": 13,
+      "featureTitle": "Arlen Chat Mode & Visual Intelligence",
+      "name": "13.3: Visual intelligence pipeline in visual-intelligence.ts parses visual context asynchronously",
+      "status": "PASS",
+      "durationMs": 1,
+      "error": null
+    },
+    {
+      "id": "13.4",
+      "featureId": 13,
+      "featureTitle": "Arlen Chat Mode & Visual Intelligence",
+      "name": "13.4: Chat API route at app/api/chat/route.ts streams response with chunked transfer",
+      "status": "PASS",
+      "durationMs": 0,
+      "error": null
+    },
+    {
+      "id": "13.5",
+      "featureId": 13,
+      "featureTitle": "Arlen Chat Mode & Visual Intelligence",
+      "name": "13.5: Swift visual intelligence component ArlenVisualIntelligence.swift avoids blocking main thread",
+      "status": "PASS",
+      "durationMs": 1,
+      "error": null
+    },
+    {
+      "id": "14.1",
+      "featureId": 14,
+      "featureTitle": "Web Search Pipeline Optimization",
+      "name": "14.1: executeWebSearchTool is exported from lib/arlen/web-search.ts matching interface contract",
+      "status": "PASS",
+      "durationMs": 0,
+      "error": null
+    },
+    {
+      "id": "14.2",
+      "featureId": 14,
+      "featureTitle": "Web Search Pipeline Optimization",
+      "name": "14.2: Web search parallelizes multi-query search with Promise.allSettled",
+      "status": "PASS",
+      "durationMs": 1,
+      "error": null
+    },
+    {
+      "id": "14.3",
+      "featureId": 14,
+      "featureTitle": "Web Search Pipeline Optimization",
+      "name": "14.3: Payload pruning option prunePayload strips redundant text/snippets",
+      "status": "PASS",
+      "durationMs": 0,
+      "error": null
+    },
+    {
+      "id": "14.4",
+      "featureId": 14,
+      "featureTitle": "Web Search Pipeline Optimization",
+      "name": "14.4: Partial streaming updates are emitted via callback during query execution",
+      "status": "PASS",
+      "durationMs": 0,
+      "error": null
+    },
+    {
+      "id": "14.5",
+      "featureId": 14,
+      "featureTitle": "Web Search Pipeline Optimization",
+      "name": "14.5: Query planning caps concurrent sub-queries to prevent latency spikes",
+      "status": "PASS",
+      "durationMs": 0,
+      "error": null
+    },
+    {
+      "id": "15.1",
+      "featureId": 15,
+      "featureTitle": "Database Query Optimization",
+      "name": "15.1: Cowork messages API specifies compound query on conversation_id and owner_id",
+      "status": "PASS",
+      "durationMs": 0,
+      "error": null
+    },
+    {
+      "id": "15.2",
+      "featureId": 15,
+      "featureTitle": "Database Query Optimization",
+      "name": "15.2: Database queries project only required fields to eliminate slow reads",
+      "status": "PASS",
+      "durationMs": 0,
+      "error": null
+    },
+    {
+      "id": "15.3",
+      "featureId": 15,
+      "featureTitle": "Database Query Optimization",
+      "name": "15.3: Batch read queries enforce limit to avoid unbound in-memory memory spikes",
+      "status": "PASS",
+      "durationMs": 0,
+      "error": null
+    },
+    {
+      "id": "15.4",
+      "featureId": 15,
+      "featureTitle": "Database Query Optimization",
+      "name": "15.4: Message retrieval leverages index sort order on created_at avoiding sort spills",
+      "status": "PASS",
+      "durationMs": 0,
+      "error": null
+    },
+    {
+      "id": "15.5",
+      "featureId": 15,
+      "featureTitle": "Database Query Optimization",
+      "name": "15.5: MongoDB connection pool configures connection limits and timeout in lib/mongodb.ts",
+      "status": "PASS",
+      "durationMs": 1,
+      "error": null
+    },
+    {
+      "id": "16.1",
+      "featureId": 16,
+      "featureTitle": "Shared Top Navigation Bar",
+      "name": "16.1: EvoSharedTopBar struct is defined in SharedTopBar.swift with callbacks",
+      "status": "PASS",
+      "durationMs": 0,
+      "error": null
+    },
+    {
+      "id": "16.2",
+      "featureId": 16,
+      "featureTitle": "Shared Top Navigation Bar",
+      "name": "16.2: Left control contains circular bordered button with square.grid.2x2 icon",
+      "status": "PASS",
+      "durationMs": 0,
+      "error": null
+    },
+    {
+      "id": "16.3",
+      "featureId": 16,
+      "featureTitle": "Shared Top Navigation Bar",
+      "name": "16.3: Right control contains pill container with ellipsis and circular user avatar",
+      "status": "PASS",
+      "durationMs": 0,
+      "error": null
+    },
+    {
+      "id": "16.4",
+      "featureId": 16,
+      "featureTitle": "Shared Top Navigation Bar",
+      "name": "16.4: Hairline 1px border and glass backdrop applied to header bar",
+      "status": "PASS",
+      "durationMs": 0,
+      "error": null
+    },
+    {
+      "id": "16.5",
+      "featureId": 16,
+      "featureTitle": "Shared Top Navigation Bar",
+      "name": "16.5: Both left circular button and right pill container satisfy minimum 44x44pt hit area",
+      "status": "PASS",
+      "durationMs": 0,
+      "error": null
+    },
+    {
+      "id": "17.1",
+      "featureId": 17,
+      "featureTitle": "Screen A: My Files (Populated)",
+      "name": "17.1: Quick Action Row contains 3 equal-width cards: New File, Arlen Send, Connect",
+      "status": "PASS",
+      "durationMs": 1,
+      "error": null
+    },
+    {
+      "id": "17.2",
+      "featureId": 17,
+      "featureTitle": "Screen A: My Files (Populated)",
+      "name": "17.2: Section Header displays bold title My Files, 4 items subtitle, and toolbar icons",
+      "status": "PASS",
+      "durationMs": 0,
+      "error": null
+    },
+    {
+      "id": "17.3",
+      "featureId": 17,
+      "featureTitle": "Screen A: My Files (Populated)",
+      "name": "17.3: Breadcrumb Bar displays drive icon and path hierarchy My Files > Documents",
+      "status": "PASS",
+      "durationMs": 0,
+      "error": null
+    },
+    {
+      "id": "17.4",
+      "featureId": 17,
+      "featureTitle": "Screen A: My Files (Populated)",
+      "name": "17.4: File list card contains rows with right chevrons for My Files, Test, Recently Deleted",
+      "status": "PASS",
+      "durationMs": 0,
+      "error": null
+    },
+    {
+      "id": "17.5",
+      "featureId": 17,
+      "featureTitle": "Screen A: My Files (Populated)",
+      "name": "17.5: Bottom search bar contains floating pill search input paired with circular + button",
+      "status": "PASS",
+      "durationMs": 0,
+      "error": null
+    },
+    {
+      "id": "18.1",
+      "featureId": 18,
+      "featureTitle": "Screen B: My Files (Empty State)",
+      "name": "18.1: Shared top bar, Quick Action Row, and bottom search bar are present in empty state",
+      "status": "PASS",
+      "durationMs": 0,
+      "error": null
+    },
+    {
+      "id": "18.2",
+      "featureId": 18,
+      "featureTitle": "Screen B: My Files (Empty State)",
+      "name": "18.2: Centered empty state displays folder outline icon",
+      "status": "PASS",
+      "durationMs": 0,
+      "error": null
+    },
+    {
+      "id": "18.3",
+      "featureId": 18,
+      "featureTitle": "Screen B: My Files (Empty State)",
+      "name": "18.3: Empty state heading displays bold text No files yet",
+      "status": "PASS",
+      "durationMs": 0,
+      "error": null
+    },
+    {
+      "id": "18.4",
+      "featureId": 18,
+      "featureTitle": "Screen B: My Files (Empty State)",
+      "name": "18.4: Empty state body displays secondary text Your files and folders will appear here.",
+      "status": "PASS",
+      "durationMs": 0,
+      "error": null
+    },
+    {
+      "id": "18.5",
+      "featureId": 18,
+      "featureTitle": "Screen B: My Files (Empty State)",
+      "name": "18.5: Bordered pill button labeled + Create file is centered below body text",
+      "status": "PASS",
+      "durationMs": 0,
+      "error": null
+    },
+    {
+      "id": "19.1",
+      "featureId": 19,
+      "featureTitle": "Screen C: Connect Server View",
+      "name": "19.1: Top card selector displays partial leading card with down chevron next to primary card",
+      "status": "PASS",
+      "durationMs": 1,
+      "error": null
+    },
+    {
+      "id": "19.2",
+      "featureId": 19,
+      "featureTitle": "Screen C: Connect Server View",
+      "name": "19.2: Primary card features centered + icon and Add Server label",
+      "status": "PASS",
+      "durationMs": 0,
+      "error": null
+    },
+    {
+      "id": "19.3",
+      "featureId": 19,
+      "featureTitle": "Screen C: Connect Server View",
+      "name": "19.3: Centered server empty state features server.rack icon",
+      "status": "PASS",
+      "durationMs": 0,
+      "error": null
+    },
+    {
+      "id": "19.4",
+      "featureId": 19,
+      "featureTitle": "Screen C: Connect Server View",
+      "name": "19.4: Heading Connect a server with 2-line description for managing projects and running Cowork remotely",
+      "status": "PASS",
+      "durationMs": 1,
+      "error": null
+    },
+    {
+      "id": "19.5",
+      "featureId": 19,
+      "featureTitle": "Screen C: Connect Server View",
+      "name": "19.5: Full-width solid black capsule button with white text + Add Server satisfies >= 44pt height",
+      "status": "PASS",
+      "durationMs": 0,
+      "error": null
+    },
+    {
+      "id": "20.1",
+      "featureId": 20,
+      "featureTitle": "Screen D: Cowork / Projects Dashboard",
+      "name": "20.1: Asymmetric 2-column bento grid has full-height left card for New Project",
+      "status": "PASS",
+      "durationMs": 0,
+      "error": null
+    },
+    {
+      "id": "20.2",
+      "featureId": 20,
+      "featureTitle": "Screen D: Cowork / Projects Dashboard",
+      "name": "20.2: Bento grid right column stacks two cards: Settings (slider icon) and Machine (server rack)",
+      "status": "PASS",
+      "durationMs": 1,
+      "error": null
+    },
+    {
+      "id": "20.3",
+      "featureId": 20,
+      "featureTitle": "Screen D: Cowork / Projects Dashboard",
+      "name": "20.3: Latest Projects section header displays bold title and See all > secondary action",
+      "status": "PASS",
+      "durationMs": 1,
+      "error": null
+    },
+    {
+      "id": "20.4",
+      "featureId": 20,
+      "featureTitle": "Screen D: Cowork / Projects Dashboard",
+      "name": "20.4: Project list displays clean rows with archive/box icon, title, and trailing chevron",
+      "status": "PASS",
+      "durationMs": 0,
+      "error": null
+    },
+    {
+      "id": "20.5",
+      "featureId": 20,
+      "featureTitle": "Screen D: Cowork / Projects Dashboard",
+      "name": "20.5: Floating bottom prompt bar features Ask Codex placeholder paired with + and mic icons",
+      "status": "PASS",
+      "durationMs": 1,
+      "error": null
+    },
+    {
+      "id": "21.1",
+      "featureId": 21,
+      "featureTitle": "Release Build & Packaging",
+      "name": "21.1: Release IPA artifact exists at ios/xtool/Evolingo.ipa or in target build output",
+      "status": "PASS",
+      "durationMs": 0,
+      "error": null
+    },
+    {
+      "id": "21.2",
+      "featureId": 21,
+      "featureTitle": "Release Build & Packaging",
+      "name": "21.2: Production deployment IPA exists at /var/lib/caddy/downloads/Arlen-build-99.ipa",
+      "status": "PASS",
+      "durationMs": 0,
+      "error": null
+    },
+    {
+      "id": "21.3",
+      "featureId": 21,
+      "featureTitle": "Release Build & Packaging",
+      "name": "21.3: Release IPA archive structure is valid and contains Payload/Evolingo.app",
+      "status": "PASS",
+      "durationMs": 9,
+      "error": null
+    },
+    {
+      "id": "21.4",
+      "featureId": 21,
+      "featureTitle": "Release Build & Packaging",
+      "name": "21.4: Release IPA file size exceeds minimum production binary threshold (> 5MB)",
+      "status": "PASS",
+      "durationMs": 10,
+      "error": null
+    },
+    {
+      "id": "21.5",
+      "featureId": 21,
+      "featureTitle": "Release Build & Packaging",
+      "name": "21.5: Production deployment file permissions allow public read access (mode >= 0644)",
+      "status": "PASS",
+      "durationMs": 0,
+      "error": null
+    }
+  ]
+}

@@ -1,0 +1,1 @@
+globalThis.__RSC_MANIFEST=(globalThis.__RSC_MANIFEST||{});globalThis.__RSC_MANIFEST["/api/cowork/approvals/[id]/decision/route"]={"moduleLoading":{"prefix":"/_next/"},"ssrModuleMapping":{},"edgeSSRModuleMapping":{},"clientModules":{},"entryCSSFiles":{"/root/evolingo/app/api/cowork/approvals/[id]/decision/route":[]},"rscModuleMapping":{},"edgeRscModuleMapping":{}};

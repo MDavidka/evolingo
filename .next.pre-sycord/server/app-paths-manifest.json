@@ -1,0 +1,13 @@
+{
+  "/_not-found/page": "app/_not-found/page.js",
+  "/_global-error/page": "app/_global-error/page.js",
+  "/manifest.webmanifest/route": "app/manifest.webmanifest/route.js",
+  "/api/chat/quiz/route": "app/api/chat/quiz/route.js",
+  "/api/brainstorm/route": "app/api/brainstorm/route.js",
+  "/api/dev/restart/route": "app/api/dev/restart/route.js",
+  "/api/space/route": "app/api/space/route.js",
+  "/api/state/route": "app/api/state/route.js",
+  "/[...slug]/page": "app/[...slug]/page.js",
+  "/page": "app/page.js",
+  "/api/chat/route": "app/api/chat/route.js"
+}

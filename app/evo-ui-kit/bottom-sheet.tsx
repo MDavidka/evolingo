@@ -1,7 +1,7 @@
 "use client"
 import { useEffect, useId, useRef, useState, type CSSProperties, type PointerEvent, type ReactNode } from "react"
 import { createPortal } from "react-dom"
-import { X } from "lucide-react"
+import { IconX as X } from "@tabler/icons-react"
 import "./tokens.css"
 import "./bottom-sheet.css"
 

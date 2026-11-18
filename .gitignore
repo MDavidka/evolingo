@@ -9,3 +9,10 @@ AGENTS.md
 
 .dev-runtime/
 tsconfig.tsbuildinfo
+ios/.build/
+ios/xtool/
+ios/.bsp/
+
+ios/.icon-tools/
+
+.next-arlen-validation/

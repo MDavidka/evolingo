@@ -35,10 +35,10 @@ import App from "./evolingo-app"
 const inter = Inter({ subsets: ["latin"], display: "swap", preload: false, variable: "--font-inter" })
 
 export const metadata: Metadata = {
-  title: "Evölingo – AI-asszisztens",
-  description: "Evölingo AI-asszisztens beszélgetéshez, fájlkezeléshez és feladatok szervezéséhez.",
-  applicationName: "Evölingo",
-  appleWebApp: { capable: true, statusBarStyle: "default", title: "Evölingo" },
+  title: "Arlen – AI-asszisztens",
+  description: "Arlen AI-asszisztens beszélgetéshez, fájlkezeléshez és feladatok szervezéséhez.",
+  applicationName: "Arlen",
+  appleWebApp: { capable: true, statusBarStyle: "default", title: "Arlen" },
   icons: { icon: "/icon.svg", apple: "/icon.svg" },
   formatDetection: { telephone: false },
 }

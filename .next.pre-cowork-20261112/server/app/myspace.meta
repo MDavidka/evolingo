@@ -1,0 +1,34 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/myspace/layout,_N_T_/myspace/page,_N_T_/myspace"
+  },
+  "segmentPaths": [
+    "/_tree",
+    "/_full",
+    "/myspace/__PAGE__"
+  ],
+  "prefetchHints": {
+    "hints": 64,
+    "slots": {
+      "children": {
+        "hints": 96,
+        "slots": {
+          "children": {
+            "hints": 160,
+            "slots": null
+          }
+        }
+      }
+    }
+  },
+  "routeCache": {
+    "key": "/route-cache/APP_PAGE/8848efb06d383ae1772317e93cf2c8791f380854ee3e9b8f520bffc180bfcae6/$/myspace",
+    "owner": {
+      "kind": "APP_PAGE",
+      "sourceRoute": "/myspace/page"
+    },
+    "isFallback": false
+  }
+}

@@ -1,0 +1,192 @@
+{
+  "version": 3,
+  "pages404": true,
+  "appType": "app",
+  "caseSensitive": false,
+  "basePath": "",
+  "redirects": [
+    {
+      "source": "/:path+/",
+      "destination": "/:path+",
+      "internal": true,
+      "priority": true,
+      "statusCode": 308,
+      "regex": "^(?:/((?:[^/]+?)(?:/(?:[^/]+?))*))/$"
+    },
+    {
+      "source": "/bejelentkezes",
+      "destination": "/belepes",
+      "statusCode": 307,
+      "regex": "^(?!/_next)/bejelentkezes(?:/)?$"
+    },
+    {
+      "source": "/utvonal",
+      "destination": "/chat",
+      "statusCode": 307,
+      "regex": "^(?!/_next)/utvonal(?:/)?$"
+    },
+    {
+      "source": "/temak",
+      "destination": "/chat",
+      "statusCode": 307,
+      "regex": "^(?!/_next)/temak(?:/)?$"
+    },
+    {
+      "source": "/lecke",
+      "destination": "/chat",
+      "statusCode": 307,
+      "regex": "^(?!/_next)/lecke(?:/)?$"
+    },
+    {
+      "source": "/gyakorlas",
+      "destination": "/chat",
+      "statusCode": 307,
+      "regex": "^(?!/_next)/gyakorlas(?:/)?$"
+    },
+    {
+      "source": "/szokartyak",
+      "destination": "/chat",
+      "statusCode": 307,
+      "regex": "^(?!/_next)/szokartyak(?:/)?$"
+    },
+    {
+      "source": "/ranglista",
+      "destination": "/chat",
+      "statusCode": 307,
+      "regex": "^(?!/_next)/ranglista(?:/)?$"
+    },
+    {
+      "source": "/baratok",
+      "destination": "/chat",
+      "statusCode": 307,
+      "regex": "^(?!/_next)/baratok(?:/)?$"
+    },
+    {
+      "source": "/bolt",
+      "destination": "/chat",
+      "statusCode": 307,
+      "regex": "^(?!/_next)/bolt(?:/)?$"
+    },
+    {
+      "source": "/temak/:path*",
+      "destination": "/chat",
+      "statusCode": 307,
+      "regex": "^(?!/_next)/temak(?:/((?:[^/]+?)(?:/(?:[^/]+?))*))?(?:/)?$"
+    },
+    {
+      "source": "/lecke/:path*",
+      "destination": "/chat",
+      "statusCode": 307,
+      "regex": "^(?!/_next)/lecke(?:/((?:[^/]+?)(?:/(?:[^/]+?))*))?(?:/)?$"
+    },
+    {
+      "source": "/gyakorlas/:path*",
+      "destination": "/chat",
+      "statusCode": 307,
+      "regex": "^(?!/_next)/gyakorlas(?:/((?:[^/]+?)(?:/(?:[^/]+?))*))?(?:/)?$"
+    },
+    {
+      "source": "/szokartyak/:path*",
+      "destination": "/chat",
+      "statusCode": 307,
+      "regex": "^(?!/_next)/szokartyak(?:/((?:[^/]+?)(?:/(?:[^/]+?))*))?(?:/)?$"
+    }
+  ],
+  "headers": [],
+  "onMatchHeaders": [],
+  "rewrites": {
+    "beforeFiles": [],
+    "afterFiles": [],
+    "fallback": []
+  },
+  "dynamicRoutes": [
+    {
+      "page": "/[...slug]",
+      "regex": "^/(.+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPslug": "nxtPslug"
+      },
+      "namedRegex": "^/(?<nxtPslug>.+?)(?:/)?$"
+    }
+  ],
+  "staticRoutes": [
+    {
+      "page": "/",
+      "regex": "^/(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/(?:/)?$"
+    },
+    {
+      "page": "/_global-error",
+      "regex": "^/_global\\-error(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/_global\\-error(?:/)?$"
+    },
+    {
+      "page": "/_not-found",
+      "regex": "^/_not\\-found(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/_not\\-found(?:/)?$"
+    },
+    {
+      "page": "/api/brainstorm",
+      "regex": "^/api/brainstorm(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/brainstorm(?:/)?$"
+    },
+    {
+      "page": "/api/chat",
+      "regex": "^/api/chat(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/chat(?:/)?$"
+    },
+    {
+      "page": "/api/chat/quiz",
+      "regex": "^/api/chat/quiz(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/chat/quiz(?:/)?$"
+    },
+    {
+      "page": "/api/dev/restart",
+      "regex": "^/api/dev/restart(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/dev/restart(?:/)?$"
+    },
+    {
+      "page": "/api/space",
+      "regex": "^/api/space(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/space(?:/)?$"
+    },
+    {
+      "page": "/api/state",
+      "regex": "^/api/state(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/state(?:/)?$"
+    },
+    {
+      "page": "/manifest.webmanifest",
+      "regex": "^/manifest\\.webmanifest(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/manifest\\.webmanifest(?:/)?$"
+    }
+  ],
+  "dataRoutes": [],
+  "rsc": {
+    "header": "rsc",
+    "varyHeader": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch",
+    "prefetchHeader": "next-router-prefetch",
+    "didPostponeHeader": "x-nextjs-postponed",
+    "contentTypeHeader": "text/x-component",
+    "suffix": ".rsc",
+    "prefetchSegmentHeader": "next-router-segment-prefetch",
+    "prefetchSegmentSuffix": ".segment.rsc",
+    "prefetchSegmentDirSuffix": ".segments",
+    "clientParamParsing": false,
+    "dynamicRSCPrerender": false
+  },
+  "rewriteHeaders": {
+    "pathHeader": "x-nextjs-rewritten-path",
+    "queryHeader": "x-nextjs-rewritten-query"
+  }
+}

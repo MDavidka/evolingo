@@ -1,0 +1,15 @@
+import {chromium}from'@playwright/test';import assert from'node:assert/strict';import fs from'node:fs/promises';
+const base=process.env.MYSPACE_TEST_ORIGIN||'https://api.sycord.site';const browser=await chromium.launch({headless:true});await fs.mkdir('/tmp/myspace-browser',{recursive:true});
+try{for(const width of[360,390,430]){
+ const context=await browser.newContext({viewport:{width,height:844},isMobile:true,hasTouch:true});await context.addInitScript(()=>{if(window===top)localStorage.setItem('evolingo.notice.developments.v2','dismissed')});const page=await context.newPage();const errors=[];page.on('pageerror',e=>errors.push(e.message));
+ page.setDefaultTimeout(15000);await page.goto(base+'/myspace');await page.getByRole('button',{name:'Skip',exact:true}).click({timeout:20000});
+ const mutate=async(action,appId='notes',extra={})=>{const r=await context.request.post(base+'/api/myspace',{headers:{Origin:base},data:{action,appId,...extra}});assert.equal(r.status(),200,await r.text())};
+ await mutate('install','notes',{consent:true});await page.goto(base+'/myspace?app=notes');const frame=page.frameLocator('iframe');await frame.getByLabel('Your notes').fill('Browser persistence '+width);await frame.getByRole('button',{name:'Save notes'}).click();await frame.getByRole('status').filter({hasText:'Saved'}).waitFor();
+ await page.reload();await frame.getByLabel('Your notes').waitFor();await page.waitForTimeout(200);assert.equal(await frame.getByLabel('Your notes').inputValue(),'Browser persistence '+width);
+ const inner=page.frames().find(f=>f!==page.mainFrame());const isolation=await inner.evaluate(()=>{let parentBlocked=false;try{void parent.document.body}catch{parentBlocked=true}return{parentBlocked,cookieReadable:(()=>{try{return document.cookie}catch{return 'blocked'}})()}});assert.equal(isolation.parentBlocked,true);assert.ok(isolation.cookieReadable===''||isolation.cookieReadable==='blocked');
+ const overflow=await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth);assert.equal(overflow,false,'Horizontal overflow at '+width);
+ await page.screenshot({path:'/tmp/myspace-browser/notes-'+width+'.png',fullPage:true});
+ await mutate('install','focus-board',{consent:true});await page.goto(base+'/myspace?app=focus-board');await frame.getByLabel('New task',{exact:true}).fill('Ship checked build');await frame.getByRole('button',{name:'Add task',exact:true}).click();await frame.getByLabel('Ship checked build').waitFor();await page.reload();await frame.getByLabel('Ship checked build').waitFor();await frame.getByLabel('Ship checked build').click();await frame.getByRole('status').filter({hasText:'Saved'}).waitFor();assert.equal(await frame.getByLabel('Ship checked build').isChecked(),true);
+ await page.screenshot({path:'/tmp/myspace-browser/focus-'+width+'.png',fullPage:true});assert.deepEqual(errors,[],'Browser errors');
+ await mutate('uninstall');await mutate('uninstall','focus-board');await context.close();console.log('BROWSER PASS:',width,'px; Notes save/reload, Focus add/reload/complete, parent DOM/cookie isolation and no horizontal overflow');
+}}finally{await browser.close()}

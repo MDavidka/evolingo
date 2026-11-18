@@ -1,0 +1,22 @@
+{
+  "version": 1,
+  "functions": {
+    "/api/brainstorm": {},
+    "/api/chat": {
+      "maxDuration": 45
+    },
+    "/api/chat/quiz": {},
+    "/api/cowork/approvals/[id]/decision": {},
+    "/api/cowork/conversations": {},
+    "/api/cowork/conversations/[id]/messages": {},
+    "/api/cowork/conversations/[id]/runs": {},
+    "/api/cowork/runs/[id]/cancel": {},
+    "/api/cowork/runs/[id]/events": {},
+    "/api/cowork/runs/[id]/snapshot": {},
+    "/api/cowork/vm": {},
+    "/api/dev/restart": {},
+    "/api/myspace": {},
+    "/api/space": {},
+    "/api/state": {}
+  }
+}

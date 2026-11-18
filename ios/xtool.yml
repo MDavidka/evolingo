@@ -1,0 +1,5 @@
+version: 1
+bundleID: com.example.evolingo
+product: Evolingo
+infoPath: Extra.plist
+iconPath: Resources/AppIcon.png

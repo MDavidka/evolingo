@@ -1,14 +1,7 @@
 "use client"
 
 import { useState, type ReactNode } from "react"
-import {
-  AlertCircle, ArrowUp, AudioLines, BookOpen, CalendarDays,
-  ChartNoAxesColumn, Check, CheckCircle2, ChevronDown, ChevronRight, Circle,
-  Clock3, Code2, Copy, FileText, Globe, Image, ListChecks, LoaderCircle,
-  Mic, MicOff, MoreHorizontal, Paperclip, Plus, RefreshCw, Search,
-  ShieldCheck, SlidersHorizontal, Sparkles, Square, Table2, ThumbsDown,
-  ThumbsUp, Volume2, Wrench, X, type LucideIcon,
-} from "lucide-react"
+import { IconAlertCircle as AlertCircle, IconArrowUp as ArrowUp, IconWaveSine as AudioLines, IconBook as BookOpen, IconCalendar as CalendarDays, IconChartBar as ChartNoAxesColumn, IconCheck as Check, IconCircleCheck as CheckCircle2, IconChevronDown as ChevronDown, IconChevronRight as ChevronRight, IconCircle as Circle, IconClock as Clock3, IconCode as Code2, IconCopy as Copy, IconFileText as FileText, IconWorld as Globe, IconPhoto as Image, IconListCheck as ListChecks, IconLoader2 as LoaderCircle, IconMicrophone as Mic, IconMicrophoneOff as MicOff, IconDots as MoreHorizontal, IconPaperclip as Paperclip, IconPlus as Plus, IconRefresh as RefreshCw, IconSearch as Search, IconShieldCheck as ShieldCheck, IconAdjustmentsHorizontal as SlidersHorizontal, IconSparkles as Sparkles, IconSquare as Square, IconTable as Table2, IconThumbDown as ThumbsDown, IconThumbUp as ThumbsUp, IconVolume as Volume2, IconTool as Wrench, IconX as X, type Icon as TablerIcon } from "@tabler/icons-react"
 import "./evolingo-ai-components-demo.css"
 
 type Group = "All" | "Messages" | "Composer" | "Agent" | "Tools" | "Rich content" | "Voice"
@@ -18,7 +11,7 @@ type Approval = "pending" | "approved" | "rejected"
 const groups: Group[] = ["All", "Messages", "Composer", "Agent", "Tools", "Rich content", "Voice"]
 const composerStates: ComposerState[] = ["Idle", "Typing", "Attachment", "Recording", "Streaming", "Disabled"]
 
-const activity: { label: string; Icon: LucideIcon; state: "done" | "working" | "error" }[] = [
+const activity: { label: string; Icon: TablerIcon; state: "done" | "working" | "error" }[] = [
   { label: "Read lesson outline", Icon: FileText, state: "done" },
   { label: "Search study resources", Icon: Search, state: "done" },
   { label: "Prepare recommendations", Icon: Sparkles, state: "working" },
@@ -32,7 +25,7 @@ function Heading({ eyebrow, title, description }: { eyebrow: string; title: stri
   </header>
 }
 
-function ActionLabel({ Icon, label }: { Icon: LucideIcon; label: string }) {
+function ActionLabel({ Icon, label }: { Icon: TablerIcon; label: string }) {
   return <span className="evo-ai-showcase__action-icon" title={label} aria-label={label}><Icon size={17} strokeWidth={1.7} aria-hidden="true" /></span>
 }
 

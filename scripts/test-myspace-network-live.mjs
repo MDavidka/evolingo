@@ -1,0 +1,4 @@
+import assert from'node:assert/strict';import{networkRequest}from'../lib/myspace/network/gateway.ts';
+const response=await networkRequest({url:'https://api.github.com/rate_limit',method:'GET',headers:{accept:'application/json'},body:''},['api.github.com']);assert.ok([200,403,429].includes(response.status));assert.ok(response.durationMs>0);assert.ok(response.body.length>0);assert.equal(typeof response.headers['content-type'],'string');assert.ok(!Object.keys(response.headers).includes('set-cookie'));
+for(const url of['https://127.0.0.1','http://api.github.com','https://api.github.com.evil.test'])await assert.rejects(()=>networkRequest({url,method:'GET',headers:{},body:''},['api.github.com']));
+console.log('NETWORK LIVE PASS: pinned-DNS HTTPS transport returned real status',response.status,'in',response.durationMs,'ms; body bounded and unapproved targets rejected.');

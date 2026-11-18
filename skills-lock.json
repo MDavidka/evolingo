@@ -1,0 +1,89 @@
+{
+  "version": 1,
+  "skills": {
+    "guide-swift-concurrency": {
+      "source": "Prisma-Labs-Dev/apple-skills",
+      "sourceType": "github",
+      "skillPath": "skills/guide-swift-concurrency/SKILL.md",
+      "computedHash": "c55bbc9c8a1e45272f78f5feed8f2fbe7c57da93936b262b7a04a51f9d02f3ec"
+    },
+    "guide-swiftui-performance-audit": {
+      "source": "Prisma-Labs-Dev/apple-skills",
+      "sourceType": "github",
+      "skillPath": "skills/guide-swiftui-performance-audit/SKILL.md",
+      "computedHash": "a9efe38c8b7e58ec7c3ec94503cd92e7de4a50b480c2d8c95168c7ea643f1ae2"
+    },
+    "hig": {
+      "source": "Prisma-Labs-Dev/apple-skills",
+      "sourceType": "github",
+      "skillPath": "skills/hig/SKILL.md",
+      "computedHash": "3839609ff8a442600b64ff35c483b0c3297407647301f745a17e46bf7a0e2287"
+    },
+    "ios-dev": {
+      "source": "Prisma-Labs-Dev/apple-skills",
+      "sourceType": "github",
+      "skillPath": "skills/ios-dev/SKILL.md",
+      "computedHash": "d82c2da5466dc076332491b932bdc5efb7fcb0e24583530bca41298f3d442495"
+    },
+    "ios-home-screen": {
+      "source": "ratul0/ios-ux-skills",
+      "sourceType": "github",
+      "skillPath": "skills/ios-home-screen/SKILL.md",
+      "computedHash": "f92d54f78e98500c83db7b86e9e1bfc47900f14cccbc7f8b3a0cb1b24b1dbe9f"
+    },
+    "ios-input-and-forms": {
+      "source": "ratul0/ios-ux-skills",
+      "sourceType": "github",
+      "skillPath": "skills/ios-input-and-forms/SKILL.md",
+      "computedHash": "554cb6527566b70c1eea9ff53761d1f37ced7c3a37de0a27aa248c4d0dd399f5"
+    },
+    "ios-motion": {
+      "source": "ratul0/ios-ux-skills",
+      "sourceType": "github",
+      "skillPath": "skills/ios-motion/SKILL.md",
+      "computedHash": "51ac66e195ff3fa5d5e563f7099737ca6e4029bf6082b10ebde01a0e40b95517"
+    },
+    "ios-senior-ui-polish": {
+      "source": "ratul0/ios-ux-skills",
+      "sourceType": "github",
+      "skillPath": "skills/ios-senior-ui-polish/SKILL.md",
+      "computedHash": "e250418212ade298a803e1f0f23bd6a97daf160ae4e929340590dcd732e55045"
+    },
+    "ios-typography-and-dark-mode": {
+      "source": "ratul0/ios-ux-skills",
+      "sourceType": "github",
+      "skillPath": "skills/ios-typography-and-dark-mode/SKILL.md",
+      "computedHash": "f597dcb5a896716c5f62290a3d6b53ce2bccfb1612f550b8ce7c6f756d26d0ef"
+    },
+    "swift-concurrency-expert": {
+      "source": "Dimillian/Skills",
+      "sourceType": "github",
+      "skillPath": "swift-concurrency-expert/SKILL.md",
+      "computedHash": "638744d687dfc9fdde7a14f5496b053f409c7bc1b26c13a4a3c39cb0afb398f9"
+    },
+    "swiftui": {
+      "source": "Prisma-Labs-Dev/apple-skills",
+      "sourceType": "github",
+      "skillPath": "skills/swiftui/SKILL.md",
+      "computedHash": "6cf99e621883e39d0a03f7689a1ede1076c9e3ec7aaea9fbbd407c16e75562c6"
+    },
+    "swiftui-performance-audit": {
+      "source": "Dimillian/Skills",
+      "sourceType": "github",
+      "skillPath": "swiftui-performance-audit/SKILL.md",
+      "computedHash": "4c153a7401d4d878fad3b7b83ca3d29f43245f8404dd34b7beb400cdfcab46f7"
+    },
+    "swiftui-ui-patterns": {
+      "source": "Dimillian/Skills",
+      "sourceType": "github",
+      "skillPath": "swiftui-ui-patterns/SKILL.md",
+      "computedHash": "f58d51fe4569f9eff10c45a4ed6859c9f5e3eefca7827e819de840141da67995"
+    },
+    "swiftui-view-refactor": {
+      "source": "Dimillian/Skills",
+      "sourceType": "github",
+      "skillPath": "swiftui-view-refactor/SKILL.md",
+      "computedHash": "eefd3e1e72a17ca627f8e50fce173efafaa23eb66515f562f4b5fca88325cb33"
+    }
+  }
+}

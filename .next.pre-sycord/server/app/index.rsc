@@ -1,0 +1,39 @@
+1:"LoadingBoundaryProvider"
+2:I[7121,[],"$1"]
+3:"$Sreact.fragment"
+4:"static/chunks/7215-e6dcf8e89be9e097.js"
+5:"static/chunks/app/layout-99236a6804be9f51.js"
+6:"AppsSDKUIProvider"
+7:I[8700,["7215","$4","7177","$5"],"$6"]
+8:I[1420,["7215","$4","7177","$5"],"default"]
+9:I[7616,["7215","$4","7177","$5"],"default"]
+a:I[9354,["7215","$4","7177","$5"],"default"]
+b:I[8996,["7215","$4","7177","$5"],"default"]
+c:I[7121,[],""]
+d:"static/chunks/app/error-5b8d07d16ee0dc5f.js"
+e:I[7460,["8039","$d"],"default"]
+f:I[4581,[],""]
+10:"static/chunks/app/not-found-ac3d409cff095acf.js"
+11:I[209,["4345","$10"],"default"]
+12:I[8500,["4345","$10"],""]
+15:I[484,[],"OutletBoundary"]
+16:"$Sreact.suspense"
+18:"ViewportBoundary"
+19:I[484,[],"$18"]
+1b:"MetadataBoundary"
+1c:I[484,[],"$1b"]
+1e:I[7123,[],"default",1]
+:HC["/",""]
+:HL["/_next/static/css/deb4ac54a1be9b09.css","style"]
+:HL["/_next/static/css/94b9d7ed54ecf9ba.css","style"]
+:HL["/_next/static/css/e080de727eb008c7.css","style"]
+:HL["/_next/static/css/d2d08b204a137db5.css","style"]
+:HL["/_next/static/css/d345dec13a1d67fa.css","style"]
+:HL["/_next/static/css/566c933a55952308.css","style"]
+13:[["children",{"s":"__PAGE__","h":512,"d":{"r":["$","$3","c",{"children":["$L14",null,["$","$L15",null,{"children":["$","$16",null,{"name":"Next.MetadataOutlet","children":"$@17"}]}]]}],"p":false,"v":null}}]]
+0:{"P":null,"c":["",""],"q":"","i":false,"t":{"t":{"s":"","h":532,"d":{"r":["$","$L2",null,{"loading":[["$","main","l",{"className":"evo-ai-system-page evo-ai-system-loading","role":"status","aria-label":"Betöltés","children":[["$","div",null,{"className":"evo-ai-skeleton-title"}],["$","div",null,{"className":"evo-ai-skeleton-row"}],["$","div",null,{"className":"evo-ai-skeleton-row"}],["$","span",null,{"children":"Betöltés…"}]]}],[],null],"children":["$","$3","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/_next/static/css/deb4ac54a1be9b09.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}],["$","link","1",{"rel":"stylesheet","href":"/_next/static/css/94b9d7ed54ecf9ba.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}],["$","link","2",{"rel":"stylesheet","href":"/_next/static/css/e080de727eb008c7.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}],["$","link","3",{"rel":"stylesheet","href":"/_next/static/css/d2d08b204a137db5.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}],["$","link","4",{"rel":"stylesheet","href":"/_next/static/css/d345dec13a1d67fa.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}],["$","link","5",{"rel":"stylesheet","href":"/_next/static/css/566c933a55952308.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}]],["$","html",null,{"lang":"hu","data-theme":"light","data-accent":"neutral","children":["$","body",null,{"className":"__variable_62543b","children":["$","$L7",null,{"linkComponent":"a","children":[["$","$L8",null,{}],["$","$L9",null,{}],["$","$La",null,{}],["$","$Lb",null,{}],["$","$Lc",null,{"parallelRouterKey":"children","error":"$e","errorStyles":[],"errorScripts":null,"template":["$","$Lf",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":[["$","main",null,{"className":"evo-ai-system-page","children":[["$","$L11",null,{"ref":"$undefined","icon":{"name":"compass","size":24,"node":[["circle",{"cx":"12","cy":"12","r":"10","key":"1mglay"}],["path",{"d":"m16.24 7.76-1.804 5.411a2 2 0 0 1-1.265 1.265L7.76 16.24l1.804-5.411a2 2 0 0 1 1.265-1.265z","key":"9ktpf1"}]]},"className":"$undefined","size":32,"strokeWidth":1.75,"aria-hidden":"true"}],["$","h1",null,{"children":"Ez az oldal nem található"}],["$","p",null,{"children":"A keresett oldal nem létezik, vagy már nem érhető el."}],["$","$L12",null,{"href":"/chat","children":"Vissza a chathez"}]]}],[]],"forbidden":"$undefined","unauthorized":"$undefined"}]]}]}]}]]}]}],"p":false,"v":null},"c":"$Q13"},"h":{"r":["$","$3","h",{"children":[null,["$","$L19",null,{"children":"$L1a"}],["$","$L1c",null,{"children":[["$","div",null,{"hidden":true,"children":["$","$16",null,{"name":"Next.Metadata","children":"$L1d"}]}],null]}],["$","meta",null,{"name":"next-size-adjust","content":""}]]}],"p":false,"v":null}},"m":"$undefined","G":["$1e",[]],"S":true,"r":"$undefined","s":"$undefined","a":"$undefined","l":"$undefined","p":"$undefined","d":"$undefined","b":"hDJPGLZp9l4WSIaJKhP0l"}
+14:E{"digest":"NEXT_REDIRECT;replace;/chat;307;"}
+1a:[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content"}],["$","meta","2",{"name":"theme-color","content":"#ffffff"}]]
+1f:I[6869,[],"IconMark"]
+17:null
+1d:[["$","title","0",{"children":"Evölingo – AI-asszisztens"}],["$","meta","1",{"name":"description","content":"Evölingo AI-asszisztens beszélgetéshez, fájlkezeléshez és feladatok szervezéséhez."}],["$","meta","2",{"name":"application-name","content":"Evölingo"}],["$","link","3",{"rel":"manifest","href":"/manifest.webmanifest","crossOrigin":"$undefined"}],["$","meta","4",{"name":"format-detection","content":"telephone=no"}],["$","meta","5",{"name":"mobile-web-app-capable","content":"yes"}],["$","meta","6",{"name":"apple-mobile-web-app-title","content":"Evölingo"}],["$","meta","7",{"name":"apple-mobile-web-app-status-bar-style","content":"default"}],["$","link","8",{"rel":"icon","href":"/icon.svg"}],["$","link","9",{"rel":"apple-touch-icon","href":"/icon.svg"}],["$","$L1f","10",{}]]

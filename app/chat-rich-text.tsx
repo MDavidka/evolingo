@@ -76,7 +76,17 @@ function inline(source: string, prefix: string, depth = 0): ReactNode[] {
     } else if (token.startsWith("*") || token.startsWith("_")) {
       nodes.push(<em key={key}>{inline(token.slice(1, -1), key, depth + 1)}</em>)
     } else if (token.startsWith("\x60")) {
-      nodes.push(<code key={key}>{token.slice(1, -1)}</code>)
+      const inner = token.slice(1, -1)
+      const isFileArtifact = /\.(?:ipa|md|swift|ts|tsx|js|mjs|py|sh|json|html|css|yml|yaml|txt|pdf|zip|sql|plist)$/i.test(inner)
+      if (isFileArtifact) {
+        nodes.push(
+          <span key={key} className="evo-rich-artifact-token">
+            <span className="evo-rich-artifact-glyph" aria-hidden="true">&lt;/&gt;</span> {inner}
+          </span>
+        )
+      } else {
+        nodes.push(<code key={key}>{inner}</code>)
+      }
     } else {
       nodes.push(token)
     }

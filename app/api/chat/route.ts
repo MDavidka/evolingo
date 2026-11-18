@@ -1,7 +1,16 @@
 import { NextRequest, NextResponse } from "next/server"
 import { validateAttachment, type ChatAttachment } from "../../chat-attachments"
-import { shouldUseAgentPlan } from "../../chat-agent-plan"
-import { executeAgentPlan } from "../../chat-agent-runner"
+import { modeInstruction } from "@/lib/arlen/modes"
+import { modelProfile, profileFor } from "@/lib/arlen/models"
+import { chatEventWriter } from "@/lib/arlen/events"
+import { detectVisualIntent } from "@/lib/arlen/visual-intelligence"
+import {
+  shouldTriggerWebSearch,
+  planSearchQueries,
+  executeWebSearchTool,
+  formatWebSearchContext,
+  type WebSearchOutput,
+} from "@/lib/arlen/web-search"
 
 export const runtime = "nodejs"
 export const dynamic = "force-dynamic"
@@ -11,25 +20,29 @@ type Role = "user" | "assistant"
 type Message = { role: Role; content: string }
 type ProviderMessage = { role: Role; content: unknown }
 
-const API_URL = "https://openrouter.ai/api/v1/chat/completions"
-const MODEL = process.env.EVO_AI_MODEL?.trim() || "nvidia/nemotron-3.5-super-vl:free"
-const rateLimits = new Map<string, { count: number; resetAt: number }>()
+const coarenaKey = () => process.env.COARENA_API_KEY?.trim()
+const zroKey = () => process.env.ZRO_API_KEY?.trim()
+const apiURL = () => coarenaKey() ? "https://coarena.ai/api/v1/chat/completions" : zroKey() ? "https://zro.moonmath.ai/v1/chat/completions" : "https://openrouter.ai/api/v1/chat/completions"
+const GLOBAL_RATE_WINDOW_MS = 60_000
+const GLOBAL_RATE_LIMIT = 100
+const globalRequestTimes: number[] = []
 const headers = { "Cache-Control": "no-store", "X-Content-Type-Options": "nosniff" }
 
-function fail(error: string, status: number) {
-  return NextResponse.json({ error }, { status, headers })
+function fail(error: string, status: number, extraHeaders: Record<string, string> = {}) {
+  return NextResponse.json({ error }, { status, headers: { ...headers, ...extraHeaders } })
+}
+
+/** One process-wide sliding window: requests from every client share the same 100/min budget. */
+function consumeGlobalRequest(now = Date.now()) {
+  const cutoff = now - GLOBAL_RATE_WINDOW_MS
+  while (globalRequestTimes.length && globalRequestTimes[0] <= cutoff) globalRequestTimes.shift()
+  if (globalRequestTimes.length >= GLOBAL_RATE_LIMIT) return false
+  globalRequestTimes.push(now)
+  return true
 }
 
 
-const replyPrompt = [
-  "Általános célú, segítőkész AI-asszisztens vagy az Evölingo alkalmazásban.",
-  "Válaszolj a felhasználó nyelvén, természetesen és pontosan. Nem vagy külön tutor, és nincs alapértelmezett tantárgyi szereped.",
-  "Bármilyen témával foglalkozhatsz: általános kérdések, kreatív írás, programozás, fordítás vagy tanulás, amennyiben a felhasználó kéri.",
-  "Rövid kérdésekre gyorsan és tömören válaszolj, hosszú bevezető és ismétlés nélkül. Ha részletes választ kérnek, adj teljes választ.",
-  "Használj rövid, jól olvasható Markdown-formázást, amikor hasznos. Ne találj ki forrásokat, adatokat vagy hivatkozásokat.",
-  "Nincs hozzáférésed az alkalmazás leckéihez, feladataihoz, Ötletbörzéjéhez, Könyvtárához, barátaihoz vagy haladási adataihoz.",
-  "Ne állítsd, hogy alkalmazásbeli műveleteket végeztél. Ne készíts interaktív UI-utasításokat.",
-].join(" ")
+const replyPrompt = modeInstruction("chat")
 
 /** Relays provider text deltas only, never reasoning_content or model-generated code. */
 async function streamProviderText(
@@ -37,25 +50,43 @@ async function streamProviderText(
   messages: ProviderMessage[],
   onDelta: (delta: string) => void,
   system: string,
-  options: { signal?: AbortSignal; maxTokens?: number } = {},
+  options: { signal?: AbortSignal; maxTokens?: number; modelOverride?: string; temperature?: number; candidates?: string[] } = {},
 ): Promise<string> {
-  const upstream = await fetch(API_URL, {
-    method: "POST",
-    headers: { Authorization: "Bearer " + apiKey, "Content-Type": "application/json" },
-    body: JSON.stringify({
-      model: MODEL,
-      messages: [{ role: "system", content: system }, ...messages],
-      temperature: 0.7,
-      max_tokens: options.maxTokens ?? 1200,
-      stream: true,
-      ...(MODEL.startsWith("nvidia/nemotron-3.5-") ? { reasoning: { effort: "none" } } : {}),
-    }),
-    cache: "no-store",
-    signal: AbortSignal.any([...(options.signal ? [options.signal] : []), AbortSignal.timeout((options.maxTokens ?? 1200) > 1200 ? 24500 : 30000)]),
-  })
-  if (!upstream.ok) {
-    console.error("[chat] streaming provider status", upstream.status)
-    throw new Error(upstream.status === 429 ? "Az AI jelenleg túlterhelt." : "Az AI szolgáltatás nem érhető el.")
+  const MODEL = options.modelOverride || modelProfile("fast").primary!
+  const candidates = [...new Set([MODEL, ...(options.candidates || [])])]
+
+  const keys = [...new Set([apiKey, process.env.ZRO_API_KEY_FALLBACK?.trim()].filter((k): k is string => Boolean(k)))]
+  let upstream: Response | null = null
+  let lastStatus = 502
+  for (let attempt = 0; attempt < 3; attempt++) {
+    const candidateModel = candidates[attempt % candidates.length]
+    const candidateKey = keys[attempt % keys.length]
+    const res = await fetch(apiURL(), {
+      method: "POST",
+      headers: { Authorization: "Bearer " + candidateKey, "Content-Type": "application/json", Connection: "keep-alive" },
+      body: JSON.stringify({
+        model: candidateModel,
+        messages: [{ role: "system", content: system }, ...messages],
+        temperature: options.temperature ?? 0.6,
+        max_tokens: options.maxTokens ?? 1200,
+        stream: true,
+        ...(candidateModel.startsWith("deepseek-") ? { thinking: { type: "disabled" } } : {}),
+        ...(candidateModel.startsWith("nvidia/nemotron-3.5-") ? { reasoning: { effort: "none" } } : {}),
+      }),
+      cache: "no-store",
+      signal: AbortSignal.any([...(options.signal ? [options.signal] : []), AbortSignal.timeout((options.maxTokens ?? 1200) > 1200 ? 24500 : 30000)]),
+    })
+    if (res.ok) {
+      upstream = res
+      break
+    }
+    lastStatus = res.status
+    if (res.status !== 429 && res.status !== 502 && res.status !== 503 && res.status !== 504) break
+    await new Promise(resolve => setTimeout(resolve, 150 * (attempt + 1)))
+  }
+  if (!upstream || !upstream.ok) {
+    console.error("[chat] streaming provider status", lastStatus)
+    throw new Error(lastStatus === 429 ? "Az AI jelenleg túlterhelt." : "Az AI szolgáltatás nem érhető el.")
   }
   if (!upstream.body) throw new Error("Az AI nem adott olvasható választ.")
 
@@ -116,61 +147,181 @@ function withAttachment(messages: Message[], attachment: ChatAttachment | null):
   return result
 }
 
-/** Ordinary messages stream in one call. Multi-part requests use bounded, concurrent substeps. */
+/** Chat streams structured web_search tool events when live external verification is needed. */
 function makeStream(
   apiKey: string, messages: Message[], attachment: ChatAttachment | null,
-  system: string, signal: AbortSignal, agentMode: "auto" | "plan" | "fast",
+  baseSystem: string, signal: AbortSignal, sessionId: string,
+  runWebSearch: boolean, lastUserPrompt: string,
 ) {
-  const providerMessages = withAttachment(messages, attachment)
-  // Image/file questions take the direct streaming path to avoid duplicated large uploads.
-  const usePlan = !attachment && (agentMode === "plan" ||
-    (agentMode === "auto" && shouldUseAgentPlan(messages[messages.length - 1].content)))
   const encoder = new TextEncoder()
+  const frame = chatEventWriter(sessionId)
+  const abort = new AbortController()
+  const combinedSignal = AbortSignal.any([signal, abort.signal])
+  let closed = false
   return new ReadableStream<Uint8Array>({
     async start(controller) {
-      const emit = (type: string, data: Record<string, unknown> = {}) =>
-        controller.enqueue(encoder.encode("data: " + JSON.stringify({ type, ...data }) + "\n\n"))
-      const streamFinal = async (currentSystem: string) => {
-        const reply = await streamProviderText(
-          apiKey, providerMessages, delta => emit("delta", { delta }), currentSystem,
-          { signal, maxTokens: usePlan ? 1500 : 1200 },
-        )
-        emit("text", { reply })
-        return reply
+      const emit = (event: Parameters<typeof frame>[0]) => {
+        if (!closed) controller.enqueue(encoder.encode(frame(event)))
       }
+      controller.enqueue(encoder.encode(": connected\n\n"))
       try {
-        if (usePlan) await executeAgentPlan({
-          apiKey, model: MODEL, messages: providerMessages, system,
-          signal, emit, streamFinal,
-        })
-        else await streamFinal(system)
-        emit("done")
+        let system = baseSystem
+        if (runWebSearch && lastUserPrompt.trim().length > 0) {
+          const executionId = `search_${crypto.randomUUID().slice(0, 12)}`
+          const plannedQueries = planSearchQueries(lastUserPrompt)
+          const primaryQuery = plannedQueries[0] || lastUserPrompt.trim().slice(0, 180)
+
+          emit({
+            type: "tool.started",
+            executionId,
+            tool: "web_search",
+            status: "searching",
+            title: "Searching the web",
+            query: primaryQuery,
+            queries: plannedQueries,
+          })
+
+          const searchOut = await executeWebSearchTool(
+            { query: lastUserPrompt, count: 15, retrievePages: true },
+            {
+              signal: combinedSignal,
+              prunePayload: true,
+              streamPartial: (partialResults) => {
+                if (!combinedSignal.aborted && partialResults.length > 0) {
+                  emit({
+                    type: "tool.results",
+                    executionId,
+                    tool: "web_search",
+                    query: primaryQuery,
+                    queries: plannedQueries,
+                    results: partialResults,
+                  })
+                }
+              },
+              callbacks: {
+                onStepStarted: (stepId, status, label, query) => {
+                  if (!combinedSignal.aborted) {
+                    emit({
+                      type: "tool.step.started",
+                      executionId,
+                      tool: "web_search",
+                      stepId,
+                      status,
+                      label,
+                      ...(query ? { query } : {}),
+                    })
+                  }
+                },
+                onStepCompleted: (stepId, label) => {
+                  if (!combinedSignal.aborted) {
+                    emit({
+                      type: "tool.step.completed",
+                      executionId,
+                      tool: "web_search",
+                      stepId,
+                      status: "completed",
+                      label,
+                    })
+                  }
+                },
+              },
+            },
+          )
+
+          if (combinedSignal.aborted) {
+            emit({
+              type: "tool.cancelled",
+              executionId,
+              tool: "web_search",
+              status: "cancelled",
+              query: primaryQuery,
+            })
+            return
+          }
+
+          if (searchOut.status === "failed") {
+            emit({
+              type: "tool.failed",
+              executionId,
+              tool: "web_search",
+              status: "failed",
+              error: searchOut.diagnostics.error || "Web search provider unavailable.",
+              query: primaryQuery,
+            })
+            system += `\n\n[WEB SEARCH FAILED: The external search provider failed (${searchOut.diagnostics.error || "unavailable"}). Do NOT fabricate citations or pretend a search succeeded. State clearly if live verification could not be completed.]`
+          } else {
+            emit({
+              type: "tool.results",
+              executionId,
+              tool: "web_search",
+              query: searchOut.query,
+              queries: searchOut.queries,
+              results: searchOut.results,
+            })
+            emit({
+              type: "tool.step.started",
+              executionId,
+              tool: "web_search",
+              stepId: "step_prepare",
+              status: "preparing",
+              label: "Preparing answer",
+            })
+            emit({
+              type: "tool.step.completed",
+              executionId,
+              tool: "web_search",
+              stepId: "step_prepare",
+              status: "completed",
+              label: "Preparing answer",
+            })
+            const countLabel = searchOut.results.length === 1 ? "1 source" : `${searchOut.results.length} sources`
+            emit({
+              type: "tool.completed",
+              executionId,
+              tool: "web_search",
+              status: "completed",
+              summary: `Searched the web · ${countLabel}`,
+              sourceCount: searchOut.results.length,
+              durationMs: searchOut.durationMs,
+              query: searchOut.query,
+              queries: searchOut.queries,
+              results: searchOut.results,
+            })
+            system += formatWebSearchContext(searchOut.results, searchOut.query)
+          }
+        }
+
+        const profile = modelProfile(profileFor("chat", { vision: attachment?.kind === "image" }))
+        const reply = await streamProviderText(apiKey, withAttachment(messages, attachment),
+          delta => emit({ type: "delta", delta }), system,
+          { signal: combinedSignal, maxTokens: profile.maxTokens, modelOverride: profile.primary, candidates: profile.candidates })
+        emit({ type: "text", reply })
+        emit({ type: "done" })
       } catch (error) {
-        emit("error", { error: error instanceof Error ? error.message : "Hálózati hiba történt." })
-        emit("done")
+        if (!combinedSignal.aborted) {
+          emit({ type: "error", error: error instanceof Error ? error.message.slice(0, 1000) : "AI request failed." })
+          emit({ type: "done" })
+        }
       } finally {
-        controller.close()
+        if (!closed) { closed = true; controller.close() }
       }
     },
+    cancel() { closed = true; abort.abort() },
   })
 }
 
 export async function POST(request: NextRequest) {
-  const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "anonymous"
-  const now = Date.now()
-  if (rateLimits.size > 2000) for (const [key, state] of rateLimits) if (state.resetAt <= now) rateLimits.delete(key)
-  const previous = rateLimits.get(ip)
-  const current = !previous || previous.resetAt <= now ? { count: 0, resetAt: now + 600_000 } : previous
-  current.count++
-  rateLimits.set(ip, current)
-  if (current.count > 25) return fail("Túl sok kérés érkezett. Próbáld újra néhány perc múlva.", 429)
+  if (!consumeGlobalRequest()) {
+    return fail("A közös API-keret megtelt. Próbáld újra egy perc múlva.", 429, { "Retry-After": "60" })
+  }
 
-  const apiKey = process.env.EVO_AI?.trim() || process.env.EVO_Ai?.trim() || process.env.NVIDIA_API_KEY?.trim()
+  const apiKey = coarenaKey() || zroKey() || process.env.EVO_AI?.trim() || process.env.EVO_Ai?.trim() || process.env.NVIDIA_API_KEY?.trim()
   if (!apiKey) return fail("Az AI szolgáltatás nincs beállítva.", 503)
 
   let messages: Message[]
   let interactive = false
-  let agentMode: "auto" | "plan" | "fast" = "auto"
+  let webSearchRequested = false
+  let sessionId: string = crypto.randomUUID()
   let attachment: ChatAttachment | null = null
   try {
     const raw = await request.text()
@@ -184,8 +335,9 @@ export async function POST(request: NextRequest) {
     }
     const list = (body as { messages?: unknown }).messages
     interactive = (body as { interactive?: unknown }).interactive === true
-    const requestedMode = (body as { agentMode?: unknown }).agentMode
-    if (requestedMode === "fast" || requestedMode === "plan") agentMode = requestedMode
+    webSearchRequested = (body as { webSearch?: unknown }).webSearch === true
+    const suppliedSession = (body as { sessionId?: unknown }).sessionId
+    if (typeof suppliedSession === "string" && /^[a-f0-9]{8}-[a-f0-9]{4}-[1-8][a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i.test(suppliedSession)) sessionId = suppliedSession
     if (!Array.isArray(list) || list.length === 0 || list.length > 12) return fail("Érvénytelen beszélgetés.", 400)
     messages = list.map((item: unknown) => {
       if (!item || typeof item !== "object") throw new Error("Invalid message")
@@ -198,17 +350,38 @@ export async function POST(request: NextRequest) {
     return fail("Érvénytelen üzenetformátum.", 400)
   }
 
-  // The general chat endpoint deliberately ignores app-specific modes and task context.
-  const system = replyPrompt
+  const lastUserPrompt = messages[messages.length - 1]?.content || ""
+  const detectedVisual = detectVisualIntent(lastUserPrompt)
+  const isSimpleGreeting = /^(hi|hello|hey|szia|helló|hali|jó napot|thanks|köszönöm|ok|rendben)[!.?]*$/i.test(lastUserPrompt.trim())
+  const runWebSearch = shouldTriggerWebSearch(lastUserPrompt, webSearchRequested)
 
-  if (interactive) return new Response(makeStream(apiKey, messages, attachment, system, request.signal, agentMode), {
+  const visualHint = detectedVisual
+    ? `\n\n[VISUAL INTELLIGENCE DIRECTIVE: Include a valid fenced \`\`\`arlen-visual JSON block in this response using component "${detectedVisual}" (and any complementary visual block such as text.heading, icon.grid, timeline.numbered, map.preview, or chart.bar) with accurate data.]`
+    : !isSimpleGreeting && lastUserPrompt.length > 12
+      ? `\n\n[VISUAL INTELLIGENCE DIRECTIVE: Whenever this topic involves places, steps, icons, comparisons, statistics, progress, files, or structured concepts, include a valid fenced \`\`\`arlen-visual JSON block alongside your Markdown explanation.]`
+      : ""
+
+  const baseSystem = replyPrompt + visualHint
+
+  if (interactive) return new Response(makeStream(apiKey, messages, attachment, baseSystem, request.signal, sessionId, runWebSearch, lastUserPrompt), {
     headers: { ...headers, "Content-Type": "text/event-stream; charset=utf-8", "X-Accel-Buffering": "no" },
   })
 
+  let system = baseSystem
+  let searchResult: WebSearchOutput | undefined
+  if (runWebSearch) {
+    searchResult = await executeWebSearchTool({ query: lastUserPrompt, count: 15, retrievePages: true }, { signal: request.signal, prunePayload: true })
+    if (searchResult.status === "completed") {
+      system += formatWebSearchContext(searchResult.results, searchResult.query)
+    }
+  }
+
   try {
-    const upstream = await fetch(API_URL, {
+    const profile = modelProfile(profileFor("chat", { vision: attachment?.kind === "image" }))
+    const MODEL = profile.primary!
+    const upstream = await fetch(apiURL(), {
       method: "POST",
-      headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
+      headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json", Connection: "keep-alive" },
       body: JSON.stringify({
         model: MODEL,
         messages: [
@@ -216,11 +389,13 @@ export async function POST(request: NextRequest) {
           ...withAttachment(messages, attachment),
         ],
         temperature: 0.7,
-        max_tokens: 1200,
+        max_tokens: profile.maxTokens,
         stream: false,
+        ...(MODEL.startsWith("deepseek-") ? { thinking: { type: "disabled" } } : {}),
+        ...(MODEL.startsWith("nvidia/nemotron-3.5-") ? { reasoning: { effort: "none" } } : {}),
       }),
       cache: "no-store",
-      signal: AbortSignal.timeout(25000),
+      signal: AbortSignal.any([request.signal, AbortSignal.timeout(25000)]),
     })
     if (!upstream.ok) {
       console.error("[chat] AI provider status", upstream.status)
@@ -232,7 +407,13 @@ export async function POST(request: NextRequest) {
     const value = result.choices?.[0]?.message?.content
     const reply = typeof value === "string" ? value : Array.isArray(value) ? value.map(part => part && typeof part === "object" && "text" in part ? String(part.text) : "").join("") : ""
     if (!reply.trim() || reply.length > 30000) return fail("Az AI nem adott értelmezhető választ.", 502)
-    return NextResponse.json({ reply: reply.trim() }, { headers })
+    return NextResponse.json(
+      {
+        reply: reply.trim(),
+        ...(searchResult ? { search: searchResult } : {}),
+      },
+      { headers },
+    )
   } catch (cause) {
     console.error("[chat] AI request failed", cause instanceof Error ? cause.name : "unknown")
     return fail("Hálózati hiba történt. Próbáld újra.", 502)

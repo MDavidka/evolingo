@@ -4,14 +4,22 @@ import "./profile-v3.css"
 import { BottomSheet } from "./evo-ui-kit"
 import { UIButton } from "./evo-ui-kit/button"
 import { UISettingsGroup, UISettingsRow, UISettingsSwitchRow } from "./evo-ui-kit/settings"
-import { RefreshCw, SlidersHorizontal, CircleHelp, Info, LogIn, ShieldCheck, UserRound, Crown, Bell, LogOut, Component, Pencil, Palette, Accessibility, Languages, Plug } from "lucide-react"
+import { IconRefresh as RefreshCw, IconAdjustmentsHorizontal as SlidersHorizontal, IconHelpCircle as CircleHelp, IconInfoCircle as Info, IconLogin as LogIn, IconShieldCheck as ShieldCheck, IconUser as UserRound, IconCrown as Crown, IconBell as Bell, IconLogout as LogOut, IconComponents as Component, IconPencil as Pencil, IconPalette as Palette, IconAccessible as Accessibility, IconLanguage as Languages, IconPlug as Plug, IconDownload as Download } from "@tabler/icons-react"
 import dynamic from "next/dynamic"
 import type { ReferenceView } from "./reference-screens"
+import { readChatSessions } from "./chat-sessions"
 
 const DemoLibrary = dynamic(() => import("./ui-library-screen"), { ssr: false })
 
 function Avatar({ name, src, fallback }: { name: string; src: string; fallback: string }) {
   return <span className="ref-avatar">{src ? <img src={src} alt={name} /> : <span className="ref-avatar-fallback"><img src={fallback} alt="" /></span>}</span>
+}
+
+function readLocalJSON<T>(key: string, fallback: T): T {
+  try {
+    const value = localStorage.getItem(key)
+    return value === null ? fallback : JSON.parse(value) as T
+  } catch { return fallback }
 }
 
 export default function Profile({ name, avatarImage, avatarFallback, onEdit, onEditAvatar, onLogin, onView, notifications, onChangeNotifications, onLogout }: {
@@ -28,6 +36,7 @@ export default function Profile({ name, avatarImage, avatarFallback, onEdit, onE
   const [restartState, setRestartState] = useState<"idle" | "busy" | "error">("idle")
   const [restartMessage, setRestartMessage] = useState("")
   const [restartConfirm, setRestartConfirm] = useState(false)
+  const [exportMessage, setExportMessage] = useState("")
   const avatarPicker = useRef<HTMLInputElement>(null)
 
   const handle = name.normalize("NFKD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "").slice(0, 20) || "tanulo"
@@ -73,6 +82,51 @@ export default function Profile({ name, avatarImage, avatarFallback, onEdit, onE
     }
   }
 
+  const exportForNativeApp = () => {
+    try {
+      let legacyChatMessages: unknown[] = []
+      try {
+        const raw = sessionStorage.getItem("evolingo.chat.session.v1")
+        const value: unknown = raw ? JSON.parse(raw) : []
+        if (Array.isArray(value)) legacyChatMessages = value
+      } catch {}
+      const coworkMessages = readLocalJSON<unknown[]>("evolingo.cowork.messages.v1", [])
+      const schedule = readLocalJSON<unknown[]>("evolingo.schedule.v1", [])
+      const spaceEntries = readLocalJSON<Array<{ id?: unknown; name?: unknown; kind?: unknown; parent?: unknown }>>("evolingo.space.v1", [])
+        .filter(item => typeof item.id === "string" && typeof item.name === "string" && typeof item.kind === "string")
+      const spaceBlobs = readLocalJSON<Record<string, string>>("evolingo.space-blobs.v1", {})
+      const machines = readLocalJSON<Array<{ id?: unknown; name?: unknown; url?: unknown }>>("evolingo.utility.machines.v1", [])
+        .filter(item => typeof item.id === "string" && typeof item.name === "string" && typeof item.url === "string")
+      const transfer = {
+        format: "evolingo-ios-transfer",
+        version: 1,
+        exportedAt: new Date().toISOString(),
+        chatSessions: readChatSessions(),
+        activeChatSessionID: localStorage.getItem("evolingo.chat.active-session.v1"),
+        legacyChatMessages,
+        coworkMessages,
+        schedule,
+        spaceEntries,
+        spaceBlobs,
+        profile: readLocalJSON("evolingo.ai.profile.v1", null),
+        integrationInterests: readLocalJSON<string[]>("evolingo.integration-interest.v1", []),
+        machines,
+      }
+      const blob = new Blob([JSON.stringify(transfer)], { type: "application/json" })
+      const url = URL.createObjectURL(blob)
+      const link = document.createElement("a")
+      link.href = url
+      link.download = "evolingo-ios-transfer.json"
+      document.body.appendChild(link)
+      link.click()
+      link.remove()
+      window.setTimeout(() => URL.revokeObjectURL(url), 30_000)
+      setExportMessage("Export letöltve. Mentsd a Fájlokba, majd az iOS app Profil → Adatok importálása menüjében válaszd ki.")
+    } catch {
+      setExportMessage("Az export nem sikerült. Ellenőrizd, hogy a böngésző engedélyezi-e a letöltést.")
+    }
+  }
+
   if (demoOpen) return <DemoLibrary onBack={() => setDemoOpen(false)} />
 
   return <div className="ref-profile ref-profile-v3 evo-ui-scope">
@@ -111,6 +165,12 @@ export default function Profile({ name, avatarImage, avatarFallback, onEdit, onE
         <UISettingsRow icon={Accessibility} title="Kisegítő lehetőségek" onClick={() => setProfileSheet("accessibility")}/>
         <UISettingsRow icon={Languages} title="Nyelv" value="Magyar" showChevron={false}/>
         <UISettingsRow icon={Plug} title="Kapcsolt szolgáltatások" onClick={() => onView("utility")}/>
+      </UISettingsGroup>
+
+      <UISettingsGroup title="Adatok átvitele">
+        <UISettingsRow icon={Download} title="Exportálás iOS-apphoz" description="Beszélgetések, feladatok, fájlok és beállítások" onClick={exportForNativeApp} />
+        <p className="evo-profile-v3__hint">Az export privát beszélgetéseket és fájltartalmakat is tartalmazhat. Csak a saját iPhone-odra mentsd.</p>
+        {exportMessage && <p className="evo-profile-v3__hint" role="status">{exportMessage}</p>}
       </UISettingsGroup>
 
       <UISettingsGroup title="Támogatás">

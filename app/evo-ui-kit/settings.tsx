@@ -1,7 +1,7 @@
 "use client"
 
 import type { ReactNode } from "react"
-import { ChevronRight, type LucideIcon } from "lucide-react"
+import { IconChevronRight as ChevronRight, type Icon as TablerIcon } from "@tabler/icons-react"
 import "./settings.css"
 
 /**
@@ -18,7 +18,7 @@ export function UISettingsGroup({
 }
 
 export type UISettingsRowProps = {
-  icon: LucideIcon
+  icon: TablerIcon
   title: string
   description?: string
   value?: string
@@ -81,7 +81,7 @@ export function UISwitch({
 export function UISettingsSwitchRow({
   icon: Icon, title, description, checked, onChange, disabled = false, pending = false,
 }: {
-  icon: LucideIcon
+  icon: TablerIcon
   title: string
   description?: string
   checked: boolean

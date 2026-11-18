@@ -1,18 +1,7 @@
 "use client"
 
 import { useState, type ReactNode } from "react"
-import {
-  Accessibility, AlertCircle, ArrowRight, Bell, BookOpen, CalendarDays,
-  Camera, Check, CheckCircle2, ChevronDown, ChevronRight, ChevronUp, Circle,
-  CircleDot, Clock3, Cloud, Code2, Copy, Download, Ear, Eye, EyeOff,
-  FileText, Fingerprint, Folder, Globe, HardDrive, Image, Info, KeyRound,
-  Languages, LayoutGrid, Link2, List, LoaderCircle, LockKeyhole, LogOut,
-  MapPin, MessageCircle, Mic, Minus, Moon, MoreHorizontal, Music2,
-  Palette, PersonStanding, Plus, RefreshCw, RotateCcw, Search,
-  Settings, ShieldCheck, Smartphone, SlidersHorizontal, Sparkles,
-  Sun, ToggleRight, Trash2, UserRound, Volume2, WifiOff, X,
-  type LucideIcon,
-} from "lucide-react"
+import { IconAccessible as Accessibility, IconAlertCircle as AlertCircle, IconArrowRight as ArrowRight, IconBell as Bell, IconBook as BookOpen, IconCalendar as CalendarDays, IconCamera as Camera, IconCheck as Check, IconCircleCheck as CheckCircle2, IconChevronDown as ChevronDown, IconChevronRight as ChevronRight, IconChevronUp as ChevronUp, IconCircle as Circle, IconCircleDot as CircleDot, IconClock as Clock3, IconCloud as Cloud, IconCode as Code2, IconCopy as Copy, IconDownload as Download, IconEar as Ear, IconEye as Eye, IconEyeOff as EyeOff, IconFileText as FileText, IconFingerprint as Fingerprint, IconFolder as Folder, IconWorld as Globe, IconDeviceFloppy as HardDrive, IconPhoto as Image, IconInfoCircle as Info, IconKey as KeyRound, IconLanguage as Languages, IconLayoutGrid as LayoutGrid, IconLink as Link2, IconList as List, IconLoader2 as LoaderCircle, IconLock as LockKeyhole, IconLogout as LogOut, IconMapPin as MapPin, IconMessageCircle as MessageCircle, IconMicrophone as Mic, IconMinus as Minus, IconMoon as Moon, IconDots as MoreHorizontal, IconMusic as Music2, IconPalette as Palette, IconAccessible as PersonStanding, IconPlus as Plus, IconRefresh as RefreshCw, IconRotate2 as RotateCcw, IconSearch as Search, IconSettings as Settings, IconShieldCheck as ShieldCheck, IconDeviceMobile as Smartphone, IconAdjustmentsHorizontal as SlidersHorizontal, IconSparkles as Sparkles, IconSun as Sun, IconToggleRight as ToggleRight, IconTrash as Trash2, IconUser as UserRound, IconVolume as Volume2, IconWifiOff as WifiOff, IconX as X, type Icon as TablerIcon } from "@tabler/icons-react"
 import "./evolingo-menus-demo.css"
 import { UISettingsGroup, UISettingsRow, UISettingsSwitchRow } from "./evo-ui-kit"
 
@@ -26,7 +15,7 @@ type SwitchMap = Record<string, boolean>
 type SettingRowProps = {
   title: string
   description?: string
-  Icon?: LucideIcon
+  Icon?: TablerIcon
   trailing?: ReactNode
   destructive?: boolean
   disabled?: boolean
@@ -178,7 +167,7 @@ const accountRows: Array<SettingRowProps> = [
   { title: "Delete account", Icon: Trash2, trailing: <ChevronRight size={17} />, destructive: true },
 ]
 
-const states: Array<{ name: string; description: string; Icon: LucideIcon; className?: string }> = [
+const states: Array<{ name: string; description: string; Icon: TablerIcon; className?: string }> = [
   { name: "Default", description: "Standard resting state", Icon: Circle },
   { name: "Pressed", description: "Subtle highlight", Icon: CircleDot, className: "pressed" },
   { name: "Selected", description: "Checkmark / active indicator", Icon: CheckCircle2, className: "selected" },

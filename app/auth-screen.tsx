@@ -1,6 +1,6 @@
 "use client"
 import { useEffect, useState } from "react"
-import { BookOpen, ChevronLeft, Eye, EyeOff } from "lucide-react"
+import { IconBook as BookOpen, IconChevronLeft as ChevronLeft, IconEye as Eye, IconEyeOff as EyeOff } from "@tabler/icons-react"
 import { UIButton } from "./evo-ui-kit/button"
 import { AppHeader } from "@/components/app-header"
 

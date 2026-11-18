@@ -25,7 +25,7 @@ Source: `app/evo-ui-kit/tokens.css`. Use the CSS variables to make themes consis
 | Success | `--evo-ui-success` | `#34C759` |
 | Destructive | `--evo-ui-danger` | `#FF3B30` |
 
-Spacing scale: 4 / 8 / 12 / 16 / 20 / 24 px. Card radius: 16px. Inputs: 14px. Bottom-sheet top radius: 26px; bottom corners: **0px**. Pill radius: 999px. Lucide icons: 20px, stroke 1.75. Font: SF Pro system fallback to Inter.
+Spacing scale: 4 / 8 / 12 / 16 / 20 / 24 px. Card radius: 16px. Inputs: 14px. Bottom-sheet top radius: 26px; bottom corners: **0px**. Pill radius: 999px. Tabler icons: 20px, stroke 1.75. Font: SF Pro system fallback to Inter.
 
 ## Reusable components
 
@@ -52,7 +52,7 @@ The Profile 3.0 design uses reusable, borderless account/preferences rows from `
 
 ```tsx
 import { UISettingsGroup, UISettingsRow, UISettingsSwitchRow } from "@/app/evo-ui-kit"
-import { UserRound, Bell, Palette } from "lucide-react"
+import { IconUser as UserRound, IconBell as Bell, IconPalette as Palette } from "@tabler/icons-react"
 
 <UISettingsGroup title="Account">
   <UISettingsRow icon={UserRound} title="Personal details" onClick={openProfileEditor} />
@@ -177,3 +177,21 @@ Every preview is non-persistent; permission examples **never** request real devi
 - [ ] AI-friendly manifest and docs remain accurate.
 - [ ] Build and typecheck pass on main.
 
+
+## Native iOS iconography, typography, and inputs
+
+The native app uses Tabler Icons 3.51.0, vendored in `ios/ThirdParty/Tabler`. The importer compiles the SVGs into SwiftUI paths. `EvoIcon`, `.evoSymbol`, and `EvoSymbolLabel` apply semantic aliases and use a bounded cache of native template images.
+
+| Role | Baseline | Weight |
+|---|---|---|
+| Standard | 20 pt | Regular |
+| Navigation | 21 pt | Regular or Medium |
+| Small toolbar | 17 pt | Regular or Medium |
+
+Primary is `#202127`; secondary is `#626267`, with adaptive equivalents in Dark Mode. Glyphs scale up to 32 pt; interactive controls retain separate minimum 44 × 44 pt targets. Regular and Medium strokes are 1.75 and 2 units. The drawer uses the standard role for all destination glyphs. Native prompts and share sheets retain system artwork. Unknown semantic keys use an SF Symbol fallback.
+
+Text uses bundled Inter 400/500/600/700 through `EvoFont`, preserving native Dynamic Type text styles. The four static text weights derive from the vendored OFL variable font at optical size 14. Font registration occurs before scene creation. AI body text remains 17 pt; user text 16 pt; Markdown formatting is preserved. The Tabler MIT and Inter OFL notices are included in the source tree.
+
+The chat requests keyboard focus once after its initial history restore. The header uses `safeAreaBar` and the native soft scroll-edge effect on iOS 26+, with a graduated material fallback on iOS 17–25. The explicit upper scroll clip and opaque header backing are removed. Response actions retain 44 pt targets and a 14 pt optical leading adjustment to align their visible glyphs with response text. Appearance, focus, scroll transitions, and accessibility still require device checks.
+
+Floating search fields in Library, Plugins, the drawer, and native project browsing share `EvoSearchField`. `EvoInputSurface` keeps floating search fields and composers visually consistent. The bottom shelves use the keyboard safe area, while task, project, and file editing use native forms.

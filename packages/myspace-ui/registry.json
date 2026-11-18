@@ -1,0 +1,397 @@
+{
+  "version": "1.0.0",
+  "components": [
+    {
+      "name": "AppShell",
+      "description": "AppShell native-control based mini-app primitive",
+      "importPath": "@myspace/ui",
+      "version": "1.0.0",
+      "deprecated": false,
+      "propsSource": "src/index.tsx#AppShell",
+      "accessibility": [
+        "Use a descriptive label",
+        "Preserve keyboard focus"
+      ],
+      "mobileBehavior": "Flexible container; native controls retain minimum 44px height",
+      "example": "<AppShell />"
+    },
+    {
+      "name": "Stack",
+      "description": "Stack native-control based mini-app primitive",
+      "importPath": "@myspace/ui",
+      "version": "1.0.0",
+      "deprecated": false,
+      "propsSource": "src/index.tsx#Stack",
+      "accessibility": [
+        "Use a descriptive label",
+        "Preserve keyboard focus"
+      ],
+      "mobileBehavior": "Flexible container; native controls retain minimum 44px height",
+      "example": "<Stack />"
+    },
+    {
+      "name": "Row",
+      "description": "Row native-control based mini-app primitive",
+      "importPath": "@myspace/ui",
+      "version": "1.0.0",
+      "deprecated": false,
+      "propsSource": "src/index.tsx#Row",
+      "accessibility": [
+        "Use a descriptive label",
+        "Preserve keyboard focus"
+      ],
+      "mobileBehavior": "Flexible container; native controls retain minimum 44px height",
+      "example": "<Row />"
+    },
+    {
+      "name": "Grid",
+      "description": "Grid native-control based mini-app primitive",
+      "importPath": "@myspace/ui",
+      "version": "1.0.0",
+      "deprecated": false,
+      "propsSource": "src/index.tsx#Grid",
+      "accessibility": [
+        "Use a descriptive label",
+        "Preserve keyboard focus"
+      ],
+      "mobileBehavior": "Flexible container; native controls retain minimum 44px height",
+      "example": "<Grid />"
+    },
+    {
+      "name": "Container",
+      "description": "Container native-control based mini-app primitive",
+      "importPath": "@myspace/ui",
+      "version": "1.0.0",
+      "deprecated": false,
+      "propsSource": "src/index.tsx#Container",
+      "accessibility": [
+        "Use a descriptive label",
+        "Preserve keyboard focus"
+      ],
+      "mobileBehavior": "Flexible container; native controls retain minimum 44px height",
+      "example": "<Container />"
+    },
+    {
+      "name": "Section",
+      "description": "Section native-control based mini-app primitive",
+      "importPath": "@myspace/ui",
+      "version": "1.0.0",
+      "deprecated": false,
+      "propsSource": "src/index.tsx#Section",
+      "accessibility": [
+        "Use a descriptive label",
+        "Preserve keyboard focus"
+      ],
+      "mobileBehavior": "Flexible container; native controls retain minimum 44px height",
+      "example": "<Section />"
+    },
+    {
+      "name": "Divider",
+      "description": "Divider native-control based mini-app primitive",
+      "importPath": "@myspace/ui",
+      "version": "1.0.0",
+      "deprecated": false,
+      "propsSource": "src/index.tsx#Divider",
+      "accessibility": [
+        "Use a descriptive label",
+        "Preserve keyboard focus"
+      ],
+      "mobileBehavior": "Flexible container; native controls retain minimum 44px height",
+      "example": "<Divider />"
+    },
+    {
+      "name": "ScrollArea",
+      "description": "ScrollArea native-control based mini-app primitive",
+      "importPath": "@myspace/ui",
+      "version": "1.0.0",
+      "deprecated": false,
+      "propsSource": "src/index.tsx#ScrollArea",
+      "accessibility": [
+        "Use a descriptive label",
+        "Preserve keyboard focus"
+      ],
+      "mobileBehavior": "Flexible container; native controls retain minimum 44px height",
+      "example": "<ScrollArea />"
+    },
+    {
+      "name": "Button",
+      "description": "Button native-control based mini-app primitive",
+      "importPath": "@myspace/ui",
+      "version": "1.0.0",
+      "deprecated": false,
+      "propsSource": "src/index.tsx#Button",
+      "accessibility": [
+        "Use a descriptive label",
+        "Preserve keyboard focus"
+      ],
+      "mobileBehavior": "Flexible container; native controls retain minimum 44px height",
+      "example": "<Button />"
+    },
+    {
+      "name": "IconButton",
+      "description": "IconButton native-control based mini-app primitive",
+      "importPath": "@myspace/ui",
+      "version": "1.0.0",
+      "deprecated": false,
+      "propsSource": "src/index.tsx#IconButton",
+      "accessibility": [
+        "Use a descriptive label",
+        "Preserve keyboard focus"
+      ],
+      "mobileBehavior": "Flexible container; native controls retain minimum 44px height",
+      "example": "<IconButton />"
+    },
+    {
+      "name": "TextField",
+      "description": "TextField native-control based mini-app primitive",
+      "importPath": "@myspace/ui",
+      "version": "1.0.0",
+      "deprecated": false,
+      "propsSource": "src/index.tsx#TextField",
+      "accessibility": [
+        "Use a descriptive label",
+        "Preserve keyboard focus"
+      ],
+      "mobileBehavior": "Flexible container; native controls retain minimum 44px height",
+      "example": "<TextField />"
+    },
+    {
+      "name": "TextArea",
+      "description": "TextArea native-control based mini-app primitive",
+      "importPath": "@myspace/ui",
+      "version": "1.0.0",
+      "deprecated": false,
+      "propsSource": "src/index.tsx#TextArea",
+      "accessibility": [
+        "Use a descriptive label",
+        "Preserve keyboard focus"
+      ],
+      "mobileBehavior": "Flexible container; native controls retain minimum 44px height",
+      "example": "<TextArea />"
+    },
+    {
+      "name": "SearchField",
+      "description": "SearchField native-control based mini-app primitive",
+      "importPath": "@myspace/ui",
+      "version": "1.0.0",
+      "deprecated": false,
+      "propsSource": "src/index.tsx#SearchField",
+      "accessibility": [
+        "Use a descriptive label",
+        "Preserve keyboard focus"
+      ],
+      "mobileBehavior": "Flexible container; native controls retain minimum 44px height",
+      "example": "<SearchField />"
+    },
+    {
+      "name": "Select",
+      "description": "Select native-control based mini-app primitive",
+      "importPath": "@myspace/ui",
+      "version": "1.0.0",
+      "deprecated": false,
+      "propsSource": "src/index.tsx#Select",
+      "accessibility": [
+        "Use a descriptive label",
+        "Preserve keyboard focus"
+      ],
+      "mobileBehavior": "Flexible container; native controls retain minimum 44px height",
+      "example": "<Select />"
+    },
+    {
+      "name": "Checkbox",
+      "description": "Checkbox native-control based mini-app primitive",
+      "importPath": "@myspace/ui",
+      "version": "1.0.0",
+      "deprecated": false,
+      "propsSource": "src/index.tsx#Checkbox",
+      "accessibility": [
+        "Use a descriptive label",
+        "Preserve keyboard focus"
+      ],
+      "mobileBehavior": "Flexible container; native controls retain minimum 44px height",
+      "example": "<Checkbox />"
+    },
+    {
+      "name": "Toggle",
+      "description": "Toggle native-control based mini-app primitive",
+      "importPath": "@myspace/ui",
+      "version": "1.0.0",
+      "deprecated": false,
+      "propsSource": "src/index.tsx#Toggle",
+      "accessibility": [
+        "Use a descriptive label",
+        "Preserve keyboard focus"
+      ],
+      "mobileBehavior": "Flexible container; native controls retain minimum 44px height",
+      "example": "<Toggle />"
+    },
+    {
+      "name": "DatePicker",
+      "description": "DatePicker native-control based mini-app primitive",
+      "importPath": "@myspace/ui",
+      "version": "1.0.0",
+      "deprecated": false,
+      "propsSource": "src/index.tsx#DatePicker",
+      "accessibility": [
+        "Use a descriptive label",
+        "Preserve keyboard focus"
+      ],
+      "mobileBehavior": "Flexible container; native controls retain minimum 44px height",
+      "example": "<DatePicker />"
+    },
+    {
+      "name": "Slider",
+      "description": "Slider native-control based mini-app primitive",
+      "importPath": "@myspace/ui",
+      "version": "1.0.0",
+      "deprecated": false,
+      "propsSource": "src/index.tsx#Slider",
+      "accessibility": [
+        "Use a descriptive label",
+        "Preserve keyboard focus"
+      ],
+      "mobileBehavior": "Flexible container; native controls retain minimum 44px height",
+      "example": "<Slider />"
+    },
+    {
+      "name": "Card",
+      "description": "Card native-control based mini-app primitive",
+      "importPath": "@myspace/ui",
+      "version": "1.0.0",
+      "deprecated": false,
+      "propsSource": "src/index.tsx#Card",
+      "accessibility": [
+        "Use a descriptive label",
+        "Preserve keyboard focus"
+      ],
+      "mobileBehavior": "Flexible container; native controls retain minimum 44px height",
+      "example": "<Card />"
+    },
+    {
+      "name": "Badge",
+      "description": "Badge native-control based mini-app primitive",
+      "importPath": "@myspace/ui",
+      "version": "1.0.0",
+      "deprecated": false,
+      "propsSource": "src/index.tsx#Badge",
+      "accessibility": [
+        "Use a descriptive label",
+        "Preserve keyboard focus"
+      ],
+      "mobileBehavior": "Flexible container; native controls retain minimum 44px height",
+      "example": "<Badge />"
+    },
+    {
+      "name": "Alert",
+      "description": "Alert native-control based mini-app primitive",
+      "importPath": "@myspace/ui",
+      "version": "1.0.0",
+      "deprecated": false,
+      "propsSource": "src/index.tsx#Alert",
+      "accessibility": [
+        "Use a descriptive label",
+        "Preserve keyboard focus"
+      ],
+      "mobileBehavior": "Flexible container; native controls retain minimum 44px height",
+      "example": "<Alert />"
+    },
+    {
+      "name": "LoadingIndicator",
+      "description": "LoadingIndicator native-control based mini-app primitive",
+      "importPath": "@myspace/ui",
+      "version": "1.0.0",
+      "deprecated": false,
+      "propsSource": "src/index.tsx#LoadingIndicator",
+      "accessibility": [
+        "Use a descriptive label",
+        "Preserve keyboard focus"
+      ],
+      "mobileBehavior": "Flexible container; native controls retain minimum 44px height",
+      "example": "<LoadingIndicator />"
+    },
+    {
+      "name": "ProgressBar",
+      "description": "ProgressBar native-control based mini-app primitive",
+      "importPath": "@myspace/ui",
+      "version": "1.0.0",
+      "deprecated": false,
+      "propsSource": "src/index.tsx#ProgressBar",
+      "accessibility": [
+        "Use a descriptive label",
+        "Preserve keyboard focus"
+      ],
+      "mobileBehavior": "Flexible container; native controls retain minimum 44px height",
+      "example": "<ProgressBar />"
+    },
+    {
+      "name": "EmptyState",
+      "description": "EmptyState native-control based mini-app primitive",
+      "importPath": "@myspace/ui",
+      "version": "1.0.0",
+      "deprecated": false,
+      "propsSource": "src/index.tsx#EmptyState",
+      "accessibility": [
+        "Use a descriptive label",
+        "Preserve keyboard focus"
+      ],
+      "mobileBehavior": "Flexible container; native controls retain minimum 44px height",
+      "example": "<EmptyState />"
+    },
+    {
+      "name": "ErrorState",
+      "description": "ErrorState native-control based mini-app primitive",
+      "importPath": "@myspace/ui",
+      "version": "1.0.0",
+      "deprecated": false,
+      "propsSource": "src/index.tsx#ErrorState",
+      "accessibility": [
+        "Use a descriptive label",
+        "Preserve keyboard focus"
+      ],
+      "mobileBehavior": "Flexible container; native controls retain minimum 44px height",
+      "example": "<ErrorState />"
+    },
+    {
+      "name": "CodeBlock",
+      "description": "CodeBlock native-control based mini-app primitive",
+      "importPath": "@myspace/ui",
+      "version": "1.0.0",
+      "deprecated": false,
+      "propsSource": "src/index.tsx#CodeBlock",
+      "accessibility": [
+        "Use a descriptive label",
+        "Preserve keyboard focus"
+      ],
+      "mobileBehavior": "Flexible container; native controls retain minimum 44px height",
+      "example": "<CodeBlock />"
+    },
+    {
+      "name": "JSONViewer",
+      "description": "JSONViewer native-control based mini-app primitive",
+      "importPath": "@myspace/ui",
+      "version": "1.0.0",
+      "deprecated": false,
+      "propsSource": "src/index.tsx#JSONViewer",
+      "accessibility": [
+        "Use a descriptive label",
+        "Preserve keyboard focus"
+      ],
+      "mobileBehavior": "Flexible container; native controls retain minimum 44px height",
+      "example": "<JSONViewer />"
+    },
+    {
+      "name": "StatusIndicator",
+      "description": "StatusIndicator native-control based mini-app primitive",
+      "importPath": "@myspace/ui",
+      "version": "1.0.0",
+      "deprecated": false,
+      "propsSource": "src/index.tsx#StatusIndicator",
+      "accessibility": [
+        "Use a descriptive label",
+        "Preserve keyboard focus"
+      ],
+      "mobileBehavior": "Flexible container; native controls retain minimum 44px height",
+      "example": "<StatusIndicator />"
+    }
+  ]
+}

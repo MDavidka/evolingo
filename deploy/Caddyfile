@@ -1,0 +1,166 @@
+api.sycord.site {
+	@arlen_build99 path /downloads/arlen-build-99.ipa
+	handle @arlen_build99 {
+		root * /var/lib/caddy/downloads
+		rewrite * /Arlen-build-99.ipa
+		header Content-Type application/octet-stream
+		header Content-Disposition "attachment; filename=Arlen-build-99.ipa"
+		header Cache-Control "no-store"
+		file_server
+	}
+
+	@arlen_build99 path /downloads/arlen-build-99.ipa /downloads/evolingo-build-99.ipa
+	handle @arlen_build99 {
+		root * /var/lib/caddy/downloads
+		rewrite * /Arlen-build-99.ipa
+		header Content-Type application/octet-stream
+		header Content-Disposition "attachment; filename=Arlen-build-99.ipa"
+		header Cache-Control "no-store"
+		file_server
+	}
+
+	@arlen_build98 path /downloads/arlen-build-98.ipa /downloads/evolingo-build-98.ipa
+	handle @arlen_build98 {
+		root * /var/lib/caddy/downloads
+		rewrite * /Arlen-build-98.ipa
+		header Content-Type application/octet-stream
+		header Content-Disposition "attachment; filename=Arlen-build-98.ipa"
+		header Cache-Control "no-store"
+		file_server
+	}
+
+	@evolingo_build97 path /downloads/evolingo-build-97.ipa
+	handle @evolingo_build97 {
+		root * /var/lib/caddy/downloads
+		rewrite * /Evolingo-build-97.ipa
+		header Content-Type application/octet-stream
+		header Content-Disposition "attachment; filename=Evolingo-build-97.ipa"
+		header Cache-Control "no-store"
+		file_server
+	}
+
+	@evolingo_build96 path /downloads/evolingo-build-96.ipa
+	handle @evolingo_build96 {
+		root * /var/lib/caddy/downloads
+		rewrite * /Evolingo-build-96.ipa
+		header Content-Type application/octet-stream
+		header Content-Disposition "attachment; filename=Evolingo-build-96.ipa"
+		header Cache-Control "no-store"
+		file_server
+	}
+
+	@evolingo_build95 path /downloads/evolingo-build-95.ipa
+	handle @evolingo_build95 {
+		root * /var/lib/caddy/downloads
+		rewrite * /Evolingo-build-95.ipa
+		header Content-Type application/octet-stream
+		header Content-Disposition "attachment; filename=Evolingo-build-95.ipa"
+		header Cache-Control "no-store"
+		file_server
+	}
+
+	@evolingo_build94 path /downloads/evolingo-build-94.ipa
+	handle @evolingo_build94 {
+		root * /var/lib/caddy/downloads
+		rewrite * /Evolingo-build-94.ipa
+		header Content-Type application/octet-stream
+		header Content-Disposition "attachment; filename=Evolingo-build-94.ipa"
+		header Cache-Control "no-store"
+		file_server
+	}
+
+	@evolingo_build93 path /downloads/evolingo-build-93.ipa
+	handle @evolingo_build93 {
+		root * /var/lib/caddy/downloads
+		rewrite * /Evolingo-build-93.ipa
+		header Content-Type application/octet-stream
+		header Content-Disposition "attachment; filename=Evolingo-build-93.ipa"
+		header Cache-Control "no-store"
+		file_server
+	}
+
+	@evolingo_build92 path /downloads/evolingo-build-92.ipa
+	handle @evolingo_build92 {
+		root * /var/lib/caddy/downloads
+		rewrite * /Evolingo-build-92.ipa
+		header Content-Type application/octet-stream
+		header Content-Disposition "attachment; filename=Evolingo-build-92.ipa"
+		header Cache-Control "no-store"
+		file_server
+	}
+
+	@evolingo_build91 path /downloads/evolingo-build-91.ipa
+	handle @evolingo_build91 {
+		root * /var/lib/caddy/downloads
+		rewrite * /Evolingo-build-91.ipa
+		header Content-Type application/octet-stream
+		header Content-Disposition "attachment; filename=Evolingo-build-91.ipa"
+		header Cache-Control "no-store"
+		file_server
+	}
+
+	@evolingo_build90 path /downloads/evolingo-build-90.ipa
+	handle @evolingo_build90 {
+		root * /var/lib/caddy/downloads
+		rewrite * /Evolingo-build-90.ipa
+		header Content-Type application/octet-stream
+		header Content-Disposition "attachment; filename=Evolingo-build-90.ipa"
+		header Cache-Control "no-store"
+		file_server
+	}
+
+	@evolingo_build89 path /downloads/evolingo-build-89.ipa
+	handle @evolingo_build89 {
+		root * /var/lib/caddy/downloads
+		rewrite * /Evolingo-build-89.ipa
+		header Content-Type application/octet-stream
+		header Content-Disposition "attachment; filename=Evolingo-build-89.ipa"
+		header Cache-Control "no-store"
+		file_server
+	}
+
+	@evolingo_build88 path /downloads/evolingo-build-88.ipa
+	handle @evolingo_build88 {
+		root * /var/lib/caddy/downloads
+		rewrite * /Evolingo-build-88.ipa
+		header Content-Type application/octet-stream
+		header Content-Disposition "attachment; filename=Evolingo-build-88.ipa"
+		header Cache-Control "no-store"
+		file_server
+	}
+
+	@evolingo_build87 path /downloads/evolingo-build-87.ipa
+	handle @evolingo_build87 {
+		root * /var/lib/caddy/downloads
+		rewrite * /Evolingo-build-87.ipa
+		header Content-Type application/octet-stream
+		header Content-Disposition "attachment; filename=Evolingo-build-87.ipa"
+		header Cache-Control "no-store"
+		file_server
+	}
+
+	@evolingo_build86 path /downloads/evolingo-build-86.ipa
+	handle @evolingo_build86 {
+		root * /var/lib/caddy/downloads
+		rewrite * /Evolingo-build-86.ipa
+		header Content-Type application/octet-stream
+		header Content-Disposition "attachment; filename=Evolingo-build-86.ipa"
+		header Cache-Control "no-store"
+		file_server
+	}
+
+	@myspace path /myspace /myspace/* /api/myspace /api/myspace/* /_next/* /api/state /images/* /icon.svg
+	handle @myspace {
+		reverse_proxy 127.0.0.1:28500
+	}
+
+	@chat path /api/chat /api/cowork /api/cowork/*
+	handle @chat {
+		reverse_proxy 127.0.0.1:28500 {
+			flush_interval -1
+		}
+	}
+	handle {
+		respond "Not Found" 404
+	}
+}

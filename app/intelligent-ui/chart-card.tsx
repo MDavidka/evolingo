@@ -1,6 +1,6 @@
 "use client"
 import { useEffect, useId, useMemo, useState } from "react"
-import { BarChart3, ChartNoAxesCombined, ChartPie } from "lucide-react"
+import { IconChartBar as BarChart3, IconChartLine as ChartNoAxesCombined, IconChartPie as ChartPie } from "@tabler/icons-react"
 import type { ChartCardBlock } from "./schema"
 
 /** Accessible, responsive native SVG chart; model data is validated upstream. */

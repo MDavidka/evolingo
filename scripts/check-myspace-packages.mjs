@@ -1,0 +1,3 @@
+import{build}from'esbuild';import{mkdtemp,rm}from'node:fs/promises';import{tmpdir}from'node:os';import{join}from'node:path';
+const out=await mkdtemp(join(tmpdir(),'myspace-sdk-'));
+try{for(const entry of['packages/myspace-ui/src/index.tsx','packages/myspace-sdk/src/index.ts','packages/myspace-types/src/index.ts','packages/myspace-templates/src/Notes.tsx','packages/myspace-templates/src/FocusBoard.tsx']){await build({entryPoints:[entry],bundle:true,platform:'browser',format:'esm',outdir:join(out,entry.split('/')[1]+entry.split('/').at(-1)),define:{'process.env.NODE_ENV':'"production"'},logLevel:'silent'});console.log('Independent browser bundle passed:',entry)}}finally{await rm(out,{recursive:true,force:true})}

@@ -1,0 +1,1718 @@
+[
+  {
+    "id": "gmail",
+    "num": 1,
+    "name": "Gmail",
+    "subtitle": "Read and manage Gmail",
+    "desc": "Search threads, summarize unread emails, and draft context-aware replies directly from Arlen.",
+    "cat": "communication",
+    "status": "available",
+    "auth": "oauth2",
+    "icon": "gmail",
+    "caps": [
+      "Search email threads",
+      "Summarize unread messages",
+      "Draft contextual replies",
+      "Send with confirmation"
+    ],
+    "scopes": [
+      "https://www.googleapis.com/auth/gmail.modify"
+    ],
+    "modes": [
+      "chat",
+      "cowork"
+    ]
+  },
+  {
+    "id": "microsoft-outlook",
+    "num": 2,
+    "name": "Microsoft Outlook",
+    "subtitle": "Search mail, calendar and inbox",
+    "desc": "Search email, read messages, and manage calendar events with authorized Microsoft Graph scopes.",
+    "cat": "communication",
+    "status": "setup_required",
+    "auth": "oauth2",
+    "icon": "outlook",
+    "caps": [
+      "Search inbox & folders",
+      "Read message details",
+      "Sync calendar appointments"
+    ],
+    "scopes": [
+      "Mail.ReadWrite",
+      "Calendars.ReadWrite"
+    ],
+    "modes": [
+      "chat",
+      "cowork"
+    ]
+  },
+  {
+    "id": "slack",
+    "num": 3,
+    "name": "Slack",
+    "subtitle": "Channels, direct messages and search",
+    "desc": "Search workspaces, summarize active channels, and send authorized status updates or responses.",
+    "cat": "communication",
+    "status": "available",
+    "auth": "oauth2",
+    "icon": "slack",
+    "caps": [
+      "Search public channels",
+      "Summarize conversation history",
+      "Draft channel messages"
+    ],
+    "scopes": [
+      "channels:read",
+      "chat:write",
+      "search:read"
+    ],
+    "modes": [
+      "chat",
+      "cowork"
+    ]
+  },
+  {
+    "id": "microsoft-teams",
+    "num": 4,
+    "name": "Microsoft Teams",
+    "subtitle": "Team chats and meetings",
+    "desc": "Access meeting transcripts, team channels, and collaboration spaces where organization policies permit.",
+    "cat": "communication",
+    "status": "setup_required",
+    "auth": "oauth2",
+    "icon": "teams",
+    "caps": [
+      "Read team channel posts",
+      "Inspect meeting transcripts",
+      "Post team updates"
+    ],
+    "scopes": [
+      "ChannelMessage.Read.All",
+      "OnlineMeetings.Read"
+    ],
+    "modes": [
+      "chat",
+      "cowork"
+    ]
+  },
+  {
+    "id": "discord",
+    "num": 5,
+    "name": "Discord",
+    "subtitle": "Bot-managed channels and servers",
+    "desc": "Query bot-authorized guild channels, post automated notifications, and inspect community threads.",
+    "cat": "communication",
+    "status": "setup_required",
+    "auth": "oauth2",
+    "icon": "discord",
+    "caps": [
+      "Query bot-authorized channels",
+      "Post automated notifications",
+      "Inspect guild threads"
+    ],
+    "scopes": [
+      "bot",
+      "messages.read"
+    ],
+    "modes": [
+      "chat",
+      "cowork"
+    ]
+  },
+  {
+    "id": "telegram",
+    "num": 6,
+    "name": "Telegram",
+    "subtitle": "Bot messaging and notifications",
+    "desc": "Send broadcast notifications and execute conversational bot tasks without user-account exposure.",
+    "cat": "communication",
+    "status": "setup_required",
+    "auth": "api_key",
+    "icon": "telegram",
+    "caps": [
+      "Send bot notifications",
+      "Poll bot message updates",
+      "Execute inline commands"
+    ],
+    "scopes": [
+      "bot_token"
+    ],
+    "modes": [
+      "chat",
+      "cowork"
+    ]
+  },
+  {
+    "id": "zoom",
+    "num": 7,
+    "name": "Zoom",
+    "subtitle": "Meetings, recordings and transcripts",
+    "desc": "Inspect scheduled meetings, generate smart summaries from past recordings, and share highlights.",
+    "cat": "communication",
+    "status": "setup_required",
+    "auth": "oauth2",
+    "icon": "zoom",
+    "caps": [
+      "List scheduled meetings",
+      "Download cloud transcripts",
+      "Generate meeting action items"
+    ],
+    "scopes": [
+      "meeting:read",
+      "recording:read"
+    ],
+    "modes": [
+      "chat",
+      "cowork"
+    ]
+  },
+  {
+    "id": "twilio",
+    "num": 8,
+    "name": "Twilio",
+    "subtitle": "SMS, voice and communications API",
+    "desc": "Trigger verified SMS alerts, phone verification workflows, and manage communications.",
+    "cat": "communication",
+    "status": "setup_required",
+    "auth": "api_key",
+    "icon": "twilio",
+    "caps": [
+      "Send SMS notifications",
+      "Query message delivery logs",
+      "Lookup phone numbers"
+    ],
+    "scopes": [
+      "AccountSid",
+      "AuthToken"
+    ],
+    "modes": [
+      "cowork"
+    ]
+  },
+  {
+    "id": "intercom",
+    "num": 9,
+    "name": "Intercom",
+    "subtitle": "Customer support and conversations",
+    "desc": "Lookup user support histories, triage active inbound conversations, and draft operator responses.",
+    "cat": "communication",
+    "status": "setup_required",
+    "auth": "api_key",
+    "icon": "intercom",
+    "caps": [
+      "Search user tickets",
+      "Summarize open conversations",
+      "Draft operator replies"
+    ],
+    "scopes": [
+      "conversations.read",
+      "conversations.write"
+    ],
+    "modes": [
+      "chat",
+      "cowork"
+    ]
+  },
+  {
+    "id": "zendesk",
+    "num": 10,
+    "name": "Zendesk",
+    "subtitle": "Tickets and customer service",
+    "desc": "Search helpdesk tickets, summarize complex customer cases, and draft structured resolution notes.",
+    "cat": "communication",
+    "status": "setup_required",
+    "auth": "api_key",
+    "icon": "zendesk",
+    "caps": [
+      "Search support tickets",
+      "Inspect customer history",
+      "Draft internal resolution notes"
+    ],
+    "scopes": [
+      "read",
+      "write"
+    ],
+    "modes": [
+      "chat",
+      "cowork"
+    ]
+  },
+  {
+    "id": "google-calendar",
+    "num": 11,
+    "name": "Google Calendar",
+    "subtitle": "Schedules, events and availability",
+    "desc": "Check calendar availability, schedule meetings, and set up contextual agenda reminders.",
+    "cat": "productivity",
+    "status": "available",
+    "auth": "oauth2",
+    "icon": "googleCalendar",
+    "caps": [
+      "Check calendar availability",
+      "Schedule events with confirmation",
+      "Summarize daily agenda"
+    ],
+    "scopes": [
+      "https://www.googleapis.com/auth/calendar.events"
+    ],
+    "modes": [
+      "chat",
+      "cowork"
+    ]
+  },
+  {
+    "id": "google-drive",
+    "num": 12,
+    "name": "Google Drive",
+    "subtitle": "Drive, Docs, Sheets or Slides",
+    "desc": "Browse documents, analyze spreadsheets, and reference presentations from your Google Drive.",
+    "cat": "productivity",
+    "status": "available",
+    "auth": "oauth2",
+    "icon": "googleDrive",
+    "caps": [
+      "Search authorized files",
+      "Read document content",
+      "Inspect presentation slides",
+      "Analyze spreadsheets"
+    ],
+    "scopes": [
+      "https://www.googleapis.com/auth/drive.readonly"
+    ],
+    "modes": [
+      "chat",
+      "cowork"
+    ]
+  },
+  {
+    "id": "google-docs",
+    "num": 13,
+    "name": "Google Docs",
+    "subtitle": "Create and edit shared documents",
+    "desc": "Read shared documents, draft outlines, and insert revisions with granular permission checks.",
+    "cat": "productivity",
+    "status": "setup_required",
+    "auth": "oauth2",
+    "icon": "googleDocs",
+    "caps": [
+      "Read document text",
+      "Draft new document",
+      "Insert suggested edits"
+    ],
+    "scopes": [
+      "https://www.googleapis.com/auth/documents"
+    ],
+    "modes": [
+      "chat",
+      "cowork"
+    ]
+  },
+  {
+    "id": "google-sheets",
+    "num": 14,
+    "name": "Google Sheets",
+    "subtitle": "Spreadsheets and tabular data",
+    "desc": "Query rows, update calculated tables, and generate conversational charts from sheets.",
+    "cat": "productivity",
+    "status": "setup_required",
+    "auth": "oauth2",
+    "icon": "googleSheets",
+    "caps": [
+      "Query spreadsheet rows",
+      "Append data rows",
+      "Calculate column formulas"
+    ],
+    "scopes": [
+      "https://www.googleapis.com/auth/spreadsheets"
+    ],
+    "modes": [
+      "chat",
+      "cowork"
+    ]
+  },
+  {
+    "id": "google-slides",
+    "num": 15,
+    "name": "Google Slides",
+    "subtitle": "Presentations and deck outlines",
+    "desc": "Inspect presentation slide contents, summarize slide decks, and generate presentation scripts.",
+    "cat": "productivity",
+    "status": "setup_required",
+    "auth": "oauth2",
+    "icon": "googleSlides",
+    "caps": [
+      "Inspect slide outlines",
+      "Extract text content",
+      "Generate speaker notes"
+    ],
+    "scopes": [
+      "https://www.googleapis.com/auth/presentations.readonly"
+    ],
+    "modes": [
+      "chat",
+      "cowork"
+    ]
+  },
+  {
+    "id": "notion",
+    "num": 16,
+    "name": "Notion",
+    "subtitle": "Notes, docs and team databases",
+    "desc": "Search workspace pages, read structured databases, and append notes to your team knowledge base.",
+    "cat": "productivity",
+    "status": "available",
+    "auth": "oauth2",
+    "icon": "notion",
+    "caps": [
+      "Search workspace pages",
+      "Read database records",
+      "Append notes to pages"
+    ],
+    "scopes": [
+      "read_content",
+      "update_content"
+    ],
+    "modes": [
+      "chat",
+      "cowork"
+    ]
+  },
+  {
+    "id": "todoist",
+    "num": 17,
+    "name": "Todoist",
+    "subtitle": "Task lists and daily reminders",
+    "desc": "Organize daily tasks, schedule reminders, and prioritize project backlogs conversationally.",
+    "cat": "productivity",
+    "status": "setup_required",
+    "auth": "api_key",
+    "icon": "todoist",
+    "caps": [
+      "List due tasks",
+      "Create task items",
+      "Mark tasks completed"
+    ],
+    "scopes": [
+      "data:read_write"
+    ],
+    "modes": [
+      "chat",
+      "cowork"
+    ]
+  },
+  {
+    "id": "trello",
+    "num": 18,
+    "name": "Trello",
+    "subtitle": "Boards, lists and workflow cards",
+    "desc": "Move cards across kanban boards, attach research notes, and keep project checklists updated.",
+    "cat": "productivity",
+    "status": "setup_required",
+    "auth": "oauth2",
+    "icon": "trello",
+    "caps": [
+      "Browse board lists",
+      "Create and move cards",
+      "Update checklist items"
+    ],
+    "scopes": [
+      "read",
+      "write"
+    ],
+    "modes": [
+      "chat",
+      "cowork"
+    ]
+  },
+  {
+    "id": "asana",
+    "num": 19,
+    "name": "Asana",
+    "subtitle": "Project tracking and team workflows",
+    "desc": "Track milestones, manage assignee workloads, and inspect sprint tasks across projects.",
+    "cat": "productivity",
+    "status": "setup_required",
+    "auth": "oauth2",
+    "icon": "asana",
+    "caps": [
+      "Inspect project tasks",
+      "Update task assignees",
+      "Track project milestones"
+    ],
+    "scopes": [
+      "default"
+    ],
+    "modes": [
+      "chat",
+      "cowork"
+    ]
+  },
+  {
+    "id": "clickup",
+    "num": 20,
+    "name": "ClickUp",
+    "subtitle": "All-in-one tasks, docs and goals",
+    "desc": "Synchronize tasks, documents, and sprint statuses from your connected ClickUp workspace.",
+    "cat": "productivity",
+    "status": "setup_required",
+    "auth": "api_key",
+    "icon": "clickup",
+    "caps": [
+      "List team spaces",
+      "Query task statuses",
+      "Create sprint tasks"
+    ],
+    "scopes": [
+      "pk_token"
+    ],
+    "modes": [
+      "chat",
+      "cowork"
+    ]
+  },
+  {
+    "id": "airtable",
+    "num": 21,
+    "name": "Airtable",
+    "subtitle": "Relational databases and grids",
+    "desc": "Perform structured queries across Airtable bases, link records, and summarize view schemas.",
+    "cat": "productivity",
+    "status": "setup_required",
+    "auth": "api_key",
+    "icon": "airtable",
+    "caps": [
+      "Query base records",
+      "Filter views",
+      "Insert and update rows"
+    ],
+    "scopes": [
+      "data.records:read",
+      "data.records:write"
+    ],
+    "modes": [
+      "chat",
+      "cowork"
+    ]
+  },
+  {
+    "id": "coda",
+    "num": 22,
+    "name": "Coda",
+    "subtitle": "Interactive docs and tables",
+    "desc": "Read interactive docs, execute table automation formulas, and pull structured project contexts.",
+    "cat": "productivity",
+    "status": "setup_required",
+    "auth": "api_key",
+    "icon": "coda",
+    "caps": [
+      "Read doc formulas",
+      "Query table rows",
+      "Append doc sections"
+    ],
+    "scopes": [
+      "docs:read"
+    ],
+    "modes": [
+      "chat",
+      "cowork"
+    ]
+  },
+  {
+    "id": "github",
+    "num": 23,
+    "name": "GitHub",
+    "subtitle": "Repositories, pull requests and issues",
+    "desc": "Review diffs, search repositories, triage issues, and inspect CI workflows.",
+    "cat": "development",
+    "status": "available",
+    "auth": "oauth2",
+    "icon": "github",
+    "caps": [
+      "Search repository code",
+      "Inspect pull request diffs",
+      "Triage issues",
+      "Check GitHub Actions CI"
+    ],
+    "scopes": [
+      "repo",
+      "read:user"
+    ],
+    "modes": [
+      "chat",
+      "cowork"
+    ]
+  },
+  {
+    "id": "gitlab",
+    "num": 24,
+    "name": "GitLab",
+    "subtitle": "DevOps lifecycle, CI/CD pipelines",
+    "desc": "Monitor merge requests, check pipeline statuses, and query issue trackers on GitLab.",
+    "cat": "development",
+    "status": "setup_required",
+    "auth": "api_key",
+    "icon": "gitlab",
+    "caps": [
+      "Monitor merge requests",
+      "Check CI pipeline status",
+      "Search project commits"
+    ],
+    "scopes": [
+      "read_api",
+      "read_repository"
+    ],
+    "modes": [
+      "chat",
+      "cowork"
+    ]
+  },
+  {
+    "id": "bitbucket",
+    "num": 25,
+    "name": "Bitbucket",
+    "subtitle": "Git repositories and pipelines",
+    "desc": "Browse source branches, inspect pull request reviews, and track Atlassian repo status.",
+    "cat": "development",
+    "status": "setup_required",
+    "auth": "oauth2",
+    "icon": "bitbucket",
+    "caps": [
+      "Browse repository branches",
+      "Inspect pull requests",
+      "View pipeline builds"
+    ],
+    "scopes": [
+      "repository:read",
+      "pullrequest:read"
+    ],
+    "modes": [
+      "chat",
+      "cowork"
+    ]
+  },
+  {
+    "id": "linear",
+    "num": 26,
+    "name": "Linear",
+    "subtitle": "Issue tracking and product cycles",
+    "desc": "Create issues, update sprint states, and summarize cycle progress in conversation.",
+    "cat": "development",
+    "status": "available",
+    "auth": "oauth2",
+    "icon": "linear",
+    "caps": [
+      "Create tracked issues",
+      "Update cycle states",
+      "Summarize sprint velocity"
+    ],
+    "scopes": [
+      "read",
+      "write",
+      "issues:create"
+    ],
+    "modes": [
+      "chat",
+      "cowork"
+    ]
+  },
+  {
+    "id": "jira",
+    "num": 27,
+    "name": "Jira",
+    "subtitle": "Software sprints, epics and tickets",
+    "desc": "Inspect backlog tickets, transition issue workflows, and track team agile velocity.",
+    "cat": "development",
+    "status": "setup_required",
+    "auth": "oauth2",
+    "icon": "jira",
+    "caps": [
+      "Inspect sprint backlogs",
+      "Transition ticket states",
+      "Search JQL filters"
+    ],
+    "scopes": [
+      "read:jira-work",
+      "write:jira-work"
+    ],
+    "modes": [
+      "chat",
+      "cowork"
+    ]
+  },
+  {
+    "id": "vercel",
+    "num": 28,
+    "name": "Vercel",
+    "subtitle": "Deployments, previews and logs",
+    "desc": "Check production build status, preview URLs, and runtime environment diagnostics.",
+    "cat": "development",
+    "status": "available",
+    "auth": "api_key",
+    "icon": "vercel",
+    "caps": [
+      "Inspect production deployments",
+      "Check preview build URLs",
+      "Stream runtime build logs"
+    ],
+    "scopes": [
+      "deployments:read",
+      "projects:read"
+    ],
+    "modes": [
+      "chat",
+      "cowork"
+    ]
+  },
+  {
+    "id": "netlify",
+    "num": 29,
+    "name": "Netlify",
+    "subtitle": "Web hosting and serverless functions",
+    "desc": "Inspect branch deploy previews, DNS records, and edge handler build logs.",
+    "cat": "development",
+    "status": "setup_required",
+    "auth": "api_key",
+    "icon": "netlify",
+    "caps": [
+      "Inspect deploy previews",
+      "Review site build logs",
+      "Check edge functions"
+    ],
+    "scopes": [
+      "sites:read"
+    ],
+    "modes": [
+      "chat",
+      "cowork"
+    ]
+  },
+  {
+    "id": "cloudflare",
+    "num": 30,
+    "name": "Cloudflare",
+    "subtitle": "DNS, Workers, and edge network",
+    "desc": "Review DNS zones, monitor edge worker latency, and inspect security telemetry.",
+    "cat": "development",
+    "status": "setup_required",
+    "auth": "api_key",
+    "icon": "cloudflare",
+    "caps": [
+      "Review DNS records",
+      "Inspect Workers telemetry",
+      "Check cache purge status"
+    ],
+    "scopes": [
+      "dns:read",
+      "workers:read"
+    ],
+    "modes": [
+      "chat",
+      "cowork"
+    ]
+  },
+  {
+    "id": "supabase",
+    "num": 31,
+    "name": "Supabase",
+    "subtitle": "Postgres database, auth and storage",
+    "desc": "Inspect database schemas, run safe read queries, and monitor edge functions.",
+    "cat": "development",
+    "status": "available",
+    "auth": "api_key",
+    "icon": "supabase",
+    "caps": [
+      "Inspect schema tables",
+      "Run safe read queries",
+      "Monitor edge function logs"
+    ],
+    "scopes": [
+      "database:read",
+      "functions:read"
+    ],
+    "modes": [
+      "chat",
+      "cowork"
+    ]
+  },
+  {
+    "id": "firebase",
+    "num": 32,
+    "name": "Firebase",
+    "subtitle": "Firestore, auth and cloud storage",
+    "desc": "Inspect Firestore collections, query authorized cloud data, and monitor authentication.",
+    "cat": "development",
+    "status": "setup_required",
+    "auth": "service_account",
+    "icon": "firebase",
+    "caps": [
+      "Query Firestore collections",
+      "Check authentication users",
+      "Inspect cloud functions"
+    ],
+    "scopes": [
+      "cloud-platform.read-only"
+    ],
+    "modes": [
+      "chat",
+      "cowork"
+    ]
+  },
+  {
+    "id": "sentry",
+    "num": 33,
+    "name": "Sentry",
+    "subtitle": "Error monitoring and stack traces",
+    "desc": "Analyze uncaught production exceptions, inspect stack traces, and correlate regressions.",
+    "cat": "development",
+    "status": "setup_required",
+    "auth": "api_key",
+    "icon": "sentry",
+    "caps": [
+      "Query unhandled errors",
+      "Analyze stack traces",
+      "Correlate release regressions"
+    ],
+    "scopes": [
+      "event:read",
+      "project:read"
+    ],
+    "modes": [
+      "chat",
+      "cowork"
+    ]
+  },
+  {
+    "id": "posthog",
+    "num": 34,
+    "name": "PostHog",
+    "subtitle": "Product analytics and feature flags",
+    "desc": "Query funnel conversions, inspect active feature flags, and observe user retention.",
+    "cat": "development",
+    "status": "setup_required",
+    "auth": "api_key",
+    "icon": "posthog",
+    "caps": [
+      "Inspect feature flags",
+      "Query retention funnels",
+      "Check user session events"
+    ],
+    "scopes": [
+      "project:read"
+    ],
+    "modes": [
+      "chat",
+      "cowork"
+    ]
+  },
+  {
+    "id": "mongodb-atlas",
+    "num": 35,
+    "name": "MongoDB Atlas",
+    "subtitle": "Document databases and collections",
+    "desc": "Query collection schemas, inspect document counts, and monitor cluster performance.",
+    "cat": "databases",
+    "status": "available",
+    "auth": "api_key",
+    "icon": "database",
+    "caps": [
+      "Query collection schemas",
+      "Inspect document counts",
+      "Monitor cluster metrics"
+    ],
+    "scopes": [
+      "cluster:read"
+    ],
+    "modes": [
+      "chat",
+      "cowork"
+    ]
+  },
+  {
+    "id": "postgresql",
+    "num": 36,
+    "name": "PostgreSQL",
+    "subtitle": "Direct SQL query engine",
+    "desc": "Execute safe read-only SQL queries and explain query execution plans on Postgres.",
+    "cat": "databases",
+    "status": "setup_required",
+    "auth": "api_key",
+    "icon": "database",
+    "caps": [
+      "Execute read-only SQL",
+      "Explain query plans",
+      "Inspect table constraints"
+    ],
+    "scopes": [
+      "pg_read_all_data"
+    ],
+    "modes": [
+      "chat",
+      "cowork"
+    ]
+  },
+  {
+    "id": "mysql",
+    "num": 37,
+    "name": "MySQL",
+    "subtitle": "Relational database connector",
+    "desc": "Connect to MySQL instances to inspect table schemas and generate performance metrics.",
+    "cat": "databases",
+    "status": "setup_required",
+    "auth": "api_key",
+    "icon": "database",
+    "caps": [
+      "Query relational tables",
+      "Inspect column types",
+      "Check index optimization"
+    ],
+    "scopes": [
+      "select_only"
+    ],
+    "modes": [
+      "chat",
+      "cowork"
+    ]
+  },
+  {
+    "id": "redis",
+    "num": 38,
+    "name": "Redis",
+    "subtitle": "In-memory cache and key-value store",
+    "desc": "Inspect cache keys, examine memory usage, and execute allowlisted monitoring commands.",
+    "cat": "databases",
+    "status": "setup_required",
+    "auth": "api_key",
+    "icon": "database",
+    "caps": [
+      "Inspect cache key patterns",
+      "Check memory statistics",
+      "Query TTL expiration"
+    ],
+    "scopes": [
+      "read_only"
+    ],
+    "modes": [
+      "chat",
+      "cowork"
+    ]
+  },
+  {
+    "id": "neon",
+    "num": 39,
+    "name": "Neon",
+    "subtitle": "Serverless Postgres with branching",
+    "desc": "Create isolated development branches, query database endpoints, and monitor compute.",
+    "cat": "databases",
+    "status": "setup_required",
+    "auth": "api_key",
+    "icon": "database",
+    "caps": [
+      "Inspect database branches",
+      "Create dev branch",
+      "Monitor compute consumption"
+    ],
+    "scopes": [
+      "projects:read",
+      "branches:create"
+    ],
+    "modes": [
+      "chat",
+      "cowork"
+    ]
+  },
+  {
+    "id": "planetscale",
+    "num": 40,
+    "name": "PlanetScale",
+    "subtitle": "Serverless MySQL platform",
+    "desc": "Review schema branches, check deployment states, and monitor database traffic.",
+    "cat": "databases",
+    "status": "setup_required",
+    "auth": "api_key",
+    "icon": "database",
+    "caps": [
+      "Inspect schema branches",
+      "Check deploy requests",
+      "Review query latencies"
+    ],
+    "scopes": [
+      "databases:read"
+    ],
+    "modes": [
+      "chat",
+      "cowork"
+    ]
+  },
+  {
+    "id": "aws",
+    "num": 41,
+    "name": "Amazon Web Services (AWS)",
+    "subtitle": "Cloud infrastructure and IAM",
+    "desc": "Query CloudWatch metrics, inspect S3 buckets, and view Lambda execution health.",
+    "cat": "databases",
+    "status": "setup_required",
+    "auth": "api_key",
+    "icon": "cloud",
+    "caps": [
+      "Query CloudWatch alarms",
+      "Inspect S3 bucket objects",
+      "Monitor Lambda health"
+    ],
+    "scopes": [
+      "cloudwatch:GetMetricData",
+      "s3:ListBucket"
+    ],
+    "modes": [
+      "cowork"
+    ]
+  },
+  {
+    "id": "google-cloud",
+    "num": 42,
+    "name": "Google Cloud",
+    "subtitle": "GCP resources and cloud run",
+    "desc": "Inspect Cloud Run services, monitor BigQuery jobs, and audit project metrics.",
+    "cat": "databases",
+    "status": "setup_required",
+    "auth": "service_account",
+    "icon": "cloud",
+    "caps": [
+      "Inspect Cloud Run status",
+      "Monitor BigQuery jobs",
+      "Audit project error logs"
+    ],
+    "scopes": [
+      "cloud-platform.read-only"
+    ],
+    "modes": [
+      "cowork"
+    ]
+  },
+  {
+    "id": "microsoft-azure",
+    "num": 43,
+    "name": "Microsoft Azure",
+    "subtitle": "Cloud services and VMs",
+    "desc": "Review resource groups, monitor Azure app services, and inspect event health.",
+    "cat": "databases",
+    "status": "setup_required",
+    "auth": "oauth2",
+    "icon": "cloud",
+    "caps": [
+      "Inspect resource groups",
+      "Monitor App Service health",
+      "Query Azure Monitor metrics"
+    ],
+    "scopes": [
+      "https://management.azure.com/user_impersonation"
+    ],
+    "modes": [
+      "cowork"
+    ]
+  },
+  {
+    "id": "digitalocean",
+    "num": 44,
+    "name": "DigitalOcean",
+    "subtitle": "Droplets, Kubernetes and apps",
+    "desc": "Monitor Droplet resource consumption, manage snapshots, and inspect app platforms.",
+    "cat": "databases",
+    "status": "setup_required",
+    "auth": "api_key",
+    "icon": "cloud",
+    "caps": [
+      "Monitor Droplet load",
+      "Query App Platform status",
+      "Inspect snapshot backups"
+    ],
+    "scopes": [
+      "read"
+    ],
+    "modes": [
+      "cowork"
+    ]
+  },
+  {
+    "id": "docker",
+    "num": 45,
+    "name": "Docker",
+    "subtitle": "Container management and images",
+    "desc": "List running containers, inspect image tags, and diagnose container log streams.",
+    "cat": "databases",
+    "status": "setup_required",
+    "auth": "mcp",
+    "icon": "docker",
+    "caps": [
+      "List running containers",
+      "Inspect container logs",
+      "Audit image vulnerability tags"
+    ],
+    "scopes": [
+      "docker.sock:read"
+    ],
+    "modes": [
+      "chat",
+      "cowork"
+    ]
+  },
+  {
+    "id": "kubernetes",
+    "num": 46,
+    "name": "Kubernetes",
+    "subtitle": "Cluster pods and workloads",
+    "desc": "Check namespace deployment health, inspect pod restart counts, and view event logs.",
+    "cat": "databases",
+    "status": "setup_required",
+    "auth": "mcp",
+    "icon": "kubernetes",
+    "caps": [
+      "Inspect pod restart counts",
+      "Query namespace events",
+      "Check deployment status"
+    ],
+    "scopes": [
+      "get:pods",
+      "get:deployments"
+    ],
+    "modes": [
+      "chat",
+      "cowork"
+    ]
+  },
+  {
+    "id": "ssh",
+    "num": 47,
+    "name": "SSH / Remote Terminal",
+    "subtitle": "Secure jump host commands",
+    "desc": "Run allowlisted diagnostic commands on remote servers through verified SSH tunnels.",
+    "cat": "databases",
+    "status": "setup_required",
+    "auth": "mcp",
+    "icon": "terminal",
+    "caps": [
+      "Execute allowlisted status scripts",
+      "Inspect system uptime",
+      "Audit disk space"
+    ],
+    "scopes": [
+      "ssh_key_scoped"
+    ],
+    "modes": [
+      "chat",
+      "cowork"
+    ]
+  },
+  {
+    "id": "figma",
+    "num": 48,
+    "name": "Figma",
+    "subtitle": "Design files, components and tokens",
+    "desc": "Inspect design component properties, pull token values, and summarize design comments.",
+    "cat": "design",
+    "status": "available",
+    "auth": "oauth2",
+    "icon": "figma",
+    "caps": [
+      "Inspect design components",
+      "Extract token color palettes",
+      "Summarize canvas comments"
+    ],
+    "scopes": [
+      "files:read"
+    ],
+    "modes": [
+      "chat",
+      "cowork"
+    ]
+  },
+  {
+    "id": "canva",
+    "num": 49,
+    "name": "Canva",
+    "subtitle": "Templates, graphics and brand kits",
+    "desc": "Generate brand graphics, inspect layout templates, and export approved media assets.",
+    "cat": "design",
+    "status": "setup_required",
+    "auth": "oauth2",
+    "icon": "design",
+    "caps": [
+      "Browse brand templates",
+      "Export preview assets",
+      "Create layout draft"
+    ],
+    "scopes": [
+      "design:content:read",
+      "design:meta:read"
+    ],
+    "modes": [
+      "chat",
+      "cowork"
+    ]
+  },
+  {
+    "id": "adobe-creative-cloud",
+    "num": 50,
+    "name": "Adobe Creative Cloud",
+    "subtitle": "Cloud libraries and assets",
+    "desc": "Browse assets in Adobe Cloud, inspect color themes, and reference vector libraries.",
+    "cat": "design",
+    "status": "setup_required",
+    "auth": "oauth2",
+    "icon": "design",
+    "caps": [
+      "Search cloud libraries",
+      "Inspect asset versions",
+      "Download reference vectors"
+    ],
+    "scopes": [
+      "cc_libraries_read"
+    ],
+    "modes": [
+      "chat",
+      "cowork"
+    ]
+  },
+  {
+    "id": "miro",
+    "num": 51,
+    "name": "Miro",
+    "subtitle": "Visual whiteboards and diagrams",
+    "desc": "Read diagram boards, summarize sticky note brainstorms, and export visual mindmaps.",
+    "cat": "design",
+    "status": "setup_required",
+    "auth": "oauth2",
+    "icon": "miro",
+    "caps": [
+      "Read whiteboard sticky notes",
+      "Summarize diagram sessions",
+      "Create conceptual card"
+    ],
+    "scopes": [
+      "boards:read",
+      "boards:write"
+    ],
+    "modes": [
+      "chat",
+      "cowork"
+    ]
+  },
+  {
+    "id": "framer",
+    "num": 52,
+    "name": "Framer",
+    "subtitle": "Interactive web layouts and CMS",
+    "desc": "Publish site updates, sync CMS collections, and review design staging previews.",
+    "cat": "design",
+    "status": "setup_required",
+    "auth": "api_key",
+    "icon": "framer",
+    "caps": [
+      "Review staging previews",
+      "Sync CMS items",
+      "Audit layout breakpoints"
+    ],
+    "scopes": [
+      "sites:read",
+      "cms:write"
+    ],
+    "modes": [
+      "chat",
+      "cowork"
+    ]
+  },
+  {
+    "id": "webflow",
+    "num": 53,
+    "name": "Webflow",
+    "subtitle": "Visual website development and CMS",
+    "desc": "Manage CMS collections, update live content items, and trigger publish workflows.",
+    "cat": "design",
+    "status": "setup_required",
+    "auth": "api_key",
+    "icon": "webflow",
+    "caps": [
+      "Update CMS collection items",
+      "Trigger publish to staging",
+      "Inspect site forms"
+    ],
+    "scopes": [
+      "cms:read",
+      "cms:write"
+    ],
+    "modes": [
+      "chat",
+      "cowork"
+    ]
+  },
+  {
+    "id": "youtube",
+    "num": 54,
+    "name": "YouTube",
+    "subtitle": "Channel metrics and video metadata",
+    "desc": "Inspect channel analytics, search video captions, and schedule community updates.",
+    "cat": "design",
+    "status": "setup_required",
+    "auth": "oauth2",
+    "icon": "youtube",
+    "caps": [
+      "Inspect video metrics",
+      "Search captions and transcripts",
+      "Draft video descriptions"
+    ],
+    "scopes": [
+      "https://www.googleapis.com/auth/youtube.readonly"
+    ],
+    "modes": [
+      "chat",
+      "cowork"
+    ]
+  },
+  {
+    "id": "spotify",
+    "num": 55,
+    "name": "Spotify",
+    "subtitle": "Music library and playlist control",
+    "desc": "Search music catalogs, inspect current playback, and curate collaborative playlists.",
+    "cat": "design",
+    "status": "setup_required",
+    "auth": "oauth2",
+    "icon": "spotify",
+    "caps": [
+      "Search audio catalogs",
+      "Inspect active playback",
+      "Add track to study playlist"
+    ],
+    "scopes": [
+      "user-read-playback-state",
+      "playlist-modify-public"
+    ],
+    "modes": [
+      "chat"
+    ]
+  },
+  {
+    "id": "stripe",
+    "num": 56,
+    "name": "Stripe",
+    "subtitle": "Payments, invoices and subscriptions",
+    "desc": "Inspect MRR trends, lookup customer payment statuses, and review invoice details.",
+    "cat": "business",
+    "status": "available",
+    "auth": "api_key",
+    "icon": "stripe",
+    "caps": [
+      "Inspect revenue analytics",
+      "Lookup invoice payment status",
+      "Verify customer subscriptions"
+    ],
+    "scopes": [
+      "rak_read_only"
+    ],
+    "modes": [
+      "chat",
+      "cowork"
+    ]
+  },
+  {
+    "id": "shopify",
+    "num": 57,
+    "name": "Shopify",
+    "subtitle": "E-commerce store and catalog",
+    "desc": "Check real-time order volume, search customer orders, and manage inventory levels.",
+    "cat": "business",
+    "status": "setup_required",
+    "auth": "oauth2",
+    "icon": "shopify",
+    "caps": [
+      "Query order fulfillment",
+      "Inspect inventory levels",
+      "Search store catalog"
+    ],
+    "scopes": [
+      "read_orders",
+      "read_products"
+    ],
+    "modes": [
+      "chat",
+      "cowork"
+    ]
+  },
+  {
+    "id": "woocommerce",
+    "num": 58,
+    "name": "WooCommerce",
+    "subtitle": "WordPress store management",
+    "desc": "Monitor daily shop sales, query customer orders, and update product inventories.",
+    "cat": "business",
+    "status": "setup_required",
+    "auth": "api_key",
+    "icon": "commerce",
+    "caps": [
+      "Monitor daily sales totals",
+      "Query pending orders",
+      "Update stock status"
+    ],
+    "scopes": [
+      "read_write"
+    ],
+    "modes": [
+      "chat",
+      "cowork"
+    ]
+  },
+  {
+    "id": "hubspot",
+    "num": 59,
+    "name": "HubSpot",
+    "subtitle": "Inbound CRM and marketing hub",
+    "desc": "Look up contact lifecycles, inspect sales deals, and synchronize lead activities.",
+    "cat": "business",
+    "status": "setup_required",
+    "auth": "oauth2",
+    "icon": "hubspot",
+    "caps": [
+      "Query contact timelines",
+      "Inspect deal pipeline stages",
+      "Create contact notes"
+    ],
+    "scopes": [
+      "crm.objects.contacts.read",
+      "crm.objects.deals.read"
+    ],
+    "modes": [
+      "chat",
+      "cowork"
+    ]
+  },
+  {
+    "id": "salesforce",
+    "num": 60,
+    "name": "Salesforce",
+    "subtitle": "Enterprise CRM and opportunities",
+    "desc": "Query customer accounts, update deal stages, and run pipeline velocity reports.",
+    "cat": "business",
+    "status": "setup_required",
+    "auth": "oauth2",
+    "icon": "salesforce",
+    "caps": [
+      "Query customer accounts",
+      "Update opportunity stages",
+      "Generate pipeline summary"
+    ],
+    "scopes": [
+      "api",
+      "refresh_token"
+    ],
+    "modes": [
+      "chat",
+      "cowork"
+    ]
+  },
+  {
+    "id": "pipedrive",
+    "num": 61,
+    "name": "Pipedrive",
+    "subtitle": "Sales pipeline and deal tracking",
+    "desc": "Track deal stages across pipelines, add meeting notes, and schedule sales follow-ups.",
+    "cat": "business",
+    "status": "setup_required",
+    "auth": "api_key",
+    "icon": "pipedrive",
+    "caps": [
+      "Track pipeline stages",
+      "Schedule activity follow-ups",
+      "Add deal notes"
+    ],
+    "scopes": [
+      "deals:read",
+      "activities:write"
+    ],
+    "modes": [
+      "chat",
+      "cowork"
+    ]
+  },
+  {
+    "id": "mailchimp",
+    "num": 62,
+    "name": "Mailchimp",
+    "subtitle": "Email campaigns and audience lists",
+    "desc": "Review campaign open rates, manage audience segments, and monitor newsletter growth.",
+    "cat": "business",
+    "status": "setup_required",
+    "auth": "api_key",
+    "icon": "mailchimp",
+    "caps": [
+      "Review campaign open rates",
+      "Inspect audience growth",
+      "Query unsubscribe rates"
+    ],
+    "scopes": [
+      "reports:read",
+      "lists:read"
+    ],
+    "modes": [
+      "chat",
+      "cowork"
+    ]
+  },
+  {
+    "id": "google-analytics",
+    "num": 63,
+    "name": "Google Analytics",
+    "subtitle": "GA4 web traffic and conversions",
+    "desc": "Query real-time visitor counts, traffic channels, and top conversion events.",
+    "cat": "business",
+    "status": "setup_required",
+    "auth": "oauth2",
+    "icon": "analytics",
+    "caps": [
+      "Query real-time visitor counts",
+      "Analyze traffic channels",
+      "Review conversion funnels"
+    ],
+    "scopes": [
+      "https://www.googleapis.com/auth/analytics.readonly"
+    ],
+    "modes": [
+      "chat",
+      "cowork"
+    ]
+  },
+  {
+    "id": "plausible",
+    "num": 64,
+    "name": "Plausible",
+    "subtitle": "Privacy-first web analytics",
+    "desc": "Check visitor counts, top referrers, and page views without privacy invasive tracking.",
+    "cat": "business",
+    "status": "setup_required",
+    "auth": "api_key",
+    "icon": "analytics",
+    "caps": [
+      "Check 30-day visitor trends",
+      "List top referrers",
+      "Inspect popular pages"
+    ],
+    "scopes": [
+      "stats:read"
+    ],
+    "modes": [
+      "chat",
+      "cowork"
+    ]
+  },
+  {
+    "id": "dropbox",
+    "num": 65,
+    "name": "Dropbox",
+    "subtitle": "Cloud file storage and sharing",
+    "desc": "Search files, generate shared links, and retrieve document contents securely.",
+    "cat": "storage",
+    "status": "setup_required",
+    "auth": "oauth2",
+    "icon": "dropbox",
+    "caps": [
+      "Search personal files",
+      "Generate sharing links",
+      "Retrieve text contents"
+    ],
+    "scopes": [
+      "files.metadata.read",
+      "files.content.read"
+    ],
+    "modes": [
+      "chat",
+      "cowork"
+    ]
+  },
+  {
+    "id": "onedrive",
+    "num": 66,
+    "name": "OneDrive",
+    "subtitle": "Microsoft personal and work files",
+    "desc": "Access Microsoft 365 cloud files, sync attachments, and preview shared folders.",
+    "cat": "storage",
+    "status": "setup_required",
+    "auth": "oauth2",
+    "icon": "onedrive",
+    "caps": [
+      "Search cloud files",
+      "Download document previews",
+      "Inspect shared folders"
+    ],
+    "scopes": [
+      "Files.Read.All"
+    ],
+    "modes": [
+      "chat",
+      "cowork"
+    ]
+  },
+  {
+    "id": "box",
+    "num": 67,
+    "name": "Box",
+    "subtitle": "Enterprise content and governance",
+    "desc": "Search enterprise file vaults, inspect version history, and manage secure collaborations.",
+    "cat": "storage",
+    "status": "setup_required",
+    "auth": "oauth2",
+    "icon": "box",
+    "caps": [
+      "Search enterprise content",
+      "Inspect file versions",
+      "Check collaboration access"
+    ],
+    "scopes": [
+      "root_readonly"
+    ],
+    "modes": [
+      "chat",
+      "cowork"
+    ]
+  },
+  {
+    "id": "zapier",
+    "num": 68,
+    "name": "Zapier",
+    "subtitle": "No-code automation workflows",
+    "desc": "Trigger multi-app Zaps, send webhook payloads, and check recent Zap run executions.",
+    "cat": "storage",
+    "status": "setup_required",
+    "auth": "api_key",
+    "icon": "zapier",
+    "caps": [
+      "Trigger active Zaps",
+      "Inspect execution logs",
+      "Send webhook actions"
+    ],
+    "scopes": [
+      "zaps:write",
+      "history:read"
+    ],
+    "modes": [
+      "chat",
+      "cowork"
+    ]
+  },
+  {
+    "id": "make",
+    "num": 69,
+    "name": "Make",
+    "subtitle": "Complex visual workflow scenarios",
+    "desc": "Trigger active scenarios, inspect execution histories, and sync cross-tool states.",
+    "cat": "storage",
+    "status": "setup_required",
+    "auth": "api_key",
+    "icon": "make",
+    "caps": [
+      "Trigger active scenarios",
+      "Inspect scenario logs",
+      "Sync tool states"
+    ],
+    "scopes": [
+      "scenarios:run",
+      "scenarios:read"
+    ],
+    "modes": [
+      "chat",
+      "cowork"
+    ]
+  },
+  {
+    "id": "n8n",
+    "num": 70,
+    "name": "n8n",
+    "subtitle": "Self-hosted workflow automation",
+    "desc": "Trigger webhook executions, inspect node error logs, and orchestrate custom services.",
+    "cat": "storage",
+    "status": "setup_required",
+    "auth": "api_key",
+    "icon": "n8n",
+    "caps": [
+      "Trigger webhook executions",
+      "Inspect error logs",
+      "Check workflow activations"
+    ],
+    "scopes": [
+      "workflows:read",
+      "workflows:execute"
+    ],
+    "modes": [
+      "chat",
+      "cowork"
+    ]
+  },
+  {
+    "id": "calendly",
+    "num": 71,
+    "name": "Calendly",
+    "subtitle": "Automated meeting scheduling",
+    "desc": "Share scheduling booking links, query upcoming slots, and manage invitee bookings.",
+    "cat": "storage",
+    "status": "setup_required",
+    "auth": "oauth2",
+    "icon": "calendly",
+    "caps": [
+      "Query upcoming booked events",
+      "Retrieve user scheduling links",
+      "Inspect available slots"
+    ],
+    "scopes": [
+      "default"
+    ],
+    "modes": [
+      "chat",
+      "cowork"
+    ]
+  },
+  {
+    "id": "health",
+    "num": 72,
+    "name": "Health",
+    "subtitle": "Explore your health data in ChatGPT",
+    "desc": "Inspect sleep trends, workouts, and wellness metrics privately with structured health charts.",
+    "cat": "popular",
+    "status": "available",
+    "auth": "none",
+    "icon": "health",
+    "caps": [
+      "Inspect step and activity trends",
+      "Review resting heart rate",
+      "Analyze sleep cycles",
+      "Privacy-first local processing"
+    ],
+    "scopes": [
+      "Apple HealthKit read"
+    ],
+    "modes": [
+      "chat"
+    ]
+  },
+  {
+    "id": "remote-desktop",
+    "num": 73,
+    "name": "Remote Desktop Commander",
+    "subtitle": "Use your computer from chat",
+    "desc": "Execute workspace workflows, inspect files, and manage terminal sessions over encrypted bridge links.",
+    "cat": "popular",
+    "status": "available",
+    "auth": "mcp",
+    "icon": "remoteDesktop",
+    "caps": [
+      "Execute local shell scripts",
+      "Inspect workspace directory files",
+      "Monitor terminal output stream",
+      "Encrypted peer-to-peer bridge"
+    ],
+    "scopes": [
+      "Arlen MCP Bridge (Local)"
+    ],
+    "modes": [
+      "chat",
+      "cowork"
+    ]
+  }
+]

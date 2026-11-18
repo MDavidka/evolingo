@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { Compass } from "lucide-react"
+import { IconCompass as Compass } from "@tabler/icons-react"
 export default function NotFound() {
   return <main className="evo-ai-system-page">
     <Compass size={32} strokeWidth={1.75} aria-hidden="true" />

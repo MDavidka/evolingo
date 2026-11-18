@@ -1,18 +1,6 @@
 "use client"
 
-import {
-  ArrowUpRight,
-  BookOpen,
-  BrainCircuit,
-  CalendarDays,
-  ChevronRight,
-  Ellipsis,
-  FileImage,
-  FileSpreadsheet,
-  FileText,
-  Folder,
-  FolderOpen,
-} from "lucide-react"
+import { IconArrowUpRight as ArrowUpRight, IconBook as BookOpen, IconBrain as BrainCircuit, IconCalendar as CalendarDays, IconChevronRight as ChevronRight, IconDots as Ellipsis, IconFileTypeJpg as FileImage, IconFileSpreadsheet as FileSpreadsheet, IconFileText as FileText, IconFolder as Folder, IconFolderOpen as FolderOpen } from "@tabler/icons-react"
 import "./evolingo-cards-demo.css"
 
 const imageCards = [

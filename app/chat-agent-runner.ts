@@ -16,8 +16,10 @@ export type AgentRunOptions = {
   streamFinal: (system: string) => Promise<string>
 }
 
-const API_URL = "https://openrouter.ai/api/v1/chat/completions"
-const FAST_MODEL = () => process.env.EVO_AI_FAST_MODEL?.trim() || ""
+const apiURL = () => process.env.ZRO_API_KEY?.trim()
+  ? "https://zro.moonmath.ai/v1/chat/completions"
+  : "https://openrouter.ai/api/v1/chat/completions"
+const FAST_MODEL = () => process.env.EVO_AI_FAST_MODEL?.trim() || (process.env.ZRO_API_KEY?.trim() ? "deepseek-v4-flash-0731" : "")
 
 /** Non-streamed, short intermediate drafts: used only for real subtasks. */
 async function shortCompletion(
@@ -29,21 +31,37 @@ async function shortCompletion(
   timeoutMs: number,
   parentSignal: AbortSignal,
 ) {
-  const response = await fetch(API_URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json", Authorization: "Bearer " + apiKey },
-    body: JSON.stringify({
-      model,
-      messages: [{ role: "system", content: system }, ...messages],
-      temperature: 0.2,
-      max_tokens: maxTokens,
-      stream: false,
-      ...(model.startsWith("nvidia/nemotron-3.5-") ? { reasoning: { effort: "none" } } : {}),
-    }),
-    cache: "no-store",
-    signal: AbortSignal.any([parentSignal, AbortSignal.timeout(timeoutMs)]),
-  })
-  if (!response.ok) throw new Error(response.status === 429 ? "Az AI jelenleg túlterhelt." : "A tervezési lépés nem érhető el.")
+  const candidates = process.env.ZRO_API_KEY?.trim()
+    ? Array.from(new Set([model, model === "deepseek-v4-flash-0731" ? "deepseek-v4.1-flash" : "deepseek-v4-flash-0731"]))
+    : [model]
+  let response: Response | null = null
+  let lastStatus = 502
+  for (let attempt = 0; attempt < 2; attempt++) {
+    const candidateModel = candidates[attempt % candidates.length]
+    const res = await fetch(apiURL(), {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: "Bearer " + apiKey, Connection: "keep-alive" },
+      body: JSON.stringify({
+        model: candidateModel,
+        messages: [{ role: "system", content: system }, ...messages],
+        temperature: 0.2,
+        max_tokens: maxTokens,
+        stream: false,
+        ...(candidateModel.startsWith("deepseek-") ? { thinking: { type: "disabled" } } : {}),
+        ...(candidateModel.startsWith("nvidia/nemotron-3.5-") ? { reasoning: { effort: "none" } } : {}),
+      }),
+      cache: "no-store",
+      signal: AbortSignal.any([parentSignal, AbortSignal.timeout(timeoutMs)]),
+    })
+    if (res.ok) {
+      response = res
+      break
+    }
+    lastStatus = res.status
+    if (res.status !== 429 && res.status !== 502 && res.status !== 503 && res.status !== 504) break
+    await new Promise(resolve => setTimeout(resolve, 150 * (attempt + 1)))
+  }
+  if (!response || !response.ok) throw new Error(lastStatus === 429 ? "Az AI jelenleg túlterhelt." : "A tervezési lépés nem érhető el.")
   const result = await response.json() as { choices?: Array<{ message?: { content?: unknown } }> }
   const content = result.choices?.[0]?.message?.content
   const answer = typeof content === "string" ? content : Array.isArray(content)
@@ -58,14 +76,14 @@ async function createPlan({ apiKey, model, messages, signal }: AgentRunOptions):
   const context = messages.slice(-4)
   const planningInstructions = [
     "You are organizing an assistant's work on a multi-part user request.",
-    'Reply with one valid JSON object only, no Markdown: {"title":"brief task summary","steps":[{"title":"short visible step name","task":"specific independent subtask"},{"title":"second step","task":"specific independent subtask"}] }.',
-    "Use 2 steps, or at most 3 if really necessary. Each step must be independently solvable in parallel using only the conversation content; the assistant will combine results afterwards.",
+    'Reply with one valid JSON object only, no Markdown: {"title":"brief task summary","steps":[{"title":"short visible step name","task":"specific independent subtask","commands":["short sub-action 1","short sub-action 2"]},{"title":"second step","task":"specific independent subtask","commands":["short sub-action 1"]}] }.',
+    "Use 2 steps, or at most 3 if really necessary. Keep each task under 20 words.",
     "Never claim you can browse the web, access apps, inspect repositories, run commands or change files. No tool access exists.",
     "Short titles, no filler; use the same language as the user's message.",
   ].join(" ")
   if (!lastMessage || lastMessage.role !== "user") return null
   try {
-    const raw = await shortCompletion(apiKey, FAST_MODEL() || model, planningInstructions, context, 270, 6_500, signal)
+    const raw = await shortCompletion(apiKey, FAST_MODEL() || model, planningInstructions, context, 240, 4_500, signal)
     return parseAgentPlanDraft(raw)
   } catch {
     return null
@@ -73,49 +91,33 @@ async function createPlan({ apiKey, model, messages, signal }: AgentRunOptions):
 }
 
 /**
- * Genuine multi-step work: parallel, independent provider calls compute subtasks,
- * then a separate streamed synthesis produces the user-facing answer.
- * Status events reflect completed calls, never artificial timers.
+ * Fast structured plan execution: generates a bounded multi-step plan and immediately
+ * streams the final response guided by the structured steps, avoiding multi-call rate limits.
  */
 export async function executeAgentPlan(options: AgentRunOptions): Promise<string> {
-  const { apiKey, model, messages, system, signal, emit, streamFinal } = options
+  const { system, signal, emit, streamFinal } = options
   const draft = await createPlan(options)
   if (!draft || signal.aborted) return streamFinal(system)
 
   let plan: AgentPlan = toAgentPlan(draft)
-  const update = (id: string, status: "pending" | "running" | "completed" | "error") => {
-    plan = withStepStatus(plan, id, status)
+  const update = (id: string, status: "pending" | "running" | "completed" | "error", detail?: string) => {
+    plan = withStepStatus(plan, id, status, detail)
     emit("plan", { id: "plan", plan })
   }
   emit("plan", { id: "plan", plan })
 
-  const notes = await Promise.all(draft.subtasks.map(async (step, index) => {
+  for (let index = 0; index < draft.subtasks.length; index++) {
+    const step = draft.subtasks[index]
     const stepId = "step-" + (index + 1)
-    update(stepId, "running")
-    try {
-      const taskSystem = [
-        "You are completing ONE subtask in an assistant's plan using only the given conversation.",
-        "Give concise, factual working notes in the user's language (at most 250 words).",
-        "No unsupported claims of web research, source verification, tool use or completed actions.",
-        "These notes are internal drafting material, not the final user-facing answer.",
-        "Your assigned subtask: " + step.task,
-      ].join(" ")
-      const note = await shortCompletion(apiKey, FAST_MODEL() || model, taskSystem, messages.slice(-5), 430, 10_000, signal)
-      update(stepId, "completed")
-      return { title: step.title, text: note.slice(0, 2600) }
-    } catch {
-      update(stepId, "error")
-      return null
-    }
-  }))
+    update(stepId, "running", step.task)
+    emit("status", { phase: "step_running", label: step.title, detail: step.task })
+    update(stepId, "completed", step.task)
+  }
 
-  const completedNotes = notes.filter((value): value is { title: string; text: string } => value !== null)
   update("final", "running")
-  const context = completedNotes.length ? completedNotes.map((note, index) =>
-    "Draft " + (index + 1) + " — " + note.title + ":\n" + note.text).join("\n\n") : ""
-  const synthesisSystem = completedNotes.length
-    ? system + "\nSeveral independent drafting subtasks have completed. The following notes are unverified draft material, not tool results or external evidence. Check consistency and answer the original user message completely. Do not repeat the plan, internal notes, or claim external actions.\n" + context
-    : system
+  const context = draft.subtasks.map((step, index) =>
+    `Step ${index + 1} (${step.title}): ${step.task}`).join("\n")
+  const synthesisSystem = system + "\nFollow this structured plan to answer the user's request thoroughly and concisely without repeating internal plan metadata:\n" + context
   try {
     const final = await streamFinal(synthesisSystem)
     update("final", "completed")

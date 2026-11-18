@@ -11,8 +11,8 @@
   width: 100%;
   min-width: 0;
   color: #202127;
-  font-size: 0.9375rem;
-  line-height: 1.65;
+  font-size: 17px;
+  line-height: 26px;
   -webkit-font-smoothing: antialiased;
 }
 .evo-rich-text > *:first-child { margin-top: 0; }
@@ -23,33 +23,45 @@
   white-space: pre-wrap;
 }
 .evo-rich-text h3 {
-  margin: 22px 0 10px;
+  margin: 20px 0 10px;
   color: #202127;
-  font-size: 1.1875rem;
-  line-height: 1.35;
-  letter-spacing: -.3px;
-  font-weight: 670;
+  font-size: 17px;
+  line-height: 26px;
+  letter-spacing: -.15px;
+  font-weight: 600;
 }
 .evo-rich-text h4 {
-  margin: 18px 0 9px;
-  color: #252830;
-  font-size: 1rem;
-  line-height: 1.4;
-  font-weight: 650;
+  margin: 16px 0 8px;
+  color: #202127;
+  font-size: 17px;
+  line-height: 26px;
+  font-weight: 600;
 }
-.evo-rich-text strong { font-weight: 660; color: #202127; }
+.evo-rich-text strong { font-weight: 600; color: #202127; }
 .evo-rich-text em { font-style: italic; }
 .evo-rich-text a {
-  color: #476e9e;
-  text-decoration: underline;
-  text-decoration-color: #b6c8de;
-  text-underline-offset: 3px;
+  color: #3988d5;
+  text-decoration: none;
+  font-weight: 500;
   overflow-wrap: anywhere;
 }
+.evo-rich-text a:hover {
+  text-decoration: underline;
+}
 .evo-rich-text a:focus-visible {
-  outline: 2px solid #6687b2;
+  outline: 2px solid #3988d5;
   outline-offset: 3px;
   border-radius: 3px;
+}
+.evo-rich-text .evo-rich-artifact-token {
+  color: #3988d5;
+  font-weight: 500;
+  overflow-wrap: anywhere;
+}
+.evo-rich-text .evo-rich-artifact-glyph {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 13.5px;
+  font-weight: 600;
 }
 .evo-rich-text blockquote {
   margin: 12px 0 18px;
@@ -72,11 +84,11 @@
   background: #e5e5ea;
 }
 .evo-rich-text code {
-  padding: 2px 5px;
-  border-radius: 6px;
-  background: #f1f2f5;
-  font: 0.78125rem/1.5 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  color: #4b5565;
+  padding: 0;
+  border-radius: 0;
+  background: transparent;
+  font: 16px/26px -apple-system, BlinkMacSystemFont, "SF Pro Text", Inter, sans-serif;
+  color: #8e8e93;
   overflow-wrap: anywhere;
 }
 .evo-rich-text pre {

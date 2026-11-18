@@ -1,13 +1,12 @@
 "use client"
 
 import { useEffect, useRef, useState, type FormEvent, type KeyboardEvent, type ClipboardEvent, type FormEventHandler } from "react"
-import { ArrowUp, Check, Copy, Plus, Camera, Image as ImageIcon, FileText, Mic, X, LoaderCircle } from "lucide-react"
+import { IconArrowUp as ArrowUp, IconCheck as Check, IconCopy as Copy, IconPlus as Plus, IconCamera as Camera, IconPhoto as ImageIcon, IconFileText as FileText, IconMicrophone as Mic, IconX as X, IconLoader2 as LoaderCircle } from "@tabler/icons-react"
 import { BottomSheet, UIButton } from "./evo-ui-kit"
 import dynamic from "next/dynamic"
 
-// Markdown/table rendering and agent traces are unnecessary for an empty chat.
+// Load answer formatting only when conversation content is present.
 const ChatRichText = dynamic(() => import("./chat-rich-text"), { ssr: false })
-const AgentPlanView = dynamic(() => import("./chat-agent-plan-view"), { ssr: false })
 import { isAgentPlan, type AgentPlan } from "./chat-agent-plan"
 import { MAX_IMAGE_BYTES, MAX_TEXT_BYTES, IMAGE_TYPES, TEXT_EXTENSIONS, type ChatAttachment } from "./chat-attachments"
 import { activeChatSessionId, readChatSessions, saveChatSession, setActiveChatSessionId } from "./chat-sessions"
@@ -292,17 +291,7 @@ export default function ChatInterface() {
     const acceptEvent = (raw: string) => {
       try {
         const event = JSON.parse(raw) as { type?: string; reply?: string; delta?: string; plan?: unknown; error?: string }
-        if (event.type === "plan" && isAgentPlan(event.plan)) {
-          // The fixed plan id is replaced in place, not appended as a new bubble.
-          const plan = event.plan
-          setStreaming(true)
-          setMessages(old => {
-            const existing = old.some(msg => msg.id === assistantId)
-            return existing
-              ? old.map(msg => msg.id === assistantId ? { ...msg, plan } : msg)
-              : [...old, { id: assistantId, role: "assistant", content: "", plan }]
-          })
-        } else if (event.type === "delta" && typeof event.delta === "string" && event.delta) {
+        if (event.type === "delta" && typeof event.delta === "string" && event.delta) {
           streamReply += event.delta
           if (streamReply.length > 30000) throw new Error("Túl hosszú válasz.")
           if (!answered) {
@@ -337,7 +326,7 @@ export default function ChatInterface() {
       const response = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages: next.slice(-8).map(({ role, content }) => ({ role, content })), interactive: true, agentMode: "auto", attachment: sentAttachment }),
+        body: JSON.stringify({ messages: next.slice(-8).map(({ role, content }) => ({ role, content })), interactive: true, sessionId, attachment: sentAttachment }),
         cache: "no-store",
         signal: controller.signal,
       })
@@ -486,7 +475,6 @@ export default function ChatInterface() {
       {messages.length > 0 && <div className="evo-chat-thread">
         {messages.map((item, index) => <div key={item.id ?? `${item.role}-${index}`} data-message-id={item.id} className={`evo-chat-entry evo-chat-entry--${item.role}`}>
           <div className="evo-chat-entry-main">
-            {item.role === "assistant" && item.plan && <AgentPlanView plan={item.plan} />}
             {(item.role === "user" || item.content) && <div className="evo-chat-bubble">
               {item.role === "assistant" ? (
                 busy && streaming && streamingAssistantId.current === item.id

@@ -1,0 +1,10 @@
+{
+  "name": "sample-repo",
+  "version": "1.0.0",
+  "description": "Sample test repository for Cowork E2E suite",
+  "main": "src/math.js",
+  "type": "module",
+  "scripts": {
+    "test": "node --test test/*.test.js"
+  }
+}

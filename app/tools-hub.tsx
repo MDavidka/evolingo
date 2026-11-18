@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useMemo, useState } from "react"
-import { ChevronRight, ExternalLink, FolderOpen, Plus, Search, Server, Trash2, X } from "lucide-react"
+import { IconChevronRight as ChevronRight, IconExternalLink as ExternalLink, IconFolderOpen as FolderOpen, IconPlus as Plus, IconSearch as Search, IconServer as Server, IconTrash as Trash2, IconX as X } from "@tabler/icons-react"
 import { BottomSheet, UIButton } from "./evo-ui-kit"
 import { readSpaceStatus } from "./space-status-cache"
 
